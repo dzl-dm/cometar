@@ -2,7 +2,9 @@
 CoMetaR is a platform that automatically deploys turtle-notated skos ontologies to a fuseki instance and an i2b2 server.
 
 ##requirements
+* a git repository the turtle notated skos files (ttl-files) are stored in
 * 2 apache jena fuseki instances, one for tests, one live server. the seperation guarantees that the live server always keeps a correctly running version
+* an i2b2 server
 
 ##installation
 1. clone the CoMetaR git repository
@@ -17,6 +19,7 @@ CoMetaR is a platform that automatically deploys turtle-notated skos ontologies 
 
 ##automatic procedure
 following steps happen before the ttl-file repository is actually updated:
+
 1. the new repository is checked out into the temporary directory
 2. the ttl files are loaded into the fuseki test instance
 3. rules are applied to the test dataset (e.g. `INSERT { ?a skos:narrower ?b } WHERE {	?b skos:broader ?a };`)
