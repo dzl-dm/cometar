@@ -18,10 +18,10 @@ CoMetaR is a platform that automatically deploys turtle-notated skos ontologies 
 ##automatic procedure
 following steps happen before the ttl-file repository is actually updated:
 1. the new repository is checked out into the temporary directory
-1. the ttl files are loaded into the fuseki test instance
-1. rules are applied to the test dataset (e.g. INSERT { ?a skos:narrower ?b } WHERE {	?b skos:broader ?a };)
-1. tests are performed (e.g. does every concept have an english label)
-1. the (verified) test dataset is exported into export.ttl
-1. export.ttl is loaded into the fuseki live instance
-1. export.ttl is translated into sql-statements for the i2b2 server
-1. sql-statements are performed
+2. the ttl files are loaded into the fuseki test instance
+3. rules are applied to the test dataset (e.g. `INSERT { ?a skos:narrower ?b } WHERE {	?b skos:broader ?a };`)
+4. tests are performed (e.g. does every concept have an english label?)
+5. the (verified) test dataset is exported into export.ttl
+6. export.ttl is loaded into the fuseki live instance
+7. export.ttl is translated into sql-statements for the i2b2 server
+8. sql-statements are performed
