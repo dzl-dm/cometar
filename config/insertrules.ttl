@@ -1,0 +1,58 @@
+prefix skos: 	<http://www.w3.org/2004/02/skos/core#> 
+prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix :	<http://data.dzl.de/ont/dwh#> 
+
+INSERT
+{
+	?a skos:broader ?b
+}
+WHERE
+{
+	?b skos:narrower ?a
+};
+
+INSERT
+{
+	?a skos:narrower ?b
+}
+WHERE
+{
+	?b skos:broader ?a
+};
+
+INSERT
+{
+	?a skos:topConceptOf ?b
+}
+WHERE
+{
+	?b skos:hasTopConcept ?a
+};
+
+INSERT
+{
+	?a skos:hasTopConcept ?b
+}
+WHERE
+{
+	?b skos:topConceptOf ?a
+};
+
+INSERT
+{
+        ?a rdf:hasPart ?b
+}
+WHERE
+{
+        ?b rdf:isPartOf ?a
+};
+
+INSERT
+{
+        ?a rdf:isPartOf ?b
+}
+WHERE
+{
+        ?b rdf:hasPart ?a
+};
+
