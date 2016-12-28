@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+	<head>
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>  
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<script src="javascript/core.js"></script>
+		<script src="javascript/helper.js"></script>
+		<script src="javascript/querymanager.js"></script>
+		<script src="javascript/modulemanager.js"></script>
+		<script src="javascript/moduleinfo.js"></script>
+		<link href="css/style.css" rel="stylesheet" type="text/css" />  
+		<link rel="stylesheet" href="css/jquery-ui.css">
+		<link href="css/dzl.css" rel="stylesheet" type="text/css" />  
+		<style>
+			body {padding:0px;margin:0px}
+			#ontologieManager {margin:0px; margin-left:10px;}
+		</style>
+		<script>
+		$(document).ready(function(){
+			$("#ontologieManager").height(window.innerHeight-145).css("width","calc(100% - 40px)");
+			$("#ontologieManager").ontologieManager();
+		});
+		</script>
+	</head>
+	<body>
+		<a href="http://www.dzl.de"><img src="images/logo.jpg" height="100" style="padding:0px;margin:0px;margin-left:10px;float:right;margin:20px;"/></a>
+		<a href="./"><h1 style="color:#0A3769; margin:50px; float:left">CoMetaR - a Collaborative Metadata Repository</h1></a>
+		<div style="clear:both"/>
+		<div id="ontologieManager"></div>
+	</body>
+</html>
