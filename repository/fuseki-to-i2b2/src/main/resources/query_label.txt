@@ -1,7 +1,8 @@
 PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#>
 PREFIX : <http://data.dzl.de/ont/dwh#>
 PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT ?concept
+SELECT ?label
 WHERE {
-	?concept skos:broader <PARENT> .
+	<CONCEPT> skos:prefLabel ?label . 
+	FILTER (lang(?label) = 'en')
 } 
