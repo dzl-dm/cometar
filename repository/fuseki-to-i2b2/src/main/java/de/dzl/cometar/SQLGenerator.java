@@ -22,54 +22,58 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
-public class Translator {
+public abstract class SQLGenerator {
 	String sparqlEndpoint = "https://data.dzl.de/fuseki/cometar_live/query";
-	String meta_schema = "public"; //i2b2metadata
-	String data_schema = "public"; //i2b2demodata
+	String meta_schema = "";//"public."; //i2b2metadata.
+	String data_schema = "";//"public."; //i2b2demodata.
 
 	String query_top_concepts = "";
 	String query_child_concepts = "";
 	String query_notations = "";
 	String query_label = "";
+	String outputDir;
 
-    public void translate() {
+	public SQLGenerator(){
+		//this.outputDir = "";	
+		this.outputDir = "target/";	
+		initializeQueries();
+	}
+	
+	protected void initializeQueries()
+	{
     	InputStream query_top_concepts_input = getClass().getResourceAsStream("/query_top_concepts.txt");
     	InputStream query_child_concepts_input = getClass().getResourceAsStream("/query_child_concepts.txt");
     	InputStream query_notations_input = getClass().getResourceAsStream("/query_notations.txt");
     	InputStream query_label_input = getClass().getResourceAsStream("/query_label.txt");
-
+    	
 		try {
 			query_top_concepts = readFile(query_top_concepts_input);
 			query_child_concepts = readFile(query_child_concepts_input);
 			query_notations = readFile(query_notations_input);
 			query_label = readFile(query_label_input);
-			
-			Writer writer_meta = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("target/meta.sql"), "utf-8"));
-			writer_meta.write("DELETE FROM "+meta_schema+".table_access WHERE c_table_cd LIKE 'test%';\n");
-			writer_meta.write("DELETE FROM "+meta_schema+".i2b2 WHERE sourcesystem_cd='test';\n");
-			
-			Writer writer_data = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("target/data.sql"), "utf-8"));
-			writer_data.write("DELETE FROM "+data_schema+".concept_dimension WHERE sourcesystem_cd='test';\n");
-			
-			List<String> topConcepts = getTopConcepts();
-			for (String concept : topConcepts)
-			{
-				writeInsertStatements(writer_meta, writer_data, concept, new ArrayList<String>());
-		    }
-			
-			writer_meta.close();
-			writer_data.close();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
+		}		
+	}
+	
+	private void writePreambles() throws IOException
+	{
+		writeMetaSql("DELETE FROM "+meta_schema+"table_access WHERE c_table_cd LIKE 'test%';\n");
+		writeMetaSql("DELETE FROM "+meta_schema+"i2b2 WHERE sourcesystem_cd='test';\n");
+		writeDataSql("DELETE FROM "+data_schema+"concept_dimension WHERE sourcesystem_cd='test';\n");
+	}
+	
+    protected void generateSQLStatements() throws IOException {
+    	initializeWriters();
+    	writePreambles();
+    	
+		List<String> topConcepts = getTopConcepts();
+		for (String concept : topConcepts)
+		{
+			writeInsertStatements(concept, new ArrayList<String>());
+	    }
+
+		closeWriters();
 		System.out.println("done");
 	}
 	
@@ -98,7 +102,7 @@ public class Translator {
      * @param ancestors List of full URIs of all ancestor concepts
      * @throws IOException
      */
-	public void writeInsertStatements(Writer writer_meta, Writer writer_data, String concept, ArrayList<String> ancestors) throws IOException
+	private void writeInsertStatements(String concept, ArrayList<String> ancestors) throws IOException
 	{		
 		String label = getLabel(concept);		
     	List<String> children = getChildren(concept);
@@ -127,11 +131,11 @@ public class Translator {
 		concept_short += getName(concept, false)+"\\";
 
 		//Write statements for concept. In case of not exactly one concept notation, String notation will be "NULL".
-		writeI2b2Entry(writer_meta, c_hlevel, notation, concept_long, concept_short, label, visualAttribute, current_timestamp);
+		writeI2b2Entry(c_hlevel, notation, concept_long, concept_short, label, visualAttribute, current_timestamp);
 		if (isRootElement)
-			writeTableAccessEntry(writer_meta, concept_long, concept_short, label, visualAttribute);		
+			writeTableAccessEntry(concept_long, concept_short, label, visualAttribute);		
 		if (!notation.equals("NULL"))
-			writeConceptDimensionEntry(writer_data, notation, concept_long, label, current_timestamp);
+			writeConceptDimensionEntry(notation, concept_long, label, current_timestamp);
 
 		//in case of multiple notations
 		if (notations.size() > 1)
@@ -144,7 +148,7 @@ public class Translator {
 				concept_long += "multiple notations\\";
 				concept_short += "multiple notations\\";
 				
-				writeI2b2Entry(writer_meta, c_hlevel, "", concept_long, concept_short, "_.-^''äbendies''^-._", visualAttribute, current_timestamp);
+				writeI2b2Entry(c_hlevel, "", concept_long, concept_short, "_.-^''äbendies''^-._", visualAttribute, current_timestamp);
 			}			
 			//Write INSERT statements for all notations.
 			c_hlevel++;
@@ -155,8 +159,8 @@ public class Translator {
 				String concept_short_sub = concept_short + i+"\\";
 				notation = notations.get(i);
 				
-				writeI2b2Entry(writer_meta, c_hlevel, notation, concept_long_sub, concept_short_sub, label, visualAttribute, current_timestamp);
-				writeConceptDimensionEntry(writer_data, notation, concept_long_sub, label, current_timestamp);
+				writeI2b2Entry(c_hlevel, notation, concept_long_sub, concept_short_sub, label, visualAttribute, current_timestamp);
+				writeConceptDimensionEntry(notation, concept_long_sub, label, current_timestamp);
 			}
 		}
 			
@@ -165,15 +169,15 @@ public class Translator {
 		{
 			@SuppressWarnings("unchecked")
 			ArrayList<String> ancestors_names_clone = (ArrayList<String>) ancestors.clone();
-			writeInsertStatements(writer_meta, writer_data, child, ancestors_names_clone);
+			writeInsertStatements(child, ancestors_names_clone);
 	    }    
 	}
 	
-	private void writeI2b2Entry(Writer writer_meta, int c_hlevel, String notation, String concept_long, String concept_short,
-			String label, String visualAttribute, String current_timestamp)
+	private void writeI2b2Entry(int c_hlevel, String notation, String concept_long, String concept_short,
+			String label, String visualAttribute, String current_timestamp) throws IOException
 	{
-		try {
-			writer_meta.write("INSERT INTO "+meta_schema+".i2b2("+
+		String statement = 
+				"INSERT INTO "+meta_schema+"i2b2("+
 					"c_hlevel,c_fullname,c_name,c_synonym_cd,c_visualattributes,"+
 					"c_basecode,c_metadataxml,c_facttablecolumn,c_tablename,c_columnname,"+
 					"c_columndatatype,c_operator,c_dimcode,c_tooltip,m_applied_path,"+
@@ -183,35 +187,29 @@ public class Translator {
 					"'"+notation+"',NULL,'concept_cd','concept_dimension','concept_path',"+
 					"'T','LIKE','"+concept_long+"','"+concept_short+"','@',"+
 					"current_timestamp,'"+current_timestamp+"',current_timestamp,'test'"+
-				");\n");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+				");\n";
+		writeMetaSql(statement);
 	}
 	
-	private void writeConceptDimensionEntry(Writer writer_data, String notation, String concept_long,
-			String label, String current_timestamp)
+	private void writeConceptDimensionEntry(String notation, String concept_long,
+			String label, String current_timestamp) throws IOException
 	{
-		try {
-			writer_data.write("INSERT INTO "+data_schema+".concept_dimension("+
-					"concept_path,concept_cd,name_char,update_date,"+
-					"download_date,import_date,sourcesystem_cd"+
-				")VALUES("+
-					"'"+concept_long+"','"+notation+"','"+label+"',current_timestamp,"+
-					"'"+current_timestamp+"',current_timestamp,'test'"+
-				");\n");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+		String statement = 
+			"INSERT INTO "+data_schema+"concept_dimension("+
+				"concept_path,concept_cd,name_char,update_date,"+
+				"download_date,import_date,sourcesystem_cd"+
+			")VALUES("+
+				"'"+concept_long+"','"+notation+"','"+label+"',current_timestamp,"+
+				"'"+current_timestamp+"',current_timestamp,'test'"+
+			");\n";
+		writeDataSql(statement);	
 	}
 	
-	private void writeTableAccessEntry(Writer writer_meta, String concept_long, String concept_short,
-			String label, String visualAttribute)
+	private void writeTableAccessEntry(String concept_long, String concept_short,
+			String label, String visualAttribute) throws IOException
 	{
-		try {
-			writer_meta.write("INSERT INTO "+meta_schema+".table_access("+
+		String statement = 
+				"INSERT INTO "+meta_schema+"table_access("+
 					"c_table_cd,c_table_name,c_protected_access,c_hlevel,c_fullname,"+
 					"c_name,c_synonym_cd,c_visualattributes,c_facttablecolumn,c_dimtablename,"+
 					"c_columnname,c_columndatatype,c_operator,c_dimcode,c_tooltip"+
@@ -219,11 +217,8 @@ public class Translator {
 					"'test_8883d7b2','i2b2','N',1,'"+concept_long+"',"+
 					"'"+label+"','N','"+visualAttribute+"','concept_cd','concept_dimension',"+
 					"'concept_path','T','LIKE','"+concept_long+"','"+concept_short+"'"+
-				");\n");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+				");\n";
+		writeMetaSql(statement);
 	}
 	
 	private List<String> getNotations(String concept)
@@ -277,26 +272,25 @@ public class Translator {
 		return concepts;
 	}
 	
-	private String getLabel(String concept)
+	/**
+	 * Retrieve the label for the given concept.
+	 * @param concept concept URI
+	 * @return preferred label
+	 * @throws NullPointerException if there is no preferred label for the given concept
+	 */
+	private String getLabel(String concept) throws NullPointerException
 	{
-		String label = "";
-		
     	String queryString = query_label.replace("<CONCEPT>", "<"+concept+">");
 		Query query = QueryFactory.create(queryString);
 		QueryEngineHTTP httpQuery = new QueryEngineHTTP(sparqlEndpoint, query);
 		ResultSet results = httpQuery.execSelect();
-		
-		while (results.hasNext()) {
-			QuerySolution solution = results.next();			
-			label = solution.get("label").toString();
+		if( !results.hasNext() ){
+			throw new NullPointerException("Concept without prefLabel: "+concept);
 		}
-		
+		QuerySolution solution = results.next();			
+		String label = solution.get("label").toString();
+		// possibly generate error if there are multiple labels
 		return cleanLabel(label);
-	}
-	  
-	public static void main(String[] args) {
-		Translator t = new Translator();
-		t.translate();
 	}
 	
 	private String cleanLabel(String label)
@@ -321,20 +315,23 @@ public class Translator {
 	}
 
 	private String readFile(InputStream is) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		
 	    String         line = null;
 	    StringBuilder  stringBuilder = new StringBuilder();
 	    String         ls = System.getProperty("line.separator");
 
-	    try {
+	    try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))){
 	        while((line = reader.readLine()) != null) {
 	            stringBuilder.append(line);
 	            stringBuilder.append(ls);
 	        }
 
 	        return stringBuilder.toString();
-	    } finally {
-	        reader.close();
 	    }
 	}
+
+	protected abstract void initializeWriters() throws UnsupportedEncodingException, FileNotFoundException;
+	protected abstract void closeWriters() throws IOException;
+	protected abstract void writeDataSql(String statement) throws IOException;
+	protected abstract void writeMetaSql(String statement) throws IOException;
 }
