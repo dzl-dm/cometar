@@ -58,11 +58,12 @@ var QueryManager = (function(){
 			PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#> \
 			PREFIX dc:		<http://purl.org/dc/elements/1.1/> \
 			PREFIX : 		<http://data.dzl.de/ont/dwh#> \
-			SELECT (<CONCEPT> as ?concept) ?label ?notation ?description ?unit (lang(?label) as ?lang) \
+			SELECT (<CONCEPT> as ?concept) ?label ?notation ?description ?unit (lang(?label) as ?lang) ?altlabel (lang(?altlabel) as ?altlang) \
 			WHERE { \
 				<CONCEPT> skos:prefLabel ?label. \
 				OPTIONAL { <CONCEPT> skos:notation ?notation } . \
 				OPTIONAL { <CONCEPT> dc:description ?description } . \
+				OPTIONAL { <CONCEPT> skos:altLabel ?altlabel } . \
 				OPTIONAL { <CONCEPT> :unit ?unit } . \
 			}",
 		getSearchBySubstring: "\

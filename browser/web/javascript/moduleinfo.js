@@ -42,7 +42,7 @@ ModuleManager.register([
 	}
 ]);
 
-var itemsToShow = [ "label", "notation", "description", "unit" ];
+var itemsToShow = [ "label", "notation", "description", "unit", "altlabel" ];
 
 var putInfo = function(resultDiv, resultItem)
 {
@@ -55,6 +55,8 @@ var putInfo = function(resultDiv, resultItem)
 				resultDiv.children("#info"+itemToShow).before("<h3>"+itemToShow+"</h3>");	
 			if (itemToShow == "label") 
 				appendInfo(resultDiv.children("#info"+itemToShow), resultItem["lang"].value.toUpperCase() + ": " + resultItem["label"].value);
+			if (itemToShow == "altlabel") 
+				appendInfo(resultDiv.children("#info"+itemToShow), resultItem["altlang"].value.toUpperCase() + ": " + resultItem["altlabel"].value);
 			else appendInfo(resultDiv.children("#info"+itemToShow), resultItem[itemToShow].value);
 		}
 	}
