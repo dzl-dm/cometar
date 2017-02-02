@@ -57,6 +57,9 @@ then
 	PGPASSWORD=i2b2metadata /usr/bin/psql -q --host=localhost --username=i2b2metadata --dbname=i2b2 -f $TEMPDIR/i2b2-sql/meta.sql
 	echo "Metadaten Teil 2.."
 	PGPASSWORD=i2b2demodata /usr/bin/psql -q --host=localhost --username=i2b2demodata --dbname=i2b2 -f $TEMPDIR/i2b2-sql/data.sql
+	echo "Patient count wird aktualisiert.."
+	cd $SCRIPTDIR
+	./update_patient_count.sh
 	echo -------------------------------------
 fi
  
