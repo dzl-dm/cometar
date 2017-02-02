@@ -1,0 +1,55 @@
+*
+{
+	border-color: #0492D0 !important;
+}
+
+body, .treeItem
+{
+	color: #0A3769;
+}
+
+.ui-resizable-handle.ui-resizable-e
+{
+	background-color:#F0F0F0;
+}
+
+.treeItem.currentDetailsSource:hover, .treeItem.currentDetailsSource, .treeMenuItem, .modulesMenuItem, .discussionPostDiv, .addDiscussionPostDiv
+{
+	background-color:#BFE3F2;
+}
+
+.modulesMenuItem:hover, .treeMenuItem:hover, .addDiscussionPostDiv.collapsed:hover, .discussionPostDiv > .addDiscussionPostDiv.collapsed:hover, input[type='button']:hover, input[type='submit']:hover
+{
+	background-color: #F0F0F0;
+}
+
+.treeItem:hover > .treeItemTitleDiv, .headPathDiv
+{
+	color: #0492D0;
+}
+
+.discussionPostDiv > .addDiscussionPostDiv, .discussionPostDiv.collapsed, .discussionPostDiv > .discussionPostDiv, input[type='button'], input[type='submit']
+{
+	background-color:#FFF;
+}
+
+.activeMenuItemDiv
+{
+	background-color:#FFF !important;
+}
+
+.treeItem, .treeItem:last-child, #searchResultDiv > div
+{
+	border-top-width:0px;
+	border-bottom-width:0px;
+}
+#conceptTree > div.treeItem
+{
+	border-top-width:1px;
+}
+.ui-resizable-handle.ui-resizable-e
+{
+	background-image:none;
+	width:5px;
+	right:-15px;
+}

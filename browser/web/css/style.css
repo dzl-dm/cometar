@@ -1,0 +1,506 @@
+/* concept tree */
+
+#treeMenu, #modulesMenu
+{
+	width:100%;
+	height:40px;
+	display: table;
+}
+
+#containerSpacer
+{
+	display:table-cell;
+	width:20px;
+}
+
+.treeMenuItem:first-child, .modulesMenuItem:first-child
+{
+	border-right:1px solid #999;
+	border-left-width:0px;
+}
+
+.treeMenuItem, .modulesMenuItem
+{
+	display: table-cell;
+	border-style: solid;
+	border-color: #999;
+	border-width:0px;
+	border-bottom-width:1px;
+	height:32px;
+	font-size:20px;
+	cursor:pointer;
+	background-color:#DDD;	
+	vertical-align:middle;
+	text-align:center;
+	border-top:1px solid black;
+	border-left:1px solid black;
+}
+
+#conceptTreeContainer, .treeMenuItem, #treeMenu, #modulesMenu, #modulesContainer, .modulesMenuItem
+{
+	border-radius: 5px 5px 0px 0px;
+}
+
+.treeMenuItem
+{
+	width:50%;	
+}
+
+.treeContentItem
+{
+	display:none;
+	overflow-y:auto;
+	overflow-x:hidden;
+}
+
+#conceptTreeContainer, #modulesContainer
+{
+	border-left:1px solid black;
+	border-right:1px solid black;
+	border-bottom:1px solid black;
+	display:table-cell;
+}
+
+#conceptTreeContainer
+{
+	width:500px;
+}
+
+#conceptTree
+{
+	width:100%;
+}
+
+.ui-resizable-handle.ui-resizable-s, .ui-resizable-handle.ui-resizable-se
+{
+	height:0px;
+}
+
+.ui-resizable-handle.ui-resizable-e
+{
+	width:10px;
+	background-image:url('../images/verticalstripes.png');
+	right:-10px;
+	top:-1px;
+	border:1px solid black;
+	border-radius: 3px 3px 3px 3px;
+}
+
+#conceptTree > div, #searchResultDiv > div
+{
+	/*border-right:1px solid black;*/
+	border-right-width:0px;
+}
+
+#conceptTree > div
+{
+	margin-top:0px;
+	border-left:0px;
+	margin-left:0px;
+}
+
+#conceptTree > div:first-child
+{
+	margin-top:10px;	
+}
+
+.treeItem
+{
+	padding-top:5px;
+	cursor: pointer;
+	background-color:white;
+	border-top:1px solid black;
+	border-left:1px solid black;
+	margin-left:20px;
+	/*background-image:url('../images/blackdot.png');*/
+	background-position: 10px 0px;
+    background-repeat: repeat-y;
+	clear:left;
+	display:none;
+}
+
+#searchDiv .expandDiv
+{
+	width:0px;
+}
+
+/*.treeItem span
+{
+	display:inline-block;
+	margin-left:5px;
+	margin-bottom:5px;
+}
+
+.treeItem:hover
+{
+	background-color:#DDD;
+}*/
+
+.treeItem:last-child
+{
+	border-bottom:1px solid black;	
+}
+
+.expanded > .expandDiv, .collapsed > .expandDiv
+{
+	background-repeat:no-repeat;	
+	background-position: 0px 0px;
+}
+
+.expandDiv
+{
+	background-image:url('../images/leafConcept.gif');
+}
+
+.expanded > .expandDiv
+{
+	background-image:url('../images/minusConcept.gif');
+}
+
+.collapsed > .expandDiv
+{
+	background-image:url('../images/plusConcept.gif');
+}
+
+.treeItem.isModifier
+{
+	filter: hue-rotate(270deg);	
+	font-style:italic;
+}
+
+.treeItem.currentDetailsSource, .treeItem.currentDetailsSource:hover
+{
+	background-color:#999;
+}
+
+.treeContentItem.activeTreeContentDiv
+{
+	display:block;
+}
+
+.expandDiv
+{
+	height:25px;
+	width:30px;
+	display:block;
+	float:left;
+}
+
+.treeItemTitleDiv
+{
+	display:block;
+	min-height:23px;
+	margin-top:2px;
+	clear:right;
+	margin-left:20px;
+}
+
+.expanded > .treeItemTitleDiv
+{
+	border-left:1px solid black;
+}
+
+.treeItemInfoDiv, .treeItemInfoTypeDiv
+{
+	display:block;
+	padding:0px;
+	font-size: 10px;
+	clear:none;
+}
+
+.treeItemInfoDiv
+{
+	padding-left:20px;	
+}
+
+.treeItemInfoTypeDiv
+{
+	float:left;
+	font-weight:bold;
+}
+
+#searchDiv
+{
+}
+
+#searchDiv .treeItem
+{
+	border-left:0px;
+	margin-left:10px;
+}
+
+#searchDiv .treeItem:last-child
+{
+	margin-bottom: 10px;
+}
+
+#searchDiv input
+{
+	margin-left:10px;
+	margin-top:10px;
+	margin-bottom:10px;
+	padding:0px;
+	border:1px solid #999;
+	display:inline-block;
+}
+
+#searchDiv input[type='text']
+{
+	width:calc(100% - 130px);
+}
+
+#searchDiv input[type='submit']
+{
+	width:90px;
+	cursor:pointer;
+}
+
+/* menu */
+
+.modulesMenuItem:hover, .treeMenuItem:hover
+{
+	background-color:#999;
+}
+
+.activeMenuItemDiv
+{
+	border-bottom:0px;
+	background-color:#FFF;
+}
+
+/* content */
+
+.moduleContentDiv
+{
+	/*width:478px;
+	clear:left;*/
+	padding:10px;
+	display:none;
+	overflow-y:auto;
+	overflow-x:hidden;
+	width:calc(100% - 20px);
+}
+
+.moduleContentDiv.activeModuleContentDiv
+{
+	display:block;
+}
+
+.treeItem .searchHighlight
+{
+	background-color: yellow;
+	margin-left:0px;
+}
+
+.discussionPostDiv
+{
+	border:1px solid black;
+	margin-top:10px;
+	padding-left:20px;
+	width:100%;
+	box-sizing: border-box;
+	clear:both;
+}
+
+.discussionPostDiv:last-child
+{
+	margin-bottom:10px;
+}
+
+.discussionPostDiv:first-of-type
+{
+	margin-top:0px;
+}
+
+.discussionPostDiv.collapsed
+{
+	height:78px;
+	overflow-y:hidden;
+}
+
+.discussionPostDiv.collapsed > .discussionPostDiv
+{
+	display:none;
+}
+
+.discussionPostDiv > .discussionPostDiv
+{
+	background-color:white;
+	border-top:1px solid black;
+	border-left: 1px solid black;
+	box-sizing: border-box;
+	width:100%;
+	clear:both;
+	border-right:0px;
+}
+
+.discussionPostDiv
+{
+	min-height: 120px;
+}
+
+.discussionPostDiv > .discussionPostDiv .discussionPostTitleDiv
+{
+	min-height:65px;
+}
+
+.discussionPostTitleDiv
+{
+	padding:10px;
+}
+
+.discussionPostInfoDiv
+{
+	float:right;
+	clear:right;
+	padding:10px;
+}
+
+.discussionPostAuthorDiv, .discussionPostDateDiv
+{
+	font-size:12px;
+}
+
+.addDiscussionPostDiv
+{
+	position:relative;
+	border:1px solid black;
+	width:100%;
+	height:30px;
+	padding-top:3px;
+	overflow:hidden;
+	margin-bottom:10px;
+	box-sizing: border-box;
+	margin-right:10px;
+	cursor:pointer;
+	text-align:center;
+}
+
+.addDiscussionPostDiv .addDiscussionPostButtonDiv
+{
+	font-weight:bold;
+	display:inline-block;
+	position: relative;
+	margin:auto;
+}
+
+.addDiscussionPostDiv input[type='text'], .addDiscussionPostDiv textarea, .addDiscussionPostDiv input[type='submit']
+{
+	border:1px solid black;
+}
+
+.addDiscussionPostDiv input[type='button'], .addDiscussionPostDiv input[type='submit']
+{
+	margin-left:10px;
+	margin-top:10px;
+	margin-bottom:10px;
+	margin-right:0px;
+	float:right;
+	padding:10px;
+	border:1px solid black;
+	cursor:pointer;
+}
+
+.addDiscussionPostDiv.expanded
+{
+    animation: yourCustomAnimation 0.3s;
+    animation-fill-mode: forwards;
+	animation-direction: normal;
+	animation-timing-function: ease;
+}
+@keyframes yourCustomAnimation {
+	100% {
+		height:250px;
+		width:100%;
+		margin-right:0px;
+	}
+}
+
+.discussionPostDiv > .addDiscussionPostDiv.expanded
+{
+	border-right-width:0px;
+}
+
+.discussionPostDiv > .addDiscussionPostDiv
+{
+	margin-bottom: 10px;
+}
+
+.discussionAuthorInput, .discussionPostInput
+{
+	width:100%;
+}
+
+.addDiscussionPostForm table
+{
+	width:calc(100% - 30px);
+	margin:10px;
+}
+
+.addDiscussionPostForm table td:first-child
+{
+	width:100px;
+}
+
+#tooltipDiv
+{
+	border:1px solid black;
+	background-color:#FFF;
+	position:fixed;
+	padding:10px;
+	display: none;
+	z-index:1000;
+}
+
+.treePathDiv:after 
+{
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.headPathDiv
+{
+	display:inline-block;
+	float:left;
+	clear:both;
+	padding-top:5px;
+}
+
+.headPathDiv:hover
+{
+	cursor:pointer;
+	text-decoration:underline;
+}
+
+/*
+
+div.detailsButton
+{
+	display:inline-block;
+	float:right;
+	margin-right:5px;
+	padding-left:3px;
+	padding-right:3px;
+	cursor:pointer;
+}
+
+div.infoButton
+{
+	background-color:#08088A;
+	color:#FFF;
+}
+
+div.discussionButton
+{
+	background-color:#61210B;
+	color:#FFF;	
+}
+
+div.infoButton:hover
+{
+	background-color:#FFF;
+	color:#999;
+}
+
+*/
