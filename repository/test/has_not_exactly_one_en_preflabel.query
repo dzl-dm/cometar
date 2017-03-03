@@ -6,5 +6,5 @@ WHERE {
         ?concept skos:prefLabel ?label .
         FILTER(lang(?label)='en') .
 }
-GROUP BY ?label
-HAVING (SUM(?label) != 1)
+GROUP BY ?concept
+HAVING (COUNT(?label) != 1)
