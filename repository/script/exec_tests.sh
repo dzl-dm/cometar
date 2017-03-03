@@ -8,12 +8,12 @@ YELLOW='\033[0;33m'
 NC='\033[0m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-echo "----------test for english label"
-curl -s --data-urlencode query="$(< $TESTDIR/has_no_en_label.query)" -G "$FUSEKITESTDATASET/query" | grep '^\s*\"concept\"' > $errorfile
+echo "----------test for exactly one english preflabel"
+curl -s --data-urlencode query="$(< $TESTDIR/has_not_exactly_one_en_preflabel.query)" -G "$FUSEKITESTDATASET/query" | grep '^\s*\"concept\"' > $errorfile
 errorcount=$(wc -l $errorfile | cut -d " " -f 1)
 if [ $errorcount -gt 0 ]
 then
-        echo -e "${RED}Folgende Konzepte haben kein englisches Label:${NC}"
+        echo -e "${RED}Folgende Konzepte haben nicht exakt ein englisches prefLabel:${NC}"
         sed -e "s/^.*\"value\":.\"\(.*\)\".*$/\1/" $errorfile | sed "s/.*/\\${RED}\\0\\${NC}/" | sed 's/\\/\\\\/g' | xargs -L 1 echo -e
         EXITCODE=1
 else
