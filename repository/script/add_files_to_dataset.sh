@@ -40,9 +40,9 @@ EXITCODE=0
 if $cleardata; then
 	if $testmode; 
 	then
-		curl -X PUT -H "Content-Type: text/turtle;charset=utf-8" $silentmode -T "$CONFDIR/empty_dataset.ttl" -G $FUSEKITESTDATASET/data -d default
+		curl -X PUT -H "Content-Type: text/turtle;charset=utf-8" $silentmode -G $FUSEKITESTDATASET/data -d default --data ""
 	else
-		curl -X PUT -H "Content-Type: text/turtle;charset=utf-8" $silentmode -T "$CONFDIR/empty_dataset.ttl" -G $FUSEKILIVEDATASET/data -d default
+  		curl -X PUT -H "Content-Type: text/turtle;charset=utf-8" $silentmode -G $FUSEKILIVEDATASET/data -d default --data ""
 	fi
 fi
 
