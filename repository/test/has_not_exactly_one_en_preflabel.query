@@ -1,0 +1,10 @@
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX : <http://data.dzl.de/ont/dwh#>
+SELECT ?concept
+WHERE {
+        ?concept a skos:Concept .
+        ?concept skos:prefLabel ?label .
+        FILTER(lang(?label)='en') .
+}
+GROUP BY ?label
+HAVING (SUM(?label) != 1)
