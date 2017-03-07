@@ -5,13 +5,20 @@ $.fn.ontologieManager = function() {
 	$(this).bind("DOMSubtreeModified", function(e) {
 		$(e.target).find("div").hover(
 			function() {
-				if ($( this ).attr("tooltip") != undefined)
+				var tt = $( this ).attr("tooltip");
+				if (tt != undefined)
 				{
 					var tooltip = $("#tooltipDiv");
-					tooltip.html($(this).attr("tooltip"));
+					tooltip.html(tt);
 					tooltip.css("top", ($(this).offset().top - tooltip.outerHeight()) + "px");
 					tooltip.css("left", ($(this).offset().left - tooltip.outerWidth()) + "px");
 					tooltip.show();
+				}
+				var tt = $( this ).data("tooltip");
+				if (tt != undefined)
+				{
+					var tooltip = $("#tooltipDiv");
+					tooltip.html(tt($(this).data("tooltiparg")));
 				}
 			}, function() {
 				$("#tooltipDiv").hide();
@@ -24,14 +31,16 @@ $.fn.ontologieManager = function() {
 				<div class='treeMenuItem activeMenuItemDiv' target='conceptTree'>concepts</div>\
 				<div class='treeMenuItem' target='searchDiv'>search</div>\
 			</div>\
-			<div id='conceptTree' class='treeContentItem activeTreeContentDiv'></div> \
-			<div id='searchDiv' class='treeContentItem'> \
-				<form> \
-					<input type='text' id='searchPatternText'/> \
-					<input type='submit' value='search' id='searchSubmitButton'/> \
-				</form> \
-				<div id='searchResultDiv'></div> \
-			</div> \
+			<div id='treeContent'>\
+				<div id='conceptTree' class='treeContentItem activeTreeContentDiv'></div> \
+				<div id='searchDiv' class='treeContentItem'> \
+					<form> \
+						<input type='text' id='searchPatternText'/> \
+						<input type='submit' value='search' id='searchSubmitButton'/> \
+					</form> \
+					<div id='searchResultDiv'></div> \
+				</div> \
+			</div>\
 		</div> \
 		<div id='containerSpacer'/> \
 		<div id='modulesContainer'> \
@@ -39,10 +48,10 @@ $.fn.ontologieManager = function() {
 			<div id='modulesContents'></div> \
 		</div> \
 		<div id='tooltipDiv'></div>"
-	).css("display", "table");
-	TreeManager.load();
-	TreeManager.renderTree();
+	).addClass("cometarContainer");
 	ModuleManager.renderModules();
+	
+	TreeManager.load();
 	$("#conceptTreeContainer").resizable();
 	/*$("#modulesContainer").resizable();*/
 	$(this).resizable();
@@ -55,19 +64,18 @@ $.fn.ontologieManager = function() {
 		$("#searchPatternText").val(searchString);
 		$("#searchSubmitButton").click();
 	}
-	
+
 	if (location.hash != "")
 	{
-		conceptUrl = decodeURIComponent(location.hash).substring(1);
-		Helper.getPathsByConceptUrl(conceptUrl, function(paths){
-			var urlPathsOnly = [];
-			for (var i = 0; i < paths.length; i++)
-			{
-				urlPathsOnly = $.merge(urlPathsOnly, [paths[i][0]]);
-			}
-			TreeManager.openPaths(urlPathsOnly);
-		});
+		conceptUrl = Helper.getCurrentConceptUrl();
+		TreeManager.openPaths(conceptUrl, true);
+		ModuleManager.showTab("details");
 	}
+	$(window).bind( 'hashchange', function(e) {
+		conceptUrl = Helper.getCurrentConceptUrl();
+		TreeManager.openPaths(conceptUrl, true);
+		ModuleManager.showTab("details");
+	});
 }
 
 var TreeManager = (function(){		
@@ -81,19 +89,20 @@ var TreeManager = (function(){
 	var createTopTreeItems = function(container)
 	{
 		var queryString = QueryManager.queries.getTopConcepts;
-		QueryManager.query(queryString, function(queryResultItem){
-			var newItem = putTreeItem(queryResultItem, container);
+		QueryManager.syncquery(queryString, function(queryResultItem){
+			putTreeItem(queryResultItem, container);
 		});
+		//$("#conceptTree").trigger("tree:created");
 	}
 	
 	var fillWithSubConcepts = function(treeItemDiv)
 	{
 		var queryString = QueryManager.queries.getModifiers.replace(/PARENTCONCEPT/g, treeItemDiv.attr("data-concepturl"));
-		QueryManager.query(queryString, function(queryResultItem){
+		QueryManager.syncquery(queryString, function(queryResultItem){
 			putTreeItem(queryResultItem, treeItemDiv);
 		});
 		var queryString = QueryManager.queries.getSubConcepts.replace(/PARENTCONCEPT/g, treeItemDiv.attr("data-concepturl"));
-		QueryManager.query(queryString, function(queryResultItem){
+		QueryManager.syncquery(queryString, function(queryResultItem){
 			putTreeItem(queryResultItem, treeItemDiv);
 		});
 	}
@@ -111,7 +120,7 @@ var TreeManager = (function(){
 		childItem.putTitleIfNotPutYet(queryResultItem);
 	}
 	
-	//creates a new tree Item, is expandable by subscribeCreateTreeItem
+	//creates a new tree Item
 		// createTreeItem({
 			// concept: { value: "test" },
 			// label: { value: "test" }
@@ -120,44 +129,12 @@ var TreeManager = (function(){
 	{
 		var ti = new treeItem().load(queryResultItem);
 		var newItemDiv = ti.getItemDiv();
+		newItemDiv.click(function(){$(document).trigger("tree:treeItemClicked");});
 		treeItemDiv.append(newItemDiv);
-		newItemDiv.show(100);
+		$(document).trigger("tree:treeItemCreated", newItemDiv);
+		newItemDiv.show();//(100);
 		return ti;		
 	}
-	
-	//calls additionalFunction with the created treeItem of type <div> as argument
-	var subscribeCreateTreeItem = function(additionalFunction)
-	{
-		var oldFunction = createTreeItem;
-		createTreeItem = extendedFunction;
-		function extendedFunction() {
-			var treeItem = oldFunction.apply(TreeManager, arguments);
-			additionalFunction(treeItem.getItemDiv());
-			return treeItem;
-		}
-	}
-	
-	var subscribeClickTreeItem = function(additionalFunction)
-	{
-		var oldFunction = createTreeItem;
-		createTreeItem = extendedFunction;
-		function extendedFunction() {
-			var treeItem = oldFunction.apply(TreeManager, arguments);
-			treeItem.getItemDiv().click(additionalFunction);
-			return treeItem;
-		}
-	}
-	
-	var renderTree = function()
-	{
-		$(".treeContentItem").css("maxHeight", (conf.container.height()- $("#treeMenu").height())+"px");
-	}
-	
-	/*var markByLabel = function(label)
-	{
-		$("#conceptTree span.conceptLabel").css("backgroundColor", "");
-		$("#conceptTree span.conceptLabel:contains('"+label+"')").css("backgroundColor", "yellow");
-	}*/
 	
 	var initClickEvents = function()
 	{
@@ -171,7 +148,7 @@ var TreeManager = (function(){
 			$("#searchResultDiv").html("");
 			var pattern = $("#searchPatternText").val();
 			var queryString = QueryManager.queries.getSearchBySubstring.replace(/EXPRESSION/g, pattern);
-			QueryManager.query(queryString, function(queryResultItem){
+			QueryManager.syncquery(queryString, function(queryResultItem){
 				putTreeItem(queryResultItem, $("#searchResultDiv"));
 				appendSearchMatches(queryResultItem, pattern);
 			});
@@ -239,43 +216,83 @@ var TreeManager = (function(){
 		});
 	}
 	
-	var openPaths = function(paths)
+	var closeFalsePaths = function(conceptUrl)
 	{
-		$(".treeMenuItem[target='conceptTree']").click();
-		collapseAll();
+		$(".treeItem.expanded[data-concepturl!='"+conceptUrl+"']").each(function(){
+			if ($(this).find(".treeItem[data-concepturl='"+conceptUrl+"']").length == 0)
+			{
+				($(this).data("treeobject")).collapse();
+				//elements from within each-loop might already have been removed from DOM at this point
+				closeFalsePaths(conceptUrl);
+				return false;
+			}
+		});
+	}
+	
+	var openPaths = function(conceptUrl, closeFalsePathsBeforeOpening)
+	{
+		$(".pathPart").removeClass("pathPart");
+		unmarkTreeItems(conceptUrl);
+		if (closeFalsePathsBeforeOpening) closeFalsePaths(conceptUrl);
+		Helper.getPathsByConceptUrl(conceptUrl, function(path){
+			TreeManager.openPath(path[0]);
+		});
+	}
+	
+	var openPath = function(path, scrollThere)
+	{
+		var conceptUrl = path[path.length-1];
+		unmarkTreeItems(conceptUrl);
+		//$(".treeMenuItem[target='conceptTree']").click();
+		
 		$("#conceptTree .pathPart").removeClass("pathPart");
 		$("#conceptTree").addClass("pathPart");
-		for (var i = 0; i < paths.length; i++)
+		var pathDepth = 1;
+		while (path.length > 0)
 		{
-			var pathToOpen = paths[i];
-			var pathDepth = 1;
-			while (pathToOpen.length > 0)
-			{
-				$("#conceptTree .treeItem[data-concepturl='"+pathToOpen[0]+"']").each(function(){
-					pathPart = $(this);
-					if (pathPart.parent().hasClass("pathPart") && pathPart.parents(".pathPart").length == pathDepth)
+			$("#conceptTree .treeItem[data-concepturl='"+path[0]+"']").each(function(){
+				pathPart = $(this);
+				if (pathPart.parent().hasClass("pathPart") && pathPart.parents(".pathPart").length == pathDepth)
+				{
+					path.shift();
+					pathDepth++;
+					pathPart.addClass("pathPart");
+					if (path.length > 0)
+						pathPart.data("treeobject").expand();
+					else 
 					{
-						pathToOpen.shift();
-						pathDepth++;
-						pathPart.addClass("pathPart");
-						if (pathToOpen.length > 0)
-							pathPart.data("treeobject").expand();
-						else if (i == 0)
-							pathPart.click();
+						mark(conceptUrl);
+						if (scrollThere) scrollToTreeItem(pathPart);
 					}
-				});
-			}
+				}
+			});
 		}
+	}
+	
+	var scrollToTreeItem = function(treeItemDiv)
+	{
+		$("#conceptTree").animate({
+			scrollTop: $("#conceptTree").scrollTop() + treeItemDiv.offset().top - 150
+		},200);
+	}
+	
+	var unmarkTreeItems = function(excludeConceptUrl)
+	{
+		$("div.currentDetailsSource[data-concepturl!='"+excludeConceptUrl+"']").removeClass("currentDetailsSource");
+	}
+	
+	var mark = function(conceptUrl)
+	{
+		$(".treeItem[data-concepturl='"+conceptUrl+"']").addClass("currentDetailsSource");
 	}
 	
 	return {
 		load: load,
 		createTopTreeItems: createTopTreeItems,
 		fillWithSubConcepts: fillWithSubConcepts,
-		subscribeCreateTreeItem: subscribeCreateTreeItem,
-		subscribeClickTreeItem: subscribeClickTreeItem,
-		renderTree: renderTree,
-		openPaths: openPaths
+		openPath: openPath,
+		openPaths: openPaths,
+		mark: mark
 	};
 }());
 
@@ -289,10 +306,9 @@ var treeItem = function(){
 			.click(function(e){
 				e.stopPropagation();
 				if (treeItemDiv.hasClass("expandable")) expandOrCollapse();
-				$("div.currentDetailsSource").removeClass("currentDetailsSource");
 				var conceptUrl = $(this).attr("data-concepturl");
-				$(".treeItem[data-concepturl='"+conceptUrl+"']").addClass("currentDetailsSource");
-				location.hash = encodeURIComponent(conceptUrl);
+				TreeManager.mark(conceptUrl);
+				Helper.setCurrentConceptUrl(conceptUrl);
 			});
 		var expandDiv = $("<div>");
 		expandDiv.addClass("expandDiv");

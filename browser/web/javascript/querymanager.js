@@ -44,16 +44,13 @@ var QueryManager = (function(){
 			PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#> \
 			PREFIX : <http://data.dzl.de/ont/dwh#> \
 			PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-			SELECT ?concept ?label ?notation (<PARENTCONCEPT> as ?parentconcept) ?subconcept (lang(?label) as ?lang) (true as ?isModifier) \
+			SELECT ?subconcept \
 			WHERE { \
-				?concept skos:prefLabel ?label. \
 				<PARENTCONCEPT> skos:broader* ?ppc . \
 				?ppc rdf:hasPart ?concept . \
-				OPTIONAL { ?concept skos:narrower* ?subconcept } . \
-				OPTIONAL { ?concept rdf:hasPart* ?subconcept } . \
-				FILTER (lang(?label) = 'en') \
+				?concept skos:narrower* ?subconcept . \
 			} \
-			ORDER BY ASC(lcase(?label))",
+			ORDER BY ASC(lcase(?label))",	
 		getConceptInfos: "\
 			PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#> \
 			PREFIX dc:		<http://purl.org/dc/elements/1.1/> \
@@ -97,6 +94,17 @@ var QueryManager = (function(){
 				UNION { ?parentconcept rdf:hasPart <CONCEPT> } \
 				FILTER (lang(?parentlabel) = 'en') . \
 			}",
+		getParentConcepts: "\
+			PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#> \
+			PREFIX : <http://data.dzl.de/ont/dwh#> \
+			PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+			SELECT ?parentconcept ?parentlabel \
+			WHERE { \
+				?parentconcept skos:prefLabel ?parentlabel . \
+				{ ?parentconcept skos:narrower* <CONCEPT> } \
+				UNION { ?parentconcept rdf:hasPart* <CONCEPT> } \
+				FILTER (lang(?parentlabel) = 'en') . \
+			}",
 		getConceptUrlByNotation: "\
 			PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#> \
 			PREFIX : <http://data.dzl.de/ont/dwh#> \
@@ -120,19 +128,26 @@ var QueryManager = (function(){
 				<CONCEPT> skos:notation ?notation . \
 			}",
 	}
-
-	var fusekiQueryGetTreeElements = function(queryString, requestCallback, requestCompleteCallback)
+	
+	var syncquery = function(queryString, requestCallback, requestCompleteCallback)
 	{
+		query(queryString, requestCallback, requestCompleteCallback, true)
+	}
+
+	var query = function(queryString, requestCallback, requestCompleteCallback, sync)
+	{
+		async = sync == undefined;
+		var rcc = requestCompleteCallback != undefined;
 		$.ajax({
 			url: endpoint + "?query=" + encodeURIComponent(queryString),
 			dataType: "json",
-			async: false,
+			async: async,
 			success: function(json){
 				queryCallback(json, requestCallback);
 			},
 			complete: function(j, k)
 			{
-				if (requestCompleteCallback != undefined) requestCompleteCallback(j, k);
+				if (rcc) requestCompleteCallback(j, k);
 			}
 		});
 	}
@@ -145,7 +160,8 @@ var QueryManager = (function(){
 	}
 	
 	return {
-		query: fusekiQueryGetTreeElements,
+		query: query,
+		syncquery: syncquery,
 		queries: queries
 	}
 }());
