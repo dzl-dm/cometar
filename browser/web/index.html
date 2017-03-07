@@ -13,20 +13,34 @@
 		<link rel="stylesheet" href="css/jquery-ui.css">
 		<link href="css/dzl.css" rel="stylesheet" type="text/css" />  
 		<style>
-			body {padding:0px;margin:0px}
-			#ontologieManager {margin:0px; margin-left:10px;}
+			html{height:100%;box-sizing: border-box;}
+			body {
+				padding:0px;
+				margin:0px;
+				display:flex;
+				flex-direction:column;
+				height:100%;
+				max-height:100%;
+			}
+			#ontologieManager {
+				margin:0px; 
+				margin-left:10px;
+				flex:1;
+				width:calc(100% - 40px);
+				margin-bottom:10px;
+			}
 		</style>
 		<script>
 		$(document).ready(function(){
-			$("#ontologieManager").height(window.innerHeight-145).css("width","calc(100% - 40px)");
 			$("#ontologieManager").ontologieManager();
-		});
+		});		
 		</script>
 	</head>
 	<body>
-		<a href="http://www.dzl.de"><img src="images/logo.jpg" style="padding:0px;margin-left:10px;margin:10px;max-width:calc(100% - 350px);max-height:70px;min-width:20px;position:absolute;right:10px;"/></a>
-		<a href="./"><span style="color:#0A3769; margin-left:20px; margin-right:0px; margin-top:10px; margin-bottom:10px; float:left;width:300px;font-size:25px">CoMetaR - a Collaborative Metadata Repository</span></a>
-		<div style="clear:both"/>
+		<div style="display:flex;justify-content:space-around;box-sizing: border-box;">
+			<a href="./client_index.html" style="text-decoration:none; color:#0A3769; width:300px;font-size:25px;">CoMetaR - a Collaborative Metadata Repository</a>
+			<a href="http://www.dzl.de"><img src="images/logo.jpg" style="padding:0px;max-width:350px;max-height:70px;"/></a>
+		</div>
 		<div id="ontologieManager"></div>
 	</body>
 </html>
