@@ -53,3 +53,15 @@ body, .treeItem
 	width:5px;
 	right:-15px;
 }
+
+.treeItem.mappedInConfigPathPart
+{
+	background-color:#EDEBC7;
+}
+
+.treeItem.mappedInConfig
+{
+	/*-webkit-filter:hue-rotate(270deg);
+	filter:hue-rotate(270deg);*/
+	background-color:#C7E6BF;
+}
