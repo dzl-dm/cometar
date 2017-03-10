@@ -27,7 +27,7 @@ else
         exitcode=1
 fi
 echo -------------------------------------
-echo "Tests werden durchgeführt..."
+echo "Performing tests..."
 $SCRIPTDIR/exec_tests.sh
 testexitcode=$?
 case $testexitcode in
