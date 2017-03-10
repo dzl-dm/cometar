@@ -16,14 +16,14 @@ env -i -- git checkout -q $newrev
 
 exitcode=0
 echo -------------------------------------
-echo "Dokumente werden in Fuseki-Testinstanz geladen..."
+echo "Loading files into fuseki test server..."
 $SCRIPTDIR/add_files_to_dataset.sh -s -t -c -d $TEMPDIR/git
 insertexitcode=$?
 if [ $insertexitcode -eq 0 ]
 then
-        echo "Dokumente erfolgreich in Fuseki-Testinstanz geladen."
+        echo "Files successfully loaded into fuseki test server."
 else
-        echo "Mindestens ein Dokument konnte nicht geladen werden."
+        echo "At least one file failed to load."
         exitcode=1
 fi
 echo -------------------------------------
@@ -32,32 +32,32 @@ $SCRIPTDIR/exec_tests.sh
 testexitcode=$?
 case $testexitcode in
         0)
-                echo "Alle Tests wurden erfolgreich bestanden."
+                echo "All tests passed."
                 echo "-------------------------------------"
                 ;;
         1)
-                echo "Bei den Tests traten Fehler auf."
+                echo "Tests resulted in errors."
                 echo "-------------------------------------"
                 exitcode=1
                 ;;
         2)
-                echo "Bei den Tests traten Warnungen auf."
+                echo "Tests resulted in warnings."
                 echo "-------------------------------------"
                 ;;
 esac
 
 if [ $testexitcode -ne 1 ]
 then
-	echo "export.ttl wird erzeugt."
+	echo "export.ttl is being produced."
 	$SCRIPTDIR/export_rdf.sh
 	$SCRIPTDIR/add_files_to_dataset.sh -s -c
-	echo "i2b2 import sql wird erzeugt."
+	echo "i2b2 import sql is being produced."
 	$TTLTOSQLDIR/write-sql.sh
-	echo "Metadaten werden in i2b2 importiert.."
+	echo "Metadata import into i2b2 server part 1..."
 	PGPASSWORD=i2b2metadata /usr/bin/psql -q --host=localhost --username=i2b2metadata --dbname=i2b2 -f $TEMPDIR/i2b2-sql/meta.sql
-	echo "Metadaten Teil 2.."
+	echo "Metadata import into i2b2 server part 2..."
 	PGPASSWORD=i2b2demodata /usr/bin/psql -q --host=localhost --username=i2b2demodata --dbname=i2b2 -f $TEMPDIR/i2b2-sql/data.sql
-	echo "Patient count wird aktualisiert.."
+	echo "Refreshing patient count..."
 	cd $SCRIPTDIR
 	./update_patient_count.sh
 	echo -------------------------------------
