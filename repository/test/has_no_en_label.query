@@ -2,9 +2,25 @@ PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX : <http://data.dzl.de/ont/dwh#>
 SELECT ?concept
 WHERE {
-        ?concept a skos:Concept ;
-        NOT EXISTS {
-                ?concept skos:prefLabel ?label
-                FILTER(lang(?label)='en')
-        }
+	{
+		SELECT ?concept
+		WHERE {
+			?concept a skos:Concept .
+			?concept skos:prefLabel ?label .
+			FILTER(lang(?label)='en') .
+		}
+		GROUP BY ?concept
+		HAVING (COUNT(?label) > 1)
+	}
+	UNION
+	{
+		SELECT ?concept
+		WHERE {
+			?concept a skos:Concept ;
+			NOT EXISTS {
+				?concept skos:prefLabel ?label
+				FILTER(lang(?label)='en')
+			}
+		}
+	}
 }
