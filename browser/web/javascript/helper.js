@@ -128,7 +128,9 @@ var Helper = (function()
 		{
 			if (location.hash.indexOf(urlShorts[i][1]) == 1) 
 			{
-				return urlShorts[i][0] + decodeURIComponent(location.hash).substring(urlShorts[i][1].length+1);
+				var result = urlShorts[i][0] + decodeURIComponent(location.hash).substring(urlShorts[i][1].length+1);
+				if (result.indexOf("?") > -1) result = result.substr(0,result.indexOf("?"));
+				return result;
 			}
 		}
 	}

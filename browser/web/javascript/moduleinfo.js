@@ -77,6 +77,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 		headPathDiv.html(path[1].join(" / "));
 		headPathDiv.data("path", path[0]);
 		headPathDiv.click(function(){
+			$(".treeMenuItem[target='conceptTree']").click();
 			TreeManager.openPath($.merge([],$(this).data("path")), true);
 		});
 		//"insertion sorting"

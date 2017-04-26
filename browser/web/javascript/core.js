@@ -26,7 +26,7 @@ $.fn.ontologieManager = function() {
 		);
 	});
 	$(this).html(	
-		"<div id='conceptTreeContainer'> \
+		"<div id='conceptTreeContainer'><div> \
 			<div id='treeMenu'>\
 				<div class='treeMenuItem activeMenuItemDiv' target='conceptTree'>concepts</div>\
 				<div class='treeMenuItem' target='searchDiv'>search</div>\
@@ -41,20 +41,23 @@ $.fn.ontologieManager = function() {
 					<div id='searchResultDiv'></div> \
 				</div> \
 			</div>\
-		</div> \
+		</div></div> \
 		<div id='containerSpacer'/> \
-		<div id='modulesContainer'> \
+		<div id='modulesContainer'><div> \
 			<div id='modulesMenu'></div> \
 			<div id='modulesContents'></div> \
-		</div> \
+		</div></div> \
+		<div id='containerSpacer'/> \
 		<div id='tooltipDiv'></div>"
 	).addClass("cometarContainer");
 	ModuleManager.renderModules();
 	
 	TreeManager.load();
-	$("#conceptTreeContainer").resizable();
-	/*$("#modulesContainer").resizable();*/
-	$(this).resizable();
+	$("#conceptTreeContainer").resizable({
+		handles: "e"
+	});
+	//$("#modulesContainer").resizable();
+	//$(this).resizable();
 	
 	var match = location.search.match(new RegExp("[?&]"+"search"+"=([^&]+)(&|$)"));
 	var searchString = match && decodeURIComponent(match[1].replace(/\+/g, " "));
@@ -243,7 +246,6 @@ var TreeManager = (function(){
 	{
 		var conceptUrl = path[path.length-1];
 		unmarkTreeItems(conceptUrl);
-		//$(".treeMenuItem[target='conceptTree']").click();
 		
 		$("#conceptTree .pathPart").removeClass("pathPart");
 		$("#conceptTree").addClass("pathPart");
@@ -374,7 +376,7 @@ var treeItem = function(){
 	return {
 		load:load,
 		getItemDiv: getItemDiv,
-		putTitleIfNotPutYet, putTitleIfNotPutYet,
+		putTitleIfNotPutYet: putTitleIfNotPutYet,
 		collapse: collapse,
 		expand: expand
 	};
