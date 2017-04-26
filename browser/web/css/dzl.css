@@ -13,7 +13,7 @@ body, .treeItem
 	background-color:#F0F0F0;
 }
 
-.treeItem.currentDetailsSource:hover, .treeItem.currentDetailsSource, .treeMenuItem, .modulesMenuItem, .discussionPostDiv, .addDiscussionPostDiv
+.treeItem.currentDetailsSource:hover, .treeItem.currentDetailsSource, .treeMenuItem, .modulesMenuItem, .discussionPostsContainerDiv, .addDiscussionPostDiv, .discussionPostsContainerDiv .firstPost
 {
 	background-color:#BFE3F2;
 }
@@ -28,7 +28,7 @@ body, .treeItem
 	color: #0492D0;
 }
 
-.discussionPostDiv > .addDiscussionPostDiv, .discussionPostDiv.collapsed, .discussionPostDiv > .discussionPostDiv, input[type='button'], input[type='submit']
+.discussionPostsContainerDiv .addDiscussionPostDiv, .discussionPostDiv.collapsed, .discussionPostDiv > .discussionPostDiv, input[type='button'], input[type='submit']
 {
 	background-color:#FFF;
 }

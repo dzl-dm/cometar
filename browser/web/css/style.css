@@ -1,6 +1,6 @@
 .cometarContainer
 {
-	display:flex;
+	display: flex;
 	min-width:500px;
 	overflow:hidden;
 }
@@ -44,7 +44,7 @@
 	align-items:center;
 }
 
-#conceptTreeContainer, .treeMenuItem, #treeMenu, #modulesMenu, #modulesContainer, .modulesMenuItem
+#conceptTreeContainer > div, .treeMenuItem, #treeMenu, #modulesMenu, #modulesContainer > div, .modulesMenuItem
 {
 	border-radius: 5px 5px 0px 0px;
 }
@@ -54,12 +54,14 @@
 	display:none;
 }
 
-#conceptTreeContainer, #modulesContainer
+#conceptTreeContainer > div, #modulesContainer > div
 {
 	border-left:1px solid black;
 	border-right:1px solid black;
 	border-bottom:1px solid black;
 	display:flex;
+	height:100%;
+	box-sizing: border-box;
 	overflow:hidden;
 	flex-direction: column;
 }
@@ -96,17 +98,12 @@
 	flex:1;
 }
 
-.ui-resizable-handle.ui-resizable-s, .ui-resizable-handle.ui-resizable-se
-{
-	height:0px;
-}
-
 .ui-resizable-handle.ui-resizable-e
 {
 	width:10px;
 	background-image:url('../images/verticalstripes.png');
-	right:-10px;
-	top:-1px;
+	margin-right:2px;
+	top:0px;
 	border:1px solid black;
 	border-radius: 3px 3px 3px 3px;
 }
@@ -328,15 +325,40 @@
 	margin-left:0px;
 }
 
-.discussionPostDiv
+.discussionPostsContainerDiv
 {
 	border:1px solid black;
-	margin-top:10px;
-	padding-left:20px;
+	margin-top:20px;
+	padding-left:10px;
 	width:100%;
 	box-sizing: border-box;
 	clear:both;
-	min-height: 85px;
+	display:flex;
+	flex-direction:column;
+	padding-top:10px;
+	padding-bottom:0px;
+}
+
+.discussionPostDiv
+{
+	border:1px solid black;
+	padding-left:20px;
+	display:flex;
+	flex-direction: row;
+	background-color:white;
+	border-bottom:0px solid black;
+	border-left: 1px solid black;
+	box-sizing: border-box;
+	margin-top:0px;
+	width:100%;
+	clear:both;
+	border-right:0px;
+}
+
+.discussionPostDiv.firstPost
+{
+	border-left:0px;
+	border-top:0px;
 }
 
 .discussionPostDiv:last-child
@@ -360,33 +382,12 @@
 	display:none;
 }
 
-.discussionPostDiv > .discussionPostDiv
-{
-	background-color:white;
-	border-bottom:0px solid black;
-	border-left: 1px solid black;
-	box-sizing: border-box;
-	margin-top:0px;
-	width:100%;
-	clear:both;
-	border-right:0px;
-}
-
-.discussionPostDiv > .discussionPostDiv:last-child
-{
-	border-bottom:1px solid black;
-}
-
-/*.discussionPostDiv > .discussionPostDiv .discussionPostTitleDiv
-{
-	min-height:65px;
-}*/
-
 .discussionPostTitleDiv
 {
 	padding-top:10px;
 	padding-bottom:10px;
-	width:calc(100% - 140px);
+	/*width:calc(100% - 140px);*/
+	flex:1;
 }
 
 .discussionPostTitleDiv textarea
@@ -397,29 +398,37 @@
 
 .discussionPostInfoDiv
 {
-	padding:10px;
-	text-align:right;
+	padding-top:10px;
+	padding-right:10px;
+	text-align:center;
 	font-size:12px;
 	width:100px;
-	float:right;
+	/*float:right;*/
+	display:flex;
+	flex-direction:column;
 }
 
 .addDiscussionPostDiv
 {
 	position:relative;
 	border:1px solid black;
-	border-right:1px solid black;
 	width:100%;
 	height:30px;
 	padding-top:3px;
 	overflow:hidden;
-	margin-bottom:10px;
+	margin-bottom:0px;
 	box-sizing: border-box;
 	margin-right:10px;
 	cursor:pointer;
 	text-align:center;
 	padding-left:20px;
 	padding-right:20px;
+}
+
+.discussionPostsContainerDiv .addDiscussionPostDiv
+{
+	border-right:0px solid black;
+	border-bottom:0px;
 }
 
 .editPostDiv:hover, .deletePostDiv:hover
@@ -447,13 +456,13 @@
 	margin-top:5px;
 }
 
-#discussionPostsContainerDiv input[type='text'], #discussionPostsContainerDiv textarea, #discussionPostsContainerDiv input[type='submit'], #discussionPostsContainerDiv input[type='button']
+#discussionThreadsContainerDiv input[type='text'], #discussionThreadsContainerDiv textarea, #discussionThreadsContainerDiv input[type='submit'], #discussionThreadsContainerDiv input[type='button']
 {
 	border:1px solid black;
 	box-sizing: border-box;
 }
 
-#discussionPostsContainerDiv input[type='button'], #discussionPostsContainerDiv input[type='submit']
+#discussionThreadsContainerDiv input[type='button'], #discussionThreadsContainerDiv input[type='submit']
 {
 	margin-left:10px;
 	margin-top:10px;

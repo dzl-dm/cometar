@@ -3,37 +3,36 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 		{
 			tabName: "discussion",
 			handlerFunction: function(conceptUri){
-				var discussionPostsContainerDiv = $("<div id='discussionPostsContainerDiv'>");
-				discussionPostsContainerDiv.append(
+				var discussionThreadsContainerDiv = $("<div id='discussionThreadsContainerDiv'>");
+				discussionThreadsContainerDiv.append(
 					createAddPostDiv(discussionBackendRootUrl+encodeURIComponent(conceptUri)+"/thread",true)
 				);
 				
 				var threads = getDiscussionInfo(discussionBackendRootUrl+encodeURIComponent(conceptUri)+"/thread");
+				if ($(threads).is("div")) return threads;
 				jQuery.each(threads, function(){
 					var thread = this;
 					var posts = getDiscussionInfo(discussionBackendRootUrl+"thread/"+thread["id"]+"/post");	
-					var firstPostDiv;
+					if ($(posts).is("div")) return posts;
+					var discussionPostsContainerDiv = $("<div class='discussionPostsContainerDiv'></div>");
 					jQuery.each(posts, function(){
 						var post = this;
 						var postDiv = createPostDiv(post["id"], post["username"], post["date_create"], post["message"]);
-						if (firstPostDiv == undefined) {
-							firstPostDiv = postDiv;
-							discussionPostsContainerDiv.append(firstPostDiv);
+						if (discussionPostsContainerDiv.children().length == 0) {
+							postDiv.addClass("firstPost");
 						}
-						else {
-							replyPostDiv = postDiv;
-							firstPostDiv.append(replyPostDiv);
-						}
+						discussionPostsContainerDiv.append(postDiv);
 						postDiv.find(".editPostButton").click(function(){
 							editPostButtonClicked($(this), post["id"])
 						});						
 					});
-					firstPostDiv.append(
+					discussionPostsContainerDiv.append(
 						createAddPostDiv(discussionBackendRootUrl+"thread/"+thread["id"]+"/post",false)
 					);
+					discussionThreadsContainerDiv.append(discussionPostsContainerDiv);
 				});
 
-				return discussionPostsContainerDiv;
+				return discussionThreadsContainerDiv;
 			}
 		}
 	]);
@@ -52,6 +51,9 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 			},
 			success: function(data) {
 				result = data;
+			},
+			error: function(a,b,c){
+				result = $("<div class='errorDiv'>An error occured: \""+c+"\"</div>");
 			}
 		});	
 		return result;
@@ -65,6 +67,9 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 		}
 		var discussionPostDiv = $("\
 			<div class='discussionPostDiv'>\
+				<div class='discussionPostTitleDiv'>\
+					<div id='discussionPost_"+id+"'>"+message+"</div>\
+				</div>\
 				<div class='discussionPostInfoDiv'>\
 					<div class='discussionPostDateDiv'>"+date+"</div>\
 					<div class='discussionPostDateDiv'>"+user+"</div>\
@@ -72,9 +77,6 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					<!--<span class='deletePostDiv'>delete</span>\
 					<div class='discussionPostDateDiv'>last edit: "+date+"</div>\
 					<div class='discussionPostDateDiv'>by author: "+user+"</div>-->\
-				</div>\
-				<div class='discussionPostTitleDiv'>\
-					<div id='discussionPost_"+id+"'>"+message+"</div>\
 				</div>\
 			</div>\
 		");
@@ -125,7 +127,8 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 			}
 			addDiscussionPostDiv.append(createDiscussionPostForm(
 				function(msg){
-					sendPost(conceptUri, msg);
+					var response = sendPost(conceptUri, msg);
+					if (response) return response;
 				},
 				function(){
 					addDiscussionPostDiv.removeClass("expanded").addClass("collapsed");
@@ -150,7 +153,6 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 	var sendPost = function(conceptUri, msg)
 	{
 		var myData = { message: msg };
-		console.log(Helper.getAuthenticationToken());
 		$.ajax({
 			url: conceptUri,
 			type: 'post',
@@ -171,7 +173,10 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 			},
 			complete: function(e, xhr, settings){
 				if(e.status === 403){
-					alert("Session abgelaufen. Bitte erneut einloggen.");
+					return $("<div>Session abgelaufen. Bitte erneut einloggen.</div>");
+				}
+				if(e.status === 401){
+					return $("<div>Nicht authorisiert. Bitte einloggen.</div>");
 				}
 			}
 		});
