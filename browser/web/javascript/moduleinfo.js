@@ -7,7 +7,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 
 				var treePathDiv = $("<div class='treePathDiv'>");	
 				Helper.getPathsByConceptUrl(conceptUrl, function(path){putPath(treePathDiv, path)});			
-				resultDiv.append("<h3>path</h3>");
+				resultDiv.append("<h3>Pfad / Path</h3>");
 				resultDiv.append(treePathDiv);
 				
 				for (var i in itemsToShow)
@@ -21,7 +21,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					putInfo(resultDiv, resultItem);
 				});
 				
-				var modifierHeading = $("<h3>modifier</h3>");
+				var modifierHeading = $("<h3>Spezifizierung / Specification</h3>");
 				var modifierDiv = $("<div class='treePathDiv' id='modifierInfoDiv'>");				
 				var queryString = QueryManager.queries.getAllModifiers.replace(/PARENTCONCEPT/g, conceptUrl);
 				QueryManager.query(queryString, 
@@ -43,21 +43,25 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 	]);	
 
 	var itemsToShow = [ "label", "notation", "description", "unit", "altlabel" ];
+	var itemsToShowLabels = [ "Bezeichnung / Label", "Notation / Code", "Beschreibung / Description", "Einheit / Unit", "Alternative Bezeichnung / Label" ]
 
 	var putInfo = function(resultDiv, resultItem)
 	{
+						console.log(resultItem);
 		for (var i in itemsToShow)
 		{
 			var itemToShow = itemsToShow[i];
+			var itemToShowLabel = itemsToShowLabels[i];
 			if (resultItem[itemToShow]) 
 			{
-				if (resultDiv.html().indexOf("<h3>"+itemToShow+"</h3>") == -1)
-					resultDiv.children("#info"+itemToShow).before("<h3>"+itemToShow+"</h3>");	
+				if (resultDiv.html().indexOf("<h3>"+itemToShowLabel+"</h3>") == -1)
+					resultDiv.children("#info"+itemToShow).before("<h3>"+itemToShowLabel+"</h3>");	
 				if (itemToShow == "label") 
 					appendInfo(resultDiv.children("#info"+itemToShow), resultItem["lang"].value.toUpperCase() + ": " + resultItem["label"].value);
-				if (itemToShow == "altlabel") 
+				else if (itemToShow == "altlabel") 
 					appendInfo(resultDiv.children("#info"+itemToShow), resultItem["altlang"].value.toUpperCase() + ": " + resultItem["altlabel"].value);
-				else appendInfo(resultDiv.children("#info"+itemToShow), resultItem[itemToShow].value);
+				else 
+					appendInfo(resultDiv.children("#info"+itemToShow), resultItem[itemToShow].value);
 			}
 		}
 	}
