@@ -166,15 +166,20 @@ var TreeManager = (function(){
 	{
 		var conceptURL = queryResultItem["concept"].value;
 		var textDiv = $("#searchResultDiv div[data-concepturl='"+conceptURL+"']");
-		if (queryResultItem["notation"] && queryResultItem["notation"].value.toUpperCase().indexOf(pattern.toUpperCase()) > -1) 
+		if (queryResultItem["label2"] && queryResultItem["label2"].value.toUpperCase().indexOf(pattern.toUpperCase()) > -1) 
 		{
-			var appendString = queryResultItem["notation"].value;
-			appendSearchMatchInfo(textDiv, "Notation", appendString);			
+			var appendString = queryResultItem["label2"].value;
+			appendSearchMatchInfo(textDiv, "Label ("+queryResultItem["lang2"].value+")", appendString);			
 		}
 		if (queryResultItem["altlabel"] && queryResultItem["altlabel"].value.toUpperCase().indexOf(pattern.toUpperCase()) > -1) 
 		{
 			var appendString = queryResultItem["altlabel"].value;
-			appendSearchMatchInfo(textDiv, "Label ("+queryResultItem["altlang"].value+")", appendString);			
+			appendSearchMatchInfo(textDiv, "Alternative Label ("+queryResultItem["altlang"].value+")", appendString);			
+		}
+		if (queryResultItem["notation"] && queryResultItem["notation"].value.toUpperCase().indexOf(pattern.toUpperCase()) > -1) 
+		{
+			var appendString = queryResultItem["notation"].value;
+			appendSearchMatchInfo(textDiv, "Notation", appendString);			
 		}
 		if (queryResultItem["description"] && queryResultItem["description"].value.toUpperCase().indexOf(pattern.toUpperCase()) > -1) 
 		{

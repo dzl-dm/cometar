@@ -67,20 +67,22 @@ var QueryManager = (function(){
 			PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#> \
 			PREFIX dc:	<http://purl.org/dc/elements/1.1/> \
 			PREFIX : <http://data.dzl.de/ont/dwh#> \
-			SELECT ?concept ?label ?notation (lang(?label) as ?lang) (lang(?altlabel) as ?altlang) ?altlabel ?description ?unit \
+			SELECT ?concept ?label ?notation (lang(?label) as ?lang) (lang(?altlabel) as ?altlang) ?altlabel ?description ?unit ?label2 (lang(?label2) as ?lang2) \
 			WHERE { \
 				?concept skos:prefLabel ?label . \
+				OPTIONAL { ?concept skos:prefLabel ?label2 } . \
 				OPTIONAL { ?concept skos:notation ?notation } . \
 				OPTIONAL { ?concept dc:description ?description } . \
 				OPTIONAL { ?concept :unit ?unit } . \
-				OPTIONAL { ?concept skos:prefLabel ?altlabel . \
-					FILTER (lang(?altlabel) != 'en') } . \
+				OPTIONAL { ?concept skos:altLabel ?altlabel } . \
 				FILTER ((regex(?label, 'EXPRESSION', 'i') \
+					|| regex(?label2, 'EXPRESSION', 'i') \
 					|| regex(?altlabel, 'EXPRESSION', 'i') \
 					|| regex(?notation, 'EXPRESSION', 'i') \
 					|| regex(?description, 'EXPRESSION', 'i') \
 					|| regex(?unit, 'EXPRESSION', 'i') ) \
-					&& (lang(?label) = 'en') ) . \
+					&& (lang(?label) = 'en') \
+					&& !(lang(?label2) = 'en') ) . \
 			} \
 			ORDER BY ASC(lcase(?label))",
 		getParentConcept: "\
