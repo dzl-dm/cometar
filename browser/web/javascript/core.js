@@ -41,13 +41,16 @@ $.fn.ontologieManager = function() {
 					<div id='searchResultDiv'></div> \
 				</div> \
 			</div>\
+			<div id='logoDiv'> \
+				<a href='./client_index.html'><img src='images/CoMetaR_Logo.png'/></a> \
+				<a href='http://www.dzl.de'><img src='images/DZL_Logo.png'/></a> \
+			</div> \
 		</div></div> \
 		<div id='containerSpacer'/> \
 		<div id='modulesContainer'><div> \
 			<div id='modulesMenu'></div> \
 			<div id='modulesContents'></div> \
 		</div></div> \
-		<div id='containerSpacer'/> \
 		<div id='tooltipDiv'></div>"
 	).addClass("cometarContainer");
 	ModuleManager.renderModules();

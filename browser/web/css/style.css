@@ -69,6 +69,7 @@
 #modulesContainer
 {
 	flex:1;
+	margin-right:10px;
 }
 
 #modulesContents
@@ -286,6 +287,21 @@
 {
 	width:90px;
 	cursor:pointer;
+}
+
+#logoDiv
+{
+	display:flex;
+	justify-content: space-evenly;
+	align-items: center;
+	padding:10px;
+}
+
+#logoDiv img
+{
+	max-height:70px;
+	padding:0px;
+	max-width:100%;
 }
 
 /* menu */
