@@ -14,10 +14,16 @@ public class SQLFileWriter extends SQLGenerator {
 	private Writer writer_data;
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		SQLFileWriter sqlFileWriter = new SQLFileWriter();
+		
+		if (args.length == 0)
+		{
+			throw new IllegalArgumentException("Missing SPARQL endpoint argument.");
+		}
+		String sparqlEndpoint = args[0];
+		
 		try {
-			sqlFileWriter.generateSQLStatements();
+			sqlFileWriter.generateSQLStatements(sparqlEndpoint);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -26,12 +32,12 @@ public class SQLFileWriter extends SQLGenerator {
 
 	@Override
 	protected void writeDataSql(String statement) throws IOException {
-		writer_meta.write(statement);
+		writer_data.write(statement);
 	}
 
 	@Override
 	protected void writeMetaSql(String statement) throws IOException {
-		writer_data.write(statement);
+		writer_meta.write(statement);
 	}
 
 	@Override

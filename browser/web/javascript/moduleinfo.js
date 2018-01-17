@@ -43,19 +43,18 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 	]);	
 
 	var itemsToShow = [ "label", "notation", "description", "unit", "altlabel" ];
-	var itemsToShowLabels = [ "Bezeichnung / Label", "Notation / Code", "Beschreibung / Description", "Einheit / Unit", "Alternative Bezeichnung / Label" ]
+	var itemsToShowHeadings = [ "Bezeichnung / Label", "Notation / Code", "Beschreibung / Description", "Einheit / Unit", "Alternative Bezeichnung / Label" ]
 
 	var putInfo = function(resultDiv, resultItem)
 	{
-						console.log(resultItem);
 		for (var i in itemsToShow)
 		{
 			var itemToShow = itemsToShow[i];
-			var itemToShowLabel = itemsToShowLabels[i];
+			var itemsToShowHeading = itemsToShowHeadings[i];
 			if (resultItem[itemToShow]) 
 			{
-				if (resultDiv.html().indexOf("<h3>"+itemToShowLabel+"</h3>") == -1)
-					resultDiv.children("#info"+itemToShow).before("<h3>"+itemToShowLabel+"</h3>");	
+				if (resultDiv.html().indexOf("<h3>"+itemsToShowHeading+"</h3>") == -1)
+					resultDiv.children("#info"+itemToShow).before("<h3>"+itemsToShowHeading+"</h3>");	
 				if (itemToShow == "label") 
 					appendInfo(resultDiv.children("#info"+itemToShow), resultItem["lang"].value.toUpperCase() + ": " + resultItem["label"].value);
 				else if (itemToShow == "altlabel") 
@@ -68,7 +67,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 
 	var appendInfo = function(div, value)
 	{
-		if (div.html().indexOf(value) == -1)
+		if (div.text().indexOf(value) == -1)
 		{
 			if (div.html() == "") div.html(value);
 			else div.html(div.html() + "<br/>" + value);		
