@@ -67,6 +67,8 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 
 	var appendInfo = function(div, value)
 	{
+		//first evaluating special characters
+		var value = $("<div>").html(value).text();
 		if (div.text().indexOf(value) == -1)
 		{
 			if (div.html() == "") div.html(value);

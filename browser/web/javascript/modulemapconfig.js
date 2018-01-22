@@ -26,12 +26,16 @@ var loadConfig = function(){
 		$xml = $( xmlDoc ),
 		// auskommentierte Felder werden nicht gefunden
 		$mdatConcepts = $xml.find( "mdat > concept" ),
+		$setConcepts = $xml.find( "mdat *, virtual *" );
+		/*$mdatConcepts2 = $xml.find( "mdat > concept > map > case" ),
 		$virtualMapConcepts = $xml.find( "virtual > value > map" ),
-		$virtualMapCaseConcepts = $xml.find( "virtual > value > map > case" );
+		$virtualMapCaseConcepts = $xml.find( "virtual > value > map > case" );*/
 	
 	addMappedFields($mdatConcepts, "id");
+	addMappedFields($setConcepts, "set-concept");
+	/*addMappedFields($mdatConcepts2, "set-concept");
 	addMappedFields($virtualMapConcepts, "set-concept");
-	addMappedFields($virtualMapCaseConcepts, "set-concept");
+	addMappedFields($virtualMapCaseConcepts, "set-concept");*/
 	
 	$(".treeItem").each(function(){
 		markMappedFields($(this));
@@ -46,16 +50,16 @@ var addMappedFields = function(tags, attrName)
 			return;
 		}
 		var queryString = QueryManager.queries.getConceptUrlByNotation.replace(/NOTATION/g, notation);
-		QueryManager.query(
+		QueryManager.syncquery(
 			queryString, 
 			function(resultItem){
 				if (resultItem["concept"]) {
 					var concept = resultItem["concept"].value;
-					console.log(concept);
+					//console.log(concept);
 					mappedFields.push(concept);
 					
 					var queryString = QueryManager.queries.getParentConcepts.replace(/CONCEPT/g, concept);
-					QueryManager.query(
+					QueryManager.syncquery(
 						queryString, 
 						function(resultItem){
 							if (resultItem["parentconcept"]) {
