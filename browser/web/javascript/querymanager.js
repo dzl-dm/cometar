@@ -18,12 +18,13 @@ var QueryManager = (function(){
 			PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#> \
 			PREFIX : <http://data.dzl.de/ont/dwh#> \
 			PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-			SELECT ?concept ?label ?notation (<PARENTCONCEPT> as ?parentconcept) ?subconcept (lang(?label) as ?lang) \
+			SELECT ?concept ?label ?notation (<PARENTCONCEPT> as ?parentconcept) ?subconcept (lang(?label) as ?lang) ?status \
 			WHERE { \
 				?concept skos:prefLabel ?label. \
 				<PARENTCONCEPT> skos:narrower ?concept . \
 				OPTIONAL { ?concept skos:narrower ?subconcept } . \
 				OPTIONAL { ?concept rdf:hasPart ?subconcept } . \
+				OPTIONAL { ?concept :status ?status } . \
 				FILTER (lang(?label) = 'en') \
 			} \
 			ORDER BY ASC(lcase(?label))",
@@ -31,12 +32,13 @@ var QueryManager = (function(){
 			PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#> \
 			PREFIX : <http://data.dzl.de/ont/dwh#> \
 			PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-			SELECT ?concept ?label ?notation (<PARENTCONCEPT> as ?parentconcept) ?subconcept (lang(?label) as ?lang) (true as ?isModifier) \
+			SELECT ?concept ?label ?notation (<PARENTCONCEPT> as ?parentconcept) ?subconcept (lang(?label) as ?lang) (true as ?isModifier) ?status \
 			WHERE { \
 				?concept skos:prefLabel ?label. \
 				<PARENTCONCEPT> rdf:hasPart ?concept . \
 				OPTIONAL { ?concept skos:narrower ?subconcept } . \
 				OPTIONAL { ?concept rdf:hasPart ?subconcept } . \
+				OPTIONAL { ?concept :status ?status } . \
 				FILTER (lang(?label) = 'en') \
 			} \
 			ORDER BY ASC(lcase(?label))",
@@ -55,34 +57,41 @@ var QueryManager = (function(){
 			PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#> \
 			PREFIX dc:		<http://purl.org/dc/elements/1.1/> \
 			PREFIX : 		<http://data.dzl.de/ont/dwh#> \
-			SELECT (<CONCEPT> as ?concept) ?label ?notation ?description ?unit (lang(?label) as ?lang) ?altlabel (lang(?altlabel) as ?altlang) \
+			PREFIX dwh:		<http://sekmi.de/histream/dwh#> \
+			SELECT (<CONCEPT> as ?concept) ?label ?notation ?description ?unit (lang(?label) as ?lang) ?altlabel (lang(?altlabel) as ?altlang) ?status ?creator ?domain \
 			WHERE { \
 				<CONCEPT> skos:prefLabel ?label. \
 				OPTIONAL { <CONCEPT> skos:notation ?notation } . \
 				OPTIONAL { <CONCEPT> dc:description ?description } . \
 				OPTIONAL { <CONCEPT> skos:altLabel ?altlabel } . \
 				OPTIONAL { <CONCEPT> :unit ?unit } . \
+				OPTIONAL { <CONCEPT> :status ?status } . \
+				OPTIONAL { <CONCEPT> dc:creator ?creator } . \
+				OPTIONAL { <CONCEPT> dwh:restriction ?domain } . \
 			}",
 		getSearchBySubstring: "\
 			PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#> \
 			PREFIX dc:	<http://purl.org/dc/elements/1.1/> \
 			PREFIX : <http://data.dzl.de/ont/dwh#> \
-			SELECT ?concept ?label ?notation (lang(?label) as ?lang) (lang(?altlabel) as ?altlang) ?altlabel ?description ?unit ?label2 (lang(?label2) as ?lang2) \
+			SELECT ?concept ?label ?notation (lang(?label) as ?lang) (lang(?altlabel) as ?altlang) ?altlabel ?description ?unit ?label2 (lang(?label2) as ?lang2) ?status ?creator \
 			WHERE { \
 				?concept skos:prefLabel ?label . \
-				OPTIONAL { ?concept skos:prefLabel ?label2 } . \
+				OPTIONAL { ?concept skos:prefLabel ?label2 . FILTER (!(lang(?label2) = 'en')) } . \
 				OPTIONAL { ?concept skos:notation ?notation } . \
 				OPTIONAL { ?concept dc:description ?description } . \
 				OPTIONAL { ?concept :unit ?unit } . \
 				OPTIONAL { ?concept skos:altLabel ?altlabel } . \
+				OPTIONAL { ?concept :status ?status } . \
+				OPTIONAL { ?concept dc:creator ?creator } . \
 				FILTER ((regex(?label, 'EXPRESSION', 'i') \
 					|| regex(?label2, 'EXPRESSION', 'i') \
 					|| regex(?altlabel, 'EXPRESSION', 'i') \
 					|| regex(?notation, 'EXPRESSION', 'i') \
 					|| regex(?description, 'EXPRESSION', 'i') \
-					|| regex(?unit, 'EXPRESSION', 'i') ) \
-					&& (lang(?label) = 'en') \
-					&& !(lang(?label2) = 'en') ) . \
+					|| regex(?unit, 'EXPRESSION', 'i') \
+					|| regex(?status, 'EXPRESSION', 'i') \
+					|| regex(?creator, 'EXPRESSION', 'i') ) \
+					&& (lang(?label) = 'en')) . \
 			} \
 			ORDER BY ASC(lcase(?label))",
 		getParentConcept: "\

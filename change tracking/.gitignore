@@ -1,0 +1,9 @@
+alt/
+dzl-ttl/
+datasource_new.xml
+datasource_test.xml
+changes.csv
+fuseki-server
+fuseki-server.jar
+notations.csv
+start_fuseki.bat

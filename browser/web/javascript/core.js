@@ -42,7 +42,7 @@ $.fn.ontologieManager = function() {
 				</div> \
 			</div>\
 			<div id='logoDiv'> \
-				<a href='./client_index.html'><img src='images/CoMetaR_Logo.png'/></a> \
+				<a href='./index.html'><img src='images/CoMetaR_Logo.png'/></a> \
 				<a href='http://www.dzl.de'><img src='images/DZL_Logo.png'/></a> \
 			</div> \
 		</div></div> \
@@ -124,6 +124,7 @@ var TreeManager = (function(){
 		}
 		else childItem = childItemDiv.data("treeobject");
 		childItem.putTitleIfNotPutYet(queryResultItem);
+		if (queryResultItem["status"]) childItem.getItemDiv().children(".treeItemTitleDiv").append("<div class='treeItemStatusDiv "+queryResultItem["status"].value+"'>"+queryResultItem["status"].value+"</div>");
 	}
 	
 	//creates a new tree Item
@@ -198,6 +199,16 @@ var TreeManager = (function(){
 		{
 			var appendString = queryResultItem["concept"].value;
 			appendSearchMatchInfo(textDiv, "URN", appendString);			
+		}
+		if (queryResultItem["status"] && queryResultItem["status"].value.toUpperCase().indexOf(pattern.toUpperCase()) > -1) 
+		{
+			var appendString = queryResultItem["status"].value;
+			appendSearchMatchInfo(textDiv, "Status", appendString);			
+		}
+		if (queryResultItem["creator"] && queryResultItem["creator"].value.toUpperCase().indexOf(pattern.toUpperCase()) > -1) 
+		{
+			var appendString = queryResultItem["creator"].value;
+			appendSearchMatchInfo(textDiv, "Author", appendString);			
 		}
 		//textDiv.children("br").first().remove();
 	}
@@ -349,6 +360,12 @@ var treeItem = function(){
 		}
 		if (queryResultItem["isModifier"])
 			treeItemDiv.addClass("isModifier");
+		if (queryResultItem["status"])
+		{	
+			if(queryResultItem["status"].value == "draft") treeItemDiv.addClass("isOnDraft");
+			else if(queryResultItem["status"].value == "obsolete") treeItemDiv.addClass("isObsolete");
+			else if(queryResultItem["status"].value == "new") treeItemDiv.addClass("isNew");
+		}
 		return this;
 	}
 	
