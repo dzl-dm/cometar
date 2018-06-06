@@ -42,8 +42,8 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 		}
 	]);	
 
-	var itemsToShow = [ "label", "notation", "description", "unit", "altlabel" ];
-	var itemsToShowHeadings = [ "Bezeichnung / Label", "Notation / Code", "Beschreibung / Description", "Einheit / Unit", "Alternative Bezeichnung / Label" ]
+	var itemsToShow = [ "label", "notation", "description", "unit", "altlabel", "status", "creator", "domain" ];
+	var itemsToShowHeadings = [ "Bezeichnung / Label", "Notation / Code", "Beschreibung / Description", "Einheit / Unit", "Alternative Bezeichnung / Label", "Status", "Author", "Value Domain" ]
 
 	var putInfo = function(resultDiv, resultItem)
 	{
@@ -59,6 +59,30 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					appendInfo(resultDiv.children("#info"+itemToShow), resultItem["lang"].value.toUpperCase() + ": " + resultItem["label"].value);
 				else if (itemToShow == "altlabel") 
 					appendInfo(resultDiv.children("#info"+itemToShow), resultItem["altlang"].value.toUpperCase() + ": " + resultItem["altlabel"].value);
+				else if (itemToShow == "domain") 
+				{
+					var restriction = "";
+					switch(resultItem["domain"].value.split("#")[1]) {
+						case "integerRestriction":
+							restriction = "Integer";
+							break;
+						case "stringRestriction":
+							restriction = "Integer";
+							break;
+						case "floatRestriction":
+							restriction = "Integer";
+							break;
+						case "partialDateRestriction":
+							restriction = "Integer";
+							break;
+						case "dateRestriction":
+							restriction = "Integer";
+							break;
+						default:
+							break;
+					} 
+					appendInfo(resultDiv.children("#info"+itemToShow), restriction);
+				}
 				else 
 					appendInfo(resultDiv.children("#info"+itemToShow), resultItem[itemToShow].value);
 			}

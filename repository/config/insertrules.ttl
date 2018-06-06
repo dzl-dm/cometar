@@ -44,12 +44,12 @@ INSERT
 }
 WHERE
 {
-        ?b rdf:isPartOf ?a 
+        ?b rdf:partOf ?a
 };
 
 INSERT
 {
-        ?a rdf:isPartOf ?b
+        ?a rdf:partOf ?b
 }
 WHERE
 {
