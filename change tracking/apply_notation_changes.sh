@@ -7,9 +7,17 @@ function print_help {
 	exit 0
 }
 
-notations=$1;
-input=$2;
-output=$3;
+while getopts "h" opt
+do
+   case $opt in
+       h) print_help;;
+       ?) print_help
+   esac
+done
+
+notations="$1";
+input="$2";
+output="$3";
 
 if [ ! -f "$notations" ]; then
     echo "Notations file not found!"
@@ -20,17 +28,9 @@ if [ ! -f "$input" ]; then
 	exit 1
 fi
 if [ -z "$output" ]; then
-    echo "Output file not found!"
+    echo "Output file not entered!"
 	exit 1
 fi
-
-while getopts "h" opt
-do
-   case $opt in
-       h) print_help;;
-       ?) print_help
-   esac
-done
 
 counter=0
 map=()
@@ -44,8 +44,8 @@ do
 	replace_command+=" -pe 's/\"${mapping[0]}\"/\"${mapping[1]}\"/g;'"
 	fi		
 	let counter+=1
-done < $notations
+done < "$notations"
 IFS=' '
 
-replace_command+=" $input > $output"
+replace_command+=" '$input' > '$output'"
 eval $replace_command
