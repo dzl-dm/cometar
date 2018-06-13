@@ -3,5 +3,5 @@ PREFIX : <http://data.dzl.de/ont/dwh#>
 PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 SELECT ?notation
 WHERE {
-	<CONCEPT> skos:notation ?notation .
-} 
+		<CONCEPT> skos:notation ?notation .
+}

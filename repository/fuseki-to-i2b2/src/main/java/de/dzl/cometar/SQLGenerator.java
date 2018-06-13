@@ -1,33 +1,51 @@
 package de.dzl.cometar;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.atlas.logging.LogCtl;
+import org.apache.jena.fuseki.Fuseki;
+import org.apache.jena.fuseki.build.FusekiConfig;
+import org.apache.jena.fuseki.embedded.FusekiServer;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.DatasetFactory;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.sparql.function.library.leviathan.log;
+import org.apache.jena.sparql.modify.UsingList;
+import org.apache.jena.update.UpdateAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class SQLGenerator {
 	int counter = 0;
 	String sparqlEndpoint;
-	String meta_schema = "i2b2metadata.";//"public."; //i2b2metadata.
-	String data_schema = "i2b2demodata.";//"public."; //i2b2demodata.
+	String meta_schema = "";//"i2b2metadata.";//"public."; //i2b2metadata.
+	String data_schema = "";//"i2b2demodata.";//"public."; //i2b2demodata.
 
-	String query_top_concepts = "";
-	String query_child_concepts = "";
-	String query_modifiers = "";
+	String query_top_elements = "";
+	String query_child_elements = "";
 	String query_notations = "";
 	String query_label = "";
+	String query_description = "";
 	String outputDir;
 
 	public SQLGenerator(){
@@ -37,18 +55,18 @@ public abstract class SQLGenerator {
 	
 	protected void initializeQueries()
 	{
-    	InputStream query_top_concepts_input = getClass().getResourceAsStream("/query_top_concepts.txt");
-    	InputStream query_child_concepts_input = getClass().getResourceAsStream("/query_child_concepts.txt");
-    	InputStream query_modifiers_input = getClass().getResourceAsStream("/query_modifiers.txt");
+    	InputStream query_top_concepts_input = getClass().getResourceAsStream("/query_top_elements.txt");
+    	InputStream query_child_elements_input = getClass().getResourceAsStream("/query_child_elements.txt");
     	InputStream query_notations_input = getClass().getResourceAsStream("/query_notations.txt");
     	InputStream query_label_input = getClass().getResourceAsStream("/query_label.txt");
+    	InputStream query_description_input = getClass().getResourceAsStream("/query_description.txt");
     	
 		try {
-			query_top_concepts = readFile(query_top_concepts_input);
-			query_child_concepts = readFile(query_child_concepts_input);
-			query_modifiers = readFile(query_modifiers_input);
+			query_top_elements = readFile(query_top_concepts_input);
+			query_child_elements = readFile(query_child_elements_input);
 			query_notations = readFile(query_notations_input);
 			query_label = readFile(query_label_input);
+			query_description = readFile(query_description_input);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
@@ -61,30 +79,59 @@ public abstract class SQLGenerator {
 		writeDataSql("DELETE FROM "+data_schema+"concept_dimension WHERE sourcesystem_cd='test';\n");
 	}
 	
-    protected void generateSQLStatements(String sparqlEndpoint) throws IOException {    	
+    protected void generateSQLStatements(String sparqlEndpoint) throws IOException { 
+
+    	Dataset ds = DatasetFactory.createTxnMem() ;
+
+		File folder = new File("C:\\Users\\stmar7\\Projekte\\Vorträge und Publikationen\\CoMetaR Evaluation\\package\\dzl_ontology_files");
+		File rulesFile = new File("C:\\Users\\stmar7\\Projekte\\cometar\\repository\\config\\insertrules.ttl");
+		File[] listOfFiles = folder.listFiles();		
+		for (File file : listOfFiles) {
+		    if (file.isFile()) {
+		        RDFDataMgr.read(ds,file.getAbsolutePath()) ;
+		    }
+		}    
+		UpdateAction.parseExecute(new UsingList(), ds.asDatasetGraph(), rulesFile.getAbsolutePath()) ;
+
+    	FusekiServer server = FusekiServer.create()
+    			  .add("/ds", ds)
+    			  .build() ;
+    	LogCtl.setJavaLogging();
+    	LogCtl.setLevel(Fuseki.serverLogName,  "WARN");
+    	LogCtl.setLevel(Fuseki.actionLogName,  "WARN");
+    	LogCtl.setLevel(Fuseki.requestLogName, "WARN");
+    	LogCtl.setLevel(Fuseki.adminLogName,   "WARN");
+    	LogCtl.setLevel("org.eclipse.jetty",   "WARN");
+    	//this.sparqlEndpoint = sparqlEndpoint;
+    	URI uri = server.server.getURI();
+		this.sparqlEndpoint = "http://"+uri.getHost()+":3330/ds/query";
+   	
     	long time = System.currentTimeMillis();
-    	this.sparqlEndpoint = sparqlEndpoint;
+    	//this.sparqlEndpoint = sparqlEndpoint;
     	try {
+        	server.start() ;
 	    	initializeWriters();
 	    	writePreambles();
 	    	
-	    	System.out.println("Starting statement generation.");
+	    	System.out.println("Starting statement generation.");			
 	    	
-			List<String> topConcepts = getTopConcepts();
-			for (String concept : topConcepts)
+			List<String>[] topElements = getTopElements();
+			for (String elementName : topElements[0])
 			{
-				String label = getLabel(concept);
+				String label = getLabel(elementName);
+				String elementType = topElements[1].get(topElements[0].indexOf(elementName));
 		    	System.out.println("Generating statements for tree: "+label);
 				//if (label.equals("Specimen")) 
-					recursivelyRunThroughConceptsAndGenerateStatements(concept, new ArrayList<String>(), false, null);
+					recursivelyRunThroughConceptsAndGenerateStatements(elementName, elementType, new ArrayList<String>(), false, null);
 		    }
     	} finally {
     		closeWriters();
+    		server.stop();
     	}
 		System.out.println("done");
 		System.out.println("Counter: "+counter);
 		long timePassed = (System.currentTimeMillis() - time)/1000;
-		System.out.println("Duration: "+timePassed+" seconds");
+		System.out.println("Duration: "+timePassed+" seconds");	
 	}
 	
     /**
@@ -112,18 +159,23 @@ public abstract class SQLGenerator {
      * @param ancestors List of full URIs of all ancestor concepts
      * @throws IOException
      */
-	private void recursivelyRunThroughConceptsAndGenerateStatements(String concept, ArrayList<String> ancestors, boolean isModifier, String appliedPath) throws IOException
+	private void recursivelyRunThroughConceptsAndGenerateStatements(String element, String type, ArrayList<String> ancestors, boolean isModifier, String appliedPath) throws IOException
 	{		
-		String label = getLabel(concept);	
-    	List<String> children = getChildren(concept);
-    	List<String> modifiers = getModifiers(concept);
-		List<String> notations = getNotations(concept);
+		String label = getLabel(element);	
+		String description = getDescription(element);
+		if (description.isEmpty()) description = label;
+    	List<String>[] childElements = getChildren(element);
+    	List<String> childNames = childElements[0];
+    	List<String> childTypes = childElements[1];
+    	List<Literal> notations = getNotations(element);
+    	//TODO nur eine notation oder mehrere?
 		
 		boolean isRootElement = ancestors.size() == 0 && !isModifier;
-		String notation = (notations.size() == 1)?notations.get(0):null;
+		String notation = (notations.size() == 1)?notations.get(0).getString():null;
 		String visualAttribute;
-		if (children.size() > 0) visualAttribute = "FA";
-		else if (notations.size() <= 1) visualAttribute = "LA";
+		if (type.equals("collection")) visualAttribute = "CA";
+		else if (childNames.size() > 0) visualAttribute = type.equals("modifier")?"DA":"FA";
+		else if (notations.size() <= 1) visualAttribute = type.equals("modifier")?"RA":"LA";
 		else visualAttribute = "MA";
 		String current_timestamp = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0")).format(new Date());
 		/*
@@ -138,12 +190,12 @@ public abstract class SQLGenerator {
 			concept_long += getName(ancestor_name, true)+"\\";
 			concept_short += getName(ancestor_name, false)+"\\";
 		}
-		concept_long += getName(concept, true)+"\\";
-		concept_short += getName(concept, false)+"\\";
+		concept_long += getName(element, true)+"\\";
+		concept_short += getName(element, false)+"\\";
 
-		if (children.size() == 0) counter+=1;	
+		if (childNames.size() == 0) counter+=1;	
 		//Write statements for concept. In case of not exactly one concept notation, String notation will be "NULL".
-		generateI2b2InsertStatement(c_hlevel, notation, concept_long, concept_short, label, visualAttribute, current_timestamp, isModifier, appliedPath);
+		generateI2b2InsertStatement(c_hlevel, notation, concept_long, concept_short, label, description, visualAttribute, current_timestamp, isModifier, appliedPath);
 		if (isRootElement)
 			generateTableAccessInsertStatement(concept_long, concept_short, label, visualAttribute);		
 		if (notation != null)
@@ -155,49 +207,51 @@ public abstract class SQLGenerator {
 		//in case of multiple notations
 		if (notations.size() > 1)
 		{
+			System.out.println(concept_short);
 			//If the concept also has children, insert an additional i2b2 path layer.
-			if (children.size() > 0)
+			if (childNames.size() > 0)
 			{
 				c_hlevel++;
-				visualAttribute = "MA";
+				visualAttribute = "MH";
 				concept_long += "multiple notations\\";
 				concept_short += "multiple notations\\";
 				
-				generateI2b2InsertStatement(c_hlevel, "", concept_long, concept_short, "_.-^''äbendies''^-._", visualAttribute, current_timestamp, isModifier, appliedPath);
+				generateI2b2InsertStatement(c_hlevel, "", concept_long, concept_short, "_.-^''äbendies''^-._", description, visualAttribute, current_timestamp, isModifier, appliedPath);
 			}		
 			//Write INSERT statements for all notations.
 			c_hlevel++;
-			visualAttribute = "LA";
+			visualAttribute = "LH";
 			for (int i = 0; i < notations.size(); i++)
 			{
 				String concept_long_sub = concept_long + i+"\\";
 				String concept_short_sub = concept_short + i+"\\";
-				notation = notations.get(i);
+				notation = notations.get(i).getString();
 				
-				generateI2b2InsertStatement(c_hlevel, notation, concept_long_sub, concept_short_sub, label, visualAttribute, current_timestamp, isModifier, appliedPath);
+				generateI2b2InsertStatement(c_hlevel, notation, concept_long_sub, concept_short_sub, label, description, visualAttribute, current_timestamp, isModifier, appliedPath);
 				if (isModifier) generateModifierDimensionInsertStatement(notation, concept_long_sub, label, current_timestamp);
 				else generateConceptDimensionInsertStatement(notation, concept_long_sub, label, current_timestamp);
 			}
 		}
 			
-		ancestors.add(concept);
-		for (String child : children)
+		ancestors.add(element);
+		for (String childName : childNames)
 		{
-			@SuppressWarnings("unchecked")
-			ArrayList<String> ancestors_names_clone = (ArrayList<String>) ancestors.clone();
-			recursivelyRunThroughConceptsAndGenerateStatements(child, ancestors_names_clone, isModifier, appliedPath);
-	    }    
-		
-		for (String modifier : modifiers)
-		{
-			//@SuppressWarnings("unchecked")
-			//ArrayList<String> ancestors_names_clone = (ArrayList<String>) ancestors.clone();
-			recursivelyRunThroughConceptsAndGenerateStatements(modifier, new ArrayList<String>(), true, concept_long+"%");
-		}
+			String childType = childTypes.get(childNames.indexOf(childName));
+			if (childType.equals("concept") || childType.equals("collection"))
+			{
+				@SuppressWarnings("unchecked")
+				ArrayList<String> ancestors_names_clone = (ArrayList<String>) ancestors.clone();
+				recursivelyRunThroughConceptsAndGenerateStatements(childName, childType, ancestors_names_clone, isModifier, appliedPath);				
+			}
+			else if (childType.equals("modifier"))
+			{
+				recursivelyRunThroughConceptsAndGenerateStatements(childName, childType, new ArrayList<String>(), true, concept_long+"%");				
+			}
+	    }   
 	}
 	
 	private void generateI2b2InsertStatement(int c_hlevel, String notation, String concept_long, String concept_short,
-			String label, String visualAttribute, String current_timestamp, boolean isModifier, String appliedPath) throws IOException
+			String label, String description, String visualAttribute, String current_timestamp, boolean isModifier, String appliedPath) throws IOException
 	{
 		String statement = 
 				"INSERT INTO "+meta_schema+"i2b2("+
@@ -208,7 +262,8 @@ public abstract class SQLGenerator {
 				"VALUES("+
 					c_hlevel+",'"+concept_long+"','"+label+"','N','"+visualAttribute+"',"+
 					(notation != null ? "'"+notation+"'" : "NULL")+",NULL,"+(isModifier?"'modifier_cd'":"'concept_cd'")+","+(isModifier?"'modifier_dimension'":"'concept_dimension'")+","+(isModifier?"'modifier_path'":"'concept_path'")+","+
-					"'T','LIKE','"+concept_long+"',"+(isModifier?"NULL":"'"+concept_short+"'")+",'"+(appliedPath != null? appliedPath : "@")+"',"+
+					//"'T','LIKE','"+concept_long+"',"+(isModifier?"NULL":"'"+concept_short+"'")+",'"+(appliedPath != null? appliedPath : "@")+"',"+
+					"'T','LIKE','"+concept_long+"','"+description+"','"+(appliedPath != null? appliedPath : "@")+"',"+
 					"current_timestamp,'"+current_timestamp+"',current_timestamp,'test'"+
 				");\n";
 		writeMetaSql(statement);
@@ -253,14 +308,14 @@ public abstract class SQLGenerator {
 				")VALUES("+
 					"'test_8883d7b2','i2b2','N',1,'"+concept_long+"',"+
 					"'"+label+"','N','"+visualAttribute+"','concept_cd','concept_dimension',"+
-					"'concept_path','T','LIKE','"+concept_long+"','"+concept_short+"'"+
+					"'concept_path','T','LIKE','"+concept_long+"','"+label+"'"+
 				");\n";
 		writeMetaSql(statement);
 	}
 	
-	private List<String> getNotations(String concept)
-	{
-		List<String> notations = new ArrayList<String>();
+	private List<Literal> getNotations(String concept)
+	{	
+		List<Literal> notations = new ArrayList<Literal>();
 		
     	String queryString = query_notations.replace("<CONCEPT>", "<"+concept+">");
 		Query query = QueryFactory.create(queryString);
@@ -268,48 +323,60 @@ public abstract class SQLGenerator {
 		ResultSet results = httpQuery.execSelect();
 
 		while (results.hasNext()) {
-			QuerySolution solution = results.next();			
-			notations.add(solution.get("notation").toString());
+			QuerySolution solution = results.next();		
+			Literal notation = (Literal) solution.get("notation");
+			notations.add(notation);
 		}
-		
+
 		return notations;
 	}
 	
-	private List<String> getTopConcepts()
+	private List<String>[] getTopElements()
 	{	
-		List<String> concepts = new ArrayList<String>();
+		List<String> elements = new ArrayList<String>();
+		List<String> types = new ArrayList<String>();
 		
-    	String queryString = query_top_concepts;
+    	String queryString = query_top_elements;
 		Query query = QueryFactory.create(queryString);
 		QueryEngineHTTP httpQuery = new QueryEngineHTTP(sparqlEndpoint, query);
 		ResultSet results = httpQuery.execSelect();
 		
 		while (results.hasNext()) {
 			QuerySolution solution = results.next();	
-			concepts.add(solution.get("concept").toString());
+			elements.add(solution.get("element").toString());
+			types.add(solution.get("type").toString());
 		}
-		
-		return concepts;
+
+		httpQuery.close();
+		List<String>[] r = new List[2];
+		r[0] = elements;
+		r[1] = types;
+		return r;
 	}
 	
-	private List<String> getChildren(String concept)
+	private List<String>[] getChildren(String element)
 	{
-		List<String> concepts = new ArrayList<String>();
+		List<String> elements = new ArrayList<String>();
+		List<String> types = new ArrayList<String>();
 		
-    	String queryString = query_child_concepts.replace("<PARENT>", "<"+concept+">");
+    	String queryString = query_child_elements.replace("TOPELEMENT", "<"+element+">");
 		Query query = QueryFactory.create(queryString);
 		QueryEngineHTTP httpQuery = new QueryEngineHTTP(sparqlEndpoint, query);
 		ResultSet results = httpQuery.execSelect();
-		
 		while (results.hasNext()) {
-			QuerySolution solution = results.next();			
-			concepts.add(solution.get("concept").toString());
+			QuerySolution solution = results.next();		
+			elements.add(solution.get("element").toString());
+			types.add(solution.get("type").toString());
 		}
 		
-		return concepts;
+		httpQuery.close();
+		List<String>[] r = new List[2];
+		r[0] = elements;
+		r[1] = types;
+		return r;
 	}
 	
-	private List<String> getModifiers(String concept)
+	/*private List<String> getModifiers(String concept)
 	{
 		List<String> modifiers = new ArrayList<String>();
 		
@@ -324,7 +391,7 @@ public abstract class SQLGenerator {
 		}
 		
 		return modifiers;
-	}
+	}*/
 	
 	/**
 	 * Retrieve the label for the given concept.
@@ -342,15 +409,30 @@ public abstract class SQLGenerator {
 			throw new NullPointerException("Concept without prefLabel: "+concept);
 		}
 		QuerySolution solution = results.next();			
-		String label = solution.get("label").toString();
+		String label = solution.getLiteral("label").getString();
 		// possibly generate error if there are multiple labels
 		return cleanLabel(label);
 	}
 	
+	private String getDescription(String concept) throws NullPointerException
+	{
+    	String queryString = query_description.replace("<CONCEPT>", "<"+concept+">");
+		Query query = QueryFactory.create(queryString);
+		QueryEngineHTTP httpQuery = new QueryEngineHTTP(sparqlEndpoint, query);
+		ResultSet results = httpQuery.execSelect();
+		String description = "";
+		if( results.hasNext() ){
+			QuerySolution solution = results.next();			
+			description = solution.getLiteral("description").getString();
+		}
+		return cleanLabel(description);
+	}
+	
 	private String cleanLabel(String label)
 	{
-		label = label.split("@")[0];
 		label = label.replaceAll("'", "''");
+		label = label.replaceAll("\"", "&quot;");
+		label = label.replaceAll("\\s+", " ");
 		return label;
 	}
 	
