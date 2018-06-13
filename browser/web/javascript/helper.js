@@ -34,14 +34,16 @@ var Helper = (function()
 	var extendPath = function(pathConceptUrls, pathLabels, pathCallback, paths)
 	{
 		var conceptUrl = pathConceptUrls[pathConceptUrls.length-1];
-		var queryString = QueryManager.queries.getParentConcept.replace(/CONCEPT/g, conceptUrl);
+		var queryString = QueryManager.queries.getParentElements.replace(/SUBELEMENT/g, "<" + conceptUrl + ">");
 		var pathConceptUrlExtensions = [];
 		var pathLabelExtensions = [];
 		QueryManager.query(
 			queryString, 
 			function(resultItem){
-				if (resultItem["parentconcept"]) pathConceptUrlExtensions.push(resultItem["parentconcept"].value);
-				if (resultItem["parentlabel"]) pathLabelExtensions.push(resultItem["parentlabel"].value);
+				var e = resultItem["element"].value;
+				pathConceptUrlExtensions.push(e);
+				var label = QueryManager.getProperty(e, "skos:prefLabel", "lang(?property) = 'en'");
+				pathLabelExtensions.push(label);
 			},
 			function()
 			{

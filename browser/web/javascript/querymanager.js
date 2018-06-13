@@ -69,31 +69,6 @@ var QueryManager = (function(){
 				OPTIONAL { <CONCEPT> dc:creator ?creator } . \
 				OPTIONAL { <CONCEPT> dwh:restriction ?domain } . \
 			}",
-		getSearchBySubstring: "\
-			PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#> \
-			PREFIX dc:	<http://purl.org/dc/elements/1.1/> \
-			PREFIX : <http://data.dzl.de/ont/dwh#> \
-			SELECT ?concept ?label ?notation (lang(?label) as ?lang) (lang(?altlabel) as ?altlang) ?altlabel ?description ?unit ?label2 (lang(?label2) as ?lang2) ?status ?creator \
-			WHERE { \
-				?concept skos:prefLabel ?label . \
-				OPTIONAL { ?concept skos:prefLabel ?label2 . FILTER (!(lang(?label2) = 'en')) } . \
-				OPTIONAL { ?concept skos:notation ?notation } . \
-				OPTIONAL { ?concept dc:description ?description } . \
-				OPTIONAL { ?concept :unit ?unit } . \
-				OPTIONAL { ?concept skos:altLabel ?altlabel } . \
-				OPTIONAL { ?concept :status ?status } . \
-				OPTIONAL { ?concept dc:creator ?creator } . \
-				FILTER ((regex(?label, 'EXPRESSION', 'i') \
-					|| regex(?label2, 'EXPRESSION', 'i') \
-					|| regex(?altlabel, 'EXPRESSION', 'i') \
-					|| regex(?notation, 'EXPRESSION', 'i') \
-					|| regex(?description, 'EXPRESSION', 'i') \
-					|| regex(?unit, 'EXPRESSION', 'i') \
-					|| regex(?status, 'EXPRESSION', 'i') \
-					|| regex(?creator, 'EXPRESSION', 'i') ) \
-					&& (lang(?label) = 'en')) . \
-			} \
-			ORDER BY ASC(lcase(?label))",
 		getParentConcept: "\
 			PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#> \
 			PREFIX : <http://data.dzl.de/ont/dwh#> \
@@ -140,6 +115,59 @@ var QueryManager = (function(){
 			}",
 	}
 	
+
+	for (var i of ["getTopElements", "getSubElements", "getSearchResults", "getParentElements", "getProperty", "getIsModifierOf"]) 
+	{
+		$.ajax({
+			url: 'queries/'+i+'.query',
+			dataType: "text",
+			async: false,
+			success: function(t){
+				queries[i] = t;
+			}
+		});
+	}
+	
+	var getTopElements = function(callback)
+	{
+		queryString = queries["getTopElements"];
+		syncquery(queryString, function(r){ callback(r["element"].value) });		
+	}
+	
+	var getSubElements = function(e, callback)
+	{
+		queryString = queries["getSubElements"].replace(/TOPELEMENT/g, "<" + e + ">" );
+		syncquery(queryString, function(r){ callback(r["element"].value) });
+	}
+	
+	var getParentElements = function(e, callback)
+	{
+		queryString = queries["getParentElements"].replace(/TOPELEMENT/g, "<" + e + ">" );
+		syncquery(queryString, function(r){ callback(r["element"].value) });
+	}
+	
+	var getProperty = function(e, p, filter)
+	{
+		var result;
+		queryString = queries["getProperty"].replace(/CONSTRAINT/g, "<" + e + ">" + " " + p + " ?property . " + ( filter? "FILTER (" + filter + ")." : "" ) );
+		syncquery(queryString, function(r){ result = r["property"].value });
+		return result;
+	}
+	
+	var getIsModifierOf = function(e)
+	{
+		var result;
+		queryString = queries["getIsModifierOf"].replace(/MODIFIER/g, "<" + e + ">" );
+		syncquery(queryString, function(r){ result = r["concept"].value });
+		return result;
+	}
+	
+	var getSearchResults = function(e, callback)
+	{
+		queryString = queries["getSearchResults"].replace(/EXPRESSION/g, e );
+		syncquery(queryString, callback);		
+	}
+		
 	var syncquery = function(queryString, requestCallback, requestCompleteCallback)
 	{
 		query(queryString, requestCallback, requestCompleteCallback, true)
@@ -173,6 +201,11 @@ var QueryManager = (function(){
 	return {
 		query: query,
 		syncquery: syncquery,
-		queries: queries
+		queries: queries,
+		getProperty: getProperty,
+		getTopElements: getTopElements,
+		getSubElements: getSubElements,
+		getSearchResults: getSearchResults,
+		getIsModifierOf: getIsModifierOf
 	}
 }());

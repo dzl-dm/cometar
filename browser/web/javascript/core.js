@@ -94,37 +94,31 @@ var TreeManager = (function(){
 	
 	var createTopTreeItems = function(container)
 	{
-		var queryString = QueryManager.queries.getTopConcepts;
-		QueryManager.syncquery(queryString, function(queryResultItem){
-			putTreeItem(queryResultItem, container);
+		QueryManager.getTopElements(function(url){
+			putTreeItem(url, container);
 		});
 		//$("#conceptTree").trigger("tree:created");
 	}
 	
 	var fillWithSubConcepts = function(treeItemDiv)
 	{
-		var queryString = QueryManager.queries.getModifiers.replace(/PARENTCONCEPT/g, treeItemDiv.attr("data-concepturl"));
-		QueryManager.syncquery(queryString, function(queryResultItem){
-			putTreeItem(queryResultItem, treeItemDiv);
-		});
-		var queryString = QueryManager.queries.getSubConcepts.replace(/PARENTCONCEPT/g, treeItemDiv.attr("data-concepturl"));
-		QueryManager.syncquery(queryString, function(queryResultItem){
-			putTreeItem(queryResultItem, treeItemDiv);
+		QueryManager.getSubElements(treeItemDiv.attr("data-concepturl"), function(url){
+			putTreeItem(url, treeItemDiv);
 		});
 	}
 	
 	//checks weather there already exists a corresponding div (same data-concepturl)
-	var putTreeItem = function(queryResultItem, treeItemDiv)
-	{
-		var conceptURL = queryResultItem["concept"].value;
-		var childItemDiv = treeItemDiv.children("div[data-concepturl='"+conceptURL+"']");
+	var putTreeItem = function(url, treeItemDiv)
+	{		
+		var childItemDiv = treeItemDiv.children("div[data-concepturl='"+url+"']");
 		if (!childItemDiv.length) 
 		{
-			childItem = createTreeItem(queryResultItem, treeItemDiv);
+			childItem = createTreeItem(url, treeItemDiv);
 		}
 		else childItem = childItemDiv.data("treeobject");
-		childItem.putTitleIfNotPutYet(queryResultItem);
-		if (queryResultItem["status"]) childItem.getItemDiv().children(".treeItemTitleDiv").append("<div class='treeItemStatusDiv "+queryResultItem["status"].value+"'>"+queryResultItem["status"].value+"</div>");
+		childItem.putTitleIfNotPutYet(url);
+		var s = QueryManager.getProperty(url, ":status");
+		if (s) childItem.getItemDiv().children(".treeItemTitleDiv").append("<div class='treeItemStatusDiv "+s+"'>"+s+"</div>");	
 	}
 	
 	//creates a new tree Item
@@ -132,9 +126,15 @@ var TreeManager = (function(){
 			// concept: { value: "test" },
 			// label: { value: "test" }
 		// }, $("#conceptTree").append($("<div>")));
-	var createTreeItem = function(queryResultItem, treeItemDiv)
+	var createTreeItem = function(url, treeItemDiv)
 	{
-		var ti = new treeItem().load(queryResultItem);
+		var ti = new treeItem().load({
+			url: url,
+			hasSubElements: (QueryManager.getProperty(url, "skos:narrower") != undefined) || (QueryManager.getProperty(url, "skos:member") != undefined),
+			isModifier: (QueryManager.getProperty(url, "rdf:partOf") != undefined),
+			isCollection: (QueryManager.getProperty(url, "rdf:type") == "http://www.w3.org/2004/02/skos/core#Collection"),
+			stat: QueryManager.getProperty(url, ":status")
+		});
 		var newItemDiv = ti.getItemDiv();
 		newItemDiv.click(function(){$(document).trigger("tree:treeItemClicked");});
 		treeItemDiv.append(newItemDiv);
@@ -154,10 +154,9 @@ var TreeManager = (function(){
 		$("#searchSubmitButton").click(function(){
 			$("#searchResultDiv").html("");
 			var pattern = $("#searchPatternText").val();
-			var queryString = QueryManager.queries.getSearchBySubstring.replace(/EXPRESSION/g, pattern);
-			QueryManager.syncquery(queryString, function(queryResultItem){
-				putTreeItem(queryResultItem, $("#searchResultDiv"));
-				appendSearchMatches(queryResultItem, pattern);
+			QueryManager.getSearchResults(pattern, function(results){
+				putTreeItem(results["concept"].value, $("#searchResultDiv"));
+				appendSearchMatches(results, pattern);				
 			});
 			markSearchMatches(pattern);
 			if (/^\s*$/.test($("#searchResultDiv").html())) $("#searchResultDiv").html("<div style='padding:15px'>Keine Suchergebnisse.</div>");
@@ -349,23 +348,22 @@ var treeItem = function(){
 		return this;
 	}
 	
-	var load = function(queryResultItem)
+	var load = function(e)
 	{
-		var conceptURL = queryResultItem["concept"].value;
+		var conceptURL = e.url;
 		treeItemDiv.attr("data-concepturl", conceptURL)
 			.data("treeobject", this);
-		if (queryResultItem["subconcept"] != undefined)
+		if (e.hasSubElements)
 		{
 			treeItemDiv.addClass("expandable").addClass("collapsed");
 		}
-		if (queryResultItem["isModifier"])
+		if (e.isModifier)
 			treeItemDiv.addClass("isModifier");
-		if (queryResultItem["status"])
-		{	
-			if(queryResultItem["status"].value == "draft") treeItemDiv.addClass("isOnDraft");
-			else if(queryResultItem["status"].value == "obsolete") treeItemDiv.addClass("isObsolete");
-			else if(queryResultItem["status"].value == "new") treeItemDiv.addClass("isNew");
-		}
+		if (e.isCollection)
+			treeItemDiv.addClass("isCollection");
+		if(e.stat == "draft") treeItemDiv.addClass("isOnDraft");
+		else if(e.stat == "obsolete") treeItemDiv.addClass("isObsolete");
+		else if(e.stat == "new") treeItemDiv.addClass("isNew");
 		return this;
 	}
 	
@@ -392,10 +390,11 @@ var treeItem = function(){
 		treeItemDiv.children("div.treeItem").remove();
 	}
 	
-	var putTitleIfNotPutYet = function(queryResultItem)
+	var putTitleIfNotPutYet = function(url)
 	{
-		if (queryResultItem["lang"].value.toLowerCase() == "en") 
-			treeItemDiv.children(".treeItemTitleDiv").text(queryResultItem["label"].value);		
+		var label = QueryManager.getProperty(url, "skos:prefLabel", "lang(?property) = 'en'");
+		if (label != undefined) 
+			treeItemDiv.children(".treeItemTitleDiv").text(label);		
 	}
 	
 	return {
