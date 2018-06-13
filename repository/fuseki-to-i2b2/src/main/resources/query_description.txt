@@ -1,0 +1,9 @@
+PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#>
+PREFIX : <http://data.dzl.de/ont/dwh#>
+PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+SELECT (coalesce(?description1,coalesce(?description2,'')) as ?description)
+WHERE {
+	OPTIONAL { <CONCEPT> dc:description ?description1 . FILTER ( lang(?description1) = 'en' ) }
+	OPTIONAL { <CONCEPT> dc:description ?description2 . FILTER ( lang(?description2) = 'de' ) }
+} 

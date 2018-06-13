@@ -48,8 +48,8 @@ public class SQLFileWriter extends SQLGenerator {
 
 	@Override
 	protected void closeWriters() throws IOException {
-		writer_meta.close();
-		writer_data.close();
+		if (writer_meta != null) writer_meta.close();
+		if (writer_data != null) writer_data.close();
 	}
 
 }

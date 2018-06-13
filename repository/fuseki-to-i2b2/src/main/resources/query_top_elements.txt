@@ -1,7 +1,18 @@
-PREFIX skos: 	<http://www.w3.org/2004/02/skos/core#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX : <http://data.dzl.de/ont/dwh#>
 PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT ?concept
+SELECT ?element ?type
 WHERE {
-	?concept skos:topConceptOf ?scheme .
-} 
+	{
+		SELECT ?element ('concept' as ?type)
+		WHERE {
+			?element a skos:Concept .
+			?element skos:topConceptOf ?scheme .
+		}
+	}
+	UNION
+	{
+		SELECT (:root as ?element) ('collection' as ?type)
+		WHERE {}
+	}
+}
