@@ -46,7 +46,7 @@
 
 #conceptTreeContainer > div, .treeMenuItem, #treeMenu, #modulesMenu, #modulesContainer > div, .modulesMenuItem
 {
-	border-radius: 5px 5px 0px 0px;
+	border-radius: 0px 0px 0px 0px;
 }
 
 .treeContentItem
@@ -179,10 +179,18 @@
 {
 	background-image:url('../images/minusConcept.gif');
 }
+.expanded.isCollection > .expandDiv
+{
+	background-image:url('../images/minusCollection.gif');
+}
 
 .collapsed > .expandDiv
 {
 	background-image:url('../images/plusConcept.gif');
+}
+.collapsed.isCollection > .expandDiv
+{
+	background-image:url('../images/plusCollection.gif');
 }
 
 .treeItem.isModifier
@@ -255,7 +263,7 @@
 
 .expanded > .treeItemTitleDiv
 {
-	border-left:1px solid black;
+	border-left:0px solid black;
 }
 
 .treeItemInfoDiv, .treeItemInfoTypeDiv

@@ -1,0 +1,41 @@
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX : <http://data.dzl.de/ont/dwh#>
+PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?element
+WHERE {
+	{
+		SELECT ?element
+		WHERE {
+			SUBELEMENT a skos:Concept .
+			?element a skos:Concept .
+			?element skos:narrower SUBELEMENT .
+		}
+	}
+	UNION
+	{
+		SELECT ?element
+		WHERE {
+			SUBELEMENT a skos:Concept . 
+			?element a skos:Concept . 
+			?element rdf:hasPart SUBELEMENT .
+		}
+	}
+	UNION
+	{
+		SELECT ?element
+		WHERE {
+			SUBELEMENT a skos:Collection .
+			?element a skos:Collection . 
+			?element skos:member SUBELEMENT .
+		}
+	}
+	UNION
+	{
+		SELECT ?element
+		WHERE {
+			?element a skos:Collection .
+			SUBELEMENT a skos:Concept . 
+			?element skos:member SUBELEMENT .
+		}
+	}
+}
