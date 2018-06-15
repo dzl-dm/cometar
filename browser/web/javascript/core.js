@@ -392,7 +392,7 @@ var treeItem = function(){
 	
 	var putTitleIfNotPutYet = function(url)
 	{
-		var label = QueryManager.getProperty(url, "skos:prefLabel", "lang(?property) = 'en'");
+		var label = QueryManager.getProperty(url, "skos:prefLabel", "lang(?result) = 'en'");
 		if (label != undefined) 
 			treeItemDiv.children(".treeItemTitleDiv").text(label);		
 	}

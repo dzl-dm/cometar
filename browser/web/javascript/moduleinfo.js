@@ -9,21 +9,132 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				Helper.getPathsByConceptUrl(conceptUrl, function(path){putPath(treePathDiv, path)});			
 				resultDiv.append("<h3>Pfad / Path</h3>");
 				resultDiv.append(treePathDiv);
-				
-				for (var i in itemsToShow)
+
+				var infos = QueryManager.getProperties(conceptUrl, "skos:prefLabel");
+				if (infos.length > 0){
+					var infoDiv = $("<div><h3>Bezeichnung / Label</h3></div>");	
+					for (var i of infos) {
+						infoDiv.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>"); 
+						resultDiv.append(infoDiv); 
+					}
+				}
+				var infos = QueryManager.getProperties(conceptUrl, "skos:notation");
+				if (infos.length > 0){
+					var infoDiv = $("<div><h3>Notation / Code</h3></div>");	
+					for (var i of infos) {
+						var dt = ""
+						switch(i["datatype"]) {
+							case "http://sekmi.de/histream/dwh#loinc":
+								dt = "LOINC";
+								break;
+							case "http://sekmi.de/histream/dwh#snomed":
+								dt = "SNOMED";
+								break;
+							default:
+								break;
+						} 
+						infoDiv.append(dt + (dt != ""?": ":"") + i.value + "<br/>"); 
+						resultDiv.append(infoDiv); 
+					}
+				}
+				var infos = QueryManager.getProperties(conceptUrl, "dc:description");
+				if (infos.length > 0){
+					var infoDiv = $("<div><h3>Beschreibung / Description</h3></div>");	
+					for (var i of infos) {
+						infoDiv.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>"); 
+						resultDiv.append(infoDiv); 
+					}
+				}
+				var infos = QueryManager.getProperties(conceptUrl, ":unit");
+				if (infos.length > 0){
+					var infoDiv = $("<div><h3>Einheit / Unit</h3></div>");	
+					for (var i of infos) {
+						infoDiv.append(i.value + "<br/>"); 
+						resultDiv.append(infoDiv); 
+					}
+				}
+				var infos = QueryManager.getProperties(conceptUrl, "skos:altLabel");
+				if (infos.length > 0){
+					var infoDiv = $("<div><h3>Alternative Bezeichnung / Label</h3></div>");	
+					for (var i of infos) {
+						infoDiv.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>"); 
+						resultDiv.append(infoDiv); 
+					}
+				}
+				var infos = QueryManager.getProperties(conceptUrl, ":status");
+				if (infos.length > 0){
+					var infoDiv = $("<div><h3>Status</h3></div>");	
+					for (var i of infos) {
+						infoDiv.append(i.value + "<br/>"); 
+						resultDiv.append(infoDiv); 
+					}
+				}
+				var infos = QueryManager.getProperties(conceptUrl, "dc:creator");
+				if (infos.length > 0){
+					var infoDiv = $("<div><h3>Author</h3></div>");	
+					for (var i of infos) {
+						infoDiv.append(i.value + "<br/>"); 
+						resultDiv.append(infoDiv); 
+					}
+				}
+				var infos = QueryManager.getProperties(conceptUrl, "dwh:restriction");
+				if (infos.length > 0){
+					var infoDiv = $("<div><h3>Wertebereich / Domain</h3></div>");	
+					for (var i of infos) {
+						var restriction = "";
+						switch(i.value.split("#")[1]) {
+							case "integerRestriction":
+								restriction = "Integer";
+								break;
+							case "stringRestriction":
+								restriction = "Integer";
+								break;
+							case "floatRestriction":
+								restriction = "Integer";
+								break;
+							case "partialDateRestriction":
+								restriction = "Integer";
+								break;
+							case "dateRestriction":
+								restriction = "Integer";
+								break;
+							default:
+								break;
+						} 
+						infoDiv.append(restriction + "<br/>"); 
+						resultDiv.append(infoDiv); 
+					}
+				}
+				var infos = QueryManager.getNote(conceptUrl);
+				if (infos != undefined){
+					var infoDiv = $("<div><h3>Änderungen / Change Log</h3></div>");	
+					var changeValue = "";
+					var changeReason = "";
+					if (infos["value"].type == "bnode") {
+						if (infos["minus"] != undefined) changeValue += "<font color='red'>&ominus;"+infos["minus"].value+"</font> " ;						
+						if (infos["plus"] != undefined) changeValue += "<font color='green'>&oplus;"+infos["plus"].value+"</font> " ;						
+						if (infos["reason"] != undefined) changeReason = ": <i>&quot;" + infos["reason"].value + "&quot;</i>";						
+					}
+					else {
+						changeValue = infos["value"].value;
+					}
+					infoDiv.append("<div style='display:inline-block;vertical-align:top'>"+infos["date"].value + ":</div><div style='display:inline-block;margin-left:10px'>" + Helper.getReadableString(infos["property"].value) + " " + infos["action"].value + " by " + infos["author"].value + changeReason + "<br/>" + " " + changeValue + "</div><br/>"); 
+					resultDiv.append(infoDiv); 
+				}		
+					
+				var modifiers = QueryManager.getModifiers(conceptUrl);
+				if (modifiers.length > 0)
 				{
-					var itemToShow = itemsToShow[i];
-					var itemDiv = $("<div id='info"+itemToShow+"'>");
-					resultDiv.append(itemDiv);
-				}			
-				var queryString = QueryManager.queries.getConceptInfos.replace(/CONCEPT/g, conceptUrl);
-				QueryManager.query(queryString, function(resultItem){
-					putInfo(resultDiv, resultItem);
-				});
+					resultDiv.append("<h3>Spezifizierung / Specification</h3>");
+					var modifierDiv = $("<div class='treePathDiv' id='modifierInfoDiv'>");
+					resultDiv.append(modifierDiv);
+					for (var m of modifiers)
+					{
+						Helper.getPathsByConceptUrl(m, function(path){putPath(modifierDiv, path)});
+					}
+				}	
 				
-				var modifierHeading = $("<h3>Spezifizierung / Specification</h3>");
-				var modifierDiv = $("<div class='treePathDiv' id='modifierInfoDiv'>");				
-				var queryString = QueryManager.queries.getAllModifiers.replace(/PARENTCONCEPT/g, conceptUrl);
+				/*var queryString = QueryManager.queries.getAllModifiers.replace(/PARENTCONCEPT/g, conceptUrl);
 				QueryManager.query(queryString, 
 					function(resultItem){
 						if (resultDiv.children("#modifierInfoDiv").length == 0)
@@ -35,70 +146,12 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					},
 					function(){
 					}
-				);
+				);*/
 				
 				return resultDiv;
 			}
 		}
 	]);	
-
-	var itemsToShow = [ "label", "notation", "description", "unit", "altlabel", "status", "creator", "domain" ];
-	var itemsToShowHeadings = [ "Bezeichnung / Label", "Notation / Code", "Beschreibung / Description", "Einheit / Unit", "Alternative Bezeichnung / Label", "Status", "Author", "Value Domain" ]
-
-	var putInfo = function(resultDiv, resultItem)
-	{
-		for (var i in itemsToShow)
-		{
-			var itemToShow = itemsToShow[i];
-			var itemsToShowHeading = itemsToShowHeadings[i];
-			if (resultItem[itemToShow]) 
-			{
-				if (resultDiv.html().indexOf("<h3>"+itemsToShowHeading+"</h3>") == -1)
-					resultDiv.children("#info"+itemToShow).before("<h3>"+itemsToShowHeading+"</h3>");	
-				if (itemToShow == "label") 
-					appendInfo(resultDiv.children("#info"+itemToShow), resultItem["lang"].value.toUpperCase() + ": " + resultItem["label"].value);
-				else if (itemToShow == "altlabel") 
-					appendInfo(resultDiv.children("#info"+itemToShow), resultItem["altlang"].value.toUpperCase() + ": " + resultItem["altlabel"].value);
-				else if (itemToShow == "domain") 
-				{
-					var restriction = "";
-					switch(resultItem["domain"].value.split("#")[1]) {
-						case "integerRestriction":
-							restriction = "Integer";
-							break;
-						case "stringRestriction":
-							restriction = "Integer";
-							break;
-						case "floatRestriction":
-							restriction = "Integer";
-							break;
-						case "partialDateRestriction":
-							restriction = "Integer";
-							break;
-						case "dateRestriction":
-							restriction = "Integer";
-							break;
-						default:
-							break;
-					} 
-					appendInfo(resultDiv.children("#info"+itemToShow), restriction);
-				}
-				else 
-					appendInfo(resultDiv.children("#info"+itemToShow), resultItem[itemToShow].value);
-			}
-		}
-	}
-
-	var appendInfo = function(div, value)
-	{
-		//first evaluating special characters
-		var value = $("<div>").html(value).text();
-		if (div.text().indexOf(value) == -1)
-		{
-			if (div.html() == "") div.html(value);
-			else div.html(div.html() + "<br/>" + value);		
-		}
-	}
 
 	var putPath = function(div, path)
 	{
