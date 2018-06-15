@@ -3,7 +3,7 @@ var QueryManager = (function(){
 	//var endpoint = "http://localhost:3030/MinimalerDatensatz/query";
 
 	var queries = [];
-	for (var i of ["getTopElements", "getSubElements", "getSearchResults", "getParentElements", "getGeneric", "getIsModifierOf", "getNote", "getModifiers"]) 
+	for (var i of ["getTopElements", "getSubElements", "getSearchResults", "getParentElements", "getGeneric", "getIsModifierOf", "getNotes", "getModifiers"]) 
 	{
 		$.ajax({
 			url: 'queries/'+i+'.query',
@@ -41,11 +41,11 @@ var QueryManager = (function(){
 		return result;
 	}
 	
-	var getNote = function(e)
+	var getNotes = function(e)
 	{
-		var result;
-		queryString = queries["getNote"].replace(/ELEMENT/g, "<" + e + ">" );
-		syncquery(queryString, function(r){ result = r });
+		var result = [];
+		queryString = queries["getNotes"].replace(/ELEMENT/g, "<" + e + ">" );
+		syncquery(queryString, function(r){ result.push(r) });
 		return result;
 	}
 	
@@ -126,7 +126,7 @@ var QueryManager = (function(){
 		getSubElements: getSubElements,
 		getSearchResults: getSearchResults,
 		getIsModifierOf: getIsModifierOf,
-		getNote: getNote,
+		getNotes: getNotes,
 		getModifiers: getModifiers
 	}
 }());
