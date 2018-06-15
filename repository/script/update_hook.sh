@@ -2,9 +2,7 @@
 
 source $(dirname $0)/../config/conf.cfg
 
-refname=$1
-oldrev=$2
-newrev=$3
+newrev=$1
 
 rm -rf $TEMPDIR/git
 mkdir -p $TEMPDIR/git
