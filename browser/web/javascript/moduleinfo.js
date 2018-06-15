@@ -105,21 +105,23 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 						resultDiv.append(infoDiv); 
 					}
 				}
-				var infos = QueryManager.getNote(conceptUrl);
-				if (infos != undefined){
+				var infos = QueryManager.getNotes(conceptUrl);
+				if (infos.length > 0){
 					var infoDiv = $("<div><h3>Änderungen / Change Log</h3></div>");	
-					var changeValue = "";
-					var changeReason = "";
-					if (infos["value"].type == "bnode") {
-						if (infos["minus"] != undefined) changeValue += "<font color='red'>&ominus;"+infos["minus"].value+"</font> " ;						
-						if (infos["plus"] != undefined) changeValue += "<font color='green'>&oplus;"+infos["plus"].value+"</font> " ;						
-						if (infos["reason"] != undefined) changeReason = ": <i>&quot;" + infos["reason"].value + "&quot;</i>";						
+					for (var i of infos) {
+						var changeValue = "";
+						var changeReason = "";
+						if (i["value"].type == "bnode") {
+							if (i["minus"] != undefined) changeValue += "<font color='red'>&ominus;"+i["minus"].value+"</font> " ;						
+							if (i["plus"] != undefined) changeValue += "<font color='green'>&oplus;"+i["plus"].value+"</font> " ;						
+							if (i["reason"] != undefined) changeReason = ": <i>&quot;" + i["reason"].value + "&quot;</i>";						
+						}
+						else {
+							changeValue = i["value"].value;
+						}
+						infoDiv.append("<div style='display:inline-block;vertical-align:top'>"+i["date"].value + ":</div><div style='display:inline-block;margin-left:10px'>" + Helper.getReadableString(i["property"].value) + " " + i["action"].value + " by " + i["author"].value + changeReason + "<br/>" + " " + changeValue + "</div><br/>"); 
+						resultDiv.append(infoDiv); 
 					}
-					else {
-						changeValue = infos["value"].value;
-					}
-					infoDiv.append("<div style='display:inline-block;vertical-align:top'>"+infos["date"].value + ":</div><div style='display:inline-block;margin-left:10px'>" + Helper.getReadableString(infos["property"].value) + " " + infos["action"].value + " by " + infos["author"].value + changeReason + "<br/>" + " " + changeValue + "</div><br/>"); 
-					resultDiv.append(infoDiv); 
 				}		
 					
 				var modifiers = QueryManager.getModifiers(conceptUrl);
