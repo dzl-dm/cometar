@@ -6,8 +6,8 @@ WHERE {
 		SELECT ?concept
 		WHERE {
 			?concept a skos:Concept .
-			?concept skos:prefLabel ?label .
-			FILTER(lang(?label)='en') .
+			?concept skos:prefLabel ?label 
+			FILTER(lang(?label)='en') 
 		}
 		GROUP BY ?concept
 		HAVING (COUNT(?label) > 1)

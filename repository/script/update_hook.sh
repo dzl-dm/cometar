@@ -63,5 +63,6 @@ then
 	echo -------------------------------------
 fi
  
+rm -r $TEMPDIR
 exit $exitcode
 
