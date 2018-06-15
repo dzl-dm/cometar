@@ -6,11 +6,9 @@ refname=$1
 oldrev=$2
 newrev=$3
 
-repdir=$(pwd)
-
 rm -rf $TEMPDIR/git
 mkdir -p $TEMPDIR/git
-env -i -- git clone -q $repdir $TEMPDIR/git
+env -i -- git clone -q $TTLDIRECTORY $TEMPDIR/git
 cd $TEMPDIR/git
 env -i -- git checkout -q $newrev
 
