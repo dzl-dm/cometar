@@ -1,1 +1,0 @@
-gawk -v options_detailed="false" -v output="notations.csv" -f "get_notation_changes.awk" "changes.csv"
