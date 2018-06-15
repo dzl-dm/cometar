@@ -1,34 +1,9 @@
 var Helper = (function()
 {	
-	var getConceptUrlByNotation = function(notation, callback)
-	{
-		var queryString = QueryManager.queries.getConceptUrlByNotation.replace(/NOTATION/g, notation);
-		QueryManager.query(queryString, function(resultItem){
-			callback(resultItem["concept"].value);
-		});
-	}
-	
-	var getNotationByConceptUrl = function(conceptUrl, callback)
-	{
-		var queryString = QueryManager.queries.getNotationByConceptUrl.replace(/CONCEPT/g, conceptUrl);
-		QueryManager.query(queryString, function(resultItem){
-			callback(resultItem["notation"].value);
-		});
-	}
-	
-	var getLabelByConceptUrl = function(conceptUrl, callback)
-	{
-		var queryString = QueryManager.queries.getLabelByConceptUrl.replace(/CONCEPT/g, conceptUrl);
-		QueryManager.query(queryString, function(resultItem){
-			callback(resultItem["label"].value);
-		});
-	}
-
 	var getPathsByConceptUrl = function(conceptUrl, pathCallback)
 	{
-		getLabelByConceptUrl(conceptUrl, function(label){
-			extendPath([conceptUrl], [label], pathCallback);
-		});
+		var label = QueryManager.getProperty(conceptUrl, "skos:prefLabel", "lang(?result) = 'en'");
+		extendPath([conceptUrl], [label], pathCallback);
 	}
 	
 	var extendPath = function(pathConceptUrls, pathLabels, pathCallback, paths)
@@ -42,7 +17,7 @@ var Helper = (function()
 			function(resultItem){
 				var e = resultItem["element"].value;
 				pathConceptUrlExtensions.push(e);
-				var label = QueryManager.getProperty(e, "skos:prefLabel", "lang(?property) = 'en'");
+				var label = QueryManager.getProperty(e, "skos:prefLabel", "lang(?result) = 'en'");
 				pathLabelExtensions.push(label);
 			},
 			function()
@@ -122,8 +97,26 @@ var Helper = (function()
 	var urlShorts = [
 		["http://data.dzl.de/ont/dwh#", "dzl/"],
 		["http://purl.bioontology.org/ontology/SNOMEDCT/", "snomed/"],
-		["http://loinc.org/owl#", "loinc/"]
+		["http://loinc.org/owl#", "loinc/"],
 	];
+
+	var moreUnderstandableStrings = [
+		["http://www.w3.org/1999/02/22-rdf-syntax-ns#about", "identifier"],
+		["http://purl.org/dc/elements/1.1/description", "description"],
+		["http://www.w3.org/2004/02/skos/core#prefLabel", "label"],
+		["http://www.w3.org/2004/02/skos/core#altLabel", "alternative label"],
+		["http://www.w3.org/2004/02/skos/core#notation", "code"],
+		["http://data.dzl.de/ont/dwh#status", "status"]
+	];
+	
+	var getReadableString = function(s)
+	{
+		for (var i = 0; i < moreUnderstandableStrings.length; i++)
+		{
+			s = s.replace(moreUnderstandableStrings[i][0], moreUnderstandableStrings[i][1])
+		}	
+		return s;		
+	}
 	
 	var getCurrentConceptUrl = function(){
 		for (var i = 0; i < urlShorts.length; i++)
@@ -149,16 +142,14 @@ var Helper = (function()
 	}
 	
 	return {
-		getConceptUrlByNotation: getConceptUrlByNotation,
-		getLabelByConceptUrl: getLabelByConceptUrl,
 		getPathsByConceptUrl: getPathsByConceptUrl,
-		getNotationByConceptUrl: getNotationByConceptUrl,
 		getAuthenticationToken: getAuthenticationToken,
 		getAuthenticationUsername: getAuthenticationUsername,
 		authenticated: authenticated,
 		setCookie: setCookie,
 		getCookie: getCookie,
 		getCurrentConceptUrl: getCurrentConceptUrl,
-		setCurrentConceptUrl: setCurrentConceptUrl
+		setCurrentConceptUrl: setCurrentConceptUrl,
+		getReadableString: getReadableString
 	}
 }());
