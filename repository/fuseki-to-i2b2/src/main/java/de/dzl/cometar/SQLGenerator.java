@@ -36,23 +36,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class SQLGenerator {
-	int counter = 0;
+	String meta_schema;
+	String data_schema;
 	String sparqlEndpoint;
-	String meta_schema = "";//"i2b2metadata.";//"public."; //i2b2metadata.
-	String data_schema = "";//"i2b2demodata.";//"public."; //i2b2demodata.
+	String sourcesystem;
 
-	String query_top_elements = "";
-	String query_child_elements = "";
-	String query_notations = "";
-	String query_label = "";
-	String query_description = "";
+	int counter = 0;
 	String outputDir;
 
 	public SQLGenerator(){
 		this.outputDir = "";	
 		initializeQueries();
 	}
-	
+
+	String query_top_elements = "";
+	String query_child_elements = "";
+	String query_notations = "";
+	String query_label = "";
+	String query_description = "";
 	protected void initializeQueries()
 	{
     	InputStream query_top_concepts_input = getClass().getResourceAsStream("/query_top_elements.txt");
@@ -74,42 +75,16 @@ public abstract class SQLGenerator {
 	
 	private void writePreambles() throws IOException
 	{
-		writeMetaSql("DELETE FROM "+meta_schema+"table_access WHERE c_table_cd LIKE 'test%';\n");
-		writeMetaSql("DELETE FROM "+meta_schema+"i2b2 WHERE sourcesystem_cd='test';\n");
-		writeDataSql("DELETE FROM "+data_schema+"concept_dimension WHERE sourcesystem_cd='test';\n");
+		writeMetaSql("DELETE FROM "+meta_schema+"table_access WHERE c_table_cd LIKE '"+sourcesystem+"%';\n");
+		writeMetaSql("DELETE FROM "+meta_schema+"i2b2 WHERE sourcesystem_cd='"+sourcesystem+"';\n");
+		writeDataSql("DELETE FROM "+data_schema+"concept_dimension WHERE sourcesystem_cd='"+sourcesystem+"';\n");
+		writeDataSql("DELETE FROM "+data_schema+"modifier_dimension WHERE sourcesystem_cd='"+sourcesystem+"';\n");
 	}
 	
-    protected void generateSQLStatements(String sparqlEndpoint) throws IOException { 
-
-    	Dataset ds = DatasetFactory.createTxnMem() ;
-
-		File folder = new File("C:\\Users\\stmar7\\Projekte\\Vorträge und Publikationen\\CoMetaR Evaluation\\package\\dzl_ontology_files");
-		File rulesFile = new File("C:\\Users\\stmar7\\Projekte\\cometar\\repository\\config\\insertrules.ttl");
-		File[] listOfFiles = folder.listFiles();		
-		for (File file : listOfFiles) {
-		    if (file.isFile()) {
-		        RDFDataMgr.read(ds,file.getAbsolutePath()) ;
-		    }
-		}    
-		UpdateAction.parseExecute(new UsingList(), ds.asDatasetGraph(), rulesFile.getAbsolutePath()) ;
-
-    	FusekiServer server = FusekiServer.create()
-    			  .add("/ds", ds)
-    			  .build() ;
-    	LogCtl.setJavaLogging();
-    	LogCtl.setLevel(Fuseki.serverLogName,  "WARN");
-    	LogCtl.setLevel(Fuseki.actionLogName,  "WARN");
-    	LogCtl.setLevel(Fuseki.requestLogName, "WARN");
-    	LogCtl.setLevel(Fuseki.adminLogName,   "WARN");
-    	LogCtl.setLevel("org.eclipse.jetty",   "WARN");
-    	//this.sparqlEndpoint = sparqlEndpoint;
-    	URI uri = server.server.getURI();
-		this.sparqlEndpoint = "http://"+uri.getHost()+":3330/ds/query";
-   	
+    protected void generateSQLStatements() throws IOException {    	
     	long time = System.currentTimeMillis();
     	//this.sparqlEndpoint = sparqlEndpoint;
     	try {
-        	server.start() ;
 	    	initializeWriters();
 	    	writePreambles();
 	    	
@@ -126,7 +101,6 @@ public abstract class SQLGenerator {
 		    }
     	} finally {
     		closeWriters();
-    		server.stop();
     	}
 		System.out.println("done");
 		System.out.println("Counter: "+counter);
@@ -171,7 +145,8 @@ public abstract class SQLGenerator {
     	//TODO nur eine notation oder mehrere?
 		
 		boolean isRootElement = ancestors.size() == 0 && !isModifier;
-		String notation = (notations.size() == 1)?notations.get(0).getString():null;
+		String notationPrefix = (notations.size() == 1)?getNotationPrefix(notations.get(0)):"";
+		String notation = (notations.size() == 1)?notationPrefix + notations.get(0).getString():null;
 		String visualAttribute;
 		if (type.equals("collection")) visualAttribute = "CA";
 		else if (childNames.size() > 0) visualAttribute = type.equals("modifier")?"DA":"FA";
@@ -182,54 +157,50 @@ public abstract class SQLGenerator {
 		 * Building two i2b2 paths, one with and one without prefixes of form:
 		 * [\i2b2]\ancestor 0\ancestor 1\...\ancestor n\concept\
 		 */
-		String concept_long = isModifier?"\\":"\\i2b2\\";
-		String concept_short = "\\";
-		int c_hlevel = ancestors.size()+1;
+		String element_path = isModifier?"\\":"\\i2b2\\";
+		int c_hlevel = ancestors.size()+2;
 		for (String ancestor_name : ancestors)
 		{
-			concept_long += getName(ancestor_name, true)+"\\";
-			concept_short += getName(ancestor_name, false)+"\\";
+			element_path += getName(ancestor_name, true)+"\\";
 		}
-		concept_long += getName(element, true)+"\\";
-		concept_short += getName(element, false)+"\\";
+		element_path += getName(element, true)+"\\";
 
 		if (childNames.size() == 0) counter+=1;	
 		//Write statements for concept. In case of not exactly one concept notation, String notation will be "NULL".
-		generateI2b2InsertStatement(c_hlevel, notation, concept_long, concept_short, label, description, visualAttribute, current_timestamp, isModifier, appliedPath);
+		generateI2b2InsertStatement(c_hlevel, notation, element_path, label, description, visualAttribute, current_timestamp, isModifier, appliedPath);
 		if (isRootElement)
-			generateTableAccessInsertStatement(concept_long, concept_short, label, visualAttribute);		
+			generateTableAccessInsertStatement(element_path, label, visualAttribute);		
 		if (notation != null)
 		{
-			if (isModifier) generateModifierDimensionInsertStatement(notation, concept_long, label, current_timestamp);
-			else generateConceptDimensionInsertStatement(notation, concept_long, label, current_timestamp);
+			if (isModifier) generateModifierDimensionInsertStatement(notation, element_path, label, current_timestamp);
+			else generateConceptDimensionInsertStatement(notation, element_path, label, current_timestamp);
 		}
 
 		//in case of multiple notations
 		if (notations.size() > 1)
 		{
-			System.out.println(concept_short);
 			//If the concept also has children, insert an additional i2b2 path layer.
 			if (childNames.size() > 0)
 			{
 				c_hlevel++;
+				//H für HIDDEN
 				visualAttribute = "MH";
-				concept_long += "multiple notations\\";
-				concept_short += "multiple notations\\";
+				element_path += "MULTI\\";
 				
-				generateI2b2InsertStatement(c_hlevel, "", concept_long, concept_short, "_.-^''äbendies''^-._", description, visualAttribute, current_timestamp, isModifier, appliedPath);
+				generateI2b2InsertStatement(c_hlevel, "", element_path, "MULTI", description, visualAttribute, current_timestamp, isModifier, appliedPath);
 			}		
 			//Write INSERT statements for all notations.
 			c_hlevel++;
 			visualAttribute = "LH";
 			for (int i = 0; i < notations.size(); i++)
 			{
-				String concept_long_sub = concept_long + i+"\\";
-				String concept_short_sub = concept_short + i+"\\";
-				notation = notations.get(i).getString();
+				String element_path_sub = element_path + i+"\\";
+				notationPrefix = getNotationPrefix(notations.get(i));
+				notation = notationPrefix + notations.get(i).getString();
 				
-				generateI2b2InsertStatement(c_hlevel, notation, concept_long_sub, concept_short_sub, label, description, visualAttribute, current_timestamp, isModifier, appliedPath);
-				if (isModifier) generateModifierDimensionInsertStatement(notation, concept_long_sub, label, current_timestamp);
-				else generateConceptDimensionInsertStatement(notation, concept_long_sub, label, current_timestamp);
+				generateI2b2InsertStatement(c_hlevel, notation, element_path_sub, label, description, visualAttribute, current_timestamp, isModifier, appliedPath);
+				if (isModifier) generateModifierDimensionInsertStatement(notation, element_path_sub, label, current_timestamp);
+				else generateConceptDimensionInsertStatement(notation, element_path_sub, label, current_timestamp);
 			}
 		}
 			
@@ -245,12 +216,12 @@ public abstract class SQLGenerator {
 			}
 			else if (childType.equals("modifier"))
 			{
-				recursivelyRunThroughConceptsAndGenerateStatements(childName, childType, new ArrayList<String>(), true, concept_long+"%");				
+				recursivelyRunThroughConceptsAndGenerateStatements(childName, childType, new ArrayList<String>(), true, element_path+"%");				
 			}
 	    }   
 	}
 	
-	private void generateI2b2InsertStatement(int c_hlevel, String notation, String concept_long, String concept_short,
+	private void generateI2b2InsertStatement(int c_hlevel, String notation, String concept_long, 
 			String label, String description, String visualAttribute, String current_timestamp, boolean isModifier, String appliedPath) throws IOException
 	{
 		String statement = 
@@ -262,9 +233,8 @@ public abstract class SQLGenerator {
 				"VALUES("+
 					c_hlevel+",'"+concept_long+"','"+label+"','N','"+visualAttribute+"',"+
 					(notation != null ? "'"+notation+"'" : "NULL")+",NULL,"+(isModifier?"'modifier_cd'":"'concept_cd'")+","+(isModifier?"'modifier_dimension'":"'concept_dimension'")+","+(isModifier?"'modifier_path'":"'concept_path'")+","+
-					//"'T','LIKE','"+concept_long+"',"+(isModifier?"NULL":"'"+concept_short+"'")+",'"+(appliedPath != null? appliedPath : "@")+"',"+
 					"'T','LIKE','"+concept_long+"','"+description+"','"+(appliedPath != null? appliedPath : "@")+"',"+
-					"current_timestamp,'"+current_timestamp+"',current_timestamp,'test'"+
+					"current_timestamp,'"+current_timestamp+"',current_timestamp,'"+sourcesystem+"'"+
 				");\n";
 		writeMetaSql(statement);
 	}
@@ -278,7 +248,7 @@ public abstract class SQLGenerator {
 				"download_date,import_date,sourcesystem_cd"+
 			")VALUES("+
 				"'"+concept_long+"','"+notation+"','"+label+"',current_timestamp,"+
-				"'"+current_timestamp+"',current_timestamp,'test'"+
+				"'"+current_timestamp+"',current_timestamp,'"+sourcesystem+"'"+
 			");\n";
 		writeDataSql(statement);	
 	}
@@ -292,12 +262,12 @@ public abstract class SQLGenerator {
 				"download_date,import_date,sourcesystem_cd"+
 			")VALUES("+
 				"'"+concept_long+"','"+notation+"','"+label+"',current_timestamp,"+
-				"'"+current_timestamp+"',current_timestamp,'test'"+
+				"'"+current_timestamp+"',current_timestamp,'"+sourcesystem+"'"+
 			");\n";
 		writeDataSql(statement);	
 	}
 	
-	private void generateTableAccessInsertStatement(String concept_long, String concept_short,
+	private void generateTableAccessInsertStatement(String concept_long, 
 			String label, String visualAttribute) throws IOException
 	{
 		String statement = 
@@ -306,7 +276,7 @@ public abstract class SQLGenerator {
 					"c_name,c_synonym_cd,c_visualattributes,c_facttablecolumn,c_dimtablename,"+
 					"c_columnname,c_columndatatype,c_operator,c_dimcode,c_tooltip"+
 				")VALUES("+
-					"'test_8883d7b2','i2b2','N',1,'"+concept_long+"',"+
+					"'i2b2_"+Integer.toHexString(concept_long.hashCode())+"','i2b2','N',1,'"+concept_long+"',"+
 					"'"+label+"','N','"+visualAttribute+"','concept_cd','concept_dimension',"+
 					"'concept_path','T','LIKE','"+concept_long+"','"+label+"'"+
 				");\n";
@@ -329,6 +299,22 @@ public abstract class SQLGenerator {
 		}
 
 		return notations;
+	}
+	private String getNotationPrefix(Literal notation)
+	{
+		String prefix = "";
+		switch (notation.getDatatypeURI())
+		{
+			case "http://sekmi.de/histream/dwh#snomed":
+				prefix = "S:";
+				break;
+			case "http://sekmi.de/histream/dwh#loinc":
+				prefix = "L:";
+				break;
+			default:
+				break;
+		}
+		return prefix;
 	}
 	
 	private List<String>[] getTopElements()
