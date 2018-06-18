@@ -2,20 +2,9 @@ var QueryManager = (function(){
 	var endpoint = "https://data.dzl.de/fuseki/cometar_live/query";
 	//var endpoint = "http://localhost:3030/MinimalerDatensatz/query";
 	var loglevel = 0; //0 = off, 1 = less detailed, 2 = more detailed
-
+	
 	var queries = [];
-	for (var i of ["getTopElements", "getSubElements", "getSearchResults", "getParentElements", "getGeneric", "getIsModifierOf", "getNotes", "getModifiers"]) 
-	{
-		$.ajax({
-			url: 'queries/'+i+'.query',
-			dataType: 'text',
-			contentType: 'text/plain',
-			async: false,
-			success: function(t){
-				queries[i] = t;
-			}
-		});
-	}
+	
 	var getTopElements = function(callback)
 	{
 		queryString = queries["getTopElements"];
@@ -180,6 +169,182 @@ var QueryManager = (function(){
 			requestCallback(item);
 		});
 	}
+	
+	var prefixes = (function () {/*
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX : <http://data.dzl.de/ont/dwh#>
+PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>  
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
+	queries = {
+		getTopElements: prefixes + (function () {/*
+SELECT ?element ?type
+WHERE {
+	{
+		SELECT ?element ('concept' as ?type)
+		WHERE {
+			?element a skos:Concept .
+			?element skos:topConceptOf ?scheme .
+			?element skos:prefLabel ?label FILTER (lang(?label)='en').
+		}
+		ORDER BY ?label
+	}
+	UNION
+	{
+		SELECT (:root as ?element) ('collection' as ?type)
+		WHERE {}
+	}
+}      
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getSubElements: prefixes + (function () {/*
+SELECT ?element
+WHERE {
+	{
+		SELECT ?element
+		WHERE {
+			TOPELEMENT a skos:Concept .
+			?element a skos:Concept .
+			TOPELEMENT skos:narrower ?element .
+			?element skos:prefLabel ?label FILTER (lang(?label) = 'en') .
+		}
+		ORDER BY ?label
+	}
+	UNION
+	{
+		SELECT ?element
+		WHERE {
+			TOPELEMENT a skos:Concept . 
+			?element a skos:Concept . 
+			TOPELEMENT rdf:hasPart ?element .
+			?element skos:prefLabel ?label FILTER (lang(?label) = 'en') .
+		}
+		ORDER BY ?label
+	}
+	UNION
+	{
+		SELECT ?element
+		WHERE {
+			TOPELEMENT a skos:Collection .
+			?element a skos:Concept . 
+			TOPELEMENT skos:member ?element .
+			?element skos:prefLabel ?label FILTER (lang(?label) = 'en') .
+		}
+		ORDER BY ?label
+	}
+	UNION
+	{
+		SELECT ?element
+		WHERE {
+			TOPELEMENT a skos:Collection .
+			?element a skos:Collection . 
+			TOPELEMENT skos:member ?element .
+			?element skos:prefLabel ?label FILTER (lang(?label) = 'en') .
+		}
+		ORDER BY ?label
+	}
+}       
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getSearchResults: prefixes + (function () {/*
+SELECT ?concept ?label ?notation (lang(?label) as ?lang) (lang(?altlabel) as ?altlang) ?altlabel ?description ?unit ?label2 (lang(?label2) as ?lang2) ?status ?creator 
+WHERE { 
+	?concept skos:prefLabel ?label . 
+	OPTIONAL { ?concept skos:prefLabel ?label2 . FILTER (!(lang(?label2) = 'en')) } . 
+	OPTIONAL { ?concept skos:notation ?notation } . 
+	OPTIONAL { ?concept dc:description ?description } . 
+	OPTIONAL { ?concept :unit ?unit } . 
+	OPTIONAL { ?concept skos:altLabel ?altlabel } . 
+	OPTIONAL { ?concept :status ?status } . 
+	OPTIONAL { ?concept dc:creator ?creator } . 
+	FILTER ((regex(?label, 'EXPRESSION', 'i') 
+		|| regex(?label2, 'EXPRESSION', 'i') 
+		|| regex(?altlabel, 'EXPRESSION', 'i') 
+		|| regex(?notation, 'EXPRESSION', 'i') 
+		|| regex(?description, 'EXPRESSION', 'i') 
+		|| regex(?unit, 'EXPRESSION', 'i') 
+		|| regex(?status, 'EXPRESSION', 'i') 
+		|| regex(?creator, 'EXPRESSION', 'i') ) 
+		&& (lang(?label) = 'en')) . 
+} 
+ORDER BY ASC(lcase(?label))      
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getParentElements: prefixes + (function () {/*
+SELECT ?element
+WHERE {
+	{
+		SELECT ?element
+		WHERE {
+			SUBELEMENT a skos:Concept .
+			?element a skos:Concept .
+			?element skos:narrower SUBELEMENT .
+		}
+	}
+	UNION
+	{
+		SELECT ?element
+		WHERE {
+			SUBELEMENT a skos:Concept . 
+			?element a skos:Concept . 
+			?element rdf:hasPart SUBELEMENT .
+		}
+	}
+	UNION
+	{
+		SELECT ?element
+		WHERE {
+			SUBELEMENT a skos:Collection .
+			?element a skos:Collection . 
+			?element skos:member SUBELEMENT .
+		}
+	}
+	UNION
+	{
+		SELECT ?element
+		WHERE {
+			?element a skos:Collection .
+			SUBELEMENT a skos:Concept . 
+			?element skos:member SUBELEMENT .
+		}
+	}
+}    
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getGeneric: prefixes + (function () {/*
+SELECT VARIABLES
+WHERE {
+	CONSTRAINT
+}       
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getIsModifierOf: prefixes + (function () {/*
+SELECT ?concept
+WHERE {
+	?concept rdf:hasPart [ skos:narrower* MODIFIER ] .
+}
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getNotes: prefixes + (function () {/*
+SELECT ?note ?date ?author ?value ?property ?action ?minus ?plus ?reason
+WHERE {
+	ELEMENT skos:changeNote ?note .
+	OPTIONAL { ?note dc:date ?date ;
+		dc:creator ?b ;
+		rdf:value ?value ;
+		owl:onProperty ?property ;
+		:action ?action .
+		OPTIONAL { ?value :minus ?minus }
+		OPTIONAL { ?value :plus ?plus }
+		OPTIONAL { ?value :reason ?reason }
+		?b foaf:name ?author . }
+}      
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getModifiers: prefixes + (function () {/*
+SELECT ?modifier 
+WHERE { 
+	CONCEPT skos:broader* ?c . 
+	?c rdf:hasPart ?m . 
+	?m skos:narrower* ?modifier . 
+}        
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1]
+	};	
 	
 	return {
 		query: query,
