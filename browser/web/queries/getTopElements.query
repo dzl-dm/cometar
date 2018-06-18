@@ -8,7 +8,9 @@ WHERE {
 		WHERE {
 			?element a skos:Concept .
 			?element skos:topConceptOf ?scheme .
+			?element skos:prefLabel ?label FILTER (lang(?label)='en').
 		}
+		ORDER BY ?label
 	}
 	UNION
 	{

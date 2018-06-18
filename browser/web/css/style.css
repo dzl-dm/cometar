@@ -285,6 +285,11 @@
 	font-weight:bold;
 }
 
+.infoDiv
+{
+	display:none;
+}
+
 #searchDiv
 {
 	overflow:hidden;
