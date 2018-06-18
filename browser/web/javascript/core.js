@@ -97,7 +97,6 @@ var TreeManager = (function(){
 		QueryManager.getTopElements(function(url){
 			putTreeItem(url, container);
 		});
-		//$("#conceptTree").trigger("tree:created");
 	}
 	
 	var fillWithSubConcepts = function(treeItemDiv)
@@ -110,31 +109,31 @@ var TreeManager = (function(){
 	//checks weather there already exists a corresponding div (same data-concepturl)
 	var putTreeItem = function(url, treeItemDiv)
 	{		
-		var childItemDiv = treeItemDiv.children("div[data-concepturl='"+url+"']");
-		if (!childItemDiv.length) 
+		if (treeItemDiv.children("div[data-concepturl='"+url+"']").length == 0)
 		{
-			childItem = createTreeItem(url, treeItemDiv);
+			createTreeItem(url, treeItemDiv);
 		}
-		else childItem = childItemDiv.data("treeobject");
-		childItem.putTitleIfNotPutYet(url);
-		var s = QueryManager.getProperty(url, ":status");
-		if (s) childItem.getItemDiv().children(".treeItemTitleDiv").append("<div class='treeItemStatusDiv "+s+"'>"+s+"</div>");	
 	}
-	
-	//creates a new tree Item
-		// createTreeItem({
-			// concept: { value: "test" },
-			// label: { value: "test" }
-		// }, $("#conceptTree").append($("<div>")));
+
 	var createTreeItem = function(url, treeItemDiv)
 	{
-		var ti = new treeItem().load({
-			url: url,
-			hasSubElements: (QueryManager.getProperty(url, "skos:narrower") != undefined) || (QueryManager.getProperty(url, "skos:member") != undefined),
-			isModifier: (QueryManager.getProperty(url, "rdf:partOf") != undefined),
-			isCollection: (QueryManager.getProperty(url, "rdf:type") == "http://www.w3.org/2004/02/skos/core#Collection"),
-			stat: QueryManager.getProperty(url, ":status")
+		var ti = new treeItem().load(url);
+		QueryManager.getProperty(url, "skos:prefLabel", "lang(?result) = 'en'", function(r){
+			ti.setTitle(r.value);
+		});	
+		QueryManager.getMultiProperties(url, [ "skos:narrower", "rdf:hasPart", "skos:member" ], function(r){
+			ti.setHasChildren();
 		});
+		QueryManager.getProperty(url, "rdf:partOf", function(r){
+			ti.setIsModifier();
+		});
+		QueryManager.getProperty(url, "rdf:type", function(r){
+			if (r.value == "http://www.w3.org/2004/02/skos/core#Collection") ti.setIsCollection();
+		});
+		QueryManager.getProperty(url, ":status", function(r){
+			ti.setStatus(r.value);
+		});
+		
 		var newItemDiv = ti.getItemDiv();
 		newItemDiv.click(function(){$(document).trigger("tree:treeItemClicked");});
 		treeItemDiv.append(newItemDiv);
@@ -325,10 +324,10 @@ var treeItem = function(){
 		treeItemDiv.addClass("treeItem")
 			.click(function(e){
 				e.stopPropagation();
-				if (treeItemDiv.hasClass("expandable")) expandOrCollapse();
 				var conceptUrl = $(this).attr("data-concepturl");
-				TreeManager.mark(conceptUrl);
 				Helper.setCurrentConceptUrl(conceptUrl);
+				if (treeItemDiv.hasClass("expandable")) expandOrCollapse();
+				TreeManager.mark(conceptUrl);
 			});
 		var expandDiv = $("<div>");
 		expandDiv.addClass("expandDiv");
@@ -348,22 +347,10 @@ var treeItem = function(){
 		return this;
 	}
 	
-	var load = function(e)
+	var load = function(conceptURL)
 	{
-		var conceptURL = e.url;
 		treeItemDiv.attr("data-concepturl", conceptURL)
 			.data("treeobject", this);
-		if (e.hasSubElements)
-		{
-			treeItemDiv.addClass("expandable").addClass("collapsed");
-		}
-		if (e.isModifier)
-			treeItemDiv.addClass("isModifier");
-		if (e.isCollection)
-			treeItemDiv.addClass("isCollection");
-		if(e.stat == "draft") treeItemDiv.addClass("isOnDraft");
-		else if(e.stat == "obsolete") treeItemDiv.addClass("isObsolete");
-		else if(e.stat == "new") treeItemDiv.addClass("isNew");
 		return this;
 	}
 	
@@ -390,19 +377,42 @@ var treeItem = function(){
 		treeItemDiv.children("div.treeItem").remove();
 	}
 	
-	var putTitleIfNotPutYet = function(url)
+	var setTitle = function(label)
 	{
-		var label = QueryManager.getProperty(url, "skos:prefLabel", "lang(?result) = 'en'");
-		if (label != undefined) 
-			treeItemDiv.children(".treeItemTitleDiv").text(label);		
+		treeItemDiv.children(".treeItemTitleDiv").text(label);				
 	}
 	
+	var setHasChildren = function(){
+		treeItemDiv.addClass("expandable");
+		//might already have been expanded because of automatic tree opening
+		if (!treeItemDiv.hasClass("expanded")) treeItemDiv.addClass("collapsed");
+	}
+	
+	var setIsModifier = function(){
+		treeItemDiv.addClass("isModifier");
+	}
+	
+	var setStatus = function(stat){
+		if(stat == "draft") treeItemDiv.addClass("isOnDraft");
+		else if(stat == "obsolete") treeItemDiv.addClass("isObsolete");
+		else if(stat == "new") treeItemDiv.addClass("isNew");
+		treeItemDiv.children(".treeItemTitleDiv").append("<div class='treeItemStatusDiv "+stat+"'>"+stat+"</div>");
+	}
+	
+	var setIsCollection = function(){
+		treeItemDiv.addClass("isCollection");
+	}			
+		
 	return {
 		load:load,
 		getItemDiv: getItemDiv,
-		putTitleIfNotPutYet: putTitleIfNotPutYet,
+		setTitle: setTitle,
 		collapse: collapse,
-		expand: expand
+		expand: expand,
+		setHasChildren: setHasChildren,
+		setIsModifier: setIsModifier,
+		setStatus: setStatus,
+		setIsCollection: setIsCollection
 	};
 }
 

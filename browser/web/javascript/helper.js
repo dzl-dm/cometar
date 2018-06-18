@@ -2,7 +2,7 @@ var Helper = (function()
 {	
 	var getPathsByConceptUrl = function(conceptUrl, pathCallback)
 	{
-		var label = QueryManager.getProperty(conceptUrl, "skos:prefLabel", "lang(?result) = 'en'");
+		var label = QueryManager.getProperty(conceptUrl, "skos:prefLabel", "lang(?result) = 'en'").value;
 		extendPath([conceptUrl], [label], pathCallback);
 	}
 	
@@ -17,7 +17,7 @@ var Helper = (function()
 			function(resultItem){
 				var e = resultItem["element"].value;
 				pathConceptUrlExtensions.push(e);
-				var label = QueryManager.getProperty(e, "skos:prefLabel", "lang(?result) = 'en'");
+				var label = QueryManager.getProperty(e, "skos:prefLabel", "lang(?result) = 'en'").value;
 				pathLabelExtensions.push(label);
 			},
 			function()

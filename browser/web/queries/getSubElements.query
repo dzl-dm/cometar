@@ -9,7 +9,9 @@ WHERE {
 			TOPELEMENT a skos:Concept .
 			?element a skos:Concept .
 			TOPELEMENT skos:narrower ?element .
+			?element skos:prefLabel ?label FILTER (lang(?label) = 'en') .
 		}
+		ORDER BY ?label
 	}
 	UNION
 	{
@@ -18,16 +20,9 @@ WHERE {
 			TOPELEMENT a skos:Concept . 
 			?element a skos:Concept . 
 			TOPELEMENT rdf:hasPart ?element .
+			?element skos:prefLabel ?label FILTER (lang(?label) = 'en') .
 		}
-	}
-	UNION
-	{
-		SELECT ?element
-		WHERE {
-			TOPELEMENT a skos:Collection .
-			?element a skos:Collection . 
-			TOPELEMENT skos:member ?element .
-		}
+		ORDER BY ?label
 	}
 	UNION
 	{
@@ -36,6 +31,19 @@ WHERE {
 			TOPELEMENT a skos:Collection .
 			?element a skos:Concept . 
 			TOPELEMENT skos:member ?element .
+			?element skos:prefLabel ?label FILTER (lang(?label) = 'en') .
 		}
+		ORDER BY ?label
+	}
+	UNION
+	{
+		SELECT ?element
+		WHERE {
+			TOPELEMENT a skos:Collection .
+			?element a skos:Collection . 
+			TOPELEMENT skos:member ?element .
+			?element skos:prefLabel ?label FILTER (lang(?label) = 'en') .
+		}
+		ORDER BY ?label
 	}
 }

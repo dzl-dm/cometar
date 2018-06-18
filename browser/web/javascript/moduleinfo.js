@@ -10,18 +10,15 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				resultDiv.append("<h3>Pfad / Path</h3>");
 				resultDiv.append(treePathDiv);
 
-				var infos = QueryManager.getProperties(conceptUrl, "skos:prefLabel");
-				if (infos.length > 0){
-					var infoDiv = $("<div><h3>Bezeichnung / Label</h3></div>");	
-					for (var i of infos) {
-						infoDiv.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>"); 
-						resultDiv.append(infoDiv); 
-					}
-				}
-				var infos = QueryManager.getProperties(conceptUrl, "skos:notation");
-				if (infos.length > 0){
-					var infoDiv = $("<div><h3>Notation / Code</h3></div>");	
-					for (var i of infos) {
+				var infoDivLabel = $("<div class='infoDiv'><h3>Bezeichnung / Label</h3></div>");
+				resultDiv.append(infoDivLabel); 	
+				QueryManager.getProperty(conceptUrl, "skos:prefLabel", function(i){
+					infoDivLabel.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>").show(); 
+				});
+				
+				var infoDivNotation = $("<div class='infoDiv'><h3>Notation / Code</h3></div>");	
+				resultDiv.append(infoDivNotation); 
+				QueryManager.getProperty(conceptUrl, "skos:notation", function(i){
 						var dt = ""
 						switch(i["datatype"]) {
 							case "http://sekmi.de/histream/dwh#loinc":
@@ -33,122 +30,80 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 							default:
 								break;
 						} 
-						infoDiv.append(dt + (dt != ""?": ":"") + i.value + "<br/>"); 
-						resultDiv.append(infoDiv); 
+						infoDivNotation.append(dt + (dt != ""?": ":"") + i.value + "<br/>").show(); 
+				});
+				var infoDivDescription = $("<div class='infoDiv'><h3>Beschreibung / Description</h3></div>");	
+				resultDiv.append(infoDivDescription); 
+				QueryManager.getProperty(conceptUrl, "dc:description", function(i){
+					infoDivDescription.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>").show(); 
+				});
+				var infoDivUnit = $("<div class='infoDiv'><h3>Einheit / Unit</h3></div>");	
+				resultDiv.append(infoDivUnit); 
+				QueryManager.getProperty(conceptUrl, ":unit", function(i){
+					infoDivUnit.append(i.value + "<br/>").show(); 
+				});
+				var infoDivAltlabel = $("<div class='infoDiv'><h3>Alternative Bezeichnung / Label</h3></div>");	
+				resultDiv.append(infoDivAltlabel); 
+				QueryManager.getProperty(conceptUrl, "skos:altLabel", function(i){
+					infoDivAltlabel.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>").show(); 
+				});
+				var infoDivStatus = $("<div class='infoDiv'><h3>Status</h3></div>");
+				resultDiv.append(infoDivStatus); 
+				QueryManager.getProperty(conceptUrl, ":status", function(i){
+					infoDivStatus.append(i.value + "<br/>").show(); 
+				});
+				var infoDivAuthor = $("<div class='infoDiv'><h3>Author</h3></div>");
+				resultDiv.append(infoDivAuthor); 
+				QueryManager.getProperty(conceptUrl, "dc:creator", function(i){
+					infoDivAuthor.append(i.value + "<br/>"); 
+				});
+				var infoDivDomain = $("<div class='infoDiv'><h3>Wertebereich / Domain</h3></div>");
+				resultDiv.append(infoDivDomain); 	
+				QueryManager.getProperty(conceptUrl, "dwh:restriction", function(i){
+					var restriction = "";
+					switch(i.value.split("#")[1]) {
+						case "integerRestriction":
+							restriction = "Integer";
+							break;
+						case "stringRestriction":
+							restriction = "Integer";
+							break;
+						case "floatRestriction":
+							restriction = "Integer";
+							break;
+						case "partialDateRestriction":
+							restriction = "Integer";
+							break;
+						case "dateRestriction":
+							restriction = "Integer";
+							break;
+						default:
+							break;
+					} 
+					infoDivDomain.append(restriction + "<br/>").show(); 
+				});
+				var infoDivChanges = $("<div class='infoDiv'><h3>Änderungen / Change Log</h3></div>");	
+				resultDiv.append(infoDivChanges); 
+				QueryManager.getNotes(conceptUrl, function(i){
+					var changeValue = "";
+					var changeReason = "";
+					if (i["value"].type == "bnode") {
+						if (i["minus"] != undefined) changeValue += "<font color='red'>&ominus;"+i["minus"].value+"</font> " ;						
+						if (i["plus"] != undefined) changeValue += "<font color='green'>&oplus;"+i["plus"].value+"</font> " ;						
+						if (i["reason"] != undefined) changeReason = ": <i>&quot;" + i["reason"].value + "&quot;</i>";						
 					}
-				}
-				var infos = QueryManager.getProperties(conceptUrl, "dc:description");
-				if (infos.length > 0){
-					var infoDiv = $("<div><h3>Beschreibung / Description</h3></div>");	
-					for (var i of infos) {
-						infoDiv.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>"); 
-						resultDiv.append(infoDiv); 
+					else {
+						changeValue = i["value"].value;
 					}
-				}
-				var infos = QueryManager.getProperties(conceptUrl, ":unit");
-				if (infos.length > 0){
-					var infoDiv = $("<div><h3>Einheit / Unit</h3></div>");	
-					for (var i of infos) {
-						infoDiv.append(i.value + "<br/>"); 
-						resultDiv.append(infoDiv); 
-					}
-				}
-				var infos = QueryManager.getProperties(conceptUrl, "skos:altLabel");
-				if (infos.length > 0){
-					var infoDiv = $("<div><h3>Alternative Bezeichnung / Label</h3></div>");	
-					for (var i of infos) {
-						infoDiv.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>"); 
-						resultDiv.append(infoDiv); 
-					}
-				}
-				var infos = QueryManager.getProperties(conceptUrl, ":status");
-				if (infos.length > 0){
-					var infoDiv = $("<div><h3>Status</h3></div>");	
-					for (var i of infos) {
-						infoDiv.append(i.value + "<br/>"); 
-						resultDiv.append(infoDiv); 
-					}
-				}
-				var infos = QueryManager.getProperties(conceptUrl, "dc:creator");
-				if (infos.length > 0){
-					var infoDiv = $("<div><h3>Author</h3></div>");	
-					for (var i of infos) {
-						infoDiv.append(i.value + "<br/>"); 
-						resultDiv.append(infoDiv); 
-					}
-				}
-				var infos = QueryManager.getProperties(conceptUrl, "dwh:restriction");
-				if (infos.length > 0){
-					var infoDiv = $("<div><h3>Wertebereich / Domain</h3></div>");	
-					for (var i of infos) {
-						var restriction = "";
-						switch(i.value.split("#")[1]) {
-							case "integerRestriction":
-								restriction = "Integer";
-								break;
-							case "stringRestriction":
-								restriction = "Integer";
-								break;
-							case "floatRestriction":
-								restriction = "Integer";
-								break;
-							case "partialDateRestriction":
-								restriction = "Integer";
-								break;
-							case "dateRestriction":
-								restriction = "Integer";
-								break;
-							default:
-								break;
-						} 
-						infoDiv.append(restriction + "<br/>"); 
-						resultDiv.append(infoDiv); 
-					}
-				}
-				var infos = QueryManager.getNotes(conceptUrl);
-				if (infos.length > 0){
-					var infoDiv = $("<div><h3>Änderungen / Change Log</h3></div>");	
-					for (var i of infos) {
-						var changeValue = "";
-						var changeReason = "";
-						if (i["value"].type == "bnode") {
-							if (i["minus"] != undefined) changeValue += "<font color='red'>&ominus;"+i["minus"].value+"</font> " ;						
-							if (i["plus"] != undefined) changeValue += "<font color='green'>&oplus;"+i["plus"].value+"</font> " ;						
-							if (i["reason"] != undefined) changeReason = ": <i>&quot;" + i["reason"].value + "&quot;</i>";						
-						}
-						else {
-							changeValue = i["value"].value;
-						}
-						infoDiv.append("<div style='display:inline-block;vertical-align:top'>"+i["date"].value + ":</div><div style='display:inline-block;margin-left:10px'>" + Helper.getReadableString(i["property"].value) + " " + i["action"].value + " by " + i["author"].value + changeReason + "<br/>" + " " + changeValue + "</div><br/>"); 
-						resultDiv.append(infoDiv); 
-					}
-				}		
+					infoDivChanges.append("<div style='display:inline-block;vertical-align:top'>"+i["date"].value + ":</div><div style='display:inline-block;margin-left:10px'>" + Helper.getReadableString(i["property"].value) + " " + i["action"].value + " by " + i["author"].value + changeReason + "<br/>" + " " + changeValue + "</div><br/>").show(); 
+				});	
 					
-				var modifiers = QueryManager.getModifiers(conceptUrl);
-				if (modifiers.length > 0)
-				{
-					resultDiv.append("<h3>Spezifizierung / Specification</h3>");
-					var modifierDiv = $("<div class='treePathDiv' id='modifierInfoDiv'>");
-					resultDiv.append(modifierDiv);
-					for (var m of modifiers)
-					{
-						Helper.getPathsByConceptUrl(m, function(path){putPath(modifierDiv, path)});
-					}
-				}	
-				
-				/*var queryString = QueryManager.queries.getAllModifiers.replace(/PARENTCONCEPT/g, conceptUrl);
-				QueryManager.query(queryString, 
-					function(resultItem){
-						if (resultDiv.children("#modifierInfoDiv").length == 0)
-						{
-							resultDiv.append(modifierHeading);	
-							resultDiv.append(modifierDiv);							
-						}
-						Helper.getPathsByConceptUrl(resultItem["subconcept"].value, function(path){putPath(modifierDiv, path)});
-					},
-					function(){
-					}
-				);*/
+				var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Spezifizierung / Specification</h3></div>");
+				resultDiv.append(modifierDiv);
+				QueryManager.getModifiers(conceptUrl, function(m){
+					modifierDiv.show();
+					Helper.getPathsByConceptUrl(m, function(path){putPath(modifierDiv, path)});
+				});
 				
 				return resultDiv;
 			}
