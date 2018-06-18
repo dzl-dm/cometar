@@ -35,7 +35,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				var infoDivDescription = $("<div class='infoDiv'><h3>Beschreibung / Description</h3></div>");	
 				resultDiv.append(infoDivDescription); 
 				QueryManager.getProperty(conceptUrl, "dc:description", function(i){
-					infoDivDescription.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>").show(); 
+					infoDivDescription.append((i["xml:lang"] != undefined?i["xml:lang"].toUpperCase() + ": ":"") + i.value + "<br/>").show(); 
 				});
 				var infoDivUnit = $("<div class='infoDiv'><h3>Einheit / Unit</h3></div>");	
 				resultDiv.append(infoDivUnit); 
@@ -85,17 +85,23 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				var infoDivChanges = $("<div class='infoDiv'><h3>Änderungen / Change Log</h3></div>");	
 				resultDiv.append(infoDivChanges); 
 				QueryManager.getNotes(conceptUrl, function(i){
-					var changeValue = "";
-					var changeReason = "";
-					if (i["value"].type == "bnode") {
-						if (i["minus"] != undefined) changeValue += "<font color='red'>&ominus;"+i["minus"].value+"</font> " ;						
-						if (i["plus"] != undefined) changeValue += "<font color='green'>&oplus;"+i["plus"].value+"</font> " ;						
-						if (i["reason"] != undefined) changeReason = ": <i>&quot;" + i["reason"].value + "&quot;</i>";						
+					var changes = "<div style='display:inline-block;vertical-align:top'>";
+					if (i["note"].type == "bnode")
+					{
+						var changeValue = "";
+						var changeReason = "";
+						if (i["value"].type == "bnode") {
+							if (i["minus"] != undefined) changeValue += "<font color='red'>&ominus;"+i["minus"].value+"</font> " ;						
+							if (i["plus"] != undefined) changeValue += "<font color='green'>&oplus;"+i["plus"].value+"</font> " ;						
+							if (i["reason"] != undefined) changeReason = ": <i>&quot;" + i["reason"].value + "&quot;</i>";						
+						}
+						else {
+							changeValue = i["value"].value;
+						}
+						changes+=i["date"].value + ":</div><div style='display:inline-block;margin-left:10px'>" + Helper.getReadableString(i["property"].value) + " " + i["action"].value + " by " + i["author"].value + changeReason + "<br/>" + " " + changeValue;
 					}
-					else {
-						changeValue = i["value"].value;
-					}
-					infoDivChanges.append("<div style='display:inline-block;vertical-align:top'>"+i["date"].value + ":</div><div style='display:inline-block;margin-left:10px'>" + Helper.getReadableString(i["property"].value) + " " + i["action"].value + " by " + i["author"].value + changeReason + "<br/>" + " " + changeValue + "</div><br/>").show(); 
+					else changes+=i["note"].value + "</div>";
+					infoDivChanges.append(changes).append("<br/>").show(); 
 				});	
 					
 				var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Spezifizierung / Specification</h3></div>");
