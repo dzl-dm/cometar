@@ -1,8 +1,19 @@
 #!/bin/bash
+conffile=$(dirname $0)/../config/conf.cfg
+while [ ! $# -eq 0 ]
+do
+	case "$1" in
+		-p)
+			shift
+			conffile=$1
+			;;
+	esac
+	shift
+done
 
-source $(dirname $0)/../config/conf.cfg
+source $conffile
 cd $(dirname $0)
 mkdir -p $TEMPDIR/i2b2-sql
 rm -f $TEMPDIR/i2b2-sql/*.sql
-/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -cp dependency/\* de.dzl.dm.meta.SQLWriter ontology.properties $TEMPDIR/i2b2-sql $TEMPDIR/export.ttl
+"$JAVADIR" -cp dependency/\* de.dzl.dm.meta.SQLWriter ontology.properties $TEMPDIR/i2b2-sql $TEMPDIR/export.ttl
 rm $TEMPDIR/export.ttl
