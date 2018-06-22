@@ -1,8 +1,20 @@
 #!/bin/bash
 
-source $(dirname $(realpath $0))/../config/conf.cfg
+conffile=$(dirname $0)/../config/conf.cfg
+while [ ! $# -eq 0 ]
+do
+	case "$1" in
+		-p)
+			shift
+			conffile=$1
+			;;
+	esac
+	shift
+done
 
-screen -dm /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -jar $FUSEKIFILE --config=$(realpath $CONFDIR/fuseki_cometar_config.ttl)
+source $conffile
+
+screen -dm $JAVADIR -jar $FUSEKIFILE --config=$(realpath $CONFDIR/fuseki_cometar_config.ttl)
 
 sleep 5
 

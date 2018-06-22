@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $(dirname $0)/../config/conf.cfg
+conffile=$(dirname $0)/../config/conf.cfg
 cleardata=false
 directory=`dirname $0`
 port=3030
@@ -24,9 +24,15 @@ do
 		-s)
 			silentmode="--silent"
 			;;
+		-p)
+			shift
+			conffile=$1
+			;;
 	esac
 	shift
 done
+
+source $conffile
 
 s=""
 if $cleardata; then

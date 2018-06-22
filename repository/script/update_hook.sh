@@ -1,19 +1,35 @@
 #!/bin/bash
 
-source $(dirname $0)/../config/conf.cfg
+newrev=master
 
-newrev=$1
+conffile=$(dirname $0)/../config/conf.cfg
+while [ ! $# -eq 0 ]
+do
+	case "$1" in
+		-p)
+			shift
+			conffile=$1
+			;;
+		-r)
+			shift
+			newrev=$1
+			;;
+	esac
+	shift
+done
+
+source $conffile
 
 rm -rf $TEMPDIR/git
 mkdir -p $TEMPDIR/git
-env -i -- git clone -q $TTLDIRECTORY $TEMPDIR/git
+$GITBIN clone -q $TTLDIRECTORY $TEMPDIR/git
 cd $TEMPDIR/git
-env -i -- git checkout -q $newrev
+$GITBIN checkout -q $newrev
 
 exitcode=0
 echo -------------------------------------
 echo "Loading files into fuseki test server..."
-$SCRIPTDIR/add_files_to_dataset.sh -s -t -c -d $TEMPDIR/git
+$SCRIPTDIR/add_files_to_dataset.sh -s -t -c -d $TEMPDIR/git -p $conffile
 insertexitcode=$?
 if [ $insertexitcode -eq 0 ]
 then
@@ -24,7 +40,7 @@ else
 fi
 echo -------------------------------------
 echo "Performing tests..."
-$SCRIPTDIR/exec_tests.sh
+$SCRIPTDIR/exec_tests.sh -p $conffile
 testexitcode=$?
 case $testexitcode in
         0)
@@ -45,17 +61,16 @@ esac
 if [ $testexitcode -ne 1 ]
 then
 	echo "export.ttl is being produced."
-	$SCRIPTDIR/export_rdf.sh
-	$SCRIPTDIR/add_files_to_dataset.sh -s -c
+	$SCRIPTDIR/export_rdf.sh -p $conffile
+	$SCRIPTDIR/add_files_to_dataset.sh -s -c -p $conffile
 	echo "i2b2 import sql is being produced."
-	$TTLTOSQLDIR/write-sql.sh
+	$TTLTOSQLDIR/write-sql.sh -p $conffile
 	echo "Metadata import into i2b2 server part 1..."
-	PGPASSWORD=i2b2metadata /usr/bin/psql -q --host=localhost --username=i2b2metadata --dbname=i2b2 -f $TEMPDIR/i2b2-sql/meta.sql
+	PGPASSWORD=$I2B2METAPW /usr/bin/psql -q --host=$I2B2HOST --username=$I2B2METAUSER --dbname=$I2B2DBNAME -f $TEMPDIR/i2b2-sql/meta.sql
 	echo "Metadata import into i2b2 server part 2..."
-	PGPASSWORD=i2b2demodata /usr/bin/psql -q --host=localhost --username=i2b2demodata --dbname=i2b2 -f $TEMPDIR/i2b2-sql/data.sql
+	PGPASSWORD=$I2B2DEMOPW /usr/bin/psql -q --host=$I2B2HOST --username=$I2B2DEMOUSER --dbname=$I2B2DBNAME -f $TEMPDIR/i2b2-sql/data.sql
 	echo "Refreshing patient count..."
-	cd $SCRIPTDIR
-	./update_patient_count.sh
+	$SCRIPTDIR/update_patient_count.sh -p $conffile
 	echo -------------------------------------
 fi
  
