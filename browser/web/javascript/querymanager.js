@@ -19,8 +19,16 @@ var QueryManager = (function(){
 	
 	var getParentElements = function(e, callback)
 	{
-		queryString = queries["getParentElements"].replace(/TOPELEMENT/g, "<" + e + ">" );
+		queryString = queries["getParentElements"].replace(/SUBELEMENT/g, "<" + e + ">" );
 		syncquery(queryString, function(r){ callback(r["element"].value) });
+	}
+	
+	var getAncestors = function(e, callback)
+	{
+		getParentElements(e, function(pe){
+			callback(pe);
+			getAncestors(pe, callback);
+		});
 	}
 	
 	var getModifiers = function(e, callback)
@@ -357,6 +365,8 @@ WHERE {
 		getIsModifierOf: getIsModifierOf,
 		getNotes: getNotes,
 		getModifiers: getModifiers,
-		getMultiProperties: getMultiProperties
+		getMultiProperties: getMultiProperties,
+		getByProperty: getByProperty,
+		getAncestors: getAncestors
 	}
 }());
