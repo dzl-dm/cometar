@@ -92,8 +92,10 @@ var loadConfig = function(){
 		
 	$($xml.find( "mdat > concept" )).each(function(){
 		var c = $(this);
+		var file = c.parent().parent().children("source").children("url").text();
+		file = file.substr(0,file.length-4);
 		dzlId = c.attr("id");
-		sourceId = $(c.children("value")[0]).attr("column");		
+		sourceId = file + "." + $(c.children("value")[0]).attr("column");		
 		keepBasePair = false;
 		getValueTagIdPairs(c.children("value")[0]);		
 		if (keepBasePair) addIdPair(dzlId, sourceId);
@@ -108,9 +110,11 @@ var loadConfig = function(){
 	
 	$($xml.find( "virtual > value" )).each(function(){
 		var map = $($(this).children("map")[0]);
+		var file = $(this).parent().parent().children("source").children("url").text();
+		file = file.substr(0,file.length-4);
 		var mapSetId = map.attr("set-concept");
 		if (mapSetId) dzlId = mapSetId;
-		sourceId = $(this).attr("column");
+		sourceId = file + "." + $(this).attr("column");
 		keepBasePair = false;
 		getValueTagIdPairs(this);
 		if (keepBasePair) addIdPair(dzlId, sourceId);
@@ -130,8 +134,22 @@ var loadConfig = function(){
 
 var addMappedFields = function(dzlId)
 {
-	var queryString = QueryManager.queries.getConceptUrlByNotation.replace(/NOTATION/g, dzlId);
-	var notationFindings = 0;
+	var concept = QueryManager.getByProperty("skos:notation", dzlId);
+	if (concept != undefined) 
+	{
+		mappedFields.push(concept);
+	}
+	else{
+		console.log(dzlId + " DEPRECATED!!!!!!!!!!!");	
+		mappedSourceFields.splice(mappedFields.length, 1);	
+	}
+	QueryManager.getAncestors(concept, function(a){
+		if (mappedPathFields.indexOf(a) == -1) {
+			mappedPathFields.push(a);
+		}
+	});
+	
+	/*var queryString = QueryManager.queries.getConceptUrlByNotation.replace(/NOTATION/g, dzlId);
 	QueryManager.syncquery(
 		queryString, 
 		function(resultItem){
@@ -140,7 +158,7 @@ var addMappedFields = function(dzlId)
 				var concept = resultItem["concept"].value;
 				mappedFields.push(concept);
 				
-				var queryString = QueryManager.queries.getParentConcepts.replace(/CONCEPT/g, concept);
+				/*var queryString = QueryManager.queries.getParentConcepts.replace(/CONCEPT/g, concept);
 				QueryManager.syncquery(
 					queryString, 
 					function(resultItem){
@@ -154,13 +172,8 @@ var addMappedFields = function(dzlId)
 				);
 			}
 		}
-	);
-	if (notationFindings == 0) 
-	{
-		console.log(dzlId + " DEPRECATED!!!!!!!!!!!");
-		mappedSourceFields.splice(mappedFields.length, 1);
-	}
-	if (notationFindings > 1) console.log(dzlId + " UNAMBIGUOUS!!!!!!!!!!!");
+	);*/
+	//if (notationFindings > 1) console.log(dzlId + " UNAMBIGUOUS!!!!!!!!!!!");
 }
 
 var markMappedFields = function(itemDiv)
