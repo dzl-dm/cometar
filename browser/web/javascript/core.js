@@ -397,7 +397,6 @@ var treeItem = function(){
 		else if(stat == "obsolete") treeItemDiv.addClass("isObsolete");
 		else if(stat == "new") treeItemDiv.addClass("isNew");
 		treeItemDiv.children(".treeItemTitleDiv").append("<div class='treeItemStatusDiv "+stat+"'>"+stat+"</div>");
-		console.log(treeItemDiv.children(".treeItemTitleDiv").html());
 	}
 	
 	var setIsCollection = function(){
