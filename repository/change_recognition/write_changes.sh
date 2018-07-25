@@ -45,7 +45,7 @@ if [ $only_recent_changes -eq 1 ]; then
 	shopt -s nullglob
 	from_date_number=$(date -d "$from_date" +%s)
 	IFS=$'\n'
-	for i in $(find "$CHANGESDIR/output" -type f -name '*.ttl'); do
+	for i in $(find "$CHANGESFILESDIR/output" -type f -name '*.ttl'); do
 		filename=$(basename "$i" .ttl)
 		datestring=$(echo ${filename:22} | tr '_' ':')
 		datenumber=$(date -d "$datestring" +%s)
@@ -59,10 +59,11 @@ if [ $only_recent_changes -eq 1 ]; then
 fi
 echo "writing changes from $from_date to $until_date"
 
-checkouts_directory="$CHANGESDIR/checkouts"
+checkouts_directory="$CHANGESFILESDIR/checkouts"
 mkdir -p "$checkouts_directory"
-output_csv="$CHANGESDIR/output/$(echo $from_date | tr ':' '_') - $(echo $until_date | tr ':' '_').csv"
-output_ttl="$CHANGESDIR/output/$(echo $from_date | tr ':' '_') - $(echo $until_date | tr ':' '_').ttl"
+mkdir -p "$CHANGESFILESDIR/output"
+output_csv="$CHANGESFILESDIR/output/$(echo $from_date | tr ':' '_') - $(echo $until_date | tr ':' '_').csv"
+output_ttl="$CHANGESFILESDIR/output/$(echo $from_date | tr ':' '_') - $(echo $until_date | tr ':' '_').ttl"
 echo -n "" > "$output_csv"
 
 while read line || [ -n "$line" ]; do #second expression is needed cause the last git log line does not end with a newline
@@ -73,12 +74,12 @@ while read line || [ -n "$line" ]; do #second expression is needed cause the las
 	checkout_id=${array[0]}	
 	commit_author=${array[2]}	
 	commit_date=${array[1]}	
-	echo $("$CHANGESDIR/extract_changes_from_checkout.sh" -p "$conffile" -i $checkout_id -a "$commit_author" -d "$commit_date" -o "$output_csv" -c "$checkouts_directory")
+	echo $("$CHANGESSCRIPTDIR/extract_changes_from_checkout.sh" -p "$conffile" -i $checkout_id -a "$commit_author" -d "$commit_date" -o "$output_csv" -c "$checkouts_directory")
 done < <(cd "$TEMPDIR/git"; unset GIT_DIR; git checkout -q master; if [ -n "$recent_line" ] ; then echo "$recent_line"; fi; git log --pretty=format:"%H;%ai;%an" --since="$from_date" --before="$until_date" --no-merges)
 
-sort -t $',' -k 2,2 -k 3,3 -k 4,4 -k 1,1 "$output_csv" > "$CHANGESDIR/output/changes_sorted.csv"
-gawk -f "$CHANGESDIR/insert_changes_record_splitter.awk" -v output="$CHANGESDIR/output/changes_sorted_splitted.csv" "$CHANGESDIR/output/changes_sorted.csv"
-gawk -f "$CHANGESDIR/extract_changes_from_changefile.awk" -v output="$output_ttl" "$CHANGESDIR/output/changes_sorted_splitted.csv"
-rm "$CHANGESDIR/output/changes_sorted.csv"
-rm "$CHANGESDIR/output/changes_sorted_splitted.csv"
+sort -t $',' -k 2,2 -k 3,3 -k 4,4 -k 1,1 "$output_csv" > "$CHANGESFILESDIR/output/changes_sorted.csv"
+gawk -f "$CHANGESSCRIPTDIR/insert_changes_record_splitter.awk" -v output="$CHANGESFILESDIR/output/changes_sorted_splitted.csv" "$CHANGESFILESDIR/output/changes_sorted.csv"
+gawk -f "$CHANGESSCRIPTDIR/extract_changes_from_changefile.awk" -v output="$output_ttl" "$CHANGESFILESDIR/output/changes_sorted_splitted.csv"
+rm "$CHANGESFILESDIR/output/changes_sorted.csv"
+rm "$CHANGESFILESDIR/output/changes_sorted_splitted.csv"
 rm "$output_csv"
