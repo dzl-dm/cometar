@@ -379,7 +379,7 @@ var treeItem = function(){
 	
 	var setTitle = function(label)
 	{
-		treeItemDiv.children(".treeItemTitleDiv").text(label);				
+		treeItemDiv.children(".treeItemTitleDiv").prepend(label);				
 	}
 	
 	var setHasChildren = function(){
@@ -397,6 +397,7 @@ var treeItem = function(){
 		else if(stat == "obsolete") treeItemDiv.addClass("isObsolete");
 		else if(stat == "new") treeItemDiv.addClass("isNew");
 		treeItemDiv.children(".treeItemTitleDiv").append("<div class='treeItemStatusDiv "+stat+"'>"+stat+"</div>");
+		console.log(treeItemDiv.children(".treeItemTitleDiv").html());
 	}
 	
 	var setIsCollection = function(){
