@@ -58,7 +58,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				var infoDivAuthor = $("<div class='aggregatedInfo'><h3>Author</h3></div>");
 				aggregatedInfoDiv.append(infoDivAuthor); 
 				QueryManager.getProperty(conceptUrl, "dc:creator", function(i){
-					infoDivAuthor.append(i.value + "<br/>"); 
+					infoDivAuthor.append(i.value + "<br/>").show(); 
 				});
 				var infoDivDomain = $("<div class='aggregatedInfo'><h3>Wertebereich / Domain</h3></div>");
 				aggregatedInfoDiv.append(infoDivDomain); 	
@@ -84,6 +84,12 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 							break;
 					} 
 					infoDivDomain.append(restriction + "<br/>").show(); 
+				});
+				
+				var infoDivEditNotes = $("<div class='infoDiv'><h3>Editorial Notes</h3></div>");
+				resultDiv.append(infoDivEditNotes); 
+				QueryManager.getProperty(conceptUrl, "skos:editorialNote", function(i){
+					infoDivEditNotes.append(i.value + "<br/>").show(); 
 				});
 				
 				var infoDivChanges = $("<div class='infoDiv'><h3>Änderungen / Change Log</h3></div>");	
@@ -112,6 +118,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 							|| i["property"].value == "http://www.w3.org/2004/02/skos/core#inScheme"
 							|| i["property"].value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf"
 							|| i["property"].value == "http://www.w3.org/2004/02/skos/core#hasTopConcept"
+							|| i["property"].value == "http://www.w3.org/2004/02/skos/core#editorialNote"
 							|| i["property"].value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 						{
 							return;
@@ -119,8 +126,11 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 						var changeValue = "";
 						var changeReason = "";
 						if (i["value"].type == "bnode") {
-							if (i["minus"] != undefined) changeValue += "<font color='red'>&ominus;"+Helper.getReadableString(i["minus"].value)+"</font> " ;						
-							if (i["plus"] != undefined) changeValue += "<font color='green'>&oplus;"+Helper.getReadableString(i["plus"].value)+"</font> " ;						
+							console.log(i);
+							if (i["minustargetlabel"] != undefined) changeValue += "<font color='red'>&ominus;"+i["minustargetlabel"].value+"</font> " ;
+							else if (i["minus"] != undefined) changeValue += "<font color='red'>&ominus;"+Helper.getReadableString(i["minus"].value)+"</font> " ;	
+							if (i["plustargetlabel"] != undefined) changeValue += "<font color='green'>&oplus;"+i["plustargetlabel"].value+"</font> " ;					
+							else if (i["plus"] != undefined) changeValue += "<font color='green'>&oplus;"+Helper.getReadableString(i["plus"].value)+"</font> " ;						
 							if (i["reason"] != undefined) changeReason = ": <i>&quot;" + i["reason"].value + "&quot;</i>";						
 						}
 						else {

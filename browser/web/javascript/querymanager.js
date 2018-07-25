@@ -373,7 +373,7 @@ WHERE {
 }
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
 		getNotes: prefixes + (function () {/*
-SELECT ?note ?date ?author ?value ?property ?action ?minus (lang(?minus) as ?minuslang) ?plus (lang(?plus) as ?pluslang) ?reason
+SELECT ?note ?date ?author ?value ?property ?action ?minus (lang(?minus) as ?minuslang) ?minustargetlabel ?plus (lang(?plus) as ?pluslang) ?plustargetlabel ?reason
 WHERE {
 	ELEMENT skos:changeNote ?note .
 	OPTIONAL { ?note dc:date ?date ;
@@ -381,8 +381,12 @@ WHERE {
 		rdf:value ?value ;
 		owl:onProperty ?property ;
 		:action ?action .
-		OPTIONAL { ?value :minus ?minus }
-		OPTIONAL { ?value :plus ?plus }
+		OPTIONAL { ?value :minus ?minus
+			OPTIONAL { ?minus skos:prefLabel ?minustargetlabel FILTER (lang(?minustargetlabel) = 'en') }
+		}
+		OPTIONAL { ?value :plus ?plus 
+			OPTIONAL { ?plus skos:prefLabel ?plustargetlabel FILTER (lang(?plustargetlabel) = 'en') }
+		}
 		OPTIONAL { ?value :reason ?reason }
 		?b foaf:name ?author . } 
 } 

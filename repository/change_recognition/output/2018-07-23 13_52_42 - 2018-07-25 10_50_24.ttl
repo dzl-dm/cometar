@@ -1,319 +1,0 @@
-@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> .
-@prefix snomed:    <http://purl.bioontology.org/ontology/SNOMEDCT/> .
-@prefix : <http://data.dzl.de/ont/dwh#> .
-@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
-@prefix dc: <http://purl.org/dc/elements/1.1/> .
-@prefix dwh:    <http://sekmi.de/histream/dwh#> .
-@prefix loinc: <http://loinc.org/owl#> .
-@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
-:DauerJahre skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus "Dauer Jahre"@de; :plus "Dauer des Rauchens in Jahren"@de ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "changed" 
-] .
-:DauerJahre skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus "Years duration"@en; :plus "Duration of smoking"@en ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "changed" 
-] .
-:DauerJahre skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus "Jahre"; :plus "Years" ] ;
-	owl:onProperty  :unit ;
-	:action "changed" 
-] .
-:DauerJahre skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-:EndeRauchen skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus skos:Concept ] ;
-	owl:onProperty  rdf:type ;
-	:action "added" 
-] .
-:EndeRauchen skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus snomed:365981007 ] ;
-	owl:onProperty  skos:broader ;
-	:action "added" 
-] .
-:EndeRauchen skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Ende des Rauchens"@de ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-:EndeRauchen skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Smoking ended"@en ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-:EndeRauchen skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-:EndeRauchen skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Years" ] ;
-	owl:onProperty  :unit ;
-	:action "added" 
-] .
-:LungCancerSpecificParams skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "&quot;Lung cancer, also known as lung carcinoma, is a malignant lung tumor characterized by uncontrolled cell growth in tissues of the lung. This growth can spread beyond the lung by the process of metastasis into nearby tissue or other parts of the body. Most cancers that starts in the lung, known as primary lung cancers, are carcinomas. (Wikipedia, 2018)&quot;"@en ] ;
-	owl:onProperty  dc:description ;
-	:action "added" 
-] .
-snomed:1221000175102 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus skos:Concept ] ;
-	owl:onProperty  rdf:type ;
-	:action "added" 
-] .
-snomed:1221000175102 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus snomed:365981007 ] ;
-	owl:onProperty  skos:broader ;
-	:action "added" 
-] .
-snomed:1221000175102 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "S:1221000175102" ] ;
-	owl:onProperty  skos:notation ;
-	:action "added" 
-] .
-snomed:1221000175102 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Alter beim Einstellen des Rauchens "@de ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-snomed:1221000175102 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Age at ending smoking"@en ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-snomed:1221000175102 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:1221000175102 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Years" ] ;
-	owl:onProperty  :unit ;
-	:action "added" 
-] .
-snomed:228488005 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus skos:Concept ] ;
-	owl:onProperty  rdf:type ;
-	:action "added" 
-] .
-snomed:228488005 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus snomed:365981007 ] ;
-	owl:onProperty  skos:broader ;
-	:action "added" 
-] .
-snomed:228488005 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "S:228488005" ] ;
-	owl:onProperty  skos:notation ;
-	:action "added" 
-] .
-snomed:228488005 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Alter bei Rauchbeginn"@de ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-snomed:228488005 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Age at starting smoking"@en ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-snomed:228488005 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:228488005 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Years" ] ;
-	owl:onProperty  :unit ;
-	:action "added" 
-] .
-snomed:266919005 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus "Smoking status terminology based on the Canadian Tobacco Use Monitoring Survey (CTUMS):  Never-smoker: a smoker who has never smoked in his lifetime"@en; :plus "A never-smoker is a person who either has never smoked at all or has never been a daily smoker and has smoked less than 100 cigarettes (or the equivalent amount of tobacco) in his/her lifetime."@en ] ;
-	owl:onProperty  dc:description ;
-	:action "changed" 
-] .
-snomed:266919005 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus :Raucherstatus; :plus snomed:8392000 ] ;
-	owl:onProperty  skos:broader ;
-	:action "changed" 
-] .
-snomed:266919005 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:266927001 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus "Smoking status terminology based on the Canadian Tobacco Use Monitoring Survey (CTUMS):  current smoker includes daily smokers and non-daily smokers (occasional smokers)"@en; :plus "&quot;An active smoker is a person who, at the time of the survey, smokes any tobacco product either daily or occasionally.&quot;"@en ] ;
-	owl:onProperty  dc:description ;
-	:action "changed" 
-] .
-snomed:266927001 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:266929003 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:266929003 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Years" ] ;
-	owl:onProperty  :unit ;
-	:action "added" 
-] .
-snomed:307438009 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:365981007 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "&quot;Smoking is a practice in which a substance is burned and the resulting smoke breathed in to be tasted and absorbed into the bloodstream. Smoking is one of the most common form of recreational drug use. Smoking has generally negative health effects, because smoke inhalation inherently poses challenges to various physiologic processes such as respiration. (Wikipedia, 2018)&quot;"@en ] ;
-	owl:onProperty  dc:description ;
-	:action "added" 
-] .
-snomed:365981007 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:401201003 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus "&quot;&quot;&quot;A pack-year is a quantification of cigarette smoking. It's used in a clinical context to measure a person's exposure to tobacco and assess their risk of developing lung cancer or other pathologies related to tobacco use.&quot;&quot;(Wikipedia)&quot;"@en; :plus "&quot;The pack-year is a unit for measuring the amount a person has smoked over a long period of time. It is calculated by multiplying the number of packs of cigarettes smoked per day by the number of years the person has smoked. (National Cancer Institute, 2018)&quot;"@en ] ;
-	owl:onProperty  dc:description ;
-	:action "changed" 
-] .
-snomed:401201003 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:405746006 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus "Smoking status terminology based on the Canadian Tobacco Use Monitoring Survey (CTUMS):  Non-smokers includes former smokers and never-smokers;  Former smoker: a smoker who reports a minimum consumption of 100 cigarettes in his lifetime"@en ] ;
-	owl:onProperty  dc:description ;
-	:action "removed" 
-] .
-snomed:405746006 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus skos:Concept ] ;
-	owl:onProperty  rdf:type ;
-	:action "removed" 
-] .
-snomed:405746006 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus :Raucherstatus ] ;
-	owl:onProperty  skos:broader ;
-	:action "removed" 
-] .
-snomed:405746006 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus "S:405746006" ] ;
-	owl:onProperty  skos:notation ;
-	:action "removed" 
-] .
-snomed:405746006 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus "Nichtraucher"@de ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "removed" 
-] .
-snomed:405746006 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus "Non-smoker"@en ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "removed" 
-] .
-snomed:428041000124106 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "&quot;An occasional smoker (someday smoker) is a person, who smokes, but not every day.&quot;"@en ] ;
-	owl:onProperty  dc:description ;
-	:action "added" 
-] .
-snomed:428041000124106 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus skos:Concept ] ;
-	owl:onProperty  rdf:type ;
-	:action "added" 
-] .
-snomed:428041000124106 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus snomed:266927001 ] ;
-	owl:onProperty  skos:broader ;
-	:action "added" 
-] .
-snomed:428041000124106 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "S:428041000124106" ] ;
-	owl:onProperty  skos:notation ;
-	:action "added" 
-] .
-snomed:428041000124106 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Gelegenheitsraucher"@de ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-snomed:428041000124106 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Occasional (someday) smoker"@en ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-snomed:428041000124106 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:449868002 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "&quot;An every day (daily) smoker is a person, who smokes any tobacco product at least once a day.&quot;"@en ] ;
-	owl:onProperty  dc:description ;
-	:action "added" 
-] .
-snomed:449868002 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus skos:Concept ] ;
-	owl:onProperty  rdf:type ;
-	:action "added" 
-] .
-snomed:449868002 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus snomed:266927001 ] ;
-	owl:onProperty  skos:broader ;
-	:action "added" 
-] .
-snomed:449868002 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "S:449868002" ] ;
-	owl:onProperty  skos:notation ;
-	:action "added" 
-] .
-snomed:449868002 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Taeglicher Raucher"@de ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-snomed:449868002 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Every day smoker"@en ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-snomed:449868002 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:714151003 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "&quot;Passive smoking is the inhalation of smoke, called second-hand smoke (SHS) or environmental tobacco smoke (ETS), by persons other than the intended “active” smoker. (Wikipedia, 2018)&quot;"@en ] ;
-	owl:onProperty  dc:description ;
-	:action "added" 
-] .
-snomed:714151003 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus skos:Concept ] ;
-	owl:onProperty  rdf:type ;
-	:action "added" 
-] .
-snomed:714151003 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus :Raucherstatus ] ;
-	owl:onProperty  skos:broader ;
-	:action "added" 
-] .
-snomed:714151003 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "S:714151003" ] ;
-	owl:onProperty  skos:notation ;
-	:action "added" 
-] .
-snomed:714151003 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Passiv-Raucher"@de ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-snomed:714151003 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Passive smoker"@en ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-snomed:714151003 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:8392000 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "&quot;A non-smoker is a person who, at the time of the survey, does not smoke at all.&quot;"@en ] ;
-	owl:onProperty  dc:description ;
-	:action "added" 
-] .
-snomed:8392000 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus skos:Concept ] ;
-	owl:onProperty  rdf:type ;
-	:action "added" 
-] .
-snomed:8392000 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus :Raucherstatus ] ;
-	owl:onProperty  skos:broader ;
-	:action "added" 
-] .
-snomed:8392000 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "S:8392000" ] ;
-	owl:onProperty  skos:notation ;
-	:action "added" 
-] .
-snomed:8392000 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Nichtraucher"@de ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-snomed:8392000 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "Non-smoker"@en ] ;
-	owl:onProperty  skos:prefLabel ;
-	:action "added" 
-] .
-snomed:8392000 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:8517006 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus "Smoking status terminology based on the Canadian Tobacco Use Monitoring Survey (CTUMS):  short term quitter; long term quitter"@en; :plus "An ex-smoker is a person who was formerly a daily smoker but currently does not smoke at all."@en ] ;
-	owl:onProperty  dc:description ;
-	:action "changed" 
-] .
-snomed:8517006 skos:changeNote [	dc:date "2018-07-24 13:43:21 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Helm" ] ;	rdf:value [ :minus :Raucherstatus; :plus snomed:8392000 ] ;
-	owl:onProperty  skos:broader ;
-	:action "changed" 
-] .
-:Raucherstatus skos:changeNote [	dc:date "2018-07-25 09:57:37 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Stöhr" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-:Raucherstatus skos:changeNote [	dc:date "2018-07-25 09:57:37 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Stöhr" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:8517006 skos:changeNote [	dc:date "2018-07-25 09:57:37 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Stöhr" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .
-snomed:8517006 skos:changeNote [	dc:date "2018-07-25 09:57:37 +0200"^^xsd:dateTimeStamp ;	dc:creator [ a foaf:person ; foaf:name "Stöhr" ] ;	rdf:value [ :plus "draft" ] ;
-	owl:onProperty  :status ;
-	:action "added" 
-] .

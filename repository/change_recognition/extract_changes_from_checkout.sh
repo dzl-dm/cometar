@@ -74,7 +74,7 @@ function find_working_parent(){
 	read -r -a checkout_ids_ancestors_array <<< "$checkout_ids_ancestors_string"
 	unset IFS;	
 	for checkout_id_ancestor in ${checkout_ids_ancestors_array[@]}; do
-		success=$("$CHANGESDIR/save_ontology_state_from_checkout.sh" -p "$conffile" -i $checkout_id_ancestor -c "$checkouts_directory")
+		success=$("$CHANGESSCRIPTDIR/save_ontology_state_from_checkout.sh" -p "$conffile" -i $checkout_id_ancestor -c "$checkouts_directory")
 		if [ $success -eq 1 ]; then
 			echo $checkout_id_ancestor
 			break
@@ -85,7 +85,7 @@ function find_working_parent(){
 	done
 }
 
-success=$("$CHANGESDIR/save_ontology_state_from_checkout.sh" -p "$conffile" -i $checkout_id -c "$checkouts_directory")
+success=$("$CHANGESSCRIPTDIR/save_ontology_state_from_checkout.sh" -p "$conffile" -i $checkout_id -c "$checkouts_directory")
 if [ $success -eq 1 ]; then
 	#get all ids of all parsable ancestors
 	checkout_ids_ancestors_string=$(find_working_parent $checkout_id)
