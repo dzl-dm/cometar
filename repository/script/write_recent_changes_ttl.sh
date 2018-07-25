@@ -20,4 +20,4 @@ done
 
 source "$conffile"
 
-"$CHANGESDIR/write_changes.sh" -p "$conffile" -n $newrev
+"$CHANGESSCRIPTDIR/write_changes.sh" -p "$conffile" -n $newrev
