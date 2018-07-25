@@ -23,9 +23,9 @@ source "$conffile"
 unset GIT_DIR;
 rm -rf "$TEMPDIR/git"
 mkdir -p "$TEMPDIR/git"
-"$GITBIN" clone -q "$TTLDIRECTORY" "$TEMPDIR/git"
+eval "$GITBIN clone -q \"$TTLDIRECTORY\" \"$TEMPDIR/git\""
 cd "$TEMPDIR/git"
-"$GITBIN" checkout -q $newrev
+eval "$GITBIN checkout -q $newrev"
 
 exitcode=0
 echo -------------------------------------
