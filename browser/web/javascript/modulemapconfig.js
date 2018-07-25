@@ -11,15 +11,27 @@ var loadMapConfigModule = function()
 				
 				var ta = $("<textarea style='width:100%; height:300px' id='configTA'></textarea>");
 				var btn = $("<input type='button' onclick='loadConfig()' value='load configuration'/>");
-				var fileSelect = $("<input type='file' id='configFileInput' />").change(function(){
-					$.ajax({
-						url : $(this).val(),
+				var fileSelect = $("<input type='file' id='configFileInput' />").change(function(evt){
+					/*$.ajax({
+						url : "file:///C:/Users/stmar7/Projekte/cometar/browser/web/css/dzl.css", //$(this).val(),
 						dataType: "text",
 						success : function (data) {
-							console.log("jo");
 							ta.val(data);
 						}
-					});
+					});*/
+					var dateien = evt.target.files;
+					for (var i = 0, f; f = dateien[i]; i++) {
+						if (!f.type.match('text/plain') && !f.type.match('text/xml')) {
+							continue;
+						}
+						var reader = new FileReader();
+						reader.onload = (function(theFile) {
+							return function(e) {
+								ta.val(e.target.result);
+							};
+						})(f);
+						reader.readAsText(f, "UTF-8");
+					}
 				});
 				var newDataSourceDownloadLink = $("<div style='width:100%;padding:10px'><a href='data:text/plain;charset=UTF-8' style='display:none' download='datasource.xml' id='newDataSourceDownloadLink'>Your configuration file is not up to date. Click here to download an updated version.</a></div><br/>");
 				
