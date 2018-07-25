@@ -32,7 +32,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					} 
 					infoDivNotation.append(dt + (dt != ""?": ":"") + i.value + "<br/>").show(); 
 				});
-				var infoDivDescription = $("<div class='infoDiv'><h3>Beschreibung / Description</h3></div>");	
+				var infoDivDescription = $("<div class='infoDiv bigInfo'><h3>Beschreibung / Description</h3></div>");	
 				resultDiv.append(infoDivDescription); 
 				QueryManager.getProperty(conceptUrl, "dc:description", function(i){
 					infoDivDescription.append((i["xml:lang"] != undefined?i["xml:lang"].toUpperCase() + ": ":"") + i.value + "<br/>").show(); 
@@ -83,7 +83,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					infoDivDomain.append(restriction + "<br/>").show(); 
 				});
 				
-				var infoDivChanges = $("<div class='infoDiv'><h3>Änderungen / Change Log</h3></div>");	
+				var infoDivChanges = $("<div class='infoDiv bigInfo'><h3>Änderungen / Change Log</h3></div>");	
 				resultDiv.append(infoDivChanges); 
 				var date="";
 				var dateDiv;
@@ -131,7 +131,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					infoDivChanges.append(dateDiv).append(changesDiv).append("<br/>").show();
 				});
 					
-				var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Spezifizierung / Specification</h3></div>");
+				var modifierDiv = $("<div class='treePathDiv infoDiv bigInfo' id='modifierInfoDiv'><h3>Spezifizierung / Specification</h3></div>");
 				resultDiv.append(modifierDiv);
 				QueryManager.getModifiers(conceptUrl, function(m){
 					modifierDiv.show();
