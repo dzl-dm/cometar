@@ -106,6 +106,9 @@ var Helper = (function()
 		["http://www.w3.org/2004/02/skos/core#prefLabel", "label"],
 		["http://www.w3.org/2004/02/skos/core#altLabel", "alternative label"],
 		["http://www.w3.org/2004/02/skos/core#notation", "code"],
+		["http://www.w3.org/2004/02/skos/core#broader", "parent element"],
+		["http://www.w3.org/1999/02/22-rdf-syntax-ns#hasPart", "modifier"],
+		["http://sekmi.de/histream/dwh#restriction", "datatype"],
 		["http://data.dzl.de/ont/dwh#status", "status"]
 	];
 	
@@ -114,6 +117,10 @@ var Helper = (function()
 		for (var i = 0; i < moreUnderstandableStrings.length; i++)
 		{
 			s = s.replace(moreUnderstandableStrings[i][0], moreUnderstandableStrings[i][1])
+		}	
+		for (var i = 0; i < urlShorts.length; i++)
+		{
+			s = s.replace(urlShorts[i][0], urlShorts[i][1])
 		}	
 		return s;		
 	}
@@ -150,6 +157,7 @@ var Helper = (function()
 		getCookie: getCookie,
 		getCurrentConceptUrl: getCurrentConceptUrl,
 		setCurrentConceptUrl: setCurrentConceptUrl,
-		getReadableString: getReadableString
+		getReadableString: getReadableString,
+		getQueryParameter: getQueryParameter
 	}
 }());

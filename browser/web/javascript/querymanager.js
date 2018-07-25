@@ -1,9 +1,13 @@
 var QueryManager = (function(){
 	var endpoint = "https://data.dzl.de/fuseki/cometar_live/query";
-	//var endpoint = "http://localhost:3030/MinimalerDatensatz/query";
 	var loglevel = 0; //0 = off, 1 = less detailed, 2 = more detailed
 	
 	var queries = [];
+	
+	var useLocalFuseki = function()
+	{
+		endpoint = "http://localhost:3030/cometar_live/query";
+	}
 	
 	var getTopElements = function(callback)
 	{
@@ -46,19 +50,27 @@ var QueryManager = (function(){
 		}
 	}
 	
-	var getNotes = function(e, callback)
+	var getNotes = function(e, callback, completeCallback)
 	{
 		var result = [];
 		queryString = queries["getNotes"].replace(/ELEMENT/g, "<" + e + ">" );
 		if (callback != undefined)
 		{
-			query(queryString, function(r) { callback(r) });
+			query(queryString, function(r) { callback(r) }, function() { completeCallback() });
 		}
 		else 
 		{
 			syncquery(queryString, function(r){ result.push(r) });
 			return result;
 		}
+	}
+	
+	var getNewNotation = function(notation)
+	{
+		var result;
+		queryString = queries["getNewNotation"].replace(/OLDNOTATION/g, "\""+notation+"\"" );
+		syncquery(queryString, function(r){ result = r["newnotation"].value });
+		return result;
 	}
 	
 	var getProperty = function(e, p, foc1, foc2)
@@ -185,6 +197,11 @@ PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX dc: <http://purl.org/dc/elements/1.1/>  
+PREFIX snomed:    <http://purl.bioontology.org/ontology/SNOMEDCT/>
+PREFIX xsd:	<http://www.w3.org/2001/XMLSchema#>
+PREFIX dwh:    <http://sekmi.de/histream/dwh#>
+PREFIX loinc: <http://loinc.org/owl#>
+PREFIX rdfs:	<http://www.w3.org/2000/01/rdf-schema#> 
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 	queries = {
 		getTopElements: prefixes + (function () {/*
@@ -329,8 +346,34 @@ WHERE {
 	?concept rdf:hasPart [ skos:narrower* MODIFIER ] .
 }
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getNewNotation: prefixes + (function () {/*
+SELECT ?newnotation
+WHERE {
+	{
+		SELECT ?newnotation
+		WHERE {
+			?concept skos:changeNote ?note .
+			?note owl:onProperty skos:notation .
+			?note rdf:value ?value .
+			?value :minus OLDNOTATION ;
+				:plus ?newnotation .
+		}
+	}
+	UNION
+	{
+		SELECT ?newnotation
+		WHERE {
+			?concept skos:changeNote ?note ;
+				skos:notation ?newnotation .
+			?note owl:onProperty skos:notation .
+			?note rdf:value ?value .
+			?value :minus OLDNOTATION .
+		}
+	}
+}
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
 		getNotes: prefixes + (function () {/*
-SELECT ?note ?date ?author ?value ?property ?action ?minus ?plus ?reason
+SELECT ?note ?date ?author ?value ?property ?action ?minus (lang(?minus) as ?minuslang) ?plus (lang(?plus) as ?pluslang) ?reason
 WHERE {
 	ELEMENT skos:changeNote ?note .
 	OPTIONAL { ?note dc:date ?date ;
@@ -341,8 +384,9 @@ WHERE {
 		OPTIONAL { ?value :minus ?minus }
 		OPTIONAL { ?value :plus ?plus }
 		OPTIONAL { ?value :reason ?reason }
-		?b foaf:name ?author . }
-}      
+		?b foaf:name ?author . } 
+} 
+ORDER BY DESC(?date) DESC(?author) DESC(?property) DESC(?action)     
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
 		getModifiers: prefixes + (function () {/*
 SELECT ?modifier 
@@ -367,6 +411,8 @@ WHERE {
 		getModifiers: getModifiers,
 		getMultiProperties: getMultiProperties,
 		getByProperty: getByProperty,
-		getAncestors: getAncestors
+		getAncestors: getAncestors,
+		useLocalFuseki: useLocalFuseki,
+		getNewNotation: getNewNotation
 	}
 }());

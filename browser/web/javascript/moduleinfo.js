@@ -5,9 +5,9 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 			handlerFunction: function(conceptUrl){
 				var resultDiv = $("<div>");
 
-				var treePathDiv = $("<div class='treePathDiv'>");	
+				var treePathDiv = $("<div class='treePathDiv infoDiv'>");	
 				Helper.getPathsByConceptUrl(conceptUrl, function(path){putPath(treePathDiv, path)});			
-				resultDiv.append("<h3>Pfad / Path</h3>");
+				treePathDiv.prepend("<h3>Pfad / Path</h3>").css("display","block");
 				resultDiv.append(treePathDiv);
 
 				var infoDivLabel = $("<div class='infoDiv'><h3>Bezeichnung / Label</h3></div>");
@@ -19,18 +19,18 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				var infoDivNotation = $("<div class='infoDiv'><h3>Notation / Code</h3></div>");	
 				resultDiv.append(infoDivNotation); 
 				QueryManager.getProperty(conceptUrl, "skos:notation", function(i){
-						var dt = ""
-						switch(i["datatype"]) {
-							case "http://sekmi.de/histream/dwh#loinc":
-								dt = "LOINC";
-								break;
-							case "http://sekmi.de/histream/dwh#snomed":
-								dt = "SNOMED";
-								break;
-							default:
-								break;
-						} 
-						infoDivNotation.append(dt + (dt != ""?": ":"") + i.value + "<br/>").show(); 
+					var dt = ""
+					switch(i["datatype"]) {
+						case "http://sekmi.de/histream/dwh#loinc":
+							dt = "LOINC";
+							break;
+						case "http://sekmi.de/histream/dwh#snomed":
+							dt = "SNOMED";
+							break;
+						default:
+							break;
+					} 
+					infoDivNotation.append(dt + (dt != ""?": ":"") + i.value + "<br/>").show(); 
 				});
 				var infoDivDescription = $("<div class='infoDiv'><h3>Beschreibung / Description</h3></div>");	
 				resultDiv.append(infoDivDescription); 
@@ -82,27 +82,54 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					} 
 					infoDivDomain.append(restriction + "<br/>").show(); 
 				});
+				
 				var infoDivChanges = $("<div class='infoDiv'><h3>Änderungen / Change Log</h3></div>");	
 				resultDiv.append(infoDivChanges); 
-				QueryManager.getNotes(conceptUrl, function(i){
-					var changes = "<div style='display:inline-block;vertical-align:top'>";
+				var date="";
+				var dateDiv;
+				var changesDiv;
+				QueryManager.getNotes(conceptUrl, function(i){	
+					var lang="";
+					if (i["minuslang"] != undefined && i["pluslang"] == undefined && i["minuslang"].value != "") lang = "(" + i["minuslang"].value + ") ";
+					else if (i["pluslang"] != undefined && i["minuslang"] == undefined && i["pluslang"].value != "") lang = "(" + i["pluslang"].value + ") ";
+					else if (i["minuslang"] != undefined && i["pluslang"] != undefined && i["minuslang"].value == i["pluslang"].value && i["minuslang"].value != "") lang = "(" + i["minuslang"].value + ") ";
+					if (i["date"].value.substr(0,10) != date) 
+					{
+						if (dateDiv != undefined && changesDiv.html()!="")
+						{
+							infoDivChanges.append(dateDiv).append(changesDiv).append("<br/>");
+						}
+						date = i["date"].value.substr(0,10);
+						dateDiv = $("<div style='display:inline-block;vertical-align:top;width:100px'>"+ date + ":</div>");
+						changesDiv = $("<div style='display:inline-block;margin-left:10px; width:calc(100% - 110px)'>");
+					}
 					if (i["note"].type == "bnode")
 					{
+						if (i["property"].value == "http://www.w3.org/2004/02/skos/core#topConceptOf"
+							|| i["property"].value == "http://www.w3.org/2004/02/skos/core#inScheme"
+							|| i["property"].value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf"
+							|| i["property"].value == "http://www.w3.org/2004/02/skos/core#hasTopConcept"
+							|| i["property"].value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
+						{
+							return;
+						}
 						var changeValue = "";
 						var changeReason = "";
 						if (i["value"].type == "bnode") {
-							if (i["minus"] != undefined) changeValue += "<font color='red'>&ominus;"+i["minus"].value+"</font> " ;						
-							if (i["plus"] != undefined) changeValue += "<font color='green'>&oplus;"+i["plus"].value+"</font> " ;						
+							if (i["minus"] != undefined) changeValue += "<font color='red'>&ominus;"+Helper.getReadableString(i["minus"].value)+"</font> " ;						
+							if (i["plus"] != undefined) changeValue += "<font color='green'>&oplus;"+Helper.getReadableString(i["plus"].value)+"</font> " ;						
 							if (i["reason"] != undefined) changeReason = ": <i>&quot;" + i["reason"].value + "&quot;</i>";						
 						}
 						else {
 							changeValue = i["value"].value;
 						}
-						changes+=i["date"].value + ":</div><div style='display:inline-block;margin-left:10px'>" + Helper.getReadableString(i["property"].value) + " " + i["action"].value + " by " + i["author"].value + changeReason + "<br/>" + " " + changeValue;
+						changesDiv.append(Helper.getReadableString(i["property"].value) + lang + " " + i["action"].value + " by " + i["author"].value + changeReason + "<br/>" + " " + changeValue);
 					}
-					else changes+=i["note"].value + "</div>";
-					infoDivChanges.append(changes).append("<br/>").show(); 
-				});	
+					else changesDiv.append(i["note"].value);
+					changesDiv.append("<br/>"); 
+				}, function(){	
+					infoDivChanges.append(dateDiv).append(changesDiv).append("<br/>").show();
+				});
 					
 				var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Spezifizierung / Specification</h3></div>");
 				resultDiv.append(modifierDiv);

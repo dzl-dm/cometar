@@ -32,5 +32,5 @@ WHERE i2b2.c_fullname=subquery.c_fullname;
 UPDATE i2b2metadata.table_access
 SET c_totalnum=i2b2.c_totalnum
 FROM i2b2metadata.i2b2
-WHERE table_access.c_fullname = i2b2.c_fullname
+WHERE table_access.c_fullname = i2b2.c_fullname;
 commit;

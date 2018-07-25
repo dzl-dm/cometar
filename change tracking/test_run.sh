@@ -1,1 +1,0 @@
-./diff_checkouts.sh -f "2017-01-01" -u -d -n "notations.csv" "http://localhost:3030/dataset" "./dzl-ttl"
