@@ -73,7 +73,7 @@ else
 			then
 					EXITCODE=1
 			fi
-		done < <(find "$CHANGESDIR/output" -iname '*.ttl')
+		done < <(find "$CHANGESFILESDIR/output" -iname '*.ttl')
 	else
 		echo "Loading dataset into live server."
 		STATUSCODE=$(curl -X POST -H "Content-Type: text/turtle;charset=utf-8" $silentmode -S --output /dev/stderr -w "%{http_code}" -T "$TEMPDIR/export.ttl" -G "$FUSEKILIVEDATASET/data" -d default)
