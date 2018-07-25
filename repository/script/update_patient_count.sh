@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 conffile=$(dirname $0)/../config/conf.cfg
 while [ ! $# -eq 0 ]
