@@ -1,20 +1,38 @@
 $(document).on("modulemanager:readyForModuleRegister", function(){
+	if (Helper.getQueryParameter("mode")=="advanced") loadMapConfigModule();
+});
+var loadMapConfigModule = function()
+{
 	ModuleManager.register([
 		{
-			tabName: "mapconfig",
+			tabName: "mapping / configuration",
 			handlerFunction: function(conceptUrl){
 				var resultDiv = $("<div>");
 				
 				var ta = $("<textarea style='width:100%; height:300px' id='configTA'></textarea>");
-				var btn = $("<button onclick='loadConfig()'>load configuration</button>");
+				var btn = $("<input type='button' onclick='loadConfig()' value='load configuration'/>");
+				var fileSelect = $("<input type='file' id='configFileInput' />").change(function(){
+					$.ajax({
+						url : $(this).val(),
+						dataType: "text",
+						success : function (data) {
+							console.log("jo");
+							ta.val(data);
+						}
+					});
+				});
+				var newDataSourceDownloadLink = $("<div style='width:100%;padding:10px'><a href='data:text/plain;charset=UTF-8' style='display:none' download='datasource.xml' id='newDataSourceDownloadLink'>Your configuration file is not up to date. Click here to download an updated version.</a></div><br/>");
+				
+				resultDiv.append(fileSelect);
 				resultDiv.append(ta);
 				resultDiv.append(btn);
-				
+				resultDiv.append(newDataSourceDownloadLink);
+
 				return resultDiv;
 			}
 		}
 	]);	
-});
+}
 
 $(document).on("tree:treeItemCreated", function(e, itemDiv){
 	markMappedFields(itemDiv);
@@ -127,6 +145,23 @@ var loadConfig = function(){
 		addMappedFields(dzlIds[i]);
 	}	
 	
+	for (var i = 0; i < deprecatedNotations.length; i++)
+	{
+		var notation = deprecatedNotations[i];
+		var newNotation = QueryManager.getNewNotation(notation);
+		console.log("old: " + notation + "; new: " + newNotation);
+		if (newNotation != undefined) 
+		{
+			xml = xml.replace("\"" + notation + "\"", "\"" + newNotation + "\"");
+			$("#newDataSourceDownloadLink").show();
+		}
+		$("#newDataSourceDownloadLink").after("<br/>"+notation+" is not a valid code (anymore).");
+	}
+	if (deprecatedNotations.length > 0)
+	{
+		$("#newDataSourceDownloadLink").attr("href", "data:text/plain;charset=UTF-8,"+encodeURIComponent(xml));
+	}
+	
 	$(".treeItem").each(function(){
 		markMappedFields($(this));
 	});
@@ -141,6 +176,7 @@ var addMappedFields = function(dzlId)
 	}
 	else{
 		console.log(dzlId + " DEPRECATED!!!!!!!!!!!");	
+		deprecatedNotations.push(dzlId);
 		mappedSourceFields.splice(mappedFields.length, 1);	
 	}
 	QueryManager.getAncestors(concept, function(a){
@@ -192,4 +228,5 @@ var markMappedFields = function(itemDiv)
 var mappedFields = [];
 var mappedPathFields = [];
 var mappedSourceFields = [];
+var deprecatedNotations = [];
 

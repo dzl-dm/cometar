@@ -33,6 +33,11 @@ body, .treeItem
 	background-color:#FFF;
 }
 
+input[type='file'], input[type='button']
+{
+	height:30px;
+}
+
 .activeMenuItemDiv
 {
 	background-color:#FFF !important;

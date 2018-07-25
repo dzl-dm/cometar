@@ -1,15 +1,15 @@
 BEGIN {
 	FS=","
 	old_concept="";
-	printf "" > "changes2.csv";
+	printf "" > output;
 }{
 	concept=$4;
 	if (concept!=old_concept) 
 	{
-		print "new concept" >> "changes2.csv";
+		print "new concept" >> output;
 		old_concept=concept;
 	}
-	print $0 >> "changes2.csv"
+	print $0 >> output
 }
 END{
 }
