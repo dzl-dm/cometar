@@ -1,7 +1,8 @@
 i2b2 vm shared folder/
 REST/
 tools/
-repository/change_recognition/checkouts/*
+repository/change_recognition/checkouts/
+repository/change_recognition/output/
 Logo.svg
 Logo2.svg
 Logo.emf
