@@ -60,6 +60,7 @@ fi
 echo "writing changes from $from_date to $until_date"
 
 checkouts_directory="$CHANGESDIR/checkouts"
+mkdir -p "$checkouts_directory"
 output_csv="$CHANGESDIR/output/$(echo $from_date | tr ':' '_') - $(echo $until_date | tr ':' '_').csv"
 output_ttl="$CHANGESDIR/output/$(echo $from_date | tr ':' '_') - $(echo $until_date | tr ':' '_').ttl"
 echo -n "" > "$output_csv"
