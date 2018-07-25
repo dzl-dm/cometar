@@ -5,19 +5,22 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 			handlerFunction: function(conceptUrl){
 				var resultDiv = $("<div>");
 
+				var aggregatedInfoDiv = $("<div id='aggregatedInfoDiv' class='infoDiv'>").css("display","block");
+				resultDiv.append(aggregatedInfoDiv);
+
 				var treePathDiv = $("<div class='treePathDiv infoDiv'>");	
 				Helper.getPathsByConceptUrl(conceptUrl, function(path){putPath(treePathDiv, path)});			
 				treePathDiv.prepend("<h3>Pfad / Path</h3>").css("display","block");
 				resultDiv.append(treePathDiv);
-
-				var infoDivLabel = $("<div class='infoDiv'><h3>Bezeichnung / Label</h3></div>");
-				resultDiv.append(infoDivLabel); 	
+				
+				var infoDivLabel = $("<div class='aggregatedInfo'><h3>Bezeichnung / Label</h3></div>");
+				aggregatedInfoDiv.append(infoDivLabel); 	
 				QueryManager.getProperty(conceptUrl, "skos:prefLabel", function(i){
 					infoDivLabel.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>").show(); 
 				});
 				
-				var infoDivNotation = $("<div class='infoDiv'><h3>Notation / Code</h3></div>");	
-				resultDiv.append(infoDivNotation); 
+				var infoDivNotation = $("<div class='aggregatedInfo'><h3>Notation / Code</h3></div>");	
+				aggregatedInfoDiv.append(infoDivNotation); 
 				QueryManager.getProperty(conceptUrl, "skos:notation", function(i){
 					var dt = ""
 					switch(i["datatype"]) {
@@ -32,33 +35,33 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					} 
 					infoDivNotation.append(dt + (dt != ""?": ":"") + i.value + "<br/>").show(); 
 				});
-				var infoDivDescription = $("<div class='infoDiv bigInfo'><h3>Beschreibung / Description</h3></div>");	
+				var infoDivDescription = $("<div class='infoDiv'><h3>Beschreibung / Description</h3></div>");	
 				resultDiv.append(infoDivDescription); 
 				QueryManager.getProperty(conceptUrl, "dc:description", function(i){
 					infoDivDescription.append((i["xml:lang"] != undefined?i["xml:lang"].toUpperCase() + ": ":"") + i.value + "<br/>").show(); 
 				});
-				var infoDivUnit = $("<div class='infoDiv'><h3>Einheit / Unit</h3></div>");	
-				resultDiv.append(infoDivUnit); 
+				var infoDivUnit = $("<div class='aggregatedInfo'><h3>Einheit / Unit</h3></div>");	
+				aggregatedInfoDiv.append(infoDivUnit); 
 				QueryManager.getProperty(conceptUrl, ":unit", function(i){
 					infoDivUnit.append(i.value + "<br/>").show(); 
 				});
-				var infoDivAltlabel = $("<div class='infoDiv'><h3>Alternative Bezeichnung / Label</h3></div>");	
-				resultDiv.append(infoDivAltlabel); 
+				var infoDivAltlabel = $("<div class='aggregatedInfo'><h3>Alternative Bezeichnung / Label</h3></div>");	
+				aggregatedInfoDiv.append(infoDivAltlabel); 
 				QueryManager.getProperty(conceptUrl, "skos:altLabel", function(i){
 					infoDivAltlabel.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>").show(); 
 				});
-				var infoDivStatus = $("<div class='infoDiv'><h3>Status</h3></div>");
-				resultDiv.append(infoDivStatus); 
+				var infoDivStatus = $("<div class='aggregatedInfo'><h3>Status</h3></div>");
+				aggregatedInfoDiv.append(infoDivStatus); 
 				QueryManager.getProperty(conceptUrl, ":status", function(i){
 					infoDivStatus.append(i.value + "<br/>").show(); 
 				});
-				var infoDivAuthor = $("<div class='infoDiv'><h3>Author</h3></div>");
-				resultDiv.append(infoDivAuthor); 
+				var infoDivAuthor = $("<div class='aggregatedInfo'><h3>Author</h3></div>");
+				aggregatedInfoDiv.append(infoDivAuthor); 
 				QueryManager.getProperty(conceptUrl, "dc:creator", function(i){
 					infoDivAuthor.append(i.value + "<br/>"); 
 				});
-				var infoDivDomain = $("<div class='infoDiv'><h3>Wertebereich / Domain</h3></div>");
-				resultDiv.append(infoDivDomain); 	
+				var infoDivDomain = $("<div class='aggregatedInfo'><h3>Wertebereich / Domain</h3></div>");
+				aggregatedInfoDiv.append(infoDivDomain); 	
 				QueryManager.getProperty(conceptUrl, "dwh:restriction", function(i){
 					var restriction = "";
 					switch(i.value.split("#")[1]) {
@@ -83,7 +86,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					infoDivDomain.append(restriction + "<br/>").show(); 
 				});
 				
-				var infoDivChanges = $("<div class='infoDiv bigInfo'><h3>Änderungen / Change Log</h3></div>");	
+				var infoDivChanges = $("<div class='infoDiv'><h3>Änderungen / Change Log</h3></div>");	
 				resultDiv.append(infoDivChanges); 
 				var date="";
 				var dateDiv;
@@ -131,7 +134,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					infoDivChanges.append(dateDiv).append(changesDiv).append("<br/>").show();
 				});
 					
-				var modifierDiv = $("<div class='treePathDiv infoDiv bigInfo' id='modifierInfoDiv'><h3>Spezifizierung / Specification</h3></div>");
+				var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Spezifizierung / Specification</h3></div>");
 				resultDiv.append(modifierDiv);
 				QueryManager.getModifiers(conceptUrl, function(m){
 					modifierDiv.show();

@@ -61,12 +61,13 @@ input[type='file'], input[type='button']
 
 .treeItem.mappedInConfigPathPart
 {
-	background-color:#EDEBC7;
+	/*background-color:#FFFFBF;*/
+	background-color:#FFFBD5;
 }
 
 .treeItem.mappedInConfig
 {
 	/*-webkit-filter:hue-rotate(270deg);
 	filter:hue-rotate(270deg);*/
-	background-color:#C7E6BF;
+	background-color:#d8ffce;
 }
