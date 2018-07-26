@@ -390,34 +390,41 @@
 	margin-left:0px;
 }
 
-/*.moduleContentDiv > div
+.moduleContentDiv > div
 {
 	display:flex;
-	flex-direction: row-reverse;
+	/*flex-direction: row;
 	flex-wrap: wrap;
-	align-items: flex-start;
-}*/
+	align-items: flex-start;*/
+}
 
 .infoDiv
 {
-	min-width:100px;
-	width:calc(100% - 380px);
 	display:none;
 	border-left: 1px solid black;
 	border-top:10px solid black;
 	padding:10px;
 	margin-bottom: 30px;
 }
+#restInfoDiv
+{
+	min-width:100px;
+	width:calc(100% - 350px);	
+}
 #aggregatedInfoDiv
 {
 	width:300px;
-	position:fixed;
-	right:50px;
+	margin-left: 20px;
 }
 #aggregatedInfoDiv > div
 {
-	display:none;
+	filter: opacity(20%);
+	padding-bottom:5px;
 	margin-bottom:15px;
+}
+#aggregatedInfoDiv > div.filled
+{
+	filter: opacity(100%);
 }
 
 .discussionPostsContainerDiv
