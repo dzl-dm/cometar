@@ -41,6 +41,10 @@ done
 
 source "$conffile"
 
+checkouts_directory="$CHANGESFILESDIR/checkouts"
+mkdir -p "$checkouts_directory"
+mkdir -p "$CHANGESFILESDIR/output"
+
 if [ $only_recent_changes -eq 1 ]; then
 	shopt -s nullglob
 	from_date_number=$(date -d "$from_date" +%s)
@@ -59,9 +63,6 @@ if [ $only_recent_changes -eq 1 ]; then
 fi
 echo "writing changes from $from_date to $until_date"
 
-checkouts_directory="$CHANGESFILESDIR/checkouts"
-mkdir -p "$checkouts_directory"
-mkdir -p "$CHANGESFILESDIR/output"
 output_csv="$CHANGESFILESDIR/output/$(echo $from_date | tr ':' '_') - $(echo $until_date | tr ':' '_').csv"
 output_ttl="$CHANGESFILESDIR/output/$(echo $from_date | tr ':' '_') - $(echo $until_date | tr ':' '_').ttl"
 echo -n "" > "$output_csv"
