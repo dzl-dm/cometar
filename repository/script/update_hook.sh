@@ -79,7 +79,7 @@ then
 	echo -------------------------------------
 fi
  
-#rm -r $TEMPDIR
+rm -r $TEMPDIR
 
 echo "-------------"
 if [ $exitcode -gt 0 ]; then echo "UPLOAD FAILED"
