@@ -50,17 +50,34 @@ var QueryManager = (function(){
 		}
 	}
 	
+	var getPreviousConceptIdentifiers = function(e,previousConceptIdentifiers)
+	{
+		if (previousConceptIdentifiers.indexOf("<"+e+">") == -1) 
+		{
+			previousConceptIdentifiers.push("<"+e+">");
+			queryString = queries["getPreviousConceptIdentifiers"].replace(/ELEMENT/g, "<" + e + ">" );
+			syncquery(queryString, function(r){
+				getPreviousConceptIdentifiers(r["a"].value, previousConceptIdentifiers);
+			});
+		}
+	}
 	var getNotes = function(e, callback, completeCallback)
 	{
 		var result = [];
-		queryString = queries["getNotes"].replace(/ELEMENT/g, "<" + e + ">" );
+		var previousConceptIdentifiers = [];
+		getPreviousConceptIdentifiers(e,previousConceptIdentifiers);
+		queryString = queries["getNotes"].replace(/ELEMENTS/g, previousConceptIdentifiers.join() );
 		if (callback != undefined)
 		{
-			query(queryString, function(r) { callback(r) }, function() { completeCallback() });
+			query(queryString, function(r) {
+				callback(r) 
+			});
 		}
 		else 
 		{
-			syncquery(queryString, function(r){ result.push(r) });
+			syncquery(queryString, function(r){ 		
+				result.push(r) 
+			});
 			return result;
 		}
 	}
@@ -372,11 +389,21 @@ WHERE {
 	}
 }
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
-		getNotes: prefixes + (function () {/*
-SELECT ?note ?date ?author ?value ?property ?action ?minus (lang(?minus) as ?minuslang) ?minustargetlabel ?plus (lang(?plus) as ?pluslang) ?plustargetlabel ?reason
+		getPreviousConceptIdentifiers: prefixes + (function () {/*
+SELECT ?a
 WHERE {
-	ELEMENT skos:changeNote ?note .
-	OPTIONAL { ?note dc:date ?date ;
+	ELEMENT skos:changeNote ?cn .
+	?cn owl:onProperty rdf:about ; 
+		rdf:value [ 
+			:minus ?a
+		] .
+}     
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getNotes: prefixes + (function () {/*
+SELECT ?note (SUBSTR(STR(?tempdate),1,10) as ?date) ?author ?value ?property ?action ?minus (lang(?minus) as ?minuslang) ?minustargetlabel ?plus (lang(?plus) as ?pluslang) ?plustargetlabel ?reason
+WHERE {
+	?element skos:changeNote ?note FILTER (?element IN (ELEMENTS)).
+	OPTIONAL { ?note dc:date ?tempdate ;
 		dc:creator ?b ;
 		rdf:value ?value ;
 		owl:onProperty ?property ;
@@ -390,7 +417,7 @@ WHERE {
 		OPTIONAL { ?value :reason ?reason }
 		?b foaf:name ?author . } 
 } 
-ORDER BY DESC(?date) DESC(?author) DESC(?property) DESC(?action)     
+ORDER BY DESC(SUBSTR(STR(?tempdate),1,10)) DESC(?author) DESC(?property) DESC(?tempdate) ASC(CONCAT(COALESCE(?minuslang,''),COALESCE(?pluslang,'')))     
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
 		getModifiers: prefixes + (function () {/*
 SELECT ?modifier 

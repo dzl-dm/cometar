@@ -101,7 +101,6 @@ var Helper = (function()
 	];
 
 	var moreUnderstandableStrings = [
-		["http://www.w3.org/1999/02/22-rdf-syntax-ns#about", "identifier"],
 		["http://purl.org/dc/elements/1.1/description", "description"],
 		["http://www.w3.org/2004/02/skos/core#prefLabel", "label"],
 		["http://www.w3.org/2004/02/skos/core#altLabel", "alternative label"],
@@ -109,7 +108,12 @@ var Helper = (function()
 		["http://www.w3.org/2004/02/skos/core#broader", "parent element"],
 		["http://www.w3.org/1999/02/22-rdf-syntax-ns#hasPart", "modifier"],
 		["http://sekmi.de/histream/dwh#restriction", "datatype"],
-		["http://data.dzl.de/ont/dwh#status", "status"]
+		["http://data.dzl.de/ont/dwh#status", "status"],
+		["http://sekmi.de/histream/dwh#integerRestriction", "integer"],
+		["http://sekmi.de/histream/dwh#stringRestriction", "string"],
+		["http://sekmi.de/histream/dwh#floatRestriction", "float"],
+		["http://sekmi.de/histream/dwh#partialDateRestriction", "partial date"],
+		["http://sekmi.de/histream/dwh#dateRestriction", "date"]
 	];
 	
 	var getReadableString = function(s)
