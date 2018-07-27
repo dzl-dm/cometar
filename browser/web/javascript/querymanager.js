@@ -67,6 +67,7 @@ var QueryManager = (function(){
 		var previousConceptIdentifiers = [];
 		getPreviousConceptIdentifiers(e,previousConceptIdentifiers);
 		queryString = queries["getNotes"].replace(/ELEMENTS/g, previousConceptIdentifiers.join() );
+		console.log(queryString);
 		if (callback != undefined)
 		{
 			query(queryString, function(r) {
@@ -399,6 +400,7 @@ WHERE {
 		] .
 }     
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		/* Im Folgenden benötige ich die NOT EXISTS Klauseln, da die Umbenennung eines Konzepts dazu führt, dass die Relationen einmal entfernt und dann wieder hinzugefügt werden, obwohl sie sich nicht änderten. */
 		getNotes: prefixes + (function () {/*
 SELECT ?note (SUBSTR(STR(?tempdate),1,10) as ?date) ?author ?value ?property ?action ?minus (lang(?minus) as ?minuslang) ?minustargetlabel ?plus (lang(?plus) as ?pluslang) ?plustargetlabel ?reason
 WHERE {
@@ -416,8 +418,20 @@ WHERE {
 		}
 		OPTIONAL { ?value :reason ?reason }
 		?b foaf:name ?author . } 
+	NOT EXISTS {	
+		?value :minus ?minus .
+		?compareElement skos:changeNote ?reverseNote FILTER (?compareElement IN (ELEMENTS)) .
+		?reverseNote dc:date ?tempdate ;
+			rdf:value [ :plus ?minus ] .
+	}
+	NOT EXISTS {	
+		?value :plus ?plus .
+		?compareElement skos:changeNote ?reverseNote FILTER (?compareElement IN (ELEMENTS)) .
+		?reverseNote dc:date ?tempdate ;
+			rdf:value [ :minus ?plus ] .
+	}	
 } 
-ORDER BY DESC(SUBSTR(STR(?tempdate),1,10)) DESC(?author) DESC(?property) DESC(?tempdate) ASC(CONCAT(COALESCE(?minuslang,''),COALESCE(?pluslang,'')))     
+ORDER BY DESC(SUBSTR(STR(?tempdate),1,10)) DESC(?author) DESC(?property) ASC(SUBSTR(CONCAT(COALESCE(?minuslang,''),COALESCE(?pluslang,'')),1,2)) DESC(?tempdate)   
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
 		getModifiers: prefixes + (function () {/*
 SELECT ?modifier 

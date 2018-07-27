@@ -104,7 +104,6 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 						|| i["property"].value == "http://www.w3.org/2004/02/skos/core#inScheme"
 						|| i["property"].value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf"
 						|| i["property"].value == "http://www.w3.org/2004/02/skos/core#hasTopConcept"
-						|| i["property"].value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#about"
 						|| i["property"].value == "http://www.w3.org/2004/02/skos/core#editorialNote"
 						|| i["property"].value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 					{
@@ -141,7 +140,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 							changeValue = i["value"].value;
 						}
 						var property = Helper.getReadableString(i["property"].value) + lang;
-						if (changesDiv.text().indexOf(property) == -1 && changeReason == "")
+						if (changesDiv.text().indexOf(property + " by " + i["author"].value) == -1 && changeReason == "")
 						{
 							if (changesDiv.text().length > 0) changesDiv.append("<br/>");
 							changesDiv.append(property + /*" " + i["action"].value +*/ " by " + i["author"].value + changeReason +"<br/>");
