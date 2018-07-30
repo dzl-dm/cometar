@@ -154,6 +154,42 @@ var Helper = (function()
 		}
 	}
 	
+	var levenstheinDistance = function(a,b) {
+		var m = [], i, j, min = Math.min;
+
+		if (!(a && b)) return (b || a).length;
+
+		for (i = 0; i <= b.length; m[i] = [i++]);
+		for (j = 0; j <= a.length; m[0][j] = j++);
+
+		for (i = 1; i <= b.length; i++) {
+			for (j = 1; j <= a.length; j++) {
+				m[i][j] = b.charAt(i - 1) == a.charAt(j - 1)
+					? m[i - 1][j - 1]
+					: m[i][j] = min(
+						m[i - 1][j - 1] + 1, 
+						min(m[i][j - 1] + 1, m[i - 1 ][j] + 1))
+			}
+		}
+
+		return m[b.length][a.length];
+	}
+	
+	var customHide = function(div, h)
+	{
+		expandDiv=$("<div class='expandInformationDiv'>+</div>");
+		div.append(expandDiv);
+		minHeight = expandDiv.get(0).scrollHeight;
+		minHeight = h > minHeight? h : minHeight;
+		div.css("height", minHeight+"px").css("overflow","hidden").css("position","relative");
+		expandDiv.click(function(){
+			$(this).hide();
+			div.animate({
+				height: div.get(0).scrollHeight
+			}, 200);
+		});
+	}
+	
 	return {
 		getPathsByConceptUrl: getPathsByConceptUrl,
 		getAuthenticationToken: getAuthenticationToken,
@@ -164,6 +200,8 @@ var Helper = (function()
 		getCurrentConceptUrl: getCurrentConceptUrl,
 		setCurrentConceptUrl: setCurrentConceptUrl,
 		getReadableString: getReadableString,
-		getQueryParameter: getQueryParameter
+		getQueryParameter: getQueryParameter,
+		levenstheinDistance: levenstheinDistance,
+		customHide: customHide
 	}
 }());
