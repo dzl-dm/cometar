@@ -41,29 +41,29 @@ BEGIN {
 				clanguage = "@" arr[7];
 			}
 		}
-		if (arr[2] == "removed" && match(record,"(added,"cauthor","searchdate_day","cconcept","crelation","searchlanguage",([^\n]*))",arr2))
-		{
-			record=substr(record,0,arr2[1,"start"]-1) substr(record,arr2[1,"start"]+arr2[1,"length"]+1);
-			if (arr[8] == arr2[2]) continue;
-			caction = "changed";
-			#cobject = "\"from &quot;"arr[8] "&quot;" clanguage " to &quot;" arr2[2] "&quot;" clanguage "\"";
-			cminus = gensub(/\"/,"\\&quot;","g",arr[8]);
-			cplus = gensub(/\"/,"\\&quot;","g",arr2[2]);
-			if (itsALiteral)
-			{
-				cminus = "\"" cminus "\"";
-				cplus = "\"" cplus "\"";
-			}
-			cobject = "[ :minus " cminus clanguage"; :plus " cplus clanguage" ]";
-		}
-		else
-		{
+		# if (arr[2] == "removed" && match(record,"(added,"cauthor","searchdate_day","cconcept","crelation","searchlanguage",([^\n]*))",arr2))
+		# {
+			# record=substr(record,0,arr2[1,"start"]-1) substr(record,arr2[1,"start"]+arr2[1,"length"]+1);
+			# if (arr[8] == arr2[2]) continue;
+			# caction = "changed";
+			# #cobject = "\"from &quot;"arr[8] "&quot;" clanguage " to &quot;" arr2[2] "&quot;" clanguage "\"";
+			# cminus = gensub(/\"/,"\\&quot;","g",arr[8]);
+			# cplus = gensub(/\"/,"\\&quot;","g",arr2[2]);
+			# if (itsALiteral)
+			# {
+				# cminus = "\"" cminus "\"";
+				# cplus = "\"" cplus "\"";
+			# }
+			# cobject = "[ :minus " cminus clanguage"; :plus " cplus clanguage" ]";
+		# }
+		# else
+		# {
 			caction = arr[2];			
 			cobject = gensub(/\"/,"\\&quot;","g",arr[8]);
 			if (itsALiteral) cobject = "\"" cobject "\"" clanguage;
 			if (caction == "added") cobject = "[ :plus "cobject" ]";
 			else cobject = "[ :minus "cobject" ]";
-		}
+		# }
 		if (caction != "current")
 		{
 			printf cconcept " skos:changeNote [" >> output;

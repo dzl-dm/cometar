@@ -70,15 +70,11 @@ var QueryManager = (function(){
 		console.log(queryString);
 		if (callback != undefined)
 		{
-			query(queryString, function(r) {
-				callback(r) 
-			});
+			query(queryString, function(r) { callback(r) }, function(){ if (completeCallback != undefined) completeCallback() });
 		}
 		else 
 		{
-			syncquery(queryString, function(r){ 		
-				result.push(r) 
-			});
+			syncquery(queryString, function(r){ result.push(r) });
 			return result;
 		}
 	}
