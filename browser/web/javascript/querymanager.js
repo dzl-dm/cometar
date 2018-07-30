@@ -67,7 +67,6 @@ var QueryManager = (function(){
 		var previousConceptIdentifiers = [];
 		getPreviousConceptIdentifiers(e,previousConceptIdentifiers);
 		queryString = queries["getNotes"].replace(/ELEMENTS/g, previousConceptIdentifiers.join() );
-		console.log(queryString);
 		if (callback != undefined)
 		{
 			query(queryString, function(r) { callback(r) }, function(){ if (completeCallback != undefined) completeCallback() });
@@ -398,7 +397,7 @@ WHERE {
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
 		/* Im Folgenden benötige ich die NOT EXISTS Klauseln, da die Umbenennung eines Konzepts dazu führt, dass die Relationen einmal entfernt und dann wieder hinzugefügt werden, obwohl sie sich nicht änderten. */
 		getNotes: prefixes + (function () {/*
-SELECT ?note (SUBSTR(STR(?tempdate),1,10) as ?date) ?author ?value ?property ?action ?minus (lang(?minus) as ?minuslang) ?minustargetlabel ?plus (lang(?plus) as ?pluslang) ?plustargetlabel ?reason
+SELECT ?note (SUBSTR(STR(?tempdate),1,10) as ?date) ?author ?value ?property ?action ?minus (lang(?minus) as ?minuslang) ?plus (lang(?plus) as ?pluslang) ?reason
 WHERE {
 	?element skos:changeNote ?note FILTER (?element IN (ELEMENTS)).
 	OPTIONAL { ?note dc:date ?tempdate ;
@@ -406,12 +405,8 @@ WHERE {
 		rdf:value ?value ;
 		owl:onProperty ?property ;
 		:action ?action .
-		OPTIONAL { ?value :minus ?minus
-			OPTIONAL { ?minus skos:prefLabel ?minustargetlabel FILTER (lang(?minustargetlabel) = 'en') }
-		}
-		OPTIONAL { ?value :plus ?plus 
-			OPTIONAL { ?plus skos:prefLabel ?plustargetlabel FILTER (lang(?plustargetlabel) = 'en') }
-		}
+		OPTIONAL { ?value :minus ?minus	}
+		OPTIONAL { ?value :plus ?plus }
 		OPTIONAL { ?value :reason ?reason }
 		?b foaf:name ?author . } 
 	NOT EXISTS {	

@@ -99,6 +99,8 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				var date="";
 				var dateDiv;
 				var changesDiv;
+				var oldValue="";
+				var segment;
 				QueryManager.getNotes(conceptUrl, function(i){						
 					if (i["property"].value == "http://www.w3.org/2004/02/skos/core#topConceptOf"
 						|| i["property"].value == "http://www.w3.org/2004/02/skos/core#inScheme"
@@ -123,41 +125,57 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					else
 					{
 						dateDiv = $("<div style='display:inline-block;vertical-align:top;width:100px' class='dateDiv'>"+ date + "</div>");
-						changesDiv = $("<div style='display:inline-block;margin-left:10px; width:calc(100% - 110px)'>");
-						infoDivChanges.append(dateDiv).append(changesDiv).append("<br/><br/>").show();
+						changesDiv = $("<div class='changesDiv'>");
+						infoDivChanges.append(dateDiv).append(changesDiv).show();
 					}
 					if (i["note"].type == "bnode")
 					{
-						var changeValue = "";
+						var changeDiv = $("<div>");
 						var changeReason = "";
 						if (i["value"].type == "bnode") {
-							if (i["plustargetlabel"] != undefined) changeValue += "<font color='green'>&oplus;"+i["plustargetlabel"].value+"</font><br/>" ;					
-							else if (i["plus"] != undefined) changeValue += "<font color='green'>&oplus;"+Helper.getReadableString(i["plus"].value)+"</font><br/>" ;	
-							if (i["minustargetlabel"] != undefined) changeValue += "<font color='red'>&ominus;"+i["minustargetlabel"].value+"</font><br/>" ;
-							else if (i["minus"] != undefined) changeValue += "<font color='red'>&ominus;"+Helper.getReadableString(i["minus"].value)+"</font><br/>" ;						
+							if (i["plus"] != undefined) changeDiv.append(Helper.getReadableString(i["plus"].value)).addClass("plusChange") ;	
+							if (i["minus"] != undefined) changeDiv.append(Helper.getReadableString(i["minus"].value)).addClass("minusChange") ;						
 							if (i["reason"] != undefined) changeReason = ": <i>&quot;" + i["reason"].value + "&quot;</i>";						
 						}
 						else {
-							changeValue = i["value"].value;
+							changeDiv.append(i["value"].value);
 						}
-						var property = Helper.getReadableString(i["property"].value) + lang;
-						if (changesDiv.text().indexOf(property + " by " + i["author"].value) == -1 && changeReason == "")
+						
+						var segmentHeading = Helper.getReadableString(i["property"].value) + lang + " by " + i["author"].value + changeReason;
+						var segmentData = date + Helper.getReadableString(i["property"].value) + lang + i["author"].value;
+						segment = $(".changesSegment[data='"+segmentData+"']");
+						if (segment.length == 0) 
 						{
-							if (changesDiv.text().length > 0) changesDiv.append("<br/>");
-							changesDiv.append(property + /*" " + i["action"].value +*/ " by " + i["author"].value + changeReason +"<br/>");
+							segment = $("<div class='changesSegment' data='"+segmentData+"'>");
+							segment.append("<div class='segmentHeading'>"+segmentHeading+"</div>");
+							changesDiv.append(segment);
 						}
-						changesDiv.append(changeValue);
+						segment.append(changeDiv);
 					}
 					else changesDiv.append(i["note"].value);
-				}, function(){			
-					infoDivChangesExpand=$("<div class='infoDivChangesExpand'>+</div>");
+				}, function(){		
+					$(".minusChange").each(function(){
+						var oldValueDiv = $(this);
+						oldValueDiv.siblings(".plusChange:not(:first)").each(function()
+						{
+							var newValueDiv = $(this);
+							if (oldValueDiv.hasClass("minorChange") || newValueDiv.hasClass("minorChange")) return;
+							if (Helper.levenstheinDistance(oldValueDiv.text(),newValueDiv.text()) < 2)
+							{
+								oldValueDiv.addClass("minorChange");
+								newValueDiv.addClass("minorChange");
+							}
+						});
+					});
+					Helper.customHide(infoDivChanges,500);
+					/*infoDivChangesExpand=$("<div class='infoDivChangesExpand'>+</div>");
 					infoDivChangesExpand.click(function(){
 						$(this).hide();
 						infoDivChanges.animate({
 							height: infoDivChanges.get(0).scrollHeight
 						}, 200);
 					});
-					infoDivChanges.append(infoDivChangesExpand);
+					infoDivChanges.append(infoDivChangesExpand);*/
 				});
 					
 				var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Specifications</h3></div>");

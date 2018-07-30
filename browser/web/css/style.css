@@ -426,13 +426,7 @@
 {
 	filter: opacity(100%);
 }
-.infoDivChanges
-{
-	height: 140px;
-	overflow:hidden;
-	position:relative;
-}
-.infoDivChangesExpand
+.expandInformationDiv
 {
 	position:absolute;
 	background-color:white;
@@ -441,6 +435,37 @@
 	width:calc(100% - 20px);
 	bottom:0px;
 	cursor: pointer;
+}
+.changesDiv
+{
+	display:inline-block;
+	margin-left:10px; 
+	width:calc(100% - 110px);
+	margin-bottom:15px;
+}
+.changesSegment
+{
+	margin-bottom:10px;
+}
+.plusChange
+{
+	color: green;
+}
+.plusChange.minorChange, .minusChange.minorChange
+{
+	color: grey;
+}
+.plusChange::before
+{
+	content: '\02295';
+}
+.minusChange
+{
+	color: red;
+}
+.minusChange::before
+{
+	content: "\02296";
 }
 
 .discussionPostsContainerDiv
