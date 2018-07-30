@@ -426,6 +426,22 @@
 {
 	filter: opacity(100%);
 }
+.infoDivChanges
+{
+	height: 140px;
+	overflow:hidden;
+	position:relative;
+}
+.infoDivChangesExpand
+{
+	position:absolute;
+	background-color:white;
+	border:1px solid black;
+	text-align: center;
+	width:calc(100% - 20px);
+	bottom:0px;
+	cursor: pointer;
+}
 
 .discussionPostsContainerDiv
 {

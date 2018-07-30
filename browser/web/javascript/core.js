@@ -267,25 +267,38 @@ var TreeManager = (function(){
 		$("#conceptTree .pathPart").removeClass("pathPart");
 		$("#conceptTree").addClass("pathPart");
 		var pathDepth = 1;
-		while (path.length > 0)
-		{
-			$("#conceptTree .treeItem[data-concepturl='"+path[0]+"']").each(function(){
-				pathPart = $(this);
-				if (pathPart.parent().hasClass("pathPart") && pathPart.parents(".pathPart").length == pathDepth)
+		var attempts = 10;
+		(function f(){
+			while (path.length > 0 && attempts > 0)
+			{
+				if ($("#conceptTree .treeItem[data-concepturl='"+path[0]+"']").length == 0) 
 				{
-					path.shift();
-					pathDepth++;
-					pathPart.addClass("pathPart");
-					if (path.length > 0)
-						pathPart.data("treeobject").expand();
-					else 
-					{
-						mark(conceptUrl);
-						if (scrollThere) scrollToTreeItem(pathPart);
-					}
+					setTimeout(function(){console.log("Loading of path delayed..."); f() }, 100);
+					attempts--;
+					break;
 				}
-			});
-		}
+				else
+				{
+					$("#conceptTree .treeItem[data-concepturl='"+path[0]+"']").each(function(){
+						pathPart = $(this);
+						if (pathPart.parent().hasClass("pathPart") && pathPart.parents(".pathPart").length == pathDepth)
+						{
+							path.shift();
+							pathDepth++;
+							pathPart.addClass("pathPart");
+							if (path.length > 0)
+								pathPart.data("treeobject").expand();
+							else 
+							{
+								mark(conceptUrl);
+								if (scrollThere) scrollToTreeItem(pathPart);
+							}
+						}
+					});
+				}
+			}
+		})();
+
 	}
 	
 	var scrollToTreeItem = function(treeItemDiv)

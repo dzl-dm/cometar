@@ -12,16 +12,16 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 
 				var treePathDiv = $("<div class='treePathDiv infoDiv'>");	
 				Helper.getPathsByConceptUrl(conceptUrl, function(path){putPath(treePathDiv, path)});			
-				treePathDiv.prepend("<h3>Pfad / Path</h3>").css("display","block");
+				treePathDiv.prepend("<h3>Path</h3>").css("display","block");
 				restInfoDiv.append(treePathDiv);
 				
-				var infoDivLabel = $("<div class='aggregatedInfo'><h3>Bezeichnung / Label</h3></div>");
+				var infoDivLabel = $("<div class='aggregatedInfo'><h3>Label</h3></div>");
 				aggregatedInfoDiv.append(infoDivLabel); 	
 				QueryManager.getProperty(conceptUrl, "skos:prefLabel", function(i){
 					infoDivLabel.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>").addClass("filled"); 
 				});
 				
-				var infoDivNotation = $("<div class='aggregatedInfo'><h3>Notation / Code</h3></div>");	
+				var infoDivNotation = $("<div class='aggregatedInfo'><h3>Code</h3></div>");	
 				aggregatedInfoDiv.append(infoDivNotation); 
 				QueryManager.getProperty(conceptUrl, "skos:notation", function(i){
 					var dt = ""
@@ -37,17 +37,17 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					} 
 					infoDivNotation.append(dt + (dt != ""?": ":"") + i.value + "<br/>").addClass("filled"); 
 				});
-				var infoDivDescription = $("<div class='infoDiv'><h3>Beschreibung / Description</h3></div>");	
+				var infoDivDescription = $("<div class='infoDiv'><h3>Description</h3></div>");	
 				restInfoDiv.append(infoDivDescription); 
 				QueryManager.getProperty(conceptUrl, "dc:description", function(i){
 					infoDivDescription.append((i["xml:lang"] != undefined?i["xml:lang"].toUpperCase() + ": ":"") + i.value + "<br/>").show(); 
 				});
-				var infoDivUnit = $("<div class='aggregatedInfo'><h3>Einheit / Unit</h3></div>");	
+				var infoDivUnit = $("<div class='aggregatedInfo'><h3>Unit</h3></div>");	
 				aggregatedInfoDiv.append(infoDivUnit); 
 				QueryManager.getProperty(conceptUrl, ":unit", function(i){
 					infoDivUnit.append(i.value + "<br/>").addClass("filled"); 
 				});
-				var infoDivAltlabel = $("<div class='aggregatedInfo'><h3>Alternative Bezeichnung / Label</h3></div>");	
+				var infoDivAltlabel = $("<div class='aggregatedInfo'><h3>Alternative Label</h3></div>");	
 				aggregatedInfoDiv.append(infoDivAltlabel); 
 				QueryManager.getProperty(conceptUrl, "skos:altLabel", function(i){
 					infoDivAltlabel.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>").addClass("filled"); 
@@ -62,7 +62,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				QueryManager.getProperty(conceptUrl, "dc:creator", function(i){
 					infoDivAuthor.append(i.value + "<br/>").addClass("filled"); 
 				});
-				var infoDivDomain = $("<div class='aggregatedInfo'><h3>Wertebereich / Domain</h3></div>");
+				var infoDivDomain = $("<div class='aggregatedInfo'><h3>Domain</h3></div>");
 				aggregatedInfoDiv.append(infoDivDomain); 	
 				QueryManager.getProperty(conceptUrl, "dwh:restriction", function(i){
 					var restriction = "";
@@ -94,7 +94,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					infoDivEditNotes.append(i.value + "<br/>").show(); 
 				});
 				
-				var infoDivChanges = $("<div class='infoDiv'><h3>Änderungen / Change Log</h3></div>");	
+				var infoDivChanges = $("<div class='infoDiv infoDivChanges'><h3>Change Log</h3></div>");	
 				restInfoDiv.append(infoDivChanges); 
 				var date="";
 				var dateDiv;
@@ -102,6 +102,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				QueryManager.getNotes(conceptUrl, function(i){						
 					if (i["property"].value == "http://www.w3.org/2004/02/skos/core#topConceptOf"
 						|| i["property"].value == "http://www.w3.org/2004/02/skos/core#inScheme"
+						|| i["property"].value == "http://www.w3.org/2004/02/skos/core#broader"
 						|| i["property"].value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf"
 						|| i["property"].value == "http://www.w3.org/2004/02/skos/core#hasTopConcept"
 						|| i["property"].value == "http://www.w3.org/2004/02/skos/core#editorialNote"
@@ -148,9 +149,18 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 						changesDiv.append(changeValue);
 					}
 					else changesDiv.append(i["note"].value);
+				}, function(){			
+					infoDivChangesExpand=$("<div class='infoDivChangesExpand'>+</div>");
+					infoDivChangesExpand.click(function(){
+						$(this).hide();
+						infoDivChanges.animate({
+							height: infoDivChanges.get(0).scrollHeight
+						}, 200);
+					});
+					infoDivChanges.append(infoDivChangesExpand);
 				});
 					
-				var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Spezifizierung / Specification</h3></div>");
+				var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Specifications</h3></div>");
 				restInfoDiv.append(modifierDiv);
 				QueryManager.getModifiers(conceptUrl, function(m){
 					modifierDiv.show();

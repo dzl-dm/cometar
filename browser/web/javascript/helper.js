@@ -109,6 +109,7 @@ var Helper = (function()
 		["http://www.w3.org/1999/02/22-rdf-syntax-ns#hasPart", "modifier"],
 		["http://sekmi.de/histream/dwh#restriction", "datatype"],
 		["http://data.dzl.de/ont/dwh#status", "status"],
+		["http://purl.org/dc/elements/1.1/creator", "author"],
 		["http://www.w3.org/1999/02/22-rdf-syntax-ns#about", "concept identifier"],
 		["http://sekmi.de/histream/dwh#integerRestriction", "integer"],
 		["http://sekmi.de/histream/dwh#stringRestriction", "string"],
