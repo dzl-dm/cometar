@@ -60,6 +60,7 @@ BEGIN {
 		# {
 			caction = arr[2];			
 			cobject = gensub(/\"/,"\\&quot;","g",arr[8]);
+			cobject = gensub(/\r/,"","g",cobject);
 			if (itsALiteral) cobject = "\"" cobject "\"" clanguage;
 			if (caction == "added") cobject = "[ :plus "cobject" ]";
 			else cobject = "[ :minus "cobject" ]";
