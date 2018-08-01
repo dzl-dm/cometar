@@ -34,11 +34,13 @@ var loadMapConfigModule = function()
 					}
 				});
 				var newDataSourceDownloadLink = $("<div style='width:100%;padding:10px'><a href='data:text/plain;charset=UTF-8' style='display:none' download='datasource.xml' id='newDataSourceDownloadLink'>Your configuration file is not up to date. Click here to download an updated version.</a></div><br/>");
+				var divNotationFeedback = $("<div id='divNotationFeedback'>");
 				
 				resultDiv.append(fileSelect);
 				resultDiv.append(ta);
 				resultDiv.append(btn);
 				resultDiv.append(newDataSourceDownloadLink);
+				resultDiv.append(divNotationFeedback);
 
 				return resultDiv;
 			}
@@ -54,18 +56,6 @@ var loadConfig = function(){
 	var xml = $("#configTA").val(),
 		xmlDoc = $.parseXML( xml ),
 		$xml = $( xmlDoc );
-		// auskommentierte Felder werden nicht gefunden
-		//$mdatConcepts = $xml.find( "mdat > concept" ),
-		//$setConcepts = $xml.find( "mdat *, virtual *" );
-		/*$mdatConcepts2 = $xml.find( "mdat > concept > map > case" ),
-		$virtualMapConcepts = $xml.find( "virtual > value > map" ),
-		$virtualMapCaseConcepts = $xml.find( "virtual > value > map > case" );*/
-	
-	//addMappedFields($mdatConcepts, "id");
-	//addMappedFields($setConcepts, "set-concept");
-	/*addMappedFields($mdatConcepts2, "set-concept");
-	addMappedFields($virtualMapConcepts, "set-concept");
-	addMappedFields($virtualMapCaseConcepts, "set-concept");*/
 	
 	var dzlIds = [];
 	var sourceIds = [];
@@ -161,13 +151,17 @@ var loadConfig = function(){
 	{
 		var notation = deprecatedNotations[i];
 		var newNotation = QueryManager.getNewNotation(notation);
-		console.log("old: " + notation + "; new: " + newNotation);
-		if (newNotation != undefined) 
+		$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; is not a valid code (anymore). ");
+		if (newNotation != undefined && newNotation != "") 
 		{
 			xml = xml.replace("\"" + notation + "\"", "\"" + newNotation + "\"");
 			$("#newDataSourceDownloadLink").css("display", "block");
+			$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; was replaced with &quot;" + newNotation + "&quot;.");
 		}
-		$("#newDataSourceDownloadLink").after("<br/>"+notation+" is not a valid code (anymore).");
+		else
+		{
+			$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; is deprecated.");			
+		}
 	}
 	if (deprecatedNotations.length > 0)
 	{
@@ -187,7 +181,6 @@ var addMappedFields = function(dzlId)
 		mappedFields.push(concept);
 	}
 	else{
-		console.log(dzlId + " DEPRECATED!!!!!!!!!!!");	
 		deprecatedNotations.push(dzlId);
 		mappedSourceFields.splice(mappedFields.length, 1);	
 	}
@@ -196,32 +189,6 @@ var addMappedFields = function(dzlId)
 			mappedPathFields.push(a);
 		}
 	});
-	
-	/*var queryString = QueryManager.queries.getConceptUrlByNotation.replace(/NOTATION/g, dzlId);
-	QueryManager.syncquery(
-		queryString, 
-		function(resultItem){
-			notationFindings++;
-			if (resultItem["concept"]) {
-				var concept = resultItem["concept"].value;
-				mappedFields.push(concept);
-				
-				/*var queryString = QueryManager.queries.getParentConcepts.replace(/CONCEPT/g, concept);
-				QueryManager.syncquery(
-					queryString, 
-					function(resultItem){
-						if (resultItem["parentconcept"]) {
-							var parentConcept = resultItem["parentconcept"].value;
-							if (mappedPathFields.indexOf(parentConcept) == -1) {
-								mappedPathFields.push(parentConcept);
-							}
-						}
-					}
-				);
-			}
-		}
-	);*/
-	//if (notationFindings > 1) console.log(dzlId + " UNAMBIGUOUS!!!!!!!!!!!");
 }
 
 var markMappedFields = function(itemDiv)
