@@ -40,7 +40,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				var infoDivDescription = $("<div class='infoDiv'><h3>Description</h3></div>");	
 				restInfoDiv.append(infoDivDescription); 
 				QueryManager.getProperty(conceptUrl, "dc:description", function(i){
-					infoDivDescription.append((i["xml:lang"] != undefined?i["xml:lang"].toUpperCase() + ": ":"") + i.value + "<br/>").show(); 
+					infoDivDescription.append((i["xml:lang"] != undefined?i["xml:lang"].toUpperCase() + ": ":"") + i.value + "<br/>").css("display","block");
 				});
 				var infoDivUnit = $("<div class='aggregatedInfo'><h3>Unit</h3></div>");	
 				aggregatedInfoDiv.append(infoDivUnit); 
