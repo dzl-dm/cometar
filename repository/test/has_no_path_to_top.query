@@ -1,10 +1,10 @@
 PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX : <http://data.dzl.de/ont/dwh#>
+PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 SELECT ?concept
 WHERE {
         ?concept a skos:Concept ;
         NOT EXISTS {
-                ?concept skos:broader* ?topconcept .
-		?topconcept skos:topConceptOf ?scheme .
+			?s skos:hasTopConcept [ skos:member* [ skos:narrower* [ rdf:hasPart? [ skos:narrower* ?concept ] ] ] ]
         }
 }
