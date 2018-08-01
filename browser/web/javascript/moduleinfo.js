@@ -167,15 +167,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 							}
 						});
 					});
-					Helper.customHide(infoDivChanges,500);
-					/*infoDivChangesExpand=$("<div class='infoDivChangesExpand'>+</div>");
-					infoDivChangesExpand.click(function(){
-						$(this).hide();
-						infoDivChanges.animate({
-							height: infoDivChanges.get(0).scrollHeight
-						}, 200);
-					});
-					infoDivChanges.append(infoDivChangesExpand);*/
+					Helper.customHide(infoDivChanges,250);
 				});
 					
 				var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Specifications</h3></div>");

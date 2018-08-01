@@ -55,7 +55,7 @@ var QueryManager = (function(){
 		if (previousConceptIdentifiers.indexOf("<"+e+">") == -1) 
 		{
 			previousConceptIdentifiers.push("<"+e+">");
-			queryString = queries["getPreviousConceptIdentifiers"].replace(/ELEMENT/g, "<" + e + ">" );
+			queryString = queries["getPreviousConceptIdentifier"].replace(/ELEMENT/g, "<" + e + ">" );
 			syncquery(queryString, function(r){
 				getPreviousConceptIdentifiers(r["a"].value, previousConceptIdentifiers);
 			});
@@ -67,6 +67,7 @@ var QueryManager = (function(){
 		var previousConceptIdentifiers = [];
 		getPreviousConceptIdentifiers(e,previousConceptIdentifiers);
 		queryString = queries["getNotes"].replace(/ELEMENTS/g, previousConceptIdentifiers.join() );
+		console.log(queryString);
 		if (callback != undefined)
 		{
 			query(queryString, function(r) { callback(r) }, function(){ if (completeCallback != undefined) completeCallback() });
@@ -80,9 +81,62 @@ var QueryManager = (function(){
 	
 	var getNewNotation = function(notation)
 	{
+		// var oldnotations = [];
+		// var newnotations = ["\""+notation+"\""];
+		// var allelements = [];
+		// var result;
+		// var worktodo = 1;
+		// while (worktodo > 0)
+		// {
+			// worktodo = 0;
+			// queryString = queries["getAllNotations"].replace(/NEWNOTATIONS/g, newnotations.join()).replace(/OLDNOTATIONS/g, oldnotations.join());
+			// // console.log(queryString);
+			// syncquery(queryString, function(r){ 
+				// // console.log("---------------");
+				// // console.log(oldnotations);
+				// // console.log(newnotations);
+				// // console.log(r);
+				// var newnotation = r["newnotation"]?"\""+r["newnotation"].value+"\"":"";
+				// var oldnotation = r["oldnotation"]?"\""+r["oldnotation"].value+"\"":"";
+				// newnotations.push(newnotation);
+				// if (newnotation!="" && newnotations.indexOf(newnotation) == -1) {  worktodo++ }
+				// if (oldnotation!="" && oldnotations.indexOf(oldnotation) == -1) { oldnotations.push(oldnotation); worktodo++ }
+				// // console.log(oldnotations);
+				// // console.log(newnotations);
+			// });
+		// }
+		// for (var i = newnotations.length-1; i >= 0; i--)
+		// {
+			// if (oldnotations.indexOf(newnotations[i])==-1) {
+				// result = newnotations[i];
+				// break;
+			// }
+		// }
+		// // console.log("new notation: " +result);
+		// return result?result.substr(1,result.length-2):"";
 		var result;
-		queryString = queries["getNewNotation"].replace(/OLDNOTATION/g, "\""+notation+"\"" );
-		syncquery(queryString, function(r){ result = r["newnotation"].value });
+		var queryString = queries["getOldConceptByOldNotation"].replace(/OLDNOTATION/g, "\""+notation+"\"");
+		var e;
+		var en;
+		console.log(queryString);
+		syncquery(queryString, function(r){
+			console.log(r);
+			e = r["oldelement"].value;
+			en = e;
+			for (var i = 0; i < 100; i++)
+			{
+				var queryString2 = queries["getNewConceptIdentifier"].replace(/ELEMENT/g, "<"+e+">");
+				syncquery(queryString2, function(r2){
+					en = r2["newelement"].value;
+				});
+				if (en == e) 
+				{				
+					result = getProperty(e,"skos:notation").value;
+					return result;
+				}
+				else e = en;
+			}
+		});
 		return result;
 	}
 	
@@ -229,11 +283,11 @@ WHERE {
 		}
 		ORDER BY ?label
 	}
-	UNION
-	{
-		SELECT (:root as ?element) ('collection' as ?type)
-		WHERE {}
-	}
+#	UNION
+#	{
+#		SELECT (:root as ?element) ('collection' as ?type)
+#		WHERE {}
+#	}
 }      
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
 		getSubElements: prefixes + (function () {/*
@@ -359,33 +413,26 @@ WHERE {
 	?concept rdf:hasPart [ skos:narrower* MODIFIER ] .
 }
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
-		getNewNotation: prefixes + (function () {/*
-SELECT ?newnotation
+		getNewConceptIdentifier: prefixes + (function () {/*
+SELECT ?newelement
 WHERE {
-	{
-		SELECT ?newnotation
-		WHERE {
-			?concept skos:changeNote ?note .
-			?note owl:onProperty skos:notation .
-			?note rdf:value ?value .
-			?value :minus OLDNOTATION ;
-				:plus ?newnotation .
-		}
-	}
-	UNION
-	{
-		SELECT ?newnotation
-		WHERE {
-			?concept skos:changeNote ?note ;
-				skos:notation ?newnotation .
-			?note owl:onProperty skos:notation .
-			?note rdf:value ?value .
-			?value :minus OLDNOTATION .
-		}
-	}
+	?newelement skos:changeNote ?cn .
+	?cn owl:onProperty rdf:about ; 
+		rdf:value [ 
+			:minus ELEMENT
+		] .
+}   
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getOldConceptByOldNotation: prefixes + (function () {/*
+SELECT ?oldelement
+WHERE {
+	?oldelement skos:changeNote [
+		owl:onProperty skos:notation ;
+		rdf:value [ :minus OLDNOTATION ] 
+	] .	
 }
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
-		getPreviousConceptIdentifiers: prefixes + (function () {/*
+		getPreviousConceptIdentifier: prefixes + (function () {/*
 SELECT ?a
 WHERE {
 	ELEMENT skos:changeNote ?cn .
@@ -409,6 +456,7 @@ WHERE {
 		OPTIONAL { ?value :plus ?plus }
 		OPTIONAL { ?value :reason ?reason }
 		?b foaf:name ?author . } 
+	#filters everything, that has been removed and added at the same time (is the case when a concept gets a new identifier)
 	NOT EXISTS {	
 		?value :minus ?minus .
 		?compareElement skos:changeNote ?reverseNote FILTER (?compareElement IN (ELEMENTS)) .

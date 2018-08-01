@@ -3,7 +3,7 @@
 conffile="$(dirname $0)/../config/conf.cfg"
 from_date="2017-01-01 00:00:00"
 until_date=$(date +'%Y-%m-%d %H:%M:%S')
-only_recent_changes=0
+only_recent_changes=1
 
 while [ ! $# -eq 0 ]
 do
@@ -23,6 +23,7 @@ do
 				echo "Please enter valid date (yyyy-mm-dd hh:mm:ss)"
 				exit
 			fi
+			only_recent_changes=0
 			;;
 		-u)
 			shift
@@ -30,6 +31,7 @@ do
 				echo "Please enter valid date (yyyy-mm-dd hh:mm:ss)"
 				exit
 			fi
+			only_recent_changes=0
 			;;
 		-o)
 			shift

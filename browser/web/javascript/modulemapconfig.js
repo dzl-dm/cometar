@@ -7,7 +7,7 @@ var loadMapConfigModule = function()
 		{
 			tabName: "mapping / configuration",
 			handlerFunction: function(conceptUrl){
-				var resultDiv = $("<div>");
+				var resultDiv = $("<div>").css("flex-direction","column");
 				
 				var ta = $("<textarea style='width:100%; height:300px' id='configTA'></textarea>");
 				var btn = $("<input type='button' onclick='loadConfig()' value='load configuration'/>");
@@ -165,7 +165,7 @@ var loadConfig = function(){
 		if (newNotation != undefined) 
 		{
 			xml = xml.replace("\"" + notation + "\"", "\"" + newNotation + "\"");
-			$("#newDataSourceDownloadLink").show();
+			$("#newDataSourceDownloadLink").css("display", "block");
 		}
 		$("#newDataSourceDownloadLink").after("<br/>"+notation+" is not a valid code (anymore).");
 	}
