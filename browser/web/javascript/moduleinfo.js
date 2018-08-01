@@ -91,7 +91,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				var infoDivEditNotes = $("<div class='infoDiv'><h3>Editorial Notes</h3></div>");
 				restInfoDiv.append(infoDivEditNotes); 
 				QueryManager.getProperty(conceptUrl, "skos:editorialNote", function(i){
-					infoDivEditNotes.append(i.value + "<br/>").show(); 
+					infoDivEditNotes.append(i.value + "<br/>").css("display","block");
 				});
 				
 				var infoDivChanges = $("<div class='infoDiv infoDivChanges'><h3>Change Log</h3></div>");	
@@ -173,7 +173,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Specifications</h3></div>");
 				restInfoDiv.append(modifierDiv);
 				QueryManager.getModifiers(conceptUrl, function(m){
-					modifierDiv.show();
+					modifierDiv.css("display","block");
 					Helper.getPathsByConceptUrl(m, function(path){putPath(modifierDiv, path)});
 				});
 				
