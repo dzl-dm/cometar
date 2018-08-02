@@ -144,12 +144,16 @@ var Helper = (function()
 	}
 	
 	var setCurrentConceptUrl = function(conceptUrl){
+		location.hash = getCometarWebUrlByConceptUrl(conceptUrl);
+	}
+	
+	var getCometarWebUrlByConceptUrl = function(conceptUrl)
+	{
 		for (var i = 0; i < urlShorts.length; i++)
 		{
 			if (conceptUrl.indexOf(urlShorts[i][0]) > -1) 
 			{
-				location.hash = urlShorts[i][1]+conceptUrl.substr(urlShorts[i][0].length);
-				return;
+				return urlShorts[i][1]+conceptUrl.substr(urlShorts[i][0].length);
 			}
 		}
 	}
@@ -202,6 +206,7 @@ var Helper = (function()
 		getReadableString: getReadableString,
 		getQueryParameter: getQueryParameter,
 		levenstheinDistance: levenstheinDistance,
-		customHide: customHide
+		customHide: customHide,
+		getCometarWebUrlByConceptUrl: getCometarWebUrlByConceptUrl
 	}
 }());

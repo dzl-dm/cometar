@@ -104,6 +104,21 @@ var QueryManager = (function(){
 		return result;
 	}
 	
+	var getDeprecatedConceptByNotation = function(notation, callback)
+	{
+		var result;
+		var queryString = queries["getDeprecatedConceptByNotation"].replace(/NOTATION/g, "\""+notation+"\"");
+		if (callback != undefined)
+		{
+			query(queryString, function(r) { callback(r["concept"].value) });
+		}
+		else 
+		{
+			syncquery(queryString, function(r){ result=r["concept"].value });
+		}
+		return result;
+	}
+	
 	var getProperty = function(e, p, foc1, foc2)
 	{
 		var result = [];
@@ -406,6 +421,18 @@ WHERE {
 		] .
 }     
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getDeprecatedConceptByNotation: prefixes + (function () {/*
+SELECT ?concept
+WHERE {
+	?concept skos:changeNote ?cn .
+	?cn owl:onProperty skos:notation ; 
+		rdf:value [ 
+			:minus NOTATION
+		] ;
+		dc:date ?date .
+}     
+ORDER BY DESC(?date) LIMIT 1
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
 		/* Im Folgenden benötige ich die NOT EXISTS Klauseln, da die Umbenennung eines Konzepts dazu führt, dass die Relationen einmal entfernt und dann wieder hinzugefügt werden, obwohl sie sich nicht änderten. */
 		getNotes: prefixes + (function () {/*
 SELECT ?note (SUBSTR(STR(?tempdate),1,10) as ?date) ?author ?value ?property ?action ?minus (lang(?minus) as ?minuslang) ?plus (lang(?plus) as ?pluslang) ?reason
@@ -461,6 +488,7 @@ WHERE {
 		getByProperty: getByProperty,
 		getAncestors: getAncestors,
 		useLocalFuseki: useLocalFuseki,
-		getNewNotation: getNewNotation
+		getNewNotation: getNewNotation,
+		getDeprecatedConceptByNotation: getDeprecatedConceptByNotation
 	}
 }());
