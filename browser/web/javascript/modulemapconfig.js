@@ -151,12 +151,16 @@ var loadConfig = function(){
 	{
 		var notation = deprecatedNotations[i];
 		var newNotation = QueryManager.getNewNotation(notation);
-		$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; is not a valid code (anymore). ");
+		var deprecatedConceptUrl = window.location.protocol + "//" + window.location.pathname + "#";
+		deprecatedConceptUrl += Helper.getCometarWebUrlByConceptUrl(QueryManager.getDeprecatedConceptByNotation(notation));
+		$("#divNotationFeedback").append("<br/><a href='"+deprecatedConceptUrl+"'>"+notation+"</a> is not a valid code (anymore). ");
 		if (newNotation != undefined && newNotation != "") 
 		{
 			xml = xml.replace("\"" + notation + "\"", "\"" + newNotation + "\"");
 			$("#newDataSourceDownloadLink").css("display", "block");
-			$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; was replaced with &quot;" + newNotation + "&quot;.");
+			var newConceptUrl = window.location.protocol + "//" + window.location.pathname + "#";
+			newConceptUrl += Helper.getCometarWebUrlByConceptUrl(QueryManager.getByProperty("skos:notation", newNotation));
+			$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; was replaced with <a href='" + newConceptUrl + "'>"+newNotation+"</a>.");
 		}
 		else
 		{
@@ -208,4 +212,3 @@ var mappedFields = [];
 var mappedPathFields = [];
 var mappedSourceFields = [];
 var deprecatedNotations = [];
-
