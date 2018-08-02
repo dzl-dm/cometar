@@ -12,13 +12,7 @@ var loadMapConfigModule = function()
 				var ta = $("<textarea style='width:100%; height:300px' id='configTA'></textarea>");
 				var btn = $("<input type='button' onclick='loadConfig()' value='load configuration'/>");
 				var fileSelect = $("<input type='file' id='configFileInput' />").change(function(evt){
-					/*$.ajax({
-						url : "file:///C:/Users/stmar7/Projekte/cometar/browser/web/css/dzl.css", //$(this).val(),
-						dataType: "text",
-						success : function (data) {
-							ta.val(data);
-						}
-					});*/
+
 					var dateien = evt.target.files;
 					for (var i = 0, f; f = dateien[i]; i++) {
 						if (!f.type.match('text/plain') && !f.type.match('text/xml')) {
@@ -46,6 +40,7 @@ var loadMapConfigModule = function()
 			}
 		}
 	]);	
+	loadConfig();
 }
 
 $(document).on("tree:treeItemCreated", function(e, itemDiv){
@@ -53,10 +48,6 @@ $(document).on("tree:treeItemCreated", function(e, itemDiv){
 });
 
 var loadConfig = function(){
-	var xml = $("#configTA").val(),
-		xmlDoc = $.parseXML( xml ),
-		$xml = $( xmlDoc );
-	
 	var dzlIds = [];
 	var sourceIds = [];
 	//changing
@@ -78,103 +69,124 @@ var loadConfig = function(){
 		{
 			sourceIds[i] += " || " + sourceId;
 		}
-	};
+	};	
 	
-	var getValueTagIdPairs = function(valueTag)
-	{
-		negations = [];
-		var map = $($(valueTag).children("map")[0]);
-		var cases = $(map.children("case, otherwise"));
-		if (cases.length == 0) keepBasePair = true;
-		cases.each(function(){
-			var caseSetId = $(this).attr("set-concept");
-			if (!caseSetId || caseSetId.length==0) caseSetId = dzlId;
-			var caseValue = $(this).attr("value");
-			var caseDropFact = $(this).attr("action") == "drop-fact";
-			if (caseDropFact)
-			{
-				negations.push(caseValue);
-			}
-			else
-			{
-				if ($(this)[0].tagName == "otherwise")
+	var taValue = $("#configTA").val();
+	var validXml = false;
+	try {
+		var xmlDoc = $.parseXML( taValue );
+		validXml = true;
+		var $xml = $( xmlDoc );
+		
+		var getValueTagIdPairs = function(valueTag)
+		{
+			negations = [];
+			var map = $($(valueTag).children("map")[0]);
+			var cases = $(map.children("case, otherwise"));
+			var hasOtherwise = $(map.children("otherwise")).length > 0;
+			if (cases.length == 0) keepBasePair = true;
+			cases.each(function(){
+				var caseSetId = $(this).attr("set-concept");
+				if (!caseSetId || caseSetId.length==0) caseSetId = dzlId;
+				var caseValue = $(this).attr("value");
+				var caseDropFact = $(this).attr("action") == "drop-fact";
+				if (caseDropFact)
 				{
-					addIdPair(caseSetId, sourceId+"!=\""+negations.join()+"\"");
+					negations.push(caseValue);
 				}
 				else
 				{
-					addIdPair(caseSetId, sourceId+"==\""+caseValue+"\"");				
+					if ($(this)[0].tagName == "otherwise")
+					{
+						addIdPair(caseSetId, sourceId+"!=\""+negations.join()+"\"");
+					}
+					else
+					{
+						addIdPair(caseSetId, sourceId+"==\""+caseValue+"\"");				
+					}
+					if (caseSetId == dzlId) keepBasePair = true;
 				}
-				if (caseSetId == dzlId) keepBasePair = true;
+			});
+			if (!hasOtherwise && negations.length > 0)
+			{
+				addIdPair(dzlId, sourceId+"!=\""+negations.join()+"\"");
 			}
+		}
+			
+		$($xml.find( "mdat > concept" )).each(function(){
+			var c = $(this);
+			var file = c.parent().parent().children("source").children("url").text();
+			file = file.substr(0,file.length-4);
+			dzlId = c.attr("id");
+			sourceId = file + "." + $(c.children("value")[0]).attr("column");		
+			keepBasePair = false;
+			if (c.children("value")[0] != undefined) getValueTagIdPairs(c.children("value")[0]);		
+			if (keepBasePair) addIdPair(dzlId, sourceId);
+			
+			$($(c.children("modifier"))).each(function(){
+				var m = $(this);
+				dzlId = m.attr("id");
+				sourceId = $(m.children("value")[0]).attr("column");
+				addIdPair(dzlId, sourceId);
+			});
 		});
-	}
 		
-	$($xml.find( "mdat > concept" )).each(function(){
-		var c = $(this);
-		var file = c.parent().parent().children("source").children("url").text();
-		file = file.substr(0,file.length-4);
-		dzlId = c.attr("id");
-		sourceId = file + "." + $(c.children("value")[0]).attr("column");		
-		keepBasePair = false;
-		getValueTagIdPairs(c.children("value")[0]);		
-		if (keepBasePair) addIdPair(dzlId, sourceId);
-		
-		$($(c.children("modifier"))).each(function(){
-			var m = $(this);
-			dzlId = m.attr("id");
-			sourceId = $(m.children("value")[0]).attr("column");
-			addIdPair(dzlId, sourceId);
+		$($xml.find( "virtual > value" )).each(function(){
+			var map = $($(this).children("map")[0]);
+			var file = $(this).parent().parent().children("source").children("url").text();
+			file = file.substr(0,file.length-4);
+			var mapSetId = map.attr("set-concept");
+			if (mapSetId) dzlId = mapSetId;
+			sourceId = file + "." + $(this).attr("column");
+			keepBasePair = false;
+			getValueTagIdPairs(this);
+			if (keepBasePair) addIdPair(dzlId, sourceId);
 		});
-	});
-	
-	$($xml.find( "virtual > value" )).each(function(){
-		var map = $($(this).children("map")[0]);
-		var file = $(this).parent().parent().children("source").children("url").text();
-		file = file.substr(0,file.length-4);
-		var mapSetId = map.attr("set-concept");
-		if (mapSetId) dzlId = mapSetId;
-		sourceId = file + "." + $(this).attr("column");
-		keepBasePair = false;
-		getValueTagIdPairs(this);
-		if (keepBasePair) addIdPair(dzlId, sourceId);
-	});
-	
-	mappedSourceFields = sourceIds;
-	for (var i = 0; i < dzlIds.length; i++)
-	{
-		//console.log(dzlIds[i]+" : "+sourceIds[i]);
-		addMappedFields(dzlIds[i]);
+	} catch (err) {
+		var ids = taValue.split(",");
+		for (var i of ids)
+		{
+			addIdPair(i,"-");
+		}
+		return;
+	} finally {
+		mappedSourceFields = sourceIds;
+		for (var i = 0; i < dzlIds.length; i++)
+		{
+			//console.log(dzlIds[i]+" : "+sourceIds[i]);
+			addMappedFields(dzlIds[i]);
+		}	
+		var output = taValue;
+		for (var i = 0; i < deprecatedNotations.length; i++)
+		{
+			var notation = deprecatedNotations[i];
+			var newNotation = QueryManager.getNewNotation(notation);
+			var deprecatedConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
+			deprecatedConceptUrl += Helper.getCometarWebUrlByConceptUrl(QueryManager.getDeprecatedConceptByNotation(notation));
+			$("#divNotationFeedback").append("<br/><a href='"+deprecatedConceptUrl+"'>"+notation+"</a> is not a valid code (anymore). ");
+			if (newNotation != undefined && newNotation != "") 
+			{
+				if (validXml) output = output.replace("\"" + notation + "\"", "\"" + newNotation + "\"");
+				else output = output.replace(notation, newNotation);
+				$("#newDataSourceDownloadLink").css("display", "block");
+				var newConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
+				newConceptUrl += Helper.getCometarWebUrlByConceptUrl(QueryManager.getByProperty("skos:notation", newNotation));
+				$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; was replaced with <a href='" + newConceptUrl + "'>"+newNotation+"</a>.");
+			}
+			else
+			{
+				$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; is deprecated.");			
+			}
+		}
+		if (deprecatedNotations.length > 0)
+		{
+			$("#newDataSourceDownloadLink").attr("href", "data:text/plain;charset=UTF-8,"+encodeURIComponent(output));
+		}
+		
+		$(".treeItem").each(function(){
+			markMappedFields($(this));
+		});
 	}	
-	
-	for (var i = 0; i < deprecatedNotations.length; i++)
-	{
-		var notation = deprecatedNotations[i];
-		var newNotation = QueryManager.getNewNotation(notation);
-		var deprecatedConceptUrl = window.location.protocol + "//" + window.location.pathname + "#";
-		deprecatedConceptUrl += Helper.getCometarWebUrlByConceptUrl(QueryManager.getDeprecatedConceptByNotation(notation));
-		$("#divNotationFeedback").append("<br/><a href='"+deprecatedConceptUrl+"'>"+notation+"</a> is not a valid code (anymore). ");
-		if (newNotation != undefined && newNotation != "") 
-		{
-			xml = xml.replace("\"" + notation + "\"", "\"" + newNotation + "\"");
-			$("#newDataSourceDownloadLink").css("display", "block");
-			var newConceptUrl = window.location.protocol + "//" + window.location.pathname + "#";
-			newConceptUrl += Helper.getCometarWebUrlByConceptUrl(QueryManager.getByProperty("skos:notation", newNotation));
-			$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; was replaced with <a href='" + newConceptUrl + "'>"+newNotation+"</a>.");
-		}
-		else
-		{
-			$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; is deprecated.");			
-		}
-	}
-	if (deprecatedNotations.length > 0)
-	{
-		$("#newDataSourceDownloadLink").attr("href", "data:text/plain;charset=UTF-8,"+encodeURIComponent(xml));
-	}
-	
-	$(".treeItem").each(function(){
-		markMappedFields($(this));
-	});
 }
 
 var addMappedFields = function(dzlId)
