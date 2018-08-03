@@ -35,17 +35,32 @@ var QueryManager = (function(){
 		});
 	}
 	
-	var getModifiers = function(e, callback)
+	var getModifiers = function(e, callback, completeCallback)
 	{
 		var result = [];
 		queryString = queries["getModifiers"].replace(/CONCEPT/g, "<" + e + ">" );
 		if (callback != undefined)
 		{
-			query(queryString, function(r) { callback(r["modifier"].value) });
+			query(queryString, function(r) { callback(r["modifier"].value) }, function(){ if (completeCallback != undefined) completeCallback() });
 		}
 		else 
 		{
 			syncquery(queryString, function(r){ result.push(r["modifier"].value) });
+			return result;
+		}
+	}
+	
+	var getTotalNumberOfSubConcepts = function(e, callback)
+	{
+		var result = [];
+		queryString = queries["getTotalNumberOfSubConcepts"].replace(/ELEMENT/g, "<" + e + ">" );
+		if (callback != undefined)
+		{
+			query(queryString, function(r) { callback(r) });
+		}
+		else 
+		{
+			syncquery(queryString, function(r){ result = r });
 			return result;
 		}
 	}
@@ -433,6 +448,15 @@ WHERE {
 }     
 ORDER BY DESC(?date) LIMIT 1
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getTotalNumberOfSubConcepts: prefixes + (function () {/*
+SELECT (count(distinct ?concept) as ?concepts) (count(?modifier) as ?modifiers)
+WHERE {
+	ELEMENT skos:member* [ skos:narrower* ?concept ] .	
+	OPTIONAL { 
+		?concept rdf:hasPart [ skos:narrower* ?modifier ] .
+	}
+}     
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
 		/* Im Folgenden benötige ich die NOT EXISTS Klauseln, da die Umbenennung eines Konzepts dazu führt, dass die Relationen einmal entfernt und dann wieder hinzugefügt werden, obwohl sie sich nicht änderten. */
 		getNotes: prefixes + (function () {/*
 SELECT ?note (SUBSTR(STR(?tempdate),1,10) as ?date) ?author ?value ?property ?action ?minus (lang(?minus) as ?minuslang) ?plus (lang(?plus) as ?pluslang) ?reason
@@ -489,6 +513,7 @@ WHERE {
 		getAncestors: getAncestors,
 		useLocalFuseki: useLocalFuseki,
 		getNewNotation: getNewNotation,
-		getDeprecatedConceptByNotation: getDeprecatedConceptByNotation
+		getDeprecatedConceptByNotation: getDeprecatedConceptByNotation,
+		getTotalNumberOfSubConcepts: getTotalNumberOfSubConcepts
 	}
 }());

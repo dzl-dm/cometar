@@ -144,7 +144,9 @@ var Helper = (function()
 	}
 	
 	var setCurrentConceptUrl = function(conceptUrl){
-		location.hash = getCometarWebUrlByConceptUrl(conceptUrl);
+		var options = "";
+		if (location.hash.indexOf("?") > -1) options = location.hash.substr(location.hash.indexOf("?"));
+		location.hash = getCometarWebUrlByConceptUrl(conceptUrl) + options;
 	}
 	
 	var getCometarWebUrlByConceptUrl = function(conceptUrl)

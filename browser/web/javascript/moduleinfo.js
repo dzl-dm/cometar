@@ -87,6 +87,14 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					} 
 					infoDivDomain.append(restriction + "<br/>").addClass("filled"); 
 				});
+				if (Helper.getQueryParameter("mode")=="advanced")
+				{
+					var infoDivSubconcepts = $("<div class='aggregatedInfo'><h3>#Subordinated concepts / modifiers</h3></div>");
+					aggregatedInfoDiv.append(infoDivSubconcepts); 
+					QueryManager.getTotalNumberOfSubConcepts(conceptUrl, function(i){
+						infoDivSubconcepts.append(i["concepts"].value + " / " + i["modifiers"].value + "<br/>").addClass("filled"); 
+					});
+				}
 				
 				var infoDivEditNotes = $("<div class='infoDiv'><h3>Editorial Notes</h3></div>");
 				restInfoDiv.append(infoDivEditNotes); 
@@ -167,7 +175,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 							}
 						});
 					});
-					Helper.customHide(infoDivChanges,250);
+					Helper.customHide(infoDivChanges,$(".infoDivChanges").children(".changesDiv:first").get(0).scrollHeight +$(".infoDivChanges").children("h3:first").get(0).scrollHeight+20);
 				});
 					
 				var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Specifications</h3></div>");
