@@ -134,6 +134,21 @@ var QueryManager = (function(){
 		return result;
 	}
 	
+	var getAllChangeCommits = function(callback)
+	{
+		var result;
+		var queryString = queries["getAllChangeCommits"];
+		if (callback != undefined)
+		{
+			query(queryString, function(r) { callback(r) });
+		}
+		else 
+		{
+			syncquery(queryString, function(r){ result=r });
+		}
+		return result;
+	}
+	
 	var getProperty = function(e, p, foc1, foc2)
 	{
 		var result = [];
@@ -266,23 +281,36 @@ PREFIX rdfs:	<http://www.w3.org/2000/01/rdf-schema#>
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 	queries = {
 		getTopElements: prefixes + (function () {/*
-SELECT ?element ?type
-WHERE {
+SELECT ?element ?type ?label
+WHERE {	
 	{
 		SELECT ?element ('concept' as ?type)
 		WHERE {
 			?element a skos:Concept .
-			?element skos:topConceptOf ?scheme .
+			?dzl :topLevelNode ?element .
 			?element skos:prefLabel ?label FILTER (lang(?label)='en').
 		}
-		ORDER BY ?label
 	}
-#	UNION
-#	{
-#		SELECT (:root as ?element) ('collection' as ?type)
-#		WHERE {}
-#	}
-}      
+	UNION
+	{
+		SELECT ?element ('collection' as ?type)
+		WHERE {
+			?element a skos:Collection .
+			?dzl :topLevelNode ?element .
+			?element skos:prefLabel ?label FILTER (lang(?label)='en').
+		}
+	}
+	UNION
+	{
+		SELECT ?element ('concept' as ?type)
+		WHERE {
+			?element a skos:Concept .
+			?element skos:topConceptOf :Scheme .
+			?element skos:prefLabel ?label FILTER (lang(?label)='en').
+		}
+	}
+}    
+ORDER BY ?label  
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
 		getSubElements: prefixes + (function () {/*
 SELECT ?element
@@ -487,6 +515,25 @@ WHERE {
 } 
 ORDER BY DESC(SUBSTR(STR(?tempdate),1,10)) DESC(?author) DESC(?property) ASC(SUBSTR(CONCAT(COALESCE(?minuslang,''),COALESCE(?pluslang,'')),1,2)) DESC(?tempdate)   
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
+		getAllChangeCommits: prefixes + (function () {/*
+SELECT DISTINCT ?element (SUBSTR(STR(?tempdate),1,10) as ?timestamp) ?author ?label ?property
+WHERE { 
+	?element skos:changeNote ?note .
+	?element skos:prefLabel ?label FILTER (lang(?label)='en') .
+	OPTIONAL { ?note dc:creator [ foaf:name ?author ] }
+	OPTIONAL { ?note owl:onProperty ?property }
+	?note dc:date ?tempdate .
+	{ 
+		SELECT DISTINCT ?tempdate 
+		WHERE {
+			?e skos:changeNote [ dc:date ?tempdate ] .
+		}
+		ORDER BY DESC(?tempdate)
+		LIMIT 30
+    }
+}   
+ORDER BY DESC(?tempdate)
+		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1],
 		getModifiers: prefixes + (function () {/*
 SELECT ?modifier 
 WHERE { 
@@ -514,6 +561,7 @@ WHERE {
 		useLocalFuseki: useLocalFuseki,
 		getNewNotation: getNewNotation,
 		getDeprecatedConceptByNotation: getDeprecatedConceptByNotation,
-		getTotalNumberOfSubConcepts: getTotalNumberOfSubConcepts
+		getTotalNumberOfSubConcepts: getTotalNumberOfSubConcepts,
+		getAllChangeCommits: getAllChangeCommits
 	}
 }());
