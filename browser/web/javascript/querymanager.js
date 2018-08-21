@@ -284,7 +284,7 @@ PREFIX rdfs:	<http://www.w3.org/2000/01/rdf-schema#>
 SELECT ?element ?type ?label
 WHERE {	
 	{
-		SELECT ?element ('concept' as ?type)
+		SELECT ?element ('concept' as ?type) ?label
 		WHERE {
 			?element a skos:Concept .
 			?dzl :topLevelNode ?element .
@@ -293,7 +293,7 @@ WHERE {
 	}
 	UNION
 	{
-		SELECT ?element ('collection' as ?type)
+		SELECT ?element ('collection' as ?type) ?label
 		WHERE {
 			?element a skos:Collection .
 			?dzl :topLevelNode ?element .
@@ -302,7 +302,7 @@ WHERE {
 	}
 	UNION
 	{
-		SELECT ?element ('concept' as ?type)
+		SELECT ?element ('concept' as ?type) ?label
 		WHERE {
 			?element a skos:Concept .
 			?element skos:topConceptOf :Scheme .
