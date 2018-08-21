@@ -2,6 +2,7 @@ package de.dzl.cometar;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,6 +10,8 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Properties;
 
 import org.apache.jena.atlas.logging.LogCtl;
 import org.apache.jena.fuseki.Fuseki;
@@ -24,28 +27,45 @@ public class SQLFileWriter extends SQLGenerator {
 	private Writer writer_meta;
 	private Writer writer_data;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		SQLFileWriter sqlFileWriter = new SQLFileWriter();
-		
-		if (args.length == 0)
-		{
-			throw new IllegalArgumentException("Missing SPARQL endpoint argument.");
-		}
-		boolean use_embedded_server = true;
 		FusekiServer server = null;
 
-		sqlFileWriter.meta_schema = "";//"i2b2metadata.";//"public.";
-		sqlFileWriter.data_schema = "";//"i2b2demodata.";//"public.";
-		sqlFileWriter.sourcesystem = "CoMetaR jauuu";
+		Properties prop = new Properties();
+		String properties_path = "";
+		if (args.length>0) properties_path = args[0];
+		else properties_path = "properties.properties";
+		prop.load(new FileInputStream(properties_path));
+		boolean use_embedded_server = prop.getProperty("test.use_embedded_server").equals("true");
+		sqlFileWriter.meta_schema = prop.getProperty("i2b2.meta_schema");
+		sqlFileWriter.data_schema = prop.getProperty("i2b2.data_schema");
+		sqlFileWriter.ontology_tablename = prop.getProperty("i2b2.ontology.tablename");
+		sqlFileWriter.i2b2_path_prefix = prop.getProperty("i2b2.ontology.path_prefix");
+		sqlFileWriter.sourcesystem = prop.getProperty("i2b2.sourcesystem");
+		sqlFileWriter.outputDir = prop.getProperty("generator.output_dir");
+		String ttl_file_directory = prop.getProperty("test.ttl_file_directory");
+		String ttl_rule_file = prop.getProperty("test.ttl_rule_file");
+		String[] mappingsArray = prop.getProperty("generator.mappings").split(";");
+		sqlFileWriter.mappings = new HashMap<String, String>();
+		for (int i = 0; i < mappingsArray.length; i+=2)
+		{
+			sqlFileWriter.mappings.put(mappingsArray[i], mappingsArray[i+1]);
+		}
+		
 		if (use_embedded_server)
 		{
-			server = startEmbeddedServer("C:\\Users\\stmar7\\Projekte\\Vorträge und Publikationen\\CoMetaR Evaluation\\package\\dzl_ontology_files","C:\\Users\\stmar7\\Projekte\\cometar\\repository\\config\\insertrules.ttl");
+			server = startEmbeddedServer(ttl_file_directory,ttl_rule_file);
 	    	URI uri = server.server.getURI();
 	    	sqlFileWriter.sparqlEndpoint = "http://"+uri.getHost()+":3330/ds/query";
 		}
 		else
 		{
-			sqlFileWriter.sparqlEndpoint = args[0];
+			
+			if (!prop.containsKey("generator.sparql_endpoint"))
+			{
+				throw new IllegalArgumentException("Missing SPARQL endpoint property.");
+			}
+			sqlFileWriter.sparqlEndpoint = prop.getProperty("generator.sparql_endpoint");
 		}
 		
 		try {
