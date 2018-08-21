@@ -162,8 +162,16 @@ var loadConfig = function(){
 			var notation = deprecatedNotations[i];
 			var newNotation = QueryManager.getNewNotation(notation);
 			var deprecatedConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
-			deprecatedConceptUrl += Helper.getCometarWebUrlByConceptUrl(QueryManager.getDeprecatedConceptByNotation(notation));
-			$("#divNotationFeedback").append("<br/><a href='"+deprecatedConceptUrl+"'>"+notation+"</a> is not a valid code (anymore). ");
+			var deprecatedConcept = QueryManager.getDeprecatedConceptByNotation(notation);
+			if (deprecatedConcept) 
+			{
+				deprecatedConceptUrl += Helper.getCometarWebUrlByConceptUrl(deprecatedConcept);
+				$("#divNotationFeedback").append("<br/><a href='"+deprecatedConceptUrl+"'>"+notation+"</a> is not a valid code (anymore). ");
+			}
+			else
+			{
+				$("#divNotationFeedback").append("<br/>Unknown notation: "+notation+". ");
+			}
 			if (newNotation != undefined && newNotation != "") 
 			{
 				if (validXml) output = output.replace("\"" + notation + "\"", "\"" + newNotation + "\"");
