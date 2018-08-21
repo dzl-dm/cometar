@@ -4,3 +4,4 @@
 target/
 data.sql
 meta.sql
+properties.properties

@@ -7,12 +7,23 @@ WHERE {
 		SELECT ?element ('concept' as ?type)
 		WHERE {
 			?element a skos:Concept .
-			?element skos:topConceptOf ?scheme .
+			?dzl :topLevelNode ?element .
 		}
 	}
 	UNION
 	{
-		SELECT (:root as ?element) ('collection' as ?type)
-		WHERE {}
+		SELECT ?element ('collection' as ?type)
+		WHERE {
+			?element a skos:Collection .
+			?dzl :topLevelNode ?element .
+		}
+	}
+	UNION
+	{
+		SELECT ?element ('concept' as ?type)
+		WHERE {
+			?element a skos:Concept .
+			?element skos:topConceptOf :Scheme .
+		}
 	}
 }
