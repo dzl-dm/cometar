@@ -1,51 +1,37 @@
 package de.dzl.cometar;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
+import java.util.Map;
 
-import org.apache.jena.atlas.logging.LogCtl;
-import org.apache.jena.fuseki.Fuseki;
-import org.apache.jena.fuseki.build.FusekiConfig;
-import org.apache.jena.fuseki.embedded.FusekiServer;
-import org.apache.jena.query.Dataset;
-import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
-import org.apache.jena.sparql.function.library.leviathan.log;
-import org.apache.jena.sparql.modify.UsingList;
-import org.apache.jena.update.UpdateAction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class SQLGenerator {
 	String meta_schema;
 	String data_schema;
 	String sparqlEndpoint;
 	String sourcesystem;
-
-	int counter = 0;
+	String ontology_tablename;
+	String i2b2_path_prefix;
+	Map<String, String> mappings;
 	String outputDir;
 
+	int counter = 0;
+
 	public SQLGenerator(){
-		this.outputDir = "";	
 		initializeQueries();
 	}
 
@@ -75,26 +61,25 @@ public abstract class SQLGenerator {
 	
 	private void writePreambles() throws IOException
 	{
-		writeMetaSql("DELETE FROM "+meta_schema+"table_access WHERE c_table_cd LIKE '"+sourcesystem+"%';\n");
-		writeMetaSql("DELETE FROM "+meta_schema+"i2b2 WHERE sourcesystem_cd='"+sourcesystem+"';\n");
+		writeMetaSql("DELETE FROM "+meta_schema+"table_access WHERE c_table_cd LIKE 'i2b2_%';\n");
+		writeMetaSql("DELETE FROM "+meta_schema+ontology_tablename+" WHERE sourcesystem_cd='"+sourcesystem+"';\n");
 		writeDataSql("DELETE FROM "+data_schema+"concept_dimension WHERE sourcesystem_cd='"+sourcesystem+"';\n");
 		writeDataSql("DELETE FROM "+data_schema+"modifier_dimension WHERE sourcesystem_cd='"+sourcesystem+"';\n");
 	}
 	
     protected void generateSQLStatements() throws IOException {    	
     	long time = System.currentTimeMillis();
-    	//this.sparqlEndpoint = sparqlEndpoint;
     	try {
 	    	initializeWriters();
 	    	writePreambles();
 	    	
 	    	System.out.println("Starting statement generation.");			
 	    	
-			List<String>[] topElements = getTopElements();
-			for (String elementName : topElements[0])
+			ArrayList<ArrayList<String>> topElements = getTopElements();
+			for (String elementName : topElements.get(0))
 			{
 				String label = getLabel(elementName);
-				String elementType = topElements[1].get(topElements[0].indexOf(elementName));
+				String elementType = topElements.get(1).get(topElements.get(0).indexOf(elementName));
 		    	System.out.println("Generating statements for tree: "+label);
 				//if (label.equals("Specimen")) 
 					recursivelyRunThroughConceptsAndGenerateStatements(elementName, elementType, new ArrayList<String>(), false, null);
@@ -138,9 +123,9 @@ public abstract class SQLGenerator {
 		String label = getLabel(element);	
 		String description = getDescription(element);
 		if (description.isEmpty()) description = label;
-    	List<String>[] childElements = getChildren(element);
-    	List<String> childNames = childElements[0];
-    	List<String> childTypes = childElements[1];
+    	ArrayList<ArrayList<String>> childElements = getChildren(element);
+    	List<String> childNames = childElements.get(0);
+    	List<String> childTypes = childElements.get(1);
     	List<Literal> notations = getNotations(element);
     	//TODO nur eine notation oder mehrere?
 		
@@ -157,7 +142,7 @@ public abstract class SQLGenerator {
 		 * Building two i2b2 paths, one with and one without prefixes of form:
 		 * [\i2b2]\ancestor 0\ancestor 1\...\ancestor n\concept\
 		 */
-		String element_path = isModifier?"\\":"\\i2b2\\";
+		String element_path = isModifier?"\\":i2b2_path_prefix+"\\";
 		int c_hlevel = ancestors.size()+2;
 		for (String ancestor_name : ancestors)
 		{
@@ -165,7 +150,7 @@ public abstract class SQLGenerator {
 		}
 		element_path += getName(element, true)+"\\";
 
-		if (childNames.size() == 0) counter+=1;	
+		counter+=1;	
 		//Write statements for concept. In case of not exactly one concept notation, String notation will be "NULL".
 		generateI2b2InsertStatement(c_hlevel, notation, element_path, label, description, visualAttribute, current_timestamp, isModifier, appliedPath);
 		if (isRootElement)
@@ -225,7 +210,7 @@ public abstract class SQLGenerator {
 			String label, String description, String visualAttribute, String current_timestamp, boolean isModifier, String appliedPath) throws IOException
 	{
 		String statement = 
-				"INSERT INTO "+meta_schema+"i2b2("+
+				"INSERT INTO "+meta_schema+ontology_tablename+"("+
 					"c_hlevel,c_fullname,c_name,c_synonym_cd,c_visualattributes,"+
 					"c_basecode,c_metadataxml,c_facttablecolumn,c_tablename,c_columnname,"+
 					"c_columndatatype,c_operator,c_dimcode,c_tooltip,m_applied_path,"+
@@ -276,7 +261,7 @@ public abstract class SQLGenerator {
 					"c_name,c_synonym_cd,c_visualattributes,c_facttablecolumn,c_dimtablename,"+
 					"c_columnname,c_columndatatype,c_operator,c_dimcode,c_tooltip"+
 				")VALUES("+
-					"'i2b2_"+Integer.toHexString(concept_long.hashCode())+"','i2b2','N',1,'"+concept_long+"',"+
+					"'i2b2_"+Integer.toHexString(concept_long.hashCode())+"','"+ontology_tablename+"','N',1,'"+concept_long+"',"+
 					"'"+label+"','N','"+visualAttribute+"','concept_cd','concept_dimension',"+
 					"'concept_path','T','LIKE','"+concept_long+"','"+label+"'"+
 				");\n";
@@ -297,30 +282,16 @@ public abstract class SQLGenerator {
 			Literal notation = (Literal) solution.get("notation");
 			notations.add(notation);
 		}
+		
+		httpQuery.close();
 
 		return notations;
 	}
-	private String getNotationPrefix(Literal notation)
-	{
-		String prefix = "";
-		switch (notation.getDatatypeURI())
-		{
-			case "http://sekmi.de/histream/dwh#snomed":
-				prefix = "S:";
-				break;
-			case "http://sekmi.de/histream/dwh#loinc":
-				prefix = "L:";
-				break;
-			default:
-				break;
-		}
-		return prefix;
-	}
 	
-	private List<String>[] getTopElements()
+	private ArrayList<ArrayList<String>> getTopElements()
 	{	
-		List<String> elements = new ArrayList<String>();
-		List<String> types = new ArrayList<String>();
+		ArrayList<String> elements = new ArrayList<String>();
+		ArrayList<String> types = new ArrayList<String>();
 		
     	String queryString = query_top_elements;
 		Query query = QueryFactory.create(queryString);
@@ -334,18 +305,19 @@ public abstract class SQLGenerator {
 		}
 
 		httpQuery.close();
-		List<String>[] r = new List[2];
-		r[0] = elements;
-		r[1] = types;
+		ArrayList<ArrayList<String>> r = new ArrayList<ArrayList<String>>();
+		r.add(elements);
+		r.add(types);
 		return r;
 	}
 	
-	private List<String>[] getChildren(String element)
+	private ArrayList<ArrayList<String>> getChildren(String element)
 	{
-		List<String> elements = new ArrayList<String>();
-		List<String> types = new ArrayList<String>();
+		ArrayList<String> elements = new ArrayList<String>();
+		ArrayList<String> types = new ArrayList<String>();
 		
     	String queryString = query_child_elements.replace("TOPELEMENT", "<"+element+">");
+    	
 		Query query = QueryFactory.create(queryString);
 		QueryEngineHTTP httpQuery = new QueryEngineHTTP(sparqlEndpoint, query);
 		ResultSet results = httpQuery.execSelect();
@@ -354,11 +326,10 @@ public abstract class SQLGenerator {
 			elements.add(solution.get("element").toString());
 			types.add(solution.get("type").toString());
 		}
-		
 		httpQuery.close();
-		List<String>[] r = new List[2];
-		r[0] = elements;
-		r[1] = types;
+		ArrayList<ArrayList<String>> r = new ArrayList<ArrayList<String>>();
+		r.add(elements);
+		r.add(types);
 		return r;
 	}
 	
@@ -392,10 +363,12 @@ public abstract class SQLGenerator {
 		QueryEngineHTTP httpQuery = new QueryEngineHTTP(sparqlEndpoint, query);
 		ResultSet results = httpQuery.execSelect();
 		if( !results.hasNext() ){
+			httpQuery.close();
 			throw new NullPointerException("Concept without prefLabel: "+concept);
 		}
 		QuerySolution solution = results.next();			
 		String label = solution.getLiteral("label").getString();
+		httpQuery.close();
 		// possibly generate error if there are multiple labels
 		return cleanLabel(label);
 	}
@@ -411,6 +384,7 @@ public abstract class SQLGenerator {
 			QuerySolution solution = results.next();			
 			description = solution.getLiteral("description").getString();
 		}
+		httpQuery.close();
 		return cleanLabel(description);
 	}
 	
@@ -425,15 +399,22 @@ public abstract class SQLGenerator {
 	private String getName(String uri, boolean withPrefix)
 	{
 		String name = uri;
-		name = name.replace("http://data.dzl.de/ont/dwh#", "dzl:");
-		name = name.replace("http://purl.bioontology.org/ontology/SNOMEDCT/", "S:");
-		name = name.replace("http://loinc.org/owl#", "L:");
+		for (String key : mappings.keySet())
+		{
+			name = name.replace(key, mappings.get(key));
+		}
 		if (!withPrefix)
 		{
 			String[] split = name.split(":");
 			name = split[split.length-1];
 		}
 		return name;
+	}
+	
+	private String getNotationPrefix(Literal notation)
+	{
+		if (mappings.containsKey(notation.getDatatypeURI())) return mappings.get(notation.getDatatypeURI());
+		return "";
 	}
 
 	private String readFile(InputStream is) throws IOException {
