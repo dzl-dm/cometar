@@ -78,7 +78,7 @@ while read line || [ -n "$line" ]; do #second expression is needed cause the las
 	commit_author=${array[2]}	
 	commit_date=${array[1]}	
 	echo $("$CHANGESSCRIPTDIR/extract_changes_from_checkout.sh" -p "$conffile" -i $checkout_id -a "$commit_author" -d "$commit_date" -o "$output_csv" -c "$checkouts_directory")
-done < <(cd "$TEMPDIR/git"; unset GIT_DIR; git checkout -q master; if [ -n "$recent_line" ] ; then echo "$recent_line"; fi; git log --pretty=format:"%H;%ai;%an" --since="$from_date" --before="$until_date" --no-merges)
+done < <(cd "$TEMPDIR/git"; unset GIT_DIR; git checkout -q master; if [ -n "$recent_line" ] ; then echo "$recent_line"; fi; git log --pretty=format:"%H;%ai;%an" --since="$from_date" --before="$until_date")
 
 sort -t $',' -k 2,2 -k 3,3 -k 4,4 -k 1,1 "$output_csv" | uniq > "$CHANGESFILESDIR/output/changes_sorted.csv"
 gawk -f "$CHANGESSCRIPTDIR/insert_changes_record_splitter.awk" -v output="$CHANGESFILESDIR/output/changes_sorted_splitted.csv" "$CHANGESFILESDIR/output/changes_sorted.csv"

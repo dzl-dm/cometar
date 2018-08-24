@@ -79,7 +79,8 @@ then
 	echo -------------------------------------
 fi
  
-rm -r $TEMPDIR
+rm -r "$TEMPDIR/git"
+rm -r "$TEMPDIR/i2b2-sql"
 
 echo "-------------"
 if [ $exitcode -gt 0 ]; then echo "UPLOAD FAILED"
