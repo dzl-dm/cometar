@@ -5,6 +5,6 @@ SELECT ?concept
 WHERE {
         ?concept a skos:Concept ;
         NOT EXISTS {
-			?s skos:hasTopConcept [ skos:member* [ skos:narrower* [ rdf:hasPart? [ skos:narrower* ?concept ] ] ] ]
+			?s :topLevelNode [ skos:member* [ skos:narrower* [ rdf:hasPart? [ skos:narrower* ?concept ] ] ] ]
         }
 }
