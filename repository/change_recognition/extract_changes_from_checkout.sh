@@ -76,8 +76,7 @@ function find_working_parent(){
 	for checkout_id_ancestor in ${checkout_ids_ancestors_array[@]}; do
 		success=$("$CHANGESSCRIPTDIR/save_ontology_state_from_checkout.sh" -p "$conffile" -i $checkout_id_ancestor -c "$checkouts_directory")
 		if [ $success -eq 1 ]; then
-			echo $checkout_id_ancestor
-			break
+			echo -n " $checkout_id_ancestor"
 		else
 			echo "$checkout_id_ancestor not parsable, trying next ancestor" >&2		
 			echo $(find_working_parent $checkout_id_ancestor)
