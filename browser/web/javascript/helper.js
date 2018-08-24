@@ -115,6 +115,7 @@ var Helper = (function()
 		["http://sekmi.de/histream/dwh#stringRestriction", "string"],
 		["http://sekmi.de/histream/dwh#floatRestriction", "float"],
 		["http://sekmi.de/histream/dwh#partialDateRestriction", "partial date"],
+		["http://www.w3.org/2004/02/skos/core#member", "collection member"],
 		["http://sekmi.de/histream/dwh#dateRestriction", "date"]
 	];
 	
@@ -195,6 +196,42 @@ var Helper = (function()
 			}, 200);
 		});
 	}
+
+	var fieldsToMark = [];
+	var fieldsToMarkClasses = [];
+	var addFieldToMark = function(id, classname)
+	{
+		if (fieldsToMark.indexOf(id)==-1)
+		{
+			fieldsToMark.push(id);
+			fieldsToMarkClasses.push(classname);
+		}
+	}
+	var markFields = function(itemDiv)
+	{
+		$(".treeItem").each(function(){
+			markField($(this));
+		});
+	}
+	var markField = function(itemDiv)
+	{
+		var conceptUrl = $(itemDiv).attr("data-concepturl");
+		var index = fieldsToMark.indexOf(conceptUrl);
+		if (index > -1){
+			$(itemDiv).addClass(fieldsToMarkClasses[index]);
+		}		
+	}
+	var clearFieldsToMark = function(classnames)
+	{
+		fieldsToMark = [];
+		fieldsToMarkClasses = [];
+		$(".treeItem").each(function(){
+			for (var c of classnames)
+			{
+				$(this).removeClass(c);
+			}
+		});
+	}
 	
 	return {
 		getPathsByConceptUrl: getPathsByConceptUrl,
@@ -209,6 +246,10 @@ var Helper = (function()
 		getQueryParameter: getQueryParameter,
 		levenstheinDistance: levenstheinDistance,
 		customHide: customHide,
-		getCometarWebUrlByConceptUrl: getCometarWebUrlByConceptUrl
+		getCometarWebUrlByConceptUrl: getCometarWebUrlByConceptUrl,
+		markFields: markFields,
+		markField: markField,
+		addFieldToMark: addFieldToMark,
+		clearFieldsToMark: clearFieldsToMark
 	}
 }());

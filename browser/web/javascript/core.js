@@ -75,13 +75,13 @@ $.fn.ontologieManager = function() {
 	{
 		conceptUrl = Helper.getCurrentConceptUrl();
 		TreeManager.openPaths(conceptUrl, true);
-		ModuleManager.showTab("details");
 	}
 	$(window).bind( 'hashchange', function(e) {
 		conceptUrl = Helper.getCurrentConceptUrl();
 		TreeManager.openPaths(conceptUrl, true);
 		ModuleManager.showTab("details");
 	});
+	ModuleManager.showTab("details");
 }
 
 var TreeManager = (function(){		
@@ -327,6 +327,10 @@ var TreeManager = (function(){
 		mark: mark
 	};
 }());
+
+$(document).on("tree:treeItemCreated", function(e, itemDiv){
+	Helper.markField(itemDiv);
+});
 
 var treeItem = function(){
 	var treeItemDiv;
