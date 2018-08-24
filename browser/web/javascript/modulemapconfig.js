@@ -10,7 +10,7 @@ var loadMapConfigModule = function()
 				var resultDiv = $("<div>").css("flex-direction","column");
 				
 				var ta = $("<textarea style='width:100%; height:300px' id='configTA'></textarea>");
-				var btn = $("<input type='button' onclick='loadConfig()' value='load configuration'/>");
+				var btn = $("<input type='button' id='loadConfigBtn' onclick='loadConfig()' value='load configuration'/>");
 				var fileSelect = $("<input type='file' id='configFileInput' />").change(function(evt){
 
 					var dateien = evt.target.files;
@@ -48,6 +48,7 @@ $(document).on("tree:treeItemCreated", function(e, itemDiv){
 });
 
 var loadConfig = function(){
+	$("#loadConfigBtn").hide();
 	var dzlIds = [];
 	var sourceIds = [];
 	//changing
@@ -161,6 +162,11 @@ var loadConfig = function(){
 		{
 			var notation = deprecatedNotations[i];
 			var newNotation = QueryManager.getNewNotation(notation);
+			if (newNotation == notation) 
+			{
+				$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; has multiple new notations.");	
+				continue;
+			}
 			var deprecatedConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
 			var deprecatedConcept = QueryManager.getDeprecatedConceptByNotation(notation);
 			if (deprecatedConcept) 
@@ -175,7 +181,7 @@ var loadConfig = function(){
 			if (newNotation != undefined && newNotation != "") 
 			{
 				if (validXml) output = output.replace("\"" + notation + "\"", "\"" + newNotation + "\"");
-				else output = output.replace(notation, newNotation);
+				else output = output.replace((i==0?"":",") + notation + (i==deprecatedNotations.length?"":","), (i==0?"":",") + newNotation + (i==deprecatedNotations.length?"":","));
 				$("#newDataSourceDownloadLink").css("display", "block");
 				var newConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
 				newConceptUrl += Helper.getCometarWebUrlByConceptUrl(QueryManager.getByProperty("skos:notation", newNotation));

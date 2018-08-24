@@ -99,6 +99,8 @@ var QueryManager = (function(){
 		var queryString = queries["getOldConceptByOldNotation"].replace(/OLDNOTATION/g, "\""+notation+"\"");
 		var e;
 		var en;
+		var oldElements = [];
+		var newNotation;
 		syncquery(queryString, function(r){
 			e = r["oldelement"].value;
 			en = e;
@@ -109,9 +111,21 @@ var QueryManager = (function(){
 					en = r2["newelement"].value;
 				});
 				if (en == e) 
-				{				
-					result = getProperty(e,"skos:notation").value;
-					return result;
+				{		
+					newNotationX = getProperty(en,"skos:notation");
+					if (newNotationX.value) 
+					{
+						newNotation = newNotationX.value;
+						oldElements.push(r["oldelement"].value);
+					}
+					if (result && result != newNotation)
+					{
+						console.log("Multiple possible new notations for "+notation+" ("+oldElements.join()+")!");
+						result = notation;
+					}
+					//once a unambiguous notation is identified, it should be returned unchanged 
+					if (result != notation) result = newNotation;
+					break;
 				}
 				else e = en;
 			}

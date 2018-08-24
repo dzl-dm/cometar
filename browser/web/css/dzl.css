@@ -59,15 +59,15 @@ input[type='file'], input[type='button']
 	right:-15px;
 }
 
-.treeItem.mappedInConfigPathPart
-{
-	/*background-color:#FFFFBF;*/
-	background-color:#FFFBD5;
-}
-
-.treeItem.mappedInConfig
+.treeItem.mappedInConfig, .treeItem.fieldToMark
 {
 	/*-webkit-filter:hue-rotate(270deg);
 	filter:hue-rotate(270deg);*/
 	background-color:#d8ffce;
+}
+
+.treeItem.mappedInConfigPathPart, .treeItem.fieldToMarkPath
+{
+	/*background-color:#FFFFBF;*/
+	background-color:#FFFBD5;
 }
