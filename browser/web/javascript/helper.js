@@ -226,8 +226,9 @@ var Helper = (function()
 		fieldsToMark = [];
 		fieldsToMarkClasses = [];
 		$(".treeItem").each(function(){
-			for (var c of classnames)
+			for (var i = 0; i < classnames.length; i++)
 			{
+				var c = classnames[i];
 				$(this).removeClass(c);
 			}
 		});
