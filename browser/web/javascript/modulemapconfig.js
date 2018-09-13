@@ -145,9 +145,10 @@ var loadConfig = function(){
 		});
 	} catch (err) {
 		var ids = taValue.split(",");
-		for (var i of ids)
+		for (var i = 0; i < ids.length; i++)
 		{
-			addIdPair(i,"-");
+			var id = ids[i];
+			addIdPair(id,"-");
 		}
 		return;
 	} finally {
