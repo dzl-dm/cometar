@@ -25,12 +25,14 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 								e.stopPropagation();	
 								Helper.clearFieldsToMark(["fieldToMark","fieldToMarkPath"]);
 								var conceptUrls = $(this).data("conceptUrls").split(",");
-								for (var u of conceptUrls)
+								for (var j=0; j < conceptUrls.length; j++)
 								{
+									var u = conceptUrls[j];
 									Helper.addFieldToMark(u,"fieldToMark");
 								}
-								for (var u of conceptUrls)
+								for (var j=0; j < conceptUrls.length; j++)
 								{
+									var u = conceptUrls[j];
 									QueryManager.getAncestors(u, function(a){
 										Helper.addFieldToMark(a,"fieldToMarkPath");
 									});
