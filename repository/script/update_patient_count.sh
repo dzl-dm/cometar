@@ -16,4 +16,4 @@ source "$conffile"
 
 # RUN SQL FOR CRC
 export PGPASSWORD=i2b2dm
-psql -h localhost -U i2b2dm i2b2 -f patient_count.sql
+psql -h localhost -U i2b2dm i2b2 -f "$SCRIPTDIR/patient_count.sql"
