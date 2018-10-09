@@ -1,7 +1,6 @@
 #!/bin/bash
 
-conffile=$(dirname $0)/../config/conf.cfg
-checkout_id=master
+conffile="$(dirname $0)/../config/conf.cfg"
 
 while [ ! $# -eq 0 ]
 do
@@ -13,10 +12,6 @@ do
 		-i)
 			shift
 			checkout_id=$1
-			;;
-		-c)
-			shift
-			checkouts_directory=$1
 			;;
 	esac
 	shift
@@ -51,14 +46,14 @@ sparql_query="PREFIX skos:    <http://www.w3.org/2004/02/skos/core#> \
 
 function write_triplestore_to_file() {
 	filename="$1"
-	echo "writing fuseki content to file $filename" >&2
+	echo "++ Writing fuseki content to file $filename." >&2
 	local success=1	
 	curl -H "Accept: text/csv" -G "$FUSEKITESTDATASET/query" -s -w "%{http_code}" --data-urlencode query="$sparql_query" >> "$filename"
 	echo $success
 }
 
 function apply_ttl_rules() {
-	echo "applying rules" >&2
+	echo "++ Applying rules." >&2
 	STATUSCODE=$(curl -X POST -s -T "$CONFDIR/insertrules.ttl" -G "$FUSEKITESTDATASET/update" -w "%{http_code}")
 	local success=0;
 	if [ $STATUSCODE -ge 200 -a $STATUSCODE -lt 300 ]; then
@@ -68,7 +63,7 @@ function apply_ttl_rules() {
 }
 
 function load_all_ttl_files() {
-	echo "loading files into fuseki" >&2
+	echo "++ Loading files into Fuseki Server." >&2
 	curl -X PUT -H "Content-Type: text/turtle;charset=utf-8" -G "$FUSEKITESTDATASET/data" -d default -s
 	number_of_failed_uploads=0
 	shopt -s nullglob
@@ -78,7 +73,7 @@ function load_all_ttl_files() {
 		if ! [ $STATUSCODE -ge 200 -a $STATUSCODE -lt 300 ]
 		then
        		let number_of_failed_uploads+=1;
-			echo "Error during loading of file ${filename}. Statuscode: $STATUSCODE" >&2
+			echo "!++ Error during loading of file ${filename}. Statuscode: $STATUSCODE" >&2
 			break;
 		fi	
 	done
@@ -89,26 +84,35 @@ function load_all_ttl_files() {
 	fi
 	echo $success
 }
+	
+checkouts_directory="$PROVENANCEFILESDIR/checkouts"
+mkdir -p "$checkouts_directory"
+output_file="${checkouts_directory}/${checkout_id}.csv"
 
-function from_checkout_id_to_file() {
-	checkout_id=$1	
-	echo "from checkout id $checkout_id to file" >&2
-	filename="${checkouts_directory}/${checkout_id}.csv"
-	local success=1
-	if [ -f "$filename" ]; then
-		echo "File $filename exists." >&2
+echo "++ Saving commit $checkout_id to file." >&2
+
+if [ -f "$output_file.invalid" ]; then
+	echo "++ File $output_file was marked as invalid commit." >&2
+	success=0
+else 
+	if [ -f "$output_file" ]; then
+		echo "++ File $output_file exists." >&2
+		success=1
 	else
 		$(cd "$TEMPDIR/git"; unset GIT_DIR; git checkout --quiet $checkout_id)
 		success=$(load_all_ttl_files)
-		if [ $success == 1 ]; then
+		if [ $success -eq 1 ]; then
 			success=$(apply_ttl_rules)
 			if [ $success -eq 1 ]; then
-				success=$(write_triplestore_to_file "$filename")
+				success=$(write_triplestore_to_file "$output_file")
 			fi
 		fi
 	fi
-	echo $success
-}
-
-success=$(from_checkout_id_to_file $checkout_id)
+	if [ $success -eq 1 ]; then
+		echo "++ $output_file successfully created." >&2
+	else
+		echo -n "" > "$output_file.invalid"
+		echo "!++ $output_file is now marked as invalid commit." >&2
+	fi
+fi
 echo $success

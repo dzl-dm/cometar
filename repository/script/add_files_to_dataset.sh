@@ -6,7 +6,8 @@ directory=`dirname $0`
 port=3030
 silentmode=""
 testmode=false
-loadChangeFiles=false
+loadProvenanceFiles=false
+emf="/dev/stderr"
 
 while [ ! $# -eq 0 ]
 do
@@ -19,6 +20,10 @@ do
 			shift
 			directory=$1
 			;;
+		-e)	
+			shift
+			emf=$1
+			;;
 		-c)
 			cleardata=true
 			;;
@@ -26,7 +31,7 @@ do
 			silentmode="--silent"
 			;;
 		-h)
-			loadChangeFiles=true
+			loadProvenanceFiles=true
 			;;
 		-p)
 			shift
@@ -39,6 +44,7 @@ done
 source "$conffile"
 EXITCODE=0
 
+touch "$TEMPDIR/out.txt"
 if $cleardata; then
 	if $testmode; 
 	then
@@ -52,34 +58,43 @@ if $testmode; then
 	while read line ; do
 		filename=$line
 		echo "Adding file $(basename "$filename")."
-		STATUSCODE=$(curl -X POST -H "Content-Type: text/turtle;charset=utf-8" $silentmode -S --output /dev/stderr -w "%{http_code}" -T "$filename" -G "$FUSEKITESTDATASET/data" -d default) 
+		STATUSCODE=$(curl -X POST -H "Content-Type: text/turtle;charset=utf-8" $silentmode -S --output "$TEMPDIR/out.txt" -w "%{http_code}" -T "$filename" -G "$FUSEKITESTDATASET/data" -d default) 
 		if ! [ $STATUSCODE -ge 200 -a $STATUSCODE -lt 300 ]
 		then
-       		 	EXITCODE=1
+			echo "$filename" >> "$emf"
+			cat "$TEMPDIR/out.txt" >> "$emf"
+       		EXITCODE=1
 		fi
 	done < <(find "$directory" -iname '*.ttl')
 	echo "Inserting rules"
 	endpoint="$FUSEKITESTDATASET/update"
 	curl -X POST -s -T "$CONFDIR/insertrules.ttl" -G "$endpoint"
 else
-	if $loadChangeFiles; then
-		echo "Loading change files into live server."
+	endpoint="$FUSEKILIVEDATASET/update"
+	if $loadProvenanceFiles; then
+		echo "Loading provenance files into live server."
 		shopt -s nullglob
 		while read line ; do
 			filename=$line
 			echo "Adding file $(basename "$filename")."
-			STATUSCODE=$(curl -X POST -H "Content-Type: text/turtle;charset=utf-8" $silentmode -S --output /dev/stderr -w "%{http_code}" -T "$filename" -G "$FUSEKILIVEDATASET/data" -d default) 
+			STATUSCODE=$(curl -X POST -H "Content-Type: text/turtle;charset=utf-8" $silentmode -S --output "$TEMPDIR/out.txt" -w "%{http_code}" -T "$filename" -G "$FUSEKILIVEDATASET/data" -d default) 
 			if ! [ $STATUSCODE -ge 200 -a $STATUSCODE -lt 300 ]
 			then
-					EXITCODE=1
+				echo "$filename" >> "$emf"
+				cat "$TEMPDIR/out.txt" >> "$emf"
+				EXITCODE=1
 			fi
-		done < <(find "$CHANGESFILESDIR/output" -iname '*.ttl')
+		done < <(find "$PROVENANCEFILESDIR/output" -iname '*.ttl')
+		echo "Inserting derivations"
+		curl -X POST -s -T "$CONFDIR/provenance_derivations.ttl" -G "$endpoint" 
 	else
 		echo "Loading dataset into live server."
-		STATUSCODE=$(curl -X POST -H "Content-Type: text/turtle;charset=utf-8" $silentmode -S --output /dev/stderr -w "%{http_code}" -T "$TEMPDIR/export.ttl" -G "$FUSEKILIVEDATASET/data" -d default)
+		STATUSCODE=$(curl -X POST -H "Content-Type: text/turtle;charset=utf-8" $silentmode -S --output "$TEMPDIR/out.txt" -w "%{http_code}" -T "$TEMPDIR/export.ttl" -G "$FUSEKILIVEDATASET/data" -d default)
 		if ! [ $STATUSCODE -ge 200 -a $STATUSCODE -lt 300 ]
 		then
-		EXITCODE=1
+			echo "$filename" >> "$emf"
+			cat "$TEMPDIR/out.txt" >> "$emf"
+			EXITCODE=1
 		fi
 	fi
 fi

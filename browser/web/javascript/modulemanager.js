@@ -109,6 +109,11 @@ $(document).ready(function(){
 			getTabDiv(tabName).click();
 		}
 		
+		var hideMenu = function()
+		{
+			$(".modulesMenuItem, #modulesMenu").css("height","0px");
+		}
+		
 		var init = function(){	
 			register([{ tabName: "details" }]);
 			/*$(document).on("tree:treeItemClicked", function(){
@@ -120,7 +125,8 @@ $(document).ready(function(){
 			register: register,
 			renderModules: renderModules,
 			showTab: showTab,
-			refreshTab: showTab
+			refreshTab: showTab,
+			hideMenu: hideMenu
 		}
 	}());
 	

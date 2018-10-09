@@ -9,9 +9,34 @@ $.fn.ontologieManager = function() {
 				if (tt != undefined)
 				{
 					var tooltip = $("#tooltipDiv");
-					tooltip.html(tt);
-					tooltip.css("top", ($(this).offset().top - tooltip.outerHeight()) + "px");
-					tooltip.css("left", ($(this).offset().left - tooltip.outerWidth()) + "px");
+					var tooltipcontent = $("#tooltipContentDiv");
+					
+					tooltipcontent.html(tt);
+					/*tooltip.css("maxWidth", $(this).offset().left-10);
+					tooltip.css("maxHeight", $(this).offset().top-10);
+					var newleft = $(this).offset().left - tooltip.outerWidth();
+					if (newleft<0)newleft=10;
+					tooltip.css("left", newleft + "px");					
+					var newtop = $(this).offset().top - tooltip.outerHeight();
+					if (newtop<0)newtop=10;
+					tooltip.css("top", newtop + "px");*/
+					tooltip.css("width", $("#modulesContents").width()-50+"px");
+					tooltip.css("left", $("#modulesContents").offset().left+10+"px");
+					tooltip.css("height", "calc(50% - 50px)");
+					tooltipcontent.css("height", (tooltip.outerHeight()-20) +"px");
+					var newtop = $(this).offset().top - tooltip.outerHeight();
+					if (newtop < 0)
+					{
+						newtop = $(this).offset().top + $(this).outerHeight();
+					}
+					tooltip.css("top", newtop+"px");
+					$(this).addClass("tooltipedDiv");
+					$("#tooltipbackgrounddiv")
+						.css("left",$("#modulesContents").offset().left)
+						.css("width",$("#modulesContents").width())
+						.css("top",$("#modulesContents").offset().top)
+						.css("height",$("#modulesContents").height())
+						.show();
 					tooltip.show();
 				}
 				var tt = $( this ).data("tooltip");
@@ -21,7 +46,12 @@ $.fn.ontologieManager = function() {
 					tooltip.html(tt($(this).data("tooltiparg")));
 				}
 			}, function() {
-				$("#tooltipDiv").hide();
+				var tooltip = $("#tooltipDiv");
+				if (!tooltip.is(":hover")) {
+					$("#tooltipDiv").hide();
+					$("#tooltipbackgrounddiv").hide();
+					$(".tooltipedDiv").removeClass("tooltipedDiv");
+				}
 			}
 		);
 	});
@@ -53,7 +83,10 @@ $.fn.ontologieManager = function() {
 		</div></div> \
 		<div id='tooltipDiv'></div>"
 	).addClass("cometarContainer");
+	$("#tooltipDiv").before($("<div id='tooltipbackgrounddiv' style='width:100%;height:100%;background-color:grey;opacity:0.9;position:fixed;left:0px;top:0px;display:none'>"));
+	$("#tooltipDiv").append($("<div id='tooltipContentDiv'>"));
 	ModuleManager.renderModules();
+	if (Helper.getQueryParameter("mode")!="advanced") ModuleManager.hideMenu();
 	
 	TreeManager.load();
 	$("#conceptTreeContainer").resizable({
@@ -254,51 +287,24 @@ var TreeManager = (function(){
 		$(".pathPart").removeClass("pathPart");
 		unmarkTreeItems(conceptUrl);
 		if (closeFalsePathsBeforeOpening) closeFalsePaths(conceptUrl);
-		Helper.getPathsByConceptUrl(conceptUrl, function(path){
-			TreeManager.openPath(path[0]);
-		});
-	}
-	
-	var openPath = function(path, scrollThere)
-	{
-		var conceptUrl = path[path.length-1];
-		unmarkTreeItems(conceptUrl);
-		
-		$("#conceptTree .pathPart").removeClass("pathPart");
-		$("#conceptTree").addClass("pathPart");
-		var pathDepth = 1;
-		var attempts = 10;
-		(function f(){
-			while (path.length > 0 && attempts > 0)
+		var pathParts = QueryManager.getPathParts(conceptUrl);
+		var pathPartsLength = pathParts.length;
+		for (var i = 0; i < pathPartsLength; i++)
+		{
+			for (var j = 0; j < pathParts.length; j++)
 			{
-				if ($("#conceptTree .treeItem[data-concepturl='"+path[0]+"']").length == 0) 
+				var pathPart = pathParts[j];
+				if (pathPart == conceptUrl) continue;
+				var pathPartDiv = $("#conceptTree .treeItem[data-concepturl='"+pathPart+"']");
+				if (pathPartDiv.length > 0)
 				{
-					setTimeout(function(){console.log("Loading of path delayed..."); f() }, 100);
-					attempts--;
+					pathPartDiv.data("treeobject").expand();
+					pathParts.splice(j,1);
 					break;
 				}
-				else
-				{
-					$("#conceptTree .treeItem[data-concepturl='"+path[0]+"']").each(function(){
-						pathPart = $(this);
-						if (pathPart.parent().hasClass("pathPart") && pathPart.parents(".pathPart").length == pathDepth)
-						{
-							path.shift();
-							pathDepth++;
-							pathPart.addClass("pathPart");
-							if (path.length > 0)
-								pathPart.data("treeobject").expand();
-							else 
-							{
-								mark(conceptUrl);
-								if (scrollThere) scrollToTreeItem(pathPart);
-							}
-						}
-					});
-				}
 			}
-		})();
-
+		}
+		mark(conceptUrl);
 	}
 	
 	var scrollToTreeItem = function(treeItemDiv)
@@ -322,7 +328,7 @@ var TreeManager = (function(){
 		load: load,
 		createTopTreeItems: createTopTreeItems,
 		fillWithSubConcepts: fillWithSubConcepts,
-		openPath: openPath,
+		//openPath: openPath,
 		openPaths: openPaths,
 		mark: mark
 	};

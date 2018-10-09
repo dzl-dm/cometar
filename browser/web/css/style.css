@@ -42,6 +42,7 @@
 	flex:1;
 	justify-content:center; 
 	align-items:center;
+	overflow:hidden;
 }
 
 #conceptTreeContainer > div, .treeMenuItem, #treeMenu, #modulesMenu, #modulesContainer > div, .modulesMenuItem
@@ -371,6 +372,7 @@
 	overflow-y:auto;
 	overflow-x:hidden;
 	width:calc(100% - 20px);
+	height:calc(100% - 20px);
 }
 
 .moduleContentDiv h3
@@ -409,12 +411,13 @@
 #restInfoDiv
 {
 	min-width:100px;
-	width:calc(100% - 350px);	
+	width:calc(100% - 350px);
 }
 #aggregatedInfoDiv
 {
+	position:relative;
 	width:300px;
-	margin-left: 20px;
+	margin-left:20px;
 }
 #aggregatedInfoDiv > div
 {
@@ -440,7 +443,7 @@
 {
 	display:inline-block;
 	margin-left:10px; 
-	width:calc(100% - 110px);
+	width:calc(100% - 160px);
 	margin-bottom:15px;
 }
 .changesSegment
@@ -658,7 +661,43 @@
 	position:fixed;
 	padding:10px;
 	display: none;
-	z-index:1000;
+	z-index:100000;
+}
+
+#tooltipContentDiv
+{
+	overflow:auto;
+	position:relative;	
+}
+
+#tooltipDiv table
+{
+	border: 0px solid black;
+	border-spacing: 0px;
+	table-layout: fixed;
+	width:100%;
+}
+#tooltipDiv table td,#tooltipDiv table th
+{
+	border: 1px solid black;
+	padding: 5px;
+}
+#tooltipDiv th:nth-of-type(1)
+{
+	width:20%;
+	min-width:300px;
+}
+#tooltipDiv th:nth-of-type(2)
+{
+	width:10%;
+}
+#tooltipDiv th:nth-of-type(3), #tooltipDiv th:nth-of-type(4)
+{
+	width:35%;
+}
+.tooltipedDiv
+{
+	z-index:1000000;
 }
 
 .treePathDiv:after
@@ -678,7 +717,7 @@
 
 .headPathDiv:hover
 {
-	cursor:pointer;
+	/*cursor:pointer;*/
 	text-decoration:underline;
 }
 
@@ -721,4 +760,88 @@ div.infoButton:hover
 	width:20px;
 	height:20px;
 	display:inline-block;
+}
+
+#provenance_div
+{
+	position:relative; 
+	display:flex;	
+	flex-direction:row;
+	width:100%;
+	overflow:scroll;
+	height:100%;
+}
+
+.provenance_date_column
+{
+	width:200px;
+	display:inline-flex;
+	flex-direction:column;
+	align-items:center;
+	position:relative;
+}
+
+.provenance_date_cell
+{
+	left:0px;
+	width:200px;
+	border-left:0px;
+	border-right:0px;
+	border-bottom:0px;
+	border-top:1px solid black;
+	position:absolute;
+}
+
+.provenance_bar_column
+{
+	display:flex;
+	flex-direction:column;
+	flex-grow:1;
+}
+
+.provenance_bar_row
+{
+	height:20px;
+	position:absolute;
+	display:flex;
+	flex-direction:row-reverse;
+}
+
+.provenance_bar_commit_cell
+{
+	height:18px;
+	border:1px solid #333 !important;
+	margin-left:10px;
+	display:none;
+	flex-direction:row;
+}
+
+.provenance_bar_cell
+{
+	height:16px;
+	border:1px solid white;
+}
+
+.provenance_bar_cell.literal
+{
+	background-color:green;
+	border-color:green !important;
+}
+
+.provenance_bar_cell.progress 
+{
+	background-color:orange;
+	border-color:orange !important;
+}
+
+.provenance_bar_cell.semantic 
+{
+	background-color:yellow;
+	border-color:yellow !important;
+}
+
+.provenance_bar_cell.structure 
+{
+	background-color:red;
+	border-color:red !important;
 }

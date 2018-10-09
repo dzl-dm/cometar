@@ -11,9 +11,9 @@ do
 	shift
 done
 
-source $conffile
+source "$conffile"
 cd $(dirname $0)
-mkdir -p $TEMPDIR/i2b2-sql
-rm -f $TEMPDIR/i2b2-sql/*.sql
+mkdir -p "$TEMPDIR/i2b2-sql"
+rm -f "$TEMPDIR/i2b2-sql/*.sql"
 "$JAVADIR" -cp dependency/\* de.dzl.cometar.SQLFileWriter ontology.properties
-rm $TEMPDIR/export.ttl
+rm "$TEMPDIR/export.ttl"
