@@ -8,13 +8,18 @@ do
 			shift
 			conffile=$1
 			;;
+		-e)
+			shift
+			errorsummary=$1
+			;;
 	esac
 	shift
 done
 
 source "$conffile"
 endpoint="$FUSEKITESTDATASET/query"
-errorfile="$TEMPDIR/fehler.txt"
+errorfile="$TEMPDIR/error.txt"
+
 EXITCODE=0
 YELLOW='\033[0;33m'
 NC='\033[0m'
@@ -25,6 +30,10 @@ curl -s --data-urlencode query="$(< """$TESTDIR/has_not_exactly_one_en_preflabel
 errorcount=$(wc -l "$errorfile" | cut -d " " -f 1)
 if [ $errorcount -gt 0 ]
 then
+		if [ ! -z "$errorsummary" ]; then 
+			echo "Check for english prefLabel: " >> "$errorsummary" 
+			sed -e "s/^.*\"value\":.\"\(.*\)\".*$/\1/" "$errorfile" | sed 's/\\/\\\\/g' | xargs -L 1 echo -e >> "$errorsummary"
+		fi
         echo -e "${RED}These concepts do not have exactly one english prefLabel:${NC}"
         sed -e "s/^.*\"value\":.\"\(.*\)\".*$/\1/" "$errorfile" | sed "s/.*/\\${RED}\\0\\${NC}/" | sed 's/\\/\\\\/g' | xargs -L 1 echo -e
         EXITCODE=1
@@ -50,6 +59,10 @@ curl -s --data-urlencode query="$(< """$TESTDIR/notation_duplicate.query""")" -G
 errorcount=$(wc -l "$errorfile" | cut -d " " -f 1)
 if [ $errorcount -gt 0 ]
 then
+		if [ ! -z "$errorsummary" ]; then 
+			echo "Check for notation: " >> "$errorsummary"
+			sed -e "s/^.*\"value\":.\"\(.*\)\".*$/\1/" "$errorfile" | sed 's/\\/\\\\/g' | xargs -L 1 echo -e >> "$errorsummary"
+		fi
         echo -e "${RED}These notations are used for multiple different concepts:${NC}"
         sed -e "s/^.*\"value\":.\"\(.*\)\".*$/\1/" "$errorfile" | sed "s/.*/\\${RED}\\0\\${NC}/" | sed 's/\\/\\\\/g' | xargs -L 1 echo -e
 	EXITCODE=1

@@ -40,7 +40,6 @@ var loadMapConfigModule = function()
 			}
 		}
 	]);	
-	loadConfig();
 }
 
 $(document).on("tree:treeItemCreated", function(e, itemDiv){
@@ -162,14 +161,14 @@ var loadConfig = function(){
 		for (var i = 0; i < deprecatedNotations.length; i++)
 		{
 			var notation = deprecatedNotations[i];
-			var newNotation = QueryManager.getNewNotation(notation);
-			if (newNotation == notation) 
+			var newNotation = QueryManager.getNewNotationByDeprecatedNotation(notation);
+			/*if (newNotation == notation) 
 			{
 				$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; has multiple new notations.");	
 				continue;
-			}
+			}*/
 			var deprecatedConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
-			var deprecatedConcept = QueryManager.getDeprecatedConceptByNotation(notation);
+			var deprecatedConcept = QueryManager.getElementByRemovedNotation(notation);
 			if (deprecatedConcept) 
 			{
 				deprecatedConceptUrl += Helper.getCometarWebUrlByConceptUrl(deprecatedConcept);
@@ -198,6 +197,7 @@ var loadConfig = function(){
 			$("#newDataSourceDownloadLink").attr("href", "data:text/plain;charset=UTF-8,"+encodeURIComponent(output));
 		}
 		
+		mappedPathFields = QueryManager.getPathPartsOfMultipleElements(mappedFields);
 		$(".treeItem").each(function(){
 			markMappedFields($(this));
 		});

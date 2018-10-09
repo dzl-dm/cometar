@@ -9,7 +9,7 @@ var Helper = (function()
 	var extendPath = function(pathConceptUrls, pathLabels, pathCallback, paths)
 	{
 		var conceptUrl = pathConceptUrls[pathConceptUrls.length-1];
-		var queryString = QueryManager.queries.getParentElements.replace(/SUBELEMENT/g, "<" + conceptUrl + ">");
+		var queryString = QueryManager.getParentElements(conceptUrl);
 		var pathConceptUrlExtensions = [];
 		var pathLabelExtensions = [];
 		QueryManager.query(
@@ -106,16 +106,21 @@ var Helper = (function()
 		["http://www.w3.org/2004/02/skos/core#altLabel", "alternative label"],
 		["http://www.w3.org/2004/02/skos/core#notation", "code"],
 		["http://www.w3.org/2004/02/skos/core#broader", "parent element"],
+		["http://www.w3.org/2004/02/skos/core#narrower", "child element"],
+		["http://www.w3.org/2004/02/skos/core#Concept", "concept"],
 		["http://www.w3.org/1999/02/22-rdf-syntax-ns#hasPart", "modifier"],
 		["http://sekmi.de/histream/dwh#restriction", "datatype"],
 		["http://data.dzl.de/ont/dwh#status", "status"],
 		["http://purl.org/dc/elements/1.1/creator", "author"],
 		["http://www.w3.org/1999/02/22-rdf-syntax-ns#about", "concept identifier"],
+		["http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "classification"],
 		["http://sekmi.de/histream/dwh#integerRestriction", "integer"],
 		["http://sekmi.de/histream/dwh#stringRestriction", "string"],
 		["http://sekmi.de/histream/dwh#floatRestriction", "float"],
 		["http://sekmi.de/histream/dwh#partialDateRestriction", "partial date"],
 		["http://www.w3.org/2004/02/skos/core#member", "collection member"],
+		["http://www.w3.org/ns/prov#wasDerivedFrom", "previous concept identifier"],
+		["http://data.dzl.de/ont/dwh#", ""],
 		["http://sekmi.de/histream/dwh#dateRestriction", "date"]
 	];
 	
@@ -123,11 +128,13 @@ var Helper = (function()
 	{
 		for (var i = 0; i < moreUnderstandableStrings.length; i++)
 		{
-			s = s.replace(moreUnderstandableStrings[i][0], moreUnderstandableStrings[i][1])
+			var regex = new RegExp(moreUnderstandableStrings[i][0], "g");
+			s = s.replace(regex, moreUnderstandableStrings[i][1]);
 		}	
 		for (var i = 0; i < urlShorts.length; i++)
 		{
-			s = s.replace(urlShorts[i][0], urlShorts[i][1])
+			var regex = new RegExp(urlShorts[i][0], "g");
+			s = s.replace(regex, urlShorts[i][1]);
 		}	
 		return s;		
 	}

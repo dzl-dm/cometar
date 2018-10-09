@@ -10,8 +10,8 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 				{			
 					var allChangeCommitsInfoDiv = $("<div class='infoDiv infoDivChanges'><h3>Recent Changes</h3></div>");	
 					restInfoDiv.append(allChangeCommitsInfoDiv);
-					QueryManager.getAllChangeCommits(function(i){
-						var ident = (i["author"]?i["author"].value.toUpperCase():"") + " on " + i["timestamp"].value;
+					QueryManager.getStartPageOverview(function(i){
+						var ident = (i["author"]?Helper.getReadableString(i["author"].value).toUpperCase():"") + " on " + i["timestamp"].value;
 						if ($(".dateDiv:contains("+ident+")").length > 0)
 						{
 							$(".dateDiv:contains("+ident+")").data("conceptUrls",$(".dateDiv:contains("+ident+")").data("conceptUrls")+","+i["element"].value); 
@@ -19,7 +19,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 						}
 						else
 						{
-							dateDiv = $("<div style='display:inline-block;vertical-align:top;width:100px' class='dateDiv'><a href='#'>"+ ident + "</a></div>");
+							dateDiv = $("<div style='display:inline-block;vertical-align:top;width:150px' class='dateDiv'><a href='#'>"+ ident + "</a></div>");
 							dateDiv.data("conceptUrls",i["element"].value);
 							dateDiv.click(function(e){
 								e.stopPropagation();	
@@ -43,7 +43,7 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 							Helper.customHide(changesDiv,100);
 							allChangeCommitsInfoDiv.append(dateDiv).append(changesDiv).show();
 						}
-						changesDiv.append(i["label"].value + ": " + (i["property"]?Helper.getReadableString(i["property"].value):"") + "<br/>"); 
+						changesDiv.append(i["label"].value + ": " + (i["predicate"]?Helper.getReadableString(i["predicate"].value):"") + "<br/>"); 
 					});
 					return resultDiv;
 				}
@@ -104,6 +104,11 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					QueryManager.getProperty(conceptUrl, "dc:creator", function(i){
 						infoDivAuthor.append(i.value + "<br/>").addClass("filled"); 
 					});
+					var infoDivCoverage = $("<div class='aggregatedInfo'><h3>Coverage</h3></div>");
+					aggregatedInfoDiv.append(infoDivCoverage); 
+					QueryManager.getSiteCoverageByConceptUrl(conceptUrl, function(i){
+						infoDivCoverage.append((Helper.getReadableString(i)).substr(3) + "<br/>").addClass("filled"); 
+					});
 					var infoDivDomain = $("<div class='aggregatedInfo'><h3>Domain</h3></div>");
 					aggregatedInfoDiv.append(infoDivDomain); 	
 					QueryManager.getProperty(conceptUrl, "dwh:restriction", function(i){
@@ -151,73 +156,64 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 					var changesDiv;
 					var oldValue="";
 					var segment;
-					QueryManager.getNotes(conceptUrl, function(i){						
-						if (i["property"].value == "http://www.w3.org/2004/02/skos/core#topConceptOf"
-							|| i["property"].value == "http://www.w3.org/2004/02/skos/core#inScheme"
-							|| i["property"].value == "http://www.w3.org/2004/02/skos/core#broader"
-							|| i["property"].value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf"
-							|| i["property"].value == "http://www.w3.org/2004/02/skos/core#hasTopConcept"
-							|| i["property"].value == "http://www.w3.org/2004/02/skos/core#editorialNote"
-							|| i["property"].value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
+					QueryManager.getNotes(conceptUrl, function(i){	
+						if (i["predicate"].value == "http://www.w3.org/2004/02/skos/core#topConceptOf"
+							|| i["predicate"].value == "http://www.w3.org/2004/02/skos/core#inScheme"
+							|| i["predicate"].value == "http://www.w3.org/2004/02/skos/core#broader"
+							|| i["predicate"].value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf"
+							|| i["predicate"].value == "http://www.w3.org/2004/02/skos/core#hasTopConcept"
+							|| i["predicate"].value == "http://www.w3.org/2004/02/skos/core#editorialNote"
+							|| i["predicate"].value == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 						{
 							return;
 						}
 						var lang="";
-						if (i["minuslang"] != undefined && i["pluslang"] == undefined && i["minuslang"].value != "") lang = "(" + i["minuslang"].value + ") ";
-						else if (i["pluslang"] != undefined && i["minuslang"] == undefined && i["pluslang"].value != "") lang = "(" + i["pluslang"].value + ") ";
-						else if (i["minuslang"] != undefined && i["pluslang"] != undefined && i["minuslang"].value == i["pluslang"].value && i["minuslang"].value != "") lang = "(" + i["minuslang"].value + ") ";
+						if (i["object"]["xml:lang"])lang="(" + i["object"]["xml:lang"] + ") ";
 
-						date = i["date"].value.substr(0,10);
-						if ($(".dateDiv:contains("+date+")").length > 0)
+						date = i["enddate"].value.substr(0,10);
+						var dateId = date.replace(/-/g,"");
+						if ($("#"+dateId).length > 0)
 						{
-							changesDiv = $(".dateDiv:contains("+date+")").next();
+							changesDiv = $("#"+dateId).next();
 						}
 						else
 						{
-							dateDiv = $("<div style='display:inline-block;vertical-align:top;width:100px' class='dateDiv'>"+ date + "</div>");
-							changesDiv = $("<div class='changesDiv'>");
+							dateDiv = $("<div style='display:inline-block;vertical-align:top;width:100px' class='dateDiv' id='"+dateId+"'>"+ date + "</div>");
+							changesDiv = $("<div class='changesDiv'></div>");
 							infoDivChanges.append(dateDiv).append(changesDiv).show();
-						}
-						if (i["note"].type == "bnode")
+						}			
+						
+						var segmentHeading = Helper.getReadableString(i["predicate"].value) + lang;
+						var segmentData = date + Helper.getReadableString(i["predicate"].value) + lang;
+						segment = $(".changesSegment[data='"+segmentData+"']");
+						if (segment.length == 0) 
 						{
-							var changeDiv = $("<div>");
-							var changeReason = "";
-							if (i["value"].type == "bnode") {
-								if (i["plus"] != undefined) changeDiv.append(Helper.getReadableString(i["plus"].value)).addClass("plusChange") ;	
-								if (i["minus"] != undefined) changeDiv.append(Helper.getReadableString(i["minus"].value)).addClass("minusChange") ;						
-								if (i["reason"] != undefined) changeReason = ": <i>&quot;" + i["reason"].value + "&quot;</i>";						
-							}
-							else {
-								changeDiv.append(i["value"].value);
-							}
-							
-							var segmentHeading = Helper.getReadableString(i["property"].value) + lang + " by " + i["author"].value + changeReason;
-							var segmentData = date + Helper.getReadableString(i["property"].value) + lang + i["author"].value;
-							segment = $(".changesSegment[data='"+segmentData+"']");
-							if (segment.length == 0) 
-							{
-								segment = $("<div class='changesSegment' data='"+segmentData+"'>");
-								segment.append("<div class='segmentHeading'>"+segmentHeading+"</div>");
-								changesDiv.append(segment);
-							}
-							segment.append(changeDiv);
+							segment = $("<div class='changesSegment' data='"+segmentData+"'>");
+							segment.append("<div class='segmentHeading'>"+segmentHeading+"</div>");
+							changesDiv.append(segment);
 						}
-						else changesDiv.append(i["note"].value);
+						var changeDiv = $("<div>").append(Helper.getReadableString(i["object"].value));
+						if (i["action"].value == "http://purl.org/vocab/changeset/schema#addition") changeDiv.addClass("plusChange");	
+						else changeDiv.addClass("minusChange");	
+						if (i["object"]["type"]=="literal") changeDiv.addClass("literal");
+						segment.append(changeDiv);
 					}, function(){		
 						$(".minusChange").each(function(){
 							var oldValueDiv = $(this);
-							oldValueDiv.siblings(".plusChange:not(:first)").each(function()
+							oldValueDiv.siblings(".plusChange").each(function()
 							{
 								var newValueDiv = $(this);
 								if (oldValueDiv.hasClass("minorChange") || newValueDiv.hasClass("minorChange")) return;
-								if (Helper.levenstheinDistance(oldValueDiv.text(),newValueDiv.text()) < 2)
+								if (($(this).hasClass("literal") && Helper.levenstheinDistance(oldValueDiv.text(),newValueDiv.text()) < 2)
+									|| oldValueDiv.text() == newValueDiv.text())
 								{
 									oldValueDiv.addClass("minorChange");
 									newValueDiv.addClass("minorChange");
 								}
 							});
 						});
-						Helper.customHide(infoDivChanges,$(".infoDivChanges").children(".changesDiv:first").get(0).scrollHeight +$(".infoDivChanges").children("h3:first").get(0).scrollHeight+20);
+						//Helper.customHide(infoDivChanges,$(".infoDivChanges").children(".changesDiv:first").get(0).scrollHeight+20);
+						Helper.customHide(infoDivChanges,40);
 					});
 						
 					var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Specifications</h3></div>");
@@ -237,10 +233,10 @@ $(document).on("modulemanager:readyForModuleRegister", function(){
 		var headPathDiv = $("<div class='headPathDiv'>");
 		headPathDiv.html(path[1].join(" / "));
 		headPathDiv.data("path", path[0]);
-		headPathDiv.click(function(){
+		/*headPathDiv.click(function(){
 			$(".treeMenuItem[target='conceptTree']").click();
 			TreeManager.openPath($.merge([],$(this).data("path")), true);
-		});
+		});*/
 		//"insertion sorting"
 		var pathCount = div.children(".headPathDiv").length;
 		for (var i = 0; i < pathCount; i++)
