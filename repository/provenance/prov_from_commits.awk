@@ -1,7 +1,5 @@
 BEGIN {
 	FS=";";
-	testfile = "/c/Users/stmar7/Projekte/cometar/browser/web/sankey-test/meinkram.csv";
-	print "source,target,value,comment" > testfile;
 }{
 	print "\n:commit_" $1 >> output;
 	print "\ta prov:Activity;" >> output;
@@ -18,7 +16,6 @@ BEGIN {
 	for (i in a) 
 	{
 		print "\tprov:wasInfluencedBy :commit_" a[i] ";" >> output;
-		print "Commit "a[i]",Commit "$1",1," > testfile;
 	}
 	
 	print "." >> output;

@@ -180,7 +180,8 @@ var loadConfig = function(){
 			}
 			if (newNotation != undefined && newNotation != "") 
 			{
-				if (validXml) output = output.replace("\"" + notation + "\"", "\"" + newNotation + "\"");
+				var regex = new RegExp("\""+notation+"\"", "g");
+				if (validXml) output = output.replace(regex, "\"" + newNotation + "\"");
 				else output = output.replace((i==0?"":",") + notation + (i==deprecatedNotations.length?"":","), (i==0?"":",") + newNotation + (i==deprecatedNotations.length?"":","));
 				$("#newDataSourceDownloadLink").css("display", "block");
 				var newConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
