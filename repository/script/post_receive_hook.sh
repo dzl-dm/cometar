@@ -44,5 +44,5 @@ echo "Metadata import into i2b2 server part 2..." >> "$LOGFILE"
 PGPASSWORD=$I2B2DEMOPW /usr/bin/psql -q --host=$I2B2HOST --username=$I2B2DEMOUSER --dbname=$I2B2DBNAME -f "$TEMPDIR/i2b2-sql/data.sql"
 echo "Refreshing patient count..."
 echo "Refreshing patient count..." >> "$LOGFILE" 
-"$SCRIPTDIR/update_patient_count.sh" -p "$conffile"
+PGPASSWORD=$I2B2DMPW /usr/bin/psql -q --host=$I2B2HOST --username=$I2B2DMUSER --dbname=$I2B2DBNAME -f "$SCRIPTDIR/patient_count.sql"
 echo -------------------------------------
