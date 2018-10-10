@@ -1,6 +1,6 @@
 #!/bin/bash
 
-conffile=$(dirname $0)/../config/conf.cfg
+conffile=$(realpath $(dirname $0)/../config/conf.cfg)
 while [ ! $# -eq 0 ]
 do
 	case "$1" in
@@ -14,15 +14,25 @@ done
 
 source "$conffile"
 
+unset GIT_DIR;
+rm -rf "$TEMPDIR/git"
+mkdir -p "$TEMPDIR/git"
+eval "$GITBIN clone -q \"$TTLDIRECTORY\" \"$TEMPDIR/git\""
+cd "$TEMPDIR/git"
+eval "$GITBIN checkout -q master"
+
 echo "---------------- POST RECEIVE ---------------------"
+echo "POST RECEIVE $(date)" >> "$LOGFILE"
+cd "$TEMPDIR/git"
+"$SCRIPTDIR/add_files_to_dataset.sh" -s -t -c -d "$TEMPDIR/git" -p "$conffile" -e "$LOGFILE"
 echo "export.ttl is being produced."
 echo "export.ttl is being produced." >> "$LOGFILE" 
 "$SCRIPTDIR/export_rdf.sh" -p "$conffile"
-"$SCRIPTDIR/add_files_to_dataset.sh" -s -c -p "$conffile"
+"$SCRIPTDIR/add_files_to_dataset.sh" -s -c -p "$conffile" -e "$LOGFILE"
 echo "Provenance..."
 echo "Provenance..." >> "$LOGFILE" 
 "$PROVENANCESCRIPTDIR/write_provenance.sh" -p "$conffile"
-"$SCRIPTDIR/add_files_to_dataset.sh" -s -h -p "$conffile"
+"$SCRIPTDIR/add_files_to_dataset.sh" -s -h -p "$conffile" -e "$LOGFILE"
 echo "i2b2 import sql is being produced."
 echo "i2b2 import sql is being produced." >> "$LOGFILE" 
 "$TTLTOSQLDIR/write-sql.sh" -p "$conffile"

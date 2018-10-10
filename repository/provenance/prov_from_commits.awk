@@ -5,7 +5,8 @@ BEGIN {
 	print "\ta prov:Activity;" >> output;
 	gsub(" ","_",$4);
 	print "\tprov:wasAssociatedWith :"$4";" >> output;
-	print "\tprov:endedAtTime \"" $3 "\"^^xsd:dateTime ;" >> output;
+	date=gensub(/(.{10}) (.{8}) (.{3})(.{2})/,"\\1T\\2\\3:\\4","g",$3);
+	print "\tprov:endedAtTime \"" date "\"^^xsd:dateTime ;" >> output;
 	label=$5
 	for (i = 6; i <= FN; i++)
 		label=label";"$i

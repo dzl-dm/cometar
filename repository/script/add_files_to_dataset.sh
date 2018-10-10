@@ -40,7 +40,7 @@ do
 	esac
 	shift
 done
-
+echo "$emf"
 source "$conffile"
 EXITCODE=0
 

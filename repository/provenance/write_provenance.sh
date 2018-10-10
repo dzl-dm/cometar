@@ -45,12 +45,6 @@ source "$conffile"
 
 output_directory="$PROVENANCEFILESDIR/output"
 mkdir -p "$output_directory"
-unset GIT_DIR;
-rm -rf "$TEMPDIR/git"
-mkdir -p "$TEMPDIR/git"
-eval "$GITBIN clone -q \"$TTLDIRECTORY\" \"$TEMPDIR/git\""
-cd "$TEMPDIR/git"
-eval "$GITBIN checkout -q master"
 
 if [ $only_recent_changes -eq 1 ]; then
 	shopt -s nullglob
