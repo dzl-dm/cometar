@@ -70,7 +70,7 @@ if ! grep -q "${author_string}" "$PROVENANCEFILESDIR/output/committers.csv"; the
 fi
 
 #commits.csv output (CommitID, Parents, Date, Name, Commit Message)
-commit_string=$(cd "$TEMPDIR/git"; unset GIT_DIR; git log -n 1 --pretty=format:"%H;%P;%cI;%cn;%s" ${checkout_id})
+commit_string=$(cd "$TEMPDIR/git"; unset GIT_DIR; git log -n 1 --pretty=format:"%H;%P;%ci;%cn;%s" ${checkout_id})
 echo "?? $commit_string" >&2
 if ! grep -q "${commit_string}" "$PROVENANCEFILESDIR/output/commits.csv"; then
 	echo "$commit_string" >> "$PROVENANCEFILESDIR/output/commits.csv"
