@@ -61,7 +61,7 @@ if [ $only_recent_changes -eq 1 ]; then
 	done
 	unset IFS
 	
-	recent_line="$(git log -n 1 --pretty=format:"%H" ${newrev})"
+	recent_line="$(cd "$TEMPDIR/git"; git log -n 1 --pretty=format:"%H" ${newrev})"
 fi
 echo "Writing deltas from $from_date to ${until_date}."
 while read line || [ -n "$line" ]; do #second expression is needed cause the last git log line does not end with a newline
