@@ -45,6 +45,12 @@ source "$conffile"
 
 output_directory="$PROVENANCEFILESDIR/output"
 mkdir -p "$output_directory"
+unset GIT_DIR;
+rm -rf "$TEMPDIR/git"
+mkdir -p "$TEMPDIR/git"
+eval "$GITBIN clone -q \"$TTLDIRECTORY\" \"$TEMPDIR/git\""
+cd "$TEMPDIR/git"
+eval "$GITBIN checkout -q master"
 
 if [ $only_recent_changes -eq 1 ]; then
 	shopt -s nullglob
@@ -60,8 +66,6 @@ if [ $only_recent_changes -eq 1 ]; then
 		fi
 	done
 	unset IFS
-	
-	recent_line="$(git log -n 1 --pretty=format:"%H" ${newrev})"
 fi
 echo "Writing deltas from $from_date to ${until_date}."
 while read line || [ -n "$line" ]; do #second expression is needed cause the last git log line does not end with a newline
@@ -69,7 +73,7 @@ while read line || [ -n "$line" ]; do #second expression is needed cause the las
 	echo $line
 	checkout_id=$line
 	success=$("$PROVENANCESCRIPTDIR/create_delta_file.sh" -p "$conffile" -i $checkout_id)
-done < <(cd "$TEMPDIR/git"; unset GIT_DIR; git checkout -q master; if [ -n "$recent_line" ] ; then echo "$recent_line"; fi; git log --pretty=format:"%H" --since="$from_date" --before="$until_date")
+done < <(cd "$TEMPDIR/git"; unset GIT_DIR; git checkout -q master; git log --pretty=format:"%H" --since="$from_date" --before="$until_date")
 
 output_file="$PROVENANCEFILESDIR/output/$(echo $from_date | tr ':' '_') - $(echo $until_date | tr ':' '_').ttl"
 echo "@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> ." > "$output_file";

@@ -2,13 +2,14 @@
 <meta charset="utf-8">
 <html>
 	<head>
-		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>  
-		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<script src="javascript/jquery-3.1.1.min.js"></script>  
+		<script src="javascript/jquery-ui-1.12.1.min.js"></script>
 		<script src="javascript/helper.js"></script>
 		<script src="javascript/modulemapconfig.js"></script>
 		<script src="javascript/querymanager.js"></script>
 		<script src="javascript/modulemanager.js"></script>
 		<script src="javascript/moduleinfo.js"></script>
+		<script src="javascript/moduleprovenance.js"></script>
 		<script src="javascript/core.js"></script>
 		<link href="css/style.css" rel="stylesheet" type="text/css" />  
 		<link rel="stylesheet" href="css/jquery-ui.css">
@@ -37,9 +38,9 @@
 			}
 		</style>
 		<script>
-		$(document).ready(function(){
-			$("#ontologieManager").ontologieManager();
-		});		
+		$(document).ready(function(){			
+			setTimeout(function(){$("#ontologieManager").ontologieManager()},1000);
+		});
 		</script>
 	</head>
 	<body>
