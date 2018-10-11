@@ -1,128 +1,166 @@
-var conf = {};
+var CB = (function(){	
+	var init = function(container){
+		container
+			.addClass("cometarContainer")
+			.html(html);
+		loadTooltipFunctionality(container);
+		$(window).bind( 'hashchange', function(e) {
+			var conceptUrl = Helper.getCurrentConceptUrl();
+			TreeManager.openPaths(conceptUrl, true);
+			ModuleManager.showTab("details");
+		});
+	}
+	
+	var loadModules = function(){
+		$(document).trigger("cometar:readyForModuleRegister", [ ModuleManager.register ]);
+		ModuleManager.render();	
+		if (Helper.getQueryParameter("mode")!="advanced") ModuleManager.hideMenu();
+	}
+	
+	var loadTree = function(){
+		return $.Deferred(function(dfd){
+			TreeManager.init().then(dfd.resolve());
+		}).promise();
+	}
+	
+	var showCurrentConcept = function(){
+		if (location.hash != "")
+		{
+			var conceptUrl = Helper.getCurrentConceptUrl();
+			TreeManager.openPaths(conceptUrl, true);
+		}
+		ModuleManager.showTab("details");
+	}
+	
+	var html = function(){
+		var result = $(
+			"<div id='conceptTreeContainer'><div> \
+				<div id='treeMenu'>\
+					<div class='treeMenuItem activeMenuItemDiv' target='conceptTree'>concepts</div>\
+					<div class='treeMenuItem' target='searchDiv'>search</div>\
+				</div>\
+				<div id='treeContent'>\
+					<div id='conceptTree' class='treeContentItem activeTreeContentDiv'></div> \
+					<div id='searchDiv' class='treeContentItem'> \
+						<form> \
+							<input type='text' id='searchPatternText'/> \
+							<input type='submit' value='search' id='searchSubmitButton'/> \
+						</form> \
+						<div id='searchResultDiv'></div> \
+					</div> \
+				</div>\
+				<div id='logoDiv'> \
+					<a href='./index.html' style='position:relative'> \
+						<img src='images/CoMetaR_Logo.png'/> \
+						<img src='images/loading.png' id='loadingPng' /> \
+					</a> \
+					<a href='http://www.dzl.de'><img src='images/DZL_Logo.png'/></a> \
+				</div> \
+			</div></div> \
+			<div id='containerSpacer'/> \
+			<div id='modulesContainer'><div> \
+				<div id='modulesMenu'></div> \
+				<div id='modulesContents'></div> \
+			</div></div>"
+		);
+		$(result[0]).resizable({
+			handles: "e"
+		});
+		return result;
+	}();
+	
+	var loadTooltipFunctionality = function(container){
+		container.append("<div id='tooltipDiv'>");
+		$("#tooltipDiv").before($("<div id='tooltipbackgrounddiv' style='width:100%;height:100%;background-color:grey;opacity:0.9;position:fixed;left:0px;top:0px;display:none'>"));
+		$("#tooltipDiv").append($("<div id='tooltipContentDiv'>"))
+		container.bind("DOMSubtreeModified", function(e) {
+			$(e.target).find("div").hover(
+				function() {
+					var tt = $( this ).attr("tooltip");
+					if (tt != undefined)
+					{
+						var tooltip = $("#tooltipDiv");
+						var tooltipcontent = $("#tooltipContentDiv");
+						
+						tooltipcontent.html(tt);
+						/*tooltip.css("maxWidth", $(this).offset().left-10);
+						tooltip.css("maxHeight", $(this).offset().top-10);
+						var newleft = $(this).offset().left - tooltip.outerWidth();
+						if (newleft<0)newleft=10;
+						tooltip.css("left", newleft + "px");					
+						var newtop = $(this).offset().top - tooltip.outerHeight();
+						if (newtop<0)newtop=10;
+						tooltip.css("top", newtop + "px");*/
+						tooltip.css("width", $("#modulesContents").width()-50+"px");
+						tooltip.css("left", $("#modulesContents").offset().left+10+"px");
+						tooltip.css("height", "calc(50% - 50px)");
+						tooltipcontent.css("height", (tooltip.outerHeight()-20) +"px");
+						var newtop = $(this).offset().top - tooltip.outerHeight();
+						if (newtop < 0)
+						{
+							newtop = $(this).offset().top + $(this).outerHeight();
+						}
+						tooltip.css("top", newtop+"px");
+						$(this).addClass("tooltipedDiv");
+						$("#tooltipbackgrounddiv")
+							.css("left",$("#modulesContents").offset().left)
+							.css("width",$("#modulesContents").width())
+							.css("top",$("#modulesContents").offset().top)
+							.css("height",$("#modulesContents").height())
+							.show();
+						tooltip.show();
+					}
+					var tt = $( this ).data("tooltip");
+					if (tt != undefined)
+					{
+						var tooltip = $("#tooltipDiv");
+						tooltip.html(tt($(this).data("tooltiparg")));
+					}
+				}, function() {
+					var tooltip = $("#tooltipDiv");
+					if (!tooltip.is(":hover")) {
+						$("#tooltipDiv").hide();
+						$("#tooltipbackgrounddiv").hide();
+						$(".tooltipedDiv").removeClass("tooltipedDiv");
+					}
+				}
+			);
+		});	;		
+	}
+	
+	return {
+		init: init,
+		loadModules: loadModules,
+		loadQueries: QueryManager.init,
+		loadTree: loadTree,
+		showCurrentConcept: showCurrentConcept
+	}
+}());
 
 $.fn.ontologieManager = function() {
-	conf.container = $(this);
-	$(this).bind("DOMSubtreeModified", function(e) {
-		$(e.target).find("div").hover(
-			function() {
-				var tt = $( this ).attr("tooltip");
-				if (tt != undefined)
-				{
-					var tooltip = $("#tooltipDiv");
-					var tooltipcontent = $("#tooltipContentDiv");
-					
-					tooltipcontent.html(tt);
-					/*tooltip.css("maxWidth", $(this).offset().left-10);
-					tooltip.css("maxHeight", $(this).offset().top-10);
-					var newleft = $(this).offset().left - tooltip.outerWidth();
-					if (newleft<0)newleft=10;
-					tooltip.css("left", newleft + "px");					
-					var newtop = $(this).offset().top - tooltip.outerHeight();
-					if (newtop<0)newtop=10;
-					tooltip.css("top", newtop + "px");*/
-					tooltip.css("width", $("#modulesContents").width()-50+"px");
-					tooltip.css("left", $("#modulesContents").offset().left+10+"px");
-					tooltip.css("height", "calc(50% - 50px)");
-					tooltipcontent.css("height", (tooltip.outerHeight()-20) +"px");
-					var newtop = $(this).offset().top - tooltip.outerHeight();
-					if (newtop < 0)
-					{
-						newtop = $(this).offset().top + $(this).outerHeight();
-					}
-					tooltip.css("top", newtop+"px");
-					$(this).addClass("tooltipedDiv");
-					$("#tooltipbackgrounddiv")
-						.css("left",$("#modulesContents").offset().left)
-						.css("width",$("#modulesContents").width())
-						.css("top",$("#modulesContents").offset().top)
-						.css("height",$("#modulesContents").height())
-						.show();
-					tooltip.show();
-				}
-				var tt = $( this ).data("tooltip");
-				if (tt != undefined)
-				{
-					var tooltip = $("#tooltipDiv");
-					tooltip.html(tt($(this).data("tooltiparg")));
-				}
-			}, function() {
-				var tooltip = $("#tooltipDiv");
-				if (!tooltip.is(":hover")) {
-					$("#tooltipDiv").hide();
-					$("#tooltipbackgrounddiv").hide();
-					$(".tooltipedDiv").removeClass("tooltipedDiv");
-				}
-			}
-		);
-	});
-	$(this).html(	
-		"<div id='conceptTreeContainer'><div> \
-			<div id='treeMenu'>\
-				<div class='treeMenuItem activeMenuItemDiv' target='conceptTree'>concepts</div>\
-				<div class='treeMenuItem' target='searchDiv'>search</div>\
-			</div>\
-			<div id='treeContent'>\
-				<div id='conceptTree' class='treeContentItem activeTreeContentDiv'></div> \
-				<div id='searchDiv' class='treeContentItem'> \
-					<form> \
-						<input type='text' id='searchPatternText'/> \
-						<input type='submit' value='search' id='searchSubmitButton'/> \
-					</form> \
-					<div id='searchResultDiv'></div> \
-				</div> \
-			</div>\
-			<div id='logoDiv'> \
-				<a href='./index.html'><img src='images/CoMetaR_Logo.png'/></a> \
-				<a href='http://www.dzl.de'><img src='images/DZL_Logo.png'/></a> \
-			</div> \
-		</div></div> \
-		<div id='containerSpacer'/> \
-		<div id='modulesContainer'><div> \
-			<div id='modulesMenu'></div> \
-			<div id='modulesContents'></div> \
-		</div></div> \
-		<div id='tooltipDiv'></div>"
-	).addClass("cometarContainer");
-	$("#tooltipDiv").before($("<div id='tooltipbackgrounddiv' style='width:100%;height:100%;background-color:grey;opacity:0.9;position:fixed;left:0px;top:0px;display:none'>"));
-	$("#tooltipDiv").append($("<div id='tooltipContentDiv'>"));
-	ModuleManager.renderModules();
-	if (Helper.getQueryParameter("mode")!="advanced") ModuleManager.hideMenu();
+	CB.init($(this));
+	CB.loadModules();
+	CB.loadQueries()
+		.then(CB.loadTree)
+		.then(CB.showCurrentConcept);
 	
-	TreeManager.load();
-	$("#conceptTreeContainer").resizable({
-		handles: "e"
-	});
-	//$("#modulesContainer").resizable();
-	//$(this).resizable();
-	
-	var match = location.search.match(new RegExp("[?&]"+"search"+"=([^&]+)(&|$)"));
+	/*var match = location.search.match(new RegExp("[?&]"+"search"+"=([^&]+)(&|$)"));
 	var searchString = match && decodeURIComponent(match[1].replace(/\+/g, " "));
 	if (searchString != null)
 	{
 		$(".treeMenuItem[target='searchDiv']").click();
 		$("#searchPatternText").val(searchString);
 		$("#searchSubmitButton").click();
-	}
-
-	if (location.hash != "")
-	{
-		conceptUrl = Helper.getCurrentConceptUrl();
-		TreeManager.openPaths(conceptUrl, true);
-	}
-	$(window).bind( 'hashchange', function(e) {
-		conceptUrl = Helper.getCurrentConceptUrl();
-		TreeManager.openPaths(conceptUrl, true);
-		ModuleManager.showTab("details");
-	});
-	ModuleManager.showTab("details");
+	}*/
 }
 
 var TreeManager = (function(){		
-	var load = function()
+	var init = function()
 	{
-		initClickEvents();
-		createTopTreeItems($("#conceptTree"));
-		return this;
+		return $.Deferred(function(dfd){
+			initMenu();
+			createTopTreeItems($("#conceptTree"));
+		}).promise();
 	}
 	
 	var createTopTreeItems = function(container)
@@ -175,7 +213,7 @@ var TreeManager = (function(){
 		return ti;		
 	}
 	
-	var initClickEvents = function()
+	var initMenu = function()
 	{
 		$(".treeMenuItem").click(function(){
 			$(".activeTreeContentDiv").removeClass("activeTreeContentDiv");
@@ -325,7 +363,7 @@ var TreeManager = (function(){
 	}
 	
 	return {
-		load: load,
+		init: init,
 		createTopTreeItems: createTopTreeItems,
 		fillWithSubConcepts: fillWithSubConcepts,
 		//openPath: openPath,
