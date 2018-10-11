@@ -2,8 +2,6 @@ var QueryManager = (function(){
 	var endpoint = "https://data.dzl.de/fuseki/cometar_live/query";
 	var loglevel = 0; //0 = off, 1 = less detailed, 2 = more detailed
 	
-	var queries = [];
-	
 	var useLocalFuseki = function()
 	{
 		endpoint = "http://localhost:3030/cometar_live/query";
@@ -12,6 +10,7 @@ var QueryManager = (function(){
 	var queriesReturnObject = {};
 	
 	function loadQuery(queryName){
+		var deferred = $.Deferred();
 		var url = "javascript/queries/"+queryName+".js";
 		var onload = function(){
 			queriesReturnObject[queryName] = Query(prefixes);			
@@ -25,37 +24,46 @@ var QueryManager = (function(){
 						script.readyState == "complete"){
 					script.onreadystatechange = null;
 					onload();
+					deferred.resolve();
 				}
 			};
 		} else {  //Others
 			script.onload = function(){
 				onload();
+				deferred.resolve();
 			};
 		}
 		script.src = url;
 		document.getElementsByTagName("head")[0].appendChild(script);
+		return deferred.promise();
 	}
 	
-	loadQuery("getNotes");
-	loadQuery("getPreviousConceptIdentifiers");
-	loadQuery("getProvenanceOverview");
-	loadQuery("getProvenanceDetails");
-	loadQuery("getPathParts");
-	loadQuery("getTopElements");
-	loadQuery("getSubElements");
-	loadQuery("getParentElements");
-	loadQuery("getModifiers");
-	loadQuery("getProperty");
-	loadQuery("getMultiProperties");
-	loadQuery("getByProperty");
-	loadQuery("getSearchResults");
-	loadQuery("getStartPageOverview");
-	loadQuery("getElementByRemovedNotation");
-	loadQuery("getPreviousMessagesOfInvalidCommits");
-	loadQuery("getTotalNumberOfSubConcepts");
-	loadQuery("getNewNotationByDeprecatedNotation");
-	loadQuery("getPathPartsOfMultipleElements");
-	loadQuery("getSiteCoverageByConceptUrl");
+	var init = function(){
+		return $.Deferred(function( dfd ) {
+			$.when(
+				loadQuery("getNotes"),
+				loadQuery("getPreviousConceptIdentifiers"),
+				loadQuery("getProvenanceOverview"),
+				loadQuery("getProvenanceDetails"),
+				loadQuery("getPathParts"),
+				loadQuery("getTopElements"),
+				loadQuery("getSubElements"),
+				loadQuery("getParentElements"),
+				loadQuery("getModifiers"),
+				loadQuery("getProperty"),
+				loadQuery("getMultiProperties"),
+				loadQuery("getByProperty"),
+				loadQuery("getSearchResults"),
+				loadQuery("getStartPageOverview"),
+				loadQuery("getElementByRemovedNotation"),
+				loadQuery("getPreviousMessagesOfInvalidCommits"),
+				loadQuery("getTotalNumberOfSubConcepts"),
+				loadQuery("getNewNotationByDeprecatedNotation"),
+				loadQuery("getPathPartsOfMultipleElements"),
+				loadQuery("getSiteCoverageByConceptUrl")
+			).done(dfd.resolve);		
+		}).promise();
+	}	
 	
 	var getAncestors = function(e, callback)
 	{
@@ -72,6 +80,7 @@ var QueryManager = (function(){
 
 	var query = function(queryString, requestCallback, requestCompleteCallback, sync)
 	{
+		Helper.startLoading();
 		if (loglevel > 0) {
 			var c = arguments.callee.caller;
 			if (c.name == "syncquery") c = c.caller;
@@ -94,6 +103,7 @@ var QueryManager = (function(){
 			},
 			complete: function(j, k)
 			{
+				Helper.stopLoading();
 				if (rcc) requestCompleteCallback(j, k);
 			}
 		});
@@ -123,8 +133,8 @@ PREFIX cs:		<http://purl.org/vocab/changeset/schema#>
 		*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 	
 	return $.extend(queriesReturnObject,{
+		init: init,
 		query: query,
-		queries: queries,
 		syncquery: syncquery,
 		getAncestors: getAncestors,
 		useLocalFuseki: useLocalFuseki
