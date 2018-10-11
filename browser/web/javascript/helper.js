@@ -241,6 +241,30 @@ var Helper = (function()
 		});
 	}
 	
+	jQuery.fn.rotate = function(degrees) {
+		$(this).css({'-webkit-transform' : 'rotate('+ degrees +'deg)',
+					 '-moz-transform' : 'rotate('+ degrees +'deg)',
+					 '-ms-transform' : 'rotate('+ degrees +'deg)',
+					 'transform' : 'rotate('+ degrees +'deg)'});
+		return $(this);
+	};
+	
+	var loadingThings = 0;
+	var startLoading = function()
+	{
+		loadingThings++;
+		$("#loadingPng").addClass("active");
+	}
+	
+	var stopLoading = function()
+	{
+		loadingThings--;
+		if (loadingThings == 0) 
+		{
+			$("#loadingPng").removeClass("active");
+		}
+	}
+	
 	return {
 		getPathsByConceptUrl: getPathsByConceptUrl,
 		getAuthenticationToken: getAuthenticationToken,
@@ -258,6 +282,8 @@ var Helper = (function()
 		markFields: markFields,
 		markField: markField,
 		addFieldToMark: addFieldToMark,
-		clearFieldsToMark: clearFieldsToMark
+		clearFieldsToMark: clearFieldsToMark,
+		startLoading: startLoading,
+		stopLoading: stopLoading
 	}
 }());
