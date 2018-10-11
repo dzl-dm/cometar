@@ -16,7 +16,7 @@ order by DESC(?enddate )
 	return function(callback, completeCallback)
 	{
 		var result = [];
-		var dt = new Date(); dt.setMonth(dt.getMonth()-4);
+		var dt = new Date(); dt.setMonth(dt.getMonth()-1);
 		var queryString = qs.replace(/ONEMONTHBEFORE/g, "'"+dt.toISOString()+"'^^xsd:dateTime");
 		if (callback != undefined)
 		{
