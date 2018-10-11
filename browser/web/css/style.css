@@ -348,6 +348,35 @@
 	max-width:100%;
 }
 
+#logoDiv #loadingPng
+{
+	max-height:100%;
+	position:absolute;
+	left:-2px;    
+	animation: spin 2s linear infinite;
+	animation-play-state: paused;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#logoDiv #loadingPng.active
+{
+	animation-play-state:running;
+}
+
+/*#loadingPng:hover
+{
+	-webkit-animation:spin 4s linear infinite;
+    -moz-animation:spin 4s linear infinite;
+    animation:spin 4s linear infinite;
+}
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }*/
+
 /* menu */
 
 .modulesMenuItem:hover, .treeMenuItem:hover
