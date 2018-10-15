@@ -38,13 +38,9 @@ var MapConfigModule = (function(){
 
 		return resultDiv;
 	}
-
-	var loadConfig = function(){
-		//reset
-		$("#divNotationFeedback").html("");
-		$("#newDataSourceDownloadLink").css("display","none").attr("href","");	
-		deprecatedNotations = [];
-		
+	
+	var readConfig = function()
+	{
 		var dzlIds = [];
 		var sourceIds = [];
 		//changing
@@ -148,101 +144,129 @@ var MapConfigModule = (function(){
 			}
 			return;
 		} finally {
-			mappedSourceFields = sourceIds;
-			for (var i = 0; i < dzlIds.length; i++)
-			{
-				//console.log(dzlIds[i]+" : "+sourceIds[i]);
-				addMappedFields(dzlIds[i]);
-			}	
-			var output = taValue;
-			for (var i = 0; i < deprecatedNotations.length; i++)
-			{
-				var notation = deprecatedNotations[i];
-				var newNotation = QueryManager.getNewNotationByDeprecatedNotation(notation);
-				/*if (newNotation == notation) 
-				{
-					$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; has multiple new notations.");	
-					continue;
-				}*/
-				var deprecatedConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
-				var deprecatedConcept = QueryManager.getElementByRemovedNotation(notation);
-				if (deprecatedConcept) 
-				{
-					deprecatedConceptUrl += Helper.getCometarWebUrlByConceptUrl(deprecatedConcept);
-					$("#divNotationFeedback").append("<br/><a href='"+deprecatedConceptUrl+"'>"+notation+"</a> is not a valid code (anymore). ");
-				}
-				else
-				{
-					$("#divNotationFeedback").append("<br/>Unknown notation: "+notation+". ");
-				}
-				if (newNotation != undefined && newNotation != "") 
-				{
-					var regex = new RegExp("\""+notation+"\"", "g");
-					if (validXml) output = output.replace(regex, "\"" + newNotation + "\"");
-					else output = output.replace((i==0?"":",") + notation + (i==deprecatedNotations.length?"":","), (i==0?"":",") + newNotation + (i==deprecatedNotations.length?"":","));
-					$("#newDataSourceDownloadLink").css("display", "block");
-					var newConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
-					newConceptUrl += Helper.getCometarWebUrlByConceptUrl(QueryManager.getByProperty("skos:notation", newNotation));
-					$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; was replaced with <a href='" + newConceptUrl + "'>"+newNotation+"</a>.");
-				}
-				else
-				{
-					$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; is deprecated.");			
-				}
+			return {
+				configString: taValue,
+				isXml: validXml,
+				dzlIds: dzlIds,
+				mappingDescriptions: sourceIds
 			}
-			if (deprecatedNotations.length > 0)
-			{
-				$("#newDataSourceDownloadLink").attr("href", "data:text/plain;charset=UTF-8,"+encodeURIComponent(output));
-			}
-			
-			mappedPathFields = QueryManager.getPathPartsOfMultipleElements(mappedFields);
-			$(".treeItem").each(function(){
-				markMappedFields($(this));
-			});
 		}	
 	}
 
-	var addMappedFields = function(dzlId)
-	{
-		var concept = QueryManager.getByProperty("skos:notation", dzlId);
-		if (concept != undefined) 
-		{
-			mappedFields.push(concept);
-		}
-		else{
-			deprecatedNotations.push(dzlId);
-			mappedSourceFields.splice(mappedFields.length, 1);	
-		}
-		QueryManager.getAncestors(concept, function(a){
-			if (mappedPathFields.indexOf(a) == -1) {
-				mappedPathFields.push(a);
-			}
+	var loadConfig = function(){
+		//reset
+		$("#divNotationFeedback").html("");
+		$("#newDataSourceDownloadLink").css("display","none").attr("href","");	
+
+		var config = readConfig();
+		var categorization = categorizeMappedOrDeprecated(config.dzlIds, config.mappingDescriptions);
+		createUpdatedConfigurationFile(config.configString, categorization.deprecatedNotations, config.isXml);
+		mappedPathFields = QueryManager.getPathPartsOfMultipleElements(categorization.mappedElements);
+		mappedElementsMarker.setFields(categorization.mappedElements, mappedPathFields, config.mappingDescriptions);
+		$(".treeItem").each(function(){
+			mappedElementsMarker.mark($(this));
 		});
 	}
-
-	var markMappedFields = function(itemDiv)
+	
+	var createUpdatedConfigurationFile = function(configString, deprecatedNotations, validXml)
 	{
-		var conceptUrl = $(itemDiv).attr("data-concepturl");
-		var index = mappedFields.indexOf(conceptUrl);
-		if (index > -1){
-			$(itemDiv).addClass("mappedInConfig");
-			$(itemDiv).prepend("<div style='font-size:12px;color:#333'>map: " + mappedSourceFields[index] + "</div>");
+		for (var i = 0; i < deprecatedNotations.length; i++)
+		{
+			var notation = deprecatedNotations[i];
+			var newNotation = QueryManager.getNewNotationByDeprecatedNotation(notation);
+			/*if (newNotation == notation) 
+			{
+				$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; has multiple new notations.");	
+				continue;
+			}*/
+			var deprecatedConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
+			var deprecatedConcept = QueryManager.getElementByRemovedNotation(notation);
+			if (deprecatedConcept) 
+			{
+				deprecatedConceptUrl += Helper.getCometarWebUrlByConceptUrl(deprecatedConcept);
+				$("#divNotationFeedback").append("<br/><a href='"+deprecatedConceptUrl+"'>"+notation+"</a> is not a valid code (anymore). ");
+			}
+			else
+			{
+				$("#divNotationFeedback").append("<br/>Unknown notation: "+notation+". ");
+			}
+			if (newNotation != undefined && newNotation != "") 
+			{
+				var regex = new RegExp("\""+notation+"\"", "g");
+				if (validXml) configString = configString.replace(regex, "\"" + newNotation + "\"");
+				else configString = configString.replace((i==0?"":",") + notation + (i==deprecatedNotations.length?"":","), (i==0?"":",") + newNotation + (i==deprecatedNotations.length?"":","));
+				$("#newDataSourceDownloadLink").css("display", "block");
+				var newConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
+				newConceptUrl += Helper.getCometarWebUrlByConceptUrl(QueryManager.getByProperty("skos:notation", newNotation));
+				$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; was replaced with <a href='" + newConceptUrl + "'>"+newNotation+"</a>.");
+			}
+			else
+			{
+				$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; is deprecated.");			
+			}
+		}	
+		if (deprecatedNotations.length > 0)
+		{
+			$("#newDataSourceDownloadLink").attr("href", "data:text/plain;charset=UTF-8,"+encodeURIComponent(configString));
+		}	
+	}
+
+	var categorizeMappedOrDeprecated = function(dzlIds, mappingDescriptions)
+	{			
+		var deprecatedNotations = [];
+		var mappedElements = [];
+		for (var i = 0; i < dzlIds.length; i++)
+		{
+			var dzlId = dzlIds[i];
+			var e = QueryManager.getByProperty("skos:notation", dzlId);
+			if (e != undefined) 
+			{
+				mappedElements.push(e);
+			}
+			else{
+				deprecatedNotations.push(dzlId);
+				mappingDescriptions.splice(mappedElements.length, 1);	
+			}
 		}
-		else if (mappedPathFields.indexOf(conceptUrl) > -1){
-			$(itemDiv).addClass("mappedInConfigPathPart");
+		return {
+			mappedElements: mappedElements,
+			mappingDescriptions: mappingDescriptions,
+			deprecatedNotations: deprecatedNotations
 		}
 	}
 
-	var mappedFields = [];
-	var mappedPathFields = [];
-	var mappedSourceFields = [];
-	var deprecatedNotations = [];
+	var mappedElementsMarker = (function()
+	{
+		var mappedElements = [];
+		var mappedPathFields = [];
+		var mappingDescriptions = [];
+		return {
+			mark: function(itemDiv)
+			{
+				var conceptUrl = $(itemDiv).attr("data-concepturl");
+				var index = mappedElements.indexOf(conceptUrl);
+				if (index > -1){
+					$(itemDiv).addClass("mappedInConfig");
+					$(itemDiv).prepend("<div style='font-size:12px;color:#333'>map: " + mappingDescriptions[index] + "</div>");
+				}
+				else if (mappedPathFields.indexOf(conceptUrl) > -1){
+					$(itemDiv).addClass("mappedInConfigPathPart");
+				}				
+			},
+			setFields: function(me, mpf, md)
+			{
+				mappedElements = me;
+				mappedPathFields = mpf;
+				mappingDescriptions = md;
+			}
+		}		
+	}());
 
 	
 	return {
 		init: init,
 		loadConfig: loadConfig,
-		markMappedFields: markMappedFields
+		mappedElementsMarker: mappedElementsMarker
 	}
 }());
 
@@ -251,5 +275,5 @@ $(document).on("cometar:readyForModuleRegister", function(){
 });
 
 $(document).on("tree:treeItemCreated", function(e, itemDiv){
-	MapConfigModule.markMappedFields(itemDiv);
+	MapConfigModule.mappedElementsMarker.mark(itemDiv);
 });

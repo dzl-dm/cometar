@@ -111,7 +111,7 @@ var InfoModule = (function(){
 			var infoDivCoverage = $("<div class='aggregatedInfo'><h3>Coverage</h3></div>");
 			aggregatedInfoDiv.append(infoDivCoverage); 
 			QueryManager.getSiteCoverageByConceptUrl(conceptUrl, function(i){
-				infoDivCoverage.append((Helper.getReadableString(i)).substr(3) + "<br/>").addClass("filled"); 
+				infoDivCoverage.append((Helper.getReadableString(i)) + "<br/>").addClass("filled"); 
 			});
 			var infoDivDomain = $("<div class='aggregatedInfo'><h3>Domain</h3></div>");
 			aggregatedInfoDiv.append(infoDivDomain); 	

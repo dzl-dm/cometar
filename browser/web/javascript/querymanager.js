@@ -61,17 +61,9 @@ var QueryManager = (function(){
 				loadQuery("getNewNotationByDeprecatedNotation"),
 				loadQuery("getPathPartsOfMultipleElements"),
 				loadQuery("getSiteCoverageByConceptUrl")
-			).done(dfd.resolve);		
+			).done(dfd.resolve);
 		}).promise();
 	}	
-	
-	var getAncestors = function(e, callback)
-	{
-		this.getParentElements(e, function(pe){
-			callback(pe);
-			getAncestors(pe, callback);
-		});
-	}
 	
 	var syncquery = function(queryString, requestCallback, requestCompleteCallback)
 	{
@@ -136,7 +128,6 @@ PREFIX cs:		<http://purl.org/vocab/changeset/schema#>
 		init: init,
 		query: query,
 		syncquery: syncquery,
-		getAncestors: getAncestors,
 		useLocalFuseki: useLocalFuseki
 	})
 }());

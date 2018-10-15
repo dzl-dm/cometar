@@ -12,14 +12,20 @@ var CB = (function(){
 	}
 	
 	var loadModules = function(){
-		$(document).trigger("cometar:readyForModuleRegister", [ ModuleManager.register ]);
+		$(document).trigger("cometar:readyForModuleRegister");
 		ModuleManager.render();	
 		if (Helper.getQueryParameter("mode")!="advanced") ModuleManager.hideMenu();
 	}
 	
+	var loadQueries = function(){
+		return $.Deferred(function(dfd){
+			QueryManager.init().done(dfd.resolve);
+		}).promise();
+	}
+	
 	var loadTree = function(){
 		return $.Deferred(function(dfd){
-			TreeManager.init().then(dfd.resolve());
+			TreeManager.init().then(dfd.resolve);
 		}).promise();
 	}
 	
@@ -131,7 +137,7 @@ var CB = (function(){
 	return {
 		init: init,
 		loadModules: loadModules,
-		loadQueries: QueryManager.init,
+		loadQueries: loadQueries,
 		loadTree: loadTree,
 		showCurrentConcept: showCurrentConcept
 	}
@@ -159,15 +165,10 @@ var TreeManager = (function(){
 	{
 		return $.Deferred(function(dfd){
 			initMenu();
-			createTopTreeItems($("#conceptTree"));
+			QueryManager.getTopElements(function(url){
+				putTreeItem(url, $("#conceptTree"));
+			},dfd.resolve);
 		}).promise();
-	}
-	
-	var createTopTreeItems = function(container)
-	{
-		QueryManager.getTopElements(function(url){
-			putTreeItem(url, container);
-		});
 	}
 	
 	var fillWithSubConcepts = function(treeItemDiv)
@@ -364,7 +365,7 @@ var TreeManager = (function(){
 	
 	return {
 		init: init,
-		createTopTreeItems: createTopTreeItems,
+		//createTopTreeItems: createTopTreeItems,
 		fillWithSubConcepts: fillWithSubConcepts,
 		//openPath: openPath,
 		openPaths: openPaths,

@@ -9,13 +9,10 @@ var Helper = (function()
 	var extendPath = function(pathConceptUrls, pathLabels, pathCallback, paths)
 	{
 		var conceptUrl = pathConceptUrls[pathConceptUrls.length-1];
-		var queryString = QueryManager.getParentElements(conceptUrl);
 		var pathConceptUrlExtensions = [];
 		var pathLabelExtensions = [];
-		QueryManager.query(
-			queryString, 
-			function(resultItem){
-				var e = resultItem["element"].value;
+		QueryManager.getParentElements(conceptUrl,
+			function(e){
 				pathConceptUrlExtensions.push(e);
 				var label = QueryManager.getProperty(e, "skos:prefLabel", "lang(?result) = 'en'").value;
 				pathLabelExtensions.push(label);
