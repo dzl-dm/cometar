@@ -352,6 +352,7 @@
 {
 	max-height:100%;
 	position:absolute;
+	top:0px;
 	left:-2px;    
 	animation: spin 2s linear infinite;
 	animation-play-state: paused;
