@@ -43,14 +43,14 @@ WHERE {
 	return function(e, callback, completeCallback)
 	{
 		var result = [];
-		var queryString = qs.replace(/SUBELEMENT/g, e );
+		var queryString = qs.replace(/SUBELEMENT/g, "<" + e + ">" );
 		if (callback != undefined)
 		{
-			QueryManager.query(queryString, function(r) { callback(r) }, function(){ if (completeCallback != undefined) completeCallback() });
+			QueryManager.query(queryString, function(r) { callback(r["element"].value) }, function(){ if (completeCallback != undefined) completeCallback() });
 		}
 		else 
 		{
-			QueryManager.syncquery(queryString, function(r){ result.push(r) });
+			QueryManager.syncquery(queryString, function(r){ result.push(r["element"].value) });
 			return result;
 		}		
 	}

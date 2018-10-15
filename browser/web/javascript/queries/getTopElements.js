@@ -36,6 +36,14 @@ ORDER BY ?label
 	{
 		var result = [];
 		var queryString = qs;
-		QueryManager.syncquery(queryString, function(r){ callback(r["element"].value) });		
+		if (callback != undefined)
+		{
+			QueryManager.query(queryString, function(r) { callback(r["element"].value) }, function(){ if (completeCallback != undefined) completeCallback() });
+		}
+		else 
+		{
+			QueryManager.syncquery(queryString, function(r){ result.push(r["element"].value) });
+			return result;
+		}		
 	}
 });

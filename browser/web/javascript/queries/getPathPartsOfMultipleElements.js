@@ -12,11 +12,12 @@ WHERE
 	return function(e, callback, completeCallback)
 	{
 		var result = [];
+		var elementsArray = [];
 		for (var i = 0; i < e.length; i++)
 		{
-			e[i]="<"+e[i]+">";
+			elementsArray[i]="<"+e[i]+">";
 		}
-		var elementsString = e.join(",");
+		var elementsString = elementsArray.join(",");
 		queryString = qs.replace(/ELEMENTS/g, elementsString );
 		if (callback != undefined)
 		{
