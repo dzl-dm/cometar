@@ -22,7 +22,7 @@ WHERE {
 		queryString = qs.replace(/CONSTRAINT/g, "<" + e + ">" + " " + p + " ?result . " + ( filter? "FILTER (" + filter + ")." : "" ) );
 		if (callback != undefined)
 		{
-			QueryManager.query(queryString, function(r) { callback(r["result"]) });
+			return QueryManager.query(queryString, function(r) { callback(r["result"]) });
 		}
 		else 
 		{

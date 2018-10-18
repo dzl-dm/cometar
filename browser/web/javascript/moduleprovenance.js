@@ -99,6 +99,7 @@ ProvenanceModule = (function(){
 				barCommitCellDiv.css("display","flex");
 				barCellDiv=barCommitCellDiv.children(".provenance_bar_cell."+changetype);
 				barCellDiv.attr("tooltip",barCellDiv.attr("tooltip")+html);
+				barCellDiv.attr("subjects",(barCellDiv.attr("subjects")?barCellDiv.attr("subjects")+";":"")+r["subject"].value);
 				barCellDiv.show().css("width","+=5");
 				
 			},function(){				
@@ -106,6 +107,14 @@ ProvenanceModule = (function(){
 					$(this).attr("tooltip",$(this).attr("tooltip")+"</table>");
 				});
 			});
+		},function(){
+			$(".provenance_bar_cell").click(function(){
+				var subjects=$(this).attr("subjects");
+				TreeManager.openSelectMark({
+					IRIs: subjects,
+					markMapping: true
+				});
+			});	
 		});
 		return resultDiv;
 	}

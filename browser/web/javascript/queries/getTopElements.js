@@ -38,7 +38,7 @@ ORDER BY ?label
 		var queryString = qs;
 		if (callback != undefined)
 		{
-			QueryManager.query(queryString, function(r) { callback(r["element"].value) }, function(){ if (completeCallback != undefined) completeCallback() });
+			return QueryManager.query(queryString, function(r) { callback(r["element"].value) }, function(){ if (completeCallback != undefined) completeCallback() });
 		}
 		else 
 		{

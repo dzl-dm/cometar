@@ -19,7 +19,7 @@ WHERE {
 		queryString = qs.replace(/VARIABLES/, variables).replace(/CONSTRAINT/g, constraints);
 		if (callback != undefined)
 		{
-			QueryManager.query(queryString, function(r) { if(!jQuery.isEmptyObject(r)) callback(r) });
+			return QueryManager.query(queryString, function(r) { if(!jQuery.isEmptyObject(r)) callback(r) });
 		}
 		else 
 		{

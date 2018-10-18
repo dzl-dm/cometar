@@ -51,7 +51,15 @@ WHERE {
 	return function(e, callback, completeCallback)
 	{
 		var result = [];
-		queryString = qs.replace(/TOPELEMENT/g, "<" + e + ">" );
-		QueryManager.syncquery(queryString, function(r){ callback(r["element"].value) });	
+		queryString = qs.replace(/TOPELEMENT/g, "<" + e + ">" );	
+		if (callback != undefined)
+		{
+			return QueryManager.query(queryString, function(r) { callback(r["element"].value) }, function(){ if (completeCallback != undefined) completeCallback() });
+		}
+		else 
+		{
+			QueryManager.syncquery(queryString, function(r){ result.push(r["element"].value) });
+			return result;
+		}	
 	}
 });
