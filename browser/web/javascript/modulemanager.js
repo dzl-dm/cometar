@@ -112,10 +112,6 @@ var ModuleManager = (function(){
 	
 	var init = function(){	
 		console.log("ModuleManager.init");
-		//register([{ tabName: "details" }]);
-		/*$(document).on("tree:treeItemClicked", function(){
-			ModuleManager.showTab.call(ModuleManager, "details");
-		});*/
 	};
 	
 	return {

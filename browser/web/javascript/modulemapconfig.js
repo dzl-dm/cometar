@@ -111,9 +111,13 @@ var MapConfigModule = (function(){
 				var file = c.parent().parent().children("source").children("url").text();
 				file = file.substr(0,file.length-4);
 				dzlId = c.attr("id");
-				sourceId = file + "." + $(c.children("value")[0]).attr("column");		
+				sourceId = file + "." + $(c.children("value")[0]).attr("column");	
 				keepBasePair = false;
-				if (c.children("value")[0] != undefined) getValueTagIdPairs(c.children("value")[0]);		
+				if (c.children("value")[0] != undefined) getValueTagIdPairs(c.children("value")[0]);	
+				if (c.attr("constant-value") != undefined) { 
+					sourceId = "constant-value";
+					keepBasePair = true;
+				}
 				if (keepBasePair) addIdPair(dzlId, sourceId);
 				
 				$($(c.children("modifier"))).each(function(){
@@ -162,10 +166,7 @@ var MapConfigModule = (function(){
 		var categorization = categorizeMappedOrDeprecated(config.dzlIds, config.mappingDescriptions);
 		createUpdatedConfigurationFile(config.configString, categorization.deprecatedNotations, config.isXml);
 		mappedPathFields = QueryManager.getPathPartsOfMultipleElements(categorization.mappedElements);
-		mappedElementsMarker.setFields(categorization.mappedElements, mappedPathFields, config.mappingDescriptions);
-		$(".treeItem").each(function(){
-			mappedElementsMarker.mark($(this));
-		});
+		TreeManager.TreeElementsMarker.setFields(categorization.mappedElements, mappedPathFields, config.mappingDescriptions).mark();
 	}
 	
 	var createUpdatedConfigurationFile = function(configString, deprecatedNotations, validXml)
@@ -234,46 +235,13 @@ var MapConfigModule = (function(){
 			deprecatedNotations: deprecatedNotations
 		}
 	}
-
-	var mappedElementsMarker = (function()
-	{
-		var mappedElements = [];
-		var mappedPathFields = [];
-		var mappingDescriptions = [];
-		return {
-			mark: function(itemDiv)
-			{
-				var conceptUrl = $(itemDiv).attr("data-concepturl");
-				var index = mappedElements.indexOf(conceptUrl);
-				if (index > -1){
-					$(itemDiv).addClass("mappedInConfig");
-					$(itemDiv).prepend("<div style='font-size:12px;color:#333'>map: " + mappingDescriptions[index] + "</div>");
-				}
-				else if (mappedPathFields.indexOf(conceptUrl) > -1){
-					$(itemDiv).addClass("mappedInConfigPathPart");
-				}				
-			},
-			setFields: function(me, mpf, md)
-			{
-				mappedElements = me;
-				mappedPathFields = mpf;
-				mappingDescriptions = md;
-			}
-		}		
-	}());
-
 	
 	return {
 		init: init,
-		loadConfig: loadConfig,
-		mappedElementsMarker: mappedElementsMarker
+		loadConfig: loadConfig
 	}
 }());
 
 $(document).on("cometar:readyForModuleRegister", function(){
 	if (Helper.getQueryParameter("mode")=="advanced") MapConfigModule.init();
-});
-
-$(document).on("tree:treeItemCreated", function(e, itemDiv){
-	MapConfigModule.mappedElementsMarker.mark(itemDiv);
 });

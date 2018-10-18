@@ -850,6 +850,12 @@ div.infoButton:hover
 {
 	height:16px;
 	border:1px solid white;
+	text-align:center;
+	cursor:pointer;
+}
+.provenance_bar_cell:hover:before
+{
+	content: "show in tree";
 }
 
 .provenance_bar_cell.literal

@@ -1,9 +1,9 @@
 var Query = (function(prefixes){
 	var qs = prefixes + (function () {/*
-SELECT ?r
+SELECT distinct ?r
 WHERE {
-	CONCEPT skos:notation ?notation .
-	?r :uses ?notation .
+	?site :uses CONCEPT ;
+		prov:label ?r .
 }   
 	*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 	

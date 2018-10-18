@@ -5,6 +5,7 @@ WHERE
 {
 	?element skos:broader* [ rdf:partOf* [ skos:broader* ?c ] ] .
 	?a skos:member* ?c .
+	?a rdf:type ?type FILTER (?type IN (skos:Concept, skos:Collection)) .
 	filter (?a != ?element && ?element IN (ELEMENTS))
 }    
 	*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
@@ -15,13 +16,15 @@ WHERE
 		var elementsArray = [];
 		for (var i = 0; i < e.length; i++)
 		{
-			elementsArray[i]="<"+e[i]+">";
+			var ep = Helper.getPrefixedIri(e[i]);
+			if (ep.indexOf("http") == 0) elementsArray[i]="<"+ep+">";
+			else elementsArray[i]=ep;
 		}
 		var elementsString = elementsArray.join(",");
 		queryString = qs.replace(/ELEMENTS/g, elementsString );
 		if (callback != undefined)
 		{
-			QueryManager.query(queryString, function(r) { callback(r["a"].value) }, function(){ if (completeCallback != undefined) completeCallback() });
+			return QueryManager.query(queryString, function(r) { callback(r["a"].value) }, function(){ if (completeCallback != undefined) completeCallback() });
 		}
 		else 
 		{

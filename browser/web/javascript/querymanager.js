@@ -82,7 +82,7 @@ var QueryManager = (function(){
 		}
 		async = sync == undefined;
 		var rcc = requestCompleteCallback != undefined;
-		$.ajax({
+		return $.ajax({
 			url: endpoint + "?query=" + encodeURIComponent(queryString),
 			dataType: "json",
 			async: async,
@@ -98,7 +98,7 @@ var QueryManager = (function(){
 				Helper.stopLoading();
 				if (rcc) requestCompleteCallback(j, k);
 			}
-		});
+		}).promise();
 	}
 
 	var queryCallback = function(json, requestCallback)

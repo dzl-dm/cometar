@@ -94,7 +94,13 @@ var Helper = (function()
 	var urlShorts = [
 		["http://data.dzl.de/ont/dwh#", "dzl/"],
 		["http://purl.bioontology.org/ontology/SNOMEDCT/", "snomed/"],
-		["http://loinc.org/owl#", "loinc/"],
+		["http://loinc.org/owl#", "loinc/"]
+	];
+	
+	var iriPrefixes = [
+		["http://purl.bioontology.org/ontology/SNOMEDCT/", "snomed:"],
+		["http://loinc.org/owl#", "loinc:"],
+		["http://data.dzl.de/ont/dwh#", ":"]
 	];
 
 	var moreUnderstandableStrings = [
@@ -120,6 +126,30 @@ var Helper = (function()
 		["http://data.dzl.de/ont/dwh#", ""],
 		["http://sekmi.de/histream/dwh#dateRestriction", "date"]
 	];
+	
+	var getPrefixedIri = function(s)
+	{
+		var sWithPrefix="";
+		for (var i = 0; i < iriPrefixes.length; i++)
+		{
+			var regex = new RegExp(iriPrefixes[i][0], "g");
+			sWithPrefix = s.replace(regex, iriPrefixes[i][1]);
+			if (sWithPrefix!=s)return sWithPrefix;
+		}	
+		return s;
+	}
+	var getFullIri = function(s)
+	{
+		var sFull="";
+		for (var i = 0; i < iriPrefixes.length; i++)
+		{
+			var regex = new RegExp(iriPrefixes[i][1], "g");
+			s = s.replace(regex, iriPrefixes[i][0]);
+			if (sFull!=s)return sFull;
+		}	
+		return s;
+	}
+	
 	
 	var getReadableString = function(s)
 	{
@@ -200,43 +230,6 @@ var Helper = (function()
 			}, 200);
 		});
 	}
-
-	var fieldsToMark = [];
-	var fieldsToMarkClasses = [];
-	var addFieldToMark = function(id, classname)
-	{
-		if (fieldsToMark.indexOf(id)==-1)
-		{
-			fieldsToMark.push(id);
-			fieldsToMarkClasses.push(classname);
-		}
-	}
-	var markFields = function(itemDiv)
-	{
-		$(".treeItem").each(function(){
-			markField($(this));
-		});
-	}
-	var markField = function(itemDiv)
-	{
-		var conceptUrl = $(itemDiv).attr("data-concepturl");
-		var index = fieldsToMark.indexOf(conceptUrl);
-		if (index > -1){
-			$(itemDiv).addClass(fieldsToMarkClasses[index]);
-		}		
-	}
-	var clearFieldsToMark = function(classnames)
-	{
-		fieldsToMark = [];
-		fieldsToMarkClasses = [];
-		$(".treeItem").each(function(){
-			for (var i = 0; i < classnames.length; i++)
-			{
-				var c = classnames[i];
-				$(this).removeClass(c);
-			}
-		});
-	}
 	
 	jQuery.fn.rotate = function(degrees) {
 		$(this).css({'-webkit-transform' : 'rotate('+ degrees +'deg)',
@@ -276,11 +269,9 @@ var Helper = (function()
 		levenstheinDistance: levenstheinDistance,
 		customHide: customHide,
 		getCometarWebUrlByConceptUrl: getCometarWebUrlByConceptUrl,
-		markFields: markFields,
-		markField: markField,
-		addFieldToMark: addFieldToMark,
-		clearFieldsToMark: clearFieldsToMark,
 		startLoading: startLoading,
-		stopLoading: stopLoading
+		stopLoading: stopLoading,
+		getPrefixedIri: getPrefixedIri,
+		getFullIri: getFullIri
 	}
 }());
