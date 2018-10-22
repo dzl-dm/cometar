@@ -122,6 +122,7 @@ var Helper = (function()
 		["http://sekmi.de/histream/dwh#floatRestriction", "float"],
 		["http://sekmi.de/histream/dwh#partialDateRestriction", "partial date"],
 		["http://www.w3.org/2004/02/skos/core#member", "collection member"],
+		["http://www.w3.org/2004/02/skos/core#editorialNote", "editorial note"],
 		["http://www.w3.org/ns/prov#wasDerivedFrom", "previous concept identifier"],
 		["http://data.dzl.de/ont/dwh#", ""],
 		["http://sekmi.de/histream/dwh#dateRestriction", "date"]
