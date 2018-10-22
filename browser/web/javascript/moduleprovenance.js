@@ -156,8 +156,8 @@ ProvenanceModule = (function(){
 		
 		var loadMoreDiv=$("<div id='provenance_loadMoreDiv'>load more</div>");
 		loadMoreDiv.click(function(){
+			untilDate = new Date(fromDate);
 			fromDate.setMonth(fromDate.getMonth()-3);
-			untilDate.setMonth(untilDate.getMonth()-3);
 			createDayLines(fromDate, untilDate);
 			createProvenanceBars(fromDate, untilDate);			
 		});
