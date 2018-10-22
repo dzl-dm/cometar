@@ -138,7 +138,7 @@ ProvenanceModule = (function(){
 					});
 				});
 			},function(){
-				provenanceDiv.children(".provenance_bar_cell").click(function(){
+				provenanceDiv.find(".provenance_bar_cell").click(function(){
 					var subjects=$(this).attr("subjects");
 					TreeManager.openSelectMark({
 						IRIs: subjects,
@@ -150,7 +150,7 @@ ProvenanceModule = (function(){
 		
 		var untilDate = new Date(Date.now());
 		var fromDate = new Date(untilDate);
-		fromDate.setMonth(fromDate.getMonth()-3);
+		fromDate.setMonth(fromDate.getMonth()-1);
 		createDayLines(fromDate, untilDate);
 		createProvenanceBars(fromDate, untilDate);
 		
