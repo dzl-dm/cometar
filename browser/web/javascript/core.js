@@ -118,6 +118,7 @@ var CB = (function(){
 				.css("top",$("#modulesContents").offset().top)
 				.css("height",$("#modulesContents").height())
 				.css("display","block");
+			tooltipcontent.scrollTop(0);
 			tooltip.css("display","block");
 		}
 		var hideTooltip = function(){
