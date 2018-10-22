@@ -684,6 +684,11 @@
 	width:100%;
 }
 
+#tooltipbackgrounddiv
+{
+	z-index:1001;
+}
+
 #tooltipDiv
 {
 	border:1px solid black;
@@ -783,64 +788,76 @@ div.infoButton:hover
 
 */
 
-.loading
-{
-	background-image:url('images/loading.gif');
-	background-size: 20px 20px;
-	width:20px;
-	height:20px;
-	display:inline-block;
-}
-
 #provenance_div
 {
 	position:relative; 
-	display:flex;	
-	flex-direction:row;
-	width:100%;
+	display:flex;
+	flex-grow:1;
+	height:calc(100% - 30px);
 	overflow:scroll;
-	height:100%;
 }
-
-.provenance_date_column
+#provenance_date_column
 {
-	width:200px;
-	display:inline-flex;
-	flex-direction:column;
-	align-items:center;
+	height:calc(100% - 0px);
+	width:100px;
+	display:flex;
 	position:relative;
+	overflow:hidden;
 }
-
-.provenance_date_cell
-{
-	left:0px;
-	width:200px;
-	border-left:0px;
-	border-right:0px;
-	border-bottom:0px;
-	border-top:1px solid black;
-	position:absolute;
-}
-
-.provenance_bar_column
+#provenance_changes_column
 {
 	display:flex;
-	flex-direction:column;
-	flex-grow:1;
+	flex-direction:column;	
+	position:absolute;
+	min-width:100%;
+}
+
+.dayLine
+{
+	border-top:1px solid #DDD !important;
+	height:0px;
+	position:relative;
+	margin-top:3px;
+	display:flex;
+	flex-shrink:0;
+}
+.dayLine.with_content
+{
+	height:10px;
+	margin-top:12px;
 }
 
 .provenance_bar_row
 {
 	height:20px;
-	position:absolute;
+	margin-top:-10px;
 	display:flex;
 	flex-direction:row-reverse;
+	justify-content: flex-end;
+	position:relative;
+	padding-right:10px;
+}
+
+.provenance_bar_row_date
+{
+	position:absolute;
+	background-color:white;
+	border:1px solid white !important;
+	width:90px;
+	margin-top:3px;
+	padding-left:5px;
+	display:none;
+}
+.provenance_bar_row_date.odd
+{
+	color: #0492D0 !important;
 }
 
 .provenance_bar_commit_cell
 {
 	height:18px;
 	border:1px solid #333 !important;
+	border-radius:3px;
 	margin-left:10px;
 	display:none;
 	flex-direction:row;
@@ -852,32 +869,102 @@ div.infoButton:hover
 	border:1px solid white;
 	text-align:center;
 	cursor:pointer;
+	display:none;
+	font-size:12px;
 }
 .provenance_bar_cell:hover:before
 {
 	content: "show in tree";
 }
 
+.provenance_bar_cell:first-child
+{
+	border-bottom-left-radius:2px;
+	border-top-left-radius:2px;
+}
+
+.provenance_bar_cell:last-child
+{
+	border-bottom-right-radius:2px;
+	border-top-right-radius:2px;
+}
+
 .provenance_bar_cell.literal
 {
-	background-color:green;
-	border-color:green !important;
+	background-color:#0492D0;
+	color:#333;
+	border-color:#0492D0 !important;
 }
 
 .provenance_bar_cell.progress 
 {
-	background-color:orange;
-	border-color:orange !important;
+	background-color:#F0F0F0;
+	color:#333;
+	border-color:#F0F0F0 !important;
 }
 
 .provenance_bar_cell.semantic 
 {
-	background-color:yellow;
-	border-color:yellow !important;
+	background-color:#BFE3F2;
+	color:#333;
+	border-color:#BFE3F2 !important;
 }
 
 .provenance_bar_cell.structure 
 {
-	background-color:red;
-	border-color:red !important;
+	background-color:#0A3769;
+	color:#F0F0F0;
+	border-color:#0A3769 !important;
+}
+
+.provenance_bar_cell.nonhighlight
+{
+	opacity: 0.3;
+}
+.provenance_bar_cell.hidden
+{
+	display:none !important;
+}
+.provenance_bar_cell.highlight
+{
+	background-color:#333 !important;
+	color:#F0F0F0 !important;
+	border-color:#333 !important;
+}
+
+#provenance_loadMoreDiv
+{
+	border:1px solid #333 !important;
+	background-color:#0492D0;
+	color:#F0F0F0;
+	border-radius:3px;
+	position:absolute;
+	height:20px;
+	bottom:0px;
+	width:calc(100% - 10px);
+	text-align:center;
+	z-index:1000;
+	cursor:pointer;
+}
+#provenance_loadMoreDiv:hover{
+	background-color: #F0F0F0;
+	color:#0492D0;
+}
+
+#provenance_legendDiv.provenance_bar_commit_cell
+{
+	position:absolute;
+	display:flex;
+	bottom:0px;
+	right:0px;
+}
+#provenance_legendDiv > .provenance_bar_cell
+{
+	display:block;
+	width:100px;
+	margin:0px;
+}
+#provenance_legendDiv > .provenance_bar_cell:hover:before
+{
+	content: "";
 }

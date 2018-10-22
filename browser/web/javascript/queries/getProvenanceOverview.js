@@ -8,16 +8,15 @@ WHERE
 		prov:endedAtTime ?enddate ;
 		prov:label ?message ;
 	.	
-	filter (?enddate > ONEMONTHBEFORE)
+	filter (?enddate >= FROMDATE && ?enddate <= UNTILDATE)
 }
 order by DESC(?enddate )
 	*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 	
-	return function(callback, completeCallback)
+	return function(fromDate, untilDate, callback, completeCallback)
 	{
 		var result = [];
-		var dt = new Date(); dt.setMonth(dt.getMonth()-1);
-		var queryString = qs.replace(/ONEMONTHBEFORE/g, "'"+dt.toISOString()+"'^^xsd:dateTime");
+		var queryString = qs.replace(/FROMDATE/g, "'"+fromDate.toISOString()+"'^^xsd:dateTime").replace(/UNTILDATE/g, "'"+untilDate.toISOString()+"'^^xsd:dateTime");
 		if (callback != undefined)
 		{
 			QueryManager.query(queryString, function(r) { callback(r) }, function(){ if (completeCallback != undefined) completeCallback() });
