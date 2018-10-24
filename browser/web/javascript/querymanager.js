@@ -60,6 +60,7 @@ var QueryManager = (function(){
 				loadQuery("getTotalNumberOfSubConcepts"),
 				loadQuery("getNewNotationByDeprecatedNotation"),
 				loadQuery("getPathPartsOfMultipleElements"),
+				loadQuery("getExportParams"),
 				loadQuery("getSiteCoverageByConceptUrl")
 			).done(dfd.resolve);
 		}).promise();

@@ -147,6 +147,18 @@ var InfoModule = (function(){
 				QueryManager.getTotalNumberOfSubConcepts(conceptUrl, function(i){
 					infoDivSubconcepts.append(i["concepts"].value + " / " + i["modifiers"].value + "<br/>").addClass("filled"); 
 				});
+				
+				var exportButtonDiv=$("<div class='button' id='exportButtonDiv'>Export</div>");
+				var exportLink = $("<a id='exportLink' href='data:text/plain;charset=UTF-8' download='export.csv' style='display:none'></a>");
+				aggregatedInfoDiv.append(exportLink);
+				aggregatedInfoDiv.append(exportButtonDiv);
+				exportButtonDiv.click(function(e){
+					getExport(conceptUrl).then(function(exportText){
+						exportText = "IRI;label;notation;unit\n" + exportText;
+						exportLink.attr("href", "data:text/plain;charset=UTF-8,"+encodeURIComponent(exportText));
+						exportLink[0].click();
+					});
+				});
 			}
 			
 			var infoDivEditNotes = $("<div class='infoDiv'><h3>Editorial Notes</h3></div>");
@@ -230,6 +242,34 @@ var InfoModule = (function(){
 			});
 		}
 		return resultDiv;
+	}
+	
+	var getExport = function(iri, c){
+		var dfd = $.Deferred();
+		var newLine = "";
+		var counter = (c!=undefined)?c:0;
+		for (var i = 0; i < counter; i++) newLine += "    ";
+		newLine += Helper.getPrefixedIri(iri);
+		QueryManager.getExportParams(iri, function(r){
+			newLine+=";"+r["enlabel"].value;
+			newLine+=";"+((r["codes"])?r["codes"].value:"");
+			newLine+=";"+((r["units"])?r["units"].value:"");
+		}).then(function(){
+			newLine += "\n";
+			var processes = [];
+			QueryManager.getSubElements(iri, function(e){
+				processes.push(getExport(e,counter+1));
+			}, function(){
+				$.when.apply($,processes).then(function(){
+					for (var i = 0; i < arguments.length && arguments[i] != undefined; i++){
+						newLine += arguments[i]; 
+					}
+					
+					dfd.resolve(newLine);
+				});
+			});
+		});
+		return dfd.promise();
 	}
 
 	var putPath = function(div, path)

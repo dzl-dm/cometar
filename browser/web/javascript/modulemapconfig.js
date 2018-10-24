@@ -1,6 +1,5 @@
 var MapConfigModule = (function(){
 	var init = function(){
-		console.log(checkForCharacterset("µasdf|µä"));
 		ModuleManager.register({
 			tabName: "mapping / configuration",
 			handlerFunction: getMapConfigDiv	
