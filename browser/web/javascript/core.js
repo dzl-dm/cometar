@@ -451,7 +451,7 @@ var TreeManager = (function(){
 	*/
 	var openSelectMark = function(a){
 		if (!Array.isArray(a.IRIs)) a.IRIs=a.IRIs.split(";");
-		if (a.IRIs=[]) return;
+		if (a.IRIs.length==0||a.IRIs[0]==undefined) return;
 		//before opening
 		if (!a.dontUnmark) {
 			$(".pathPart").removeClass("pathPart");
