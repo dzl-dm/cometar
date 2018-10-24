@@ -1,5 +1,6 @@
 var MapConfigModule = (function(){
 	var init = function(){
+		console.log(checkForCharacterset("µasdf|µä"));
 		ModuleManager.register({
 			tabName: "mapping / configuration",
 			handlerFunction: getMapConfigDiv	
@@ -206,11 +207,22 @@ var MapConfigModule = (function(){
 				$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; is deprecated.");			
 			}
 		}	
-		if (deprecatedNotations.length > 0)
+		if (deprecatedNotations.length > 0 && checkForCharacterset(configString))
 		{
 			$("#newDataSourceDownloadLink").attr("href", "data:text/plain;charset=UTF-8,"+encodeURIComponent(configString));
 		}	
 	}
+	
+	var checkForCharacterset = function(s){
+		//such characters may make sense in the column-field which will not appear in the client-software-produced xml
+		var regex = new RegExp("column=\"[^\"]+\"", "g");
+		s = s.replace(regex, "");		
+		var regex = new RegExp("[^\x80-\xFF]", "g");
+		s = s.replace(regex, "");		
+		if (s=="") return true;
+		$("#divNotationFeedback").append("<br/><span style='color:red;font-weight:bold'>!!</span> Configuration file contains invalid character(s): &quot;"+s+"&quot;.");
+		return false;
+	};
 
 	var categorizeMappedOrDeprecated = function(dzlIds, mappingDescriptions)
 	{			
