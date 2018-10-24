@@ -1,6 +1,6 @@
 var Query = (function(prefixes){
 	var qs = prefixes + (function () {/*
-SELECT ?result
+SELECT DISTINCT ?result
 WHERE {
 	CONSTRAINT
 }  
@@ -19,7 +19,7 @@ WHERE {
 			if (typeof foc2 == "string") filter = foc2;
 			else if (typeof foc2 == "function") callback = foc2;
 		}
-		queryString = qs.replace(/CONSTRAINT/g, "<" + e + ">" + " " + p + " ?result . " + ( filter? "FILTER (" + filter + ")." : "" ) );
+		queryString = qs.replace(/CONSTRAINT/g, "<" + e + ">" + " " + p + " ?result " + ( filter? "FILTER (" + filter + ")." : "" ) );
 		if (callback != undefined)
 		{
 			return QueryManager.query(queryString, function(r) { callback(r["result"]) });

@@ -451,6 +451,7 @@ var TreeManager = (function(){
 	*/
 	var openSelectMark = function(a){
 		if (!Array.isArray(a.IRIs)) a.IRIs=a.IRIs.split(";");
+		if (a.IRIs=[]) return;
 		//before opening
 		if (!a.dontUnmark) {
 			$(".pathPart").removeClass("pathPart");
@@ -497,7 +498,7 @@ var TreeManager = (function(){
 			expandNextItem();
 		});			
 	}		
-	afterOpening = function(a, pathParts){
+	var afterOpening = function(a, pathParts){
 		if (a.oneSelectedIri) {
 			getItem(a.IRIs[0]).expand();
 			markItemAsSelected(a.IRIs[0]);
