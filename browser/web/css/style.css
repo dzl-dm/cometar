@@ -871,6 +871,7 @@ div.infoButton:hover
 	cursor:pointer;
 	display:none;
 	font-size:12px;
+	white-space: nowrap;
 }
 .provenance_bar_cell:hover:before
 {

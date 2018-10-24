@@ -528,20 +528,20 @@ var TreeManager = (function(){
 					var conceptUrl = $(itemDiv).attr("rdf-iri");
 					if (mappedElements != undefined && mappedElements.indexOf(conceptUrl) > -1){
 						$(itemDiv).addClass("mappedInConfig");
-						if (mappingDescriptions != undefined) $(itemDiv).prepend("<div style='font-size:12px;color:#333'>map: " + mappingDescriptions[index] + "</div>");
+						if (mappingDescriptions != undefined) $(itemDiv).prepend("<div style='font-size:12px;color:#333'>map: " + mappingDescriptions[mappedElements.indexOf(conceptUrl)] + "</div>");
 					}
 					else if (mappedPathFields != undefined && mappedPathFields.indexOf(conceptUrl) > -1){
 						$(itemDiv).addClass("mappedInConfigPathPart");
 					}	
 				}
-				return $(this);
+				return TreeElementsMarker;
 			},
 			setFields: function(me, mpf, md)
 			{
 				mappedElements = me;
 				mappedPathFields = mpf;
 				mappingDescriptions = md;
-				return $(this);
+				return TreeElementsMarker;
 			}
 		}		
 	}());
