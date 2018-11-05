@@ -1,5 +1,7 @@
 #!/bin/bash
 
+newrev=master
+
 conffile=$(realpath $(dirname $0)/../config/conf.cfg)
 while [ ! $# -eq 0 ]
 do
@@ -7,6 +9,10 @@ do
 		-p)
 			shift
 			conffile=$1
+			;;
+		-r)
+			shift
+			newrev=$1
 			;;
 	esac
 	shift
@@ -19,7 +25,7 @@ rm -rf "$TEMPDIR/git"
 mkdir -p "$TEMPDIR/git"
 eval "$GITBIN clone -q \"$TTLDIRECTORY\" \"$TEMPDIR/git\""
 cd "$TEMPDIR/git"
-eval "$GITBIN checkout -q master"
+eval "$GITBIN checkout -q $newrev"
 
 echo "---------------- POST RECEIVE ---------------------"
 echo "POST RECEIVE $(date)" >> "$LOGFILE"
