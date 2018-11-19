@@ -6,11 +6,11 @@ var InfoModule = (function(){
 		});
 	}
 	
-	var getInfoDiv = function(conceptUrl){
+	var getInfoDiv = function(conceptIri){
 		var resultDiv = $("<div>");	
 		var restInfoDiv = $("<div id='restInfoDiv'>").css("display","block");
 		resultDiv.append(restInfoDiv);
-		if (!conceptUrl) 
+		if (!conceptIri) 
 		{			
 			var allChangeCommitsInfoDiv = $("<div class='infoDiv infoDivChanges'><h3>Recent Changes</h3></div>");	
 			restInfoDiv.append(allChangeCommitsInfoDiv);
@@ -18,25 +18,25 @@ var InfoModule = (function(){
 				var ident = (i["author"]?Helper.getReadableString(i["author"].value).toUpperCase():"") + " on " + i["timestamp"].value;
 				if ($(".dateDiv:contains("+ident+")").length > 0)
 				{
-					$(".dateDiv:contains("+ident+")").data("conceptUrls",$(".dateDiv:contains("+ident+")").data("conceptUrls")+","+i["element"].value); 
+					$(".dateDiv:contains("+ident+")").data("conceptIris",$(".dateDiv:contains("+ident+")").data("conceptIris")+","+i["element"].value); 
 					changesDiv = $(".dateDiv:contains("+ident+")").next();
 				}
 				else
 				{
 					dateDiv = $("<div style='display:inline-block;vertical-align:top;width:150px' class='dateDiv'><a href='#'>"+ ident + "</a></div>");
-					dateDiv.data("conceptUrls",i["element"].value);
+					dateDiv.data("conceptIris",i["element"].value);
 					dateDiv.click(function(e){
 						e.stopPropagation();	
 						Helper.clearFieldsToMark(["fieldToMark","fieldToMarkPath"]);
-						var conceptUrls = $(this).data("conceptUrls").split(",");
-						for (var j=0; j < conceptUrls.length; j++)
+						var conceptIris = $(this).data("conceptIris").split(",");
+						for (var j=0; j < conceptIris.length; j++)
 						{
-							var u = conceptUrls[j];
+							var u = conceptIris[j];
 							Helper.addFieldToMark(u,"fieldToMark");
 						}
-						for (var j=0; j < conceptUrls.length; j++)
+						for (var j=0; j < conceptIris.length; j++)
 						{
-							var u = conceptUrls[j];
+							var u = conceptIris[j];
 							QueryManager.getAncestors(u, function(a){
 								Helper.addFieldToMark(a,"fieldToMarkPath");
 							});
@@ -57,19 +57,19 @@ var InfoModule = (function(){
 			resultDiv.append(aggregatedInfoDiv);
 
 			var treePathDiv = $("<div class='treePathDiv infoDiv'>");	
-			Helper.getPathsByConceptUrl(conceptUrl, function(path){putPath(treePathDiv, path)});			
+			Helper.getPathsByConceptIri(conceptIri, function(path){putPath(treePathDiv, path)});			
 			treePathDiv.prepend("<h3>Path</h3>").css("display","block");
 			restInfoDiv.append(treePathDiv);
 			
 			var infoDivLabel = $("<div class='aggregatedInfo'><h3>Label</h3></div>");
 			aggregatedInfoDiv.append(infoDivLabel); 	
-			QueryManager.getProperty(conceptUrl, "skos:prefLabel", function(i){
+			QueryManager.getProperty(conceptIri, "skos:prefLabel", function(i){
 				infoDivLabel.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>").addClass("filled"); 
 			});
 			
 			var infoDivNotation = $("<div class='aggregatedInfo'><h3>Code</h3></div>");	
 			aggregatedInfoDiv.append(infoDivNotation); 
-			QueryManager.getProperty(conceptUrl, "skos:notation", function(i){
+			QueryManager.getProperty(conceptIri, "skos:notation", function(i){
 				var dt = ""
 				switch(i["datatype"]) {
 					case "http://sekmi.de/histream/dwh#loinc":
@@ -85,39 +85,39 @@ var InfoModule = (function(){
 			});
 			var infoDivDescription = $("<div class='infoDiv'><h3>Description</h3></div>");	
 			restInfoDiv.append(infoDivDescription); 
-			QueryManager.getProperty(conceptUrl, "dc:description", function(i){
+			QueryManager.getProperty(conceptIri, "dc:description", function(i){
 				infoDivDescription.append((i["xml:lang"] != undefined?i["xml:lang"].toUpperCase() + ": ":"") + i.value + "<br/>").css("display","block");
 			});
 			var infoDivUnit = $("<div class='aggregatedInfo'><h3>Unit</h3></div>");	
 			aggregatedInfoDiv.append(infoDivUnit); 
-			QueryManager.getProperty(conceptUrl, ":unit", function(i){
+			QueryManager.getProperty(conceptIri, ":unit", function(i){
 				infoDivUnit.append(i.value + "<br/>").addClass("filled"); 
 			});
 			var infoDivAltlabel = $("<div class='aggregatedInfo'><h3>Alternative Label</h3></div>");	
 			aggregatedInfoDiv.append(infoDivAltlabel); 
-			QueryManager.getProperty(conceptUrl, "skos:altLabel", function(i){
+			QueryManager.getProperty(conceptIri, "skos:altLabel", function(i){
 				infoDivAltlabel.append(i["xml:lang"].toUpperCase() + ": " + i.value + "<br/>").addClass("filled"); 
 			});
 			var infoDivStatus = $("<div class='aggregatedInfo'><h3>Status</h3></div>");
 			aggregatedInfoDiv.append(infoDivStatus); 
-			QueryManager.getProperty(conceptUrl, ":status", function(i){
+			QueryManager.getProperty(conceptIri, ":status", function(i){
 				infoDivStatus.append(i.value + "<br/>").addClass("filled");  
 			});
 			var infoDivAuthor = $("<div class='aggregatedInfo'><h3>Author</h3></div>");
 			aggregatedInfoDiv.append(infoDivAuthor); 
-			QueryManager.getProperty(conceptUrl, "dc:creator", function(i){
+			QueryManager.getProperty(conceptIri, "dc:creator", function(i){
 				infoDivAuthor.append(i.value + "<br/>").addClass("filled"); 
 			});
 			var infoDivCoverage = $("<div class='aggregatedInfo'><h3>Coverage</h3></div>");
 			aggregatedInfoDiv.append(infoDivCoverage); 
-			QueryManager.getSiteCoverageByConceptUrl(conceptUrl, function(i){
+			QueryManager.getSiteCoverageByConceptUrl(conceptIri, function(i){
 				var name = Helper.getReadableString(i) + "<br>";
 				if (infoDivCoverage.html().indexOf(name)==-1) infoDivCoverage.append(name).addClass("filled"); 
 				
 			});
 			var infoDivDomain = $("<div class='aggregatedInfo'><h3>Domain</h3></div>");
 			aggregatedInfoDiv.append(infoDivDomain); 	
-			QueryManager.getProperty(conceptUrl, "dwh:restriction", function(i){
+			QueryManager.getProperty(conceptIri, "dwh:restriction", function(i){
 				var restriction = "";
 				switch(i.value.split("#")[1]) {
 					case "integerRestriction":
@@ -144,7 +144,7 @@ var InfoModule = (function(){
 			{
 				var infoDivSubconcepts = $("<div class='aggregatedInfo'><h3>#Subordinated concepts / modifiers</h3></div>");
 				aggregatedInfoDiv.append(infoDivSubconcepts); 
-				QueryManager.getTotalNumberOfSubConcepts(conceptUrl, function(i){
+				QueryManager.getTotalNumberOfSubConcepts(conceptIri, function(i){
 					infoDivSubconcepts.append(i["concepts"].value + " / " + i["modifiers"].value + "<br/>").addClass("filled"); 
 				});
 				
@@ -153,8 +153,8 @@ var InfoModule = (function(){
 				aggregatedInfoDiv.append(exportLink);
 				aggregatedInfoDiv.append(exportButtonDiv);
 				exportButtonDiv.click(function(e){
-					getExport(conceptUrl).then(function(exportText){
-						exportText = "IRI;label;notation;unit\n" + exportText;
+					getExport(conceptIri).then(function(exportText){
+						exportText = "Bezeichnung;Code;Einheit;ist Spezifikation;Status draft\n" + exportText;
 						exportLink.attr("href", "data:text/plain;charset=UTF-8,"+encodeURIComponent(exportText));
 						exportLink[0].click();
 					});
@@ -163,7 +163,7 @@ var InfoModule = (function(){
 			
 			var infoDivEditNotes = $("<div class='infoDiv'><h3>Editorial Notes</h3></div>");
 			restInfoDiv.append(infoDivEditNotes); 
-			QueryManager.getProperty(conceptUrl, "skos:editorialNote", function(i){
+			QueryManager.getProperty(conceptIri, "skos:editorialNote", function(i){
 				infoDivEditNotes.append(i.value + "<br/>").css("display","block");
 			});
 			
@@ -174,7 +174,7 @@ var InfoModule = (function(){
 			var changesDiv;
 			var oldValue="";
 			var segment;
-			QueryManager.getNotes(conceptUrl, function(i){	
+			QueryManager.getNotes(conceptIri, function(i){	
 				if (i["predicate"].value == "http://www.w3.org/2004/02/skos/core#topConceptOf"
 					|| i["predicate"].value == "http://www.w3.org/2004/02/skos/core#inScheme"
 					|| i["predicate"].value == "http://www.w3.org/2004/02/skos/core#broader"
@@ -236,9 +236,9 @@ var InfoModule = (function(){
 				
 			var modifierDiv = $("<div class='treePathDiv infoDiv' id='modifierInfoDiv'><h3>Specifications</h3></div>");
 			restInfoDiv.append(modifierDiv);
-			QueryManager.getModifiers(conceptUrl, function(m){
+			QueryManager.getModifiers(conceptIri, function(m){
 				modifierDiv.css("display","block");
-				Helper.getPathsByConceptUrl(m, function(path){putPath(modifierDiv, path)});
+				Helper.getPathsByConceptIri(m, function(path){putPath(modifierDiv, path)});
 			});
 		}
 		return resultDiv;
@@ -249,11 +249,13 @@ var InfoModule = (function(){
 		var newLine = "";
 		var counter = (c!=undefined)?c:0;
 		for (var i = 0; i < counter; i++) newLine += "    ";
-		newLine += Helper.getPrefixedIri(iri);
+		//newLine += Helper.getPrefixedIri(iri);
 		QueryManager.getExportParams(iri, function(r){
-			newLine+=";"+r["enlabel"].value;
+			newLine+=/*";"+*/r["enlabel"].value;
 			newLine+=";"+((r["codes"])?r["codes"].value:"");
 			newLine+=";"+((r["units"])?r["units"].value:"");
+			newLine+=";"+((r["ismod"].value > 0)?"x":"");
+			newLine+=";"+((r["isdraft"].value > 0)?"x":"");
 		}).then(function(){
 			newLine += "\n";
 			var processes = [];
