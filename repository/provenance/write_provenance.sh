@@ -53,6 +53,9 @@ if [ $only_recent_changes -eq 1 ]; then
 	for i in $(find "$PROVENANCEFILESDIR/output" -type f -name '*.ttl'); do
 		filename=$(basename "$i" .ttl)
 		datestring=$(echo ${filename:22} | tr '_' ':')
+		if ! testdate=$(date -d "$datestring" +"%Y-%m-%d %H:%M:%S") ; then
+			continue
+		fi
 		datenumber=$(date -d "$datestring" +%s)
 		if [ $datenumber -gt $from_date_number ]; then
 			from_date=$datestring

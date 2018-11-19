@@ -50,11 +50,10 @@ BEGIN {
 	# print "\t]" >> output;
 	
 	print "\t\tcs:"action" [" >> output;
-	print "\t\t\trdf:Statement [" >> output;
-	print "\t\t\t\trdf:subject <"a[2]">;" >> output;
-	print "\t\t\t\trdf:predicate <"a[3]">;" >> output;
-	print "\t\t\t\trdf:object "object >> output;
-	print "\t\t\t]" >> output;
+	print "\t\t\ta rdf:Statement;" >> output;
+	print "\t\t\trdf:subject <"a[2]">;" >> output;
+	print "\t\t\trdf:predicate <"a[3]">;" >> output;
+	print "\t\t\trdf:object "object >> output;
 	print "\t\t];" >> output;	
 
 	
