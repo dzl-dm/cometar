@@ -174,6 +174,21 @@
 .expandDiv
 {
 	background-image:url('../images/leafConcept.gif');
+	margin-left:-1px;
+	margin-top:-5px;
+	height:30px;
+	width:31px;
+	display:block;
+	float:left;
+}
+
+.treeItem > .treeItem:last-child > .expandDiv
+{
+	margin-left:0px;	
+}
+.treeItem > .treeItem:last-child > .treeItem
+{
+	margin-left:21px;
 }
 
 .expanded > .expandDiv
@@ -243,14 +258,6 @@
 .treeContentItem.activeTreeContentDiv
 {
 	display:block;
-}
-
-.expandDiv
-{
-	height:25px;
-	width:30px;
-	display:block;
-	float:left;
 }
 
 .treeItemTitleDiv
@@ -847,6 +854,7 @@ div.infoButton:hover
 	margin-top:3px;
 	padding-left:5px;
 	display:none;
+	cursor:pointer;
 }
 .provenance_bar_row_date.odd
 {
@@ -861,6 +869,10 @@ div.infoButton:hover
 	margin-left:10px;
 	display:none;
 	flex-direction:row;
+}
+.provenance_bar_commit_cell.with_content
+{
+	display:flex;
 }
 
 .provenance_bar_cell
@@ -924,7 +936,8 @@ div.infoButton:hover
 }
 .provenance_bar_cell.hidden
 {
-	display:none !important;
+	/*display:none !important;*/
+	opacity:0.1;
 }
 .provenance_bar_cell.highlight
 {
@@ -933,23 +946,44 @@ div.infoButton:hover
 	border-color:#333 !important;
 }
 
-#provenance_loadMoreDiv
+.provenance_button
 {
 	border:1px solid #333 !important;
 	background-color:#0492D0;
 	color:#F0F0F0;
 	border-radius:3px;
-	position:absolute;
 	height:20px;
-	bottom:0px;
-	width:calc(100% - 10px);
 	text-align:center;
 	z-index:1000;
-	cursor:pointer;
+	cursor:pointer;	
 }
-#provenance_loadMoreDiv:hover{
+.provenance_button:hover{
 	background-color: #F0F0F0;
 	color:#0492D0;
+}
+#provenance_loadMoreDiv
+{
+	position:absolute;
+	bottom:0px;
+	width:300px;
+	left:0px;
+}
+#provenance_loadMoreButtonDiv
+{	
+	margin-right:5px;
+	width:80px;
+	display:inline-block;
+}
+#provenance_loadMoreAmountInput
+{
+	width:15px;
+}
+#provenance_loadAllInTreeDiv
+{
+	position:absolute;
+	bottom:0px;
+	left:250px;
+	width:160px;
 }
 
 #provenance_legendDiv.provenance_bar_commit_cell
@@ -984,4 +1018,60 @@ div.button
 div.button:hover{
 	background-color: #F0F0F0;
 	color:#0492D0;
+}
+
+.treeDescriptionTable
+{
+	border-spacing: 0px;
+	position:relative;
+	width:100%;
+}
+.treeDescriptionTable td, .treeDescriptionTable th
+{
+	padding-left:10px;
+	padding-right:10px;
+	vertical-align:top;
+}
+.treeDescriptionTable td:nth-last-child(2),.treeDescriptionTable td:last-child
+{
+	width:300px;
+    -ms-word-break: break-all;
+    word-break: break-all;
+    word-break: break-word;
+	border-left:0px;
+}
+.treeDescriptionTable td, .treeDescriptionTable th
+{
+	text-align:right;
+}
+.treeDescriptionTable th:nth-last-child(3):not(:first-child), .treeDescriptionTable td:nth-last-child(3):not(:first-child)
+{
+	width:100px;
+	text-align:left;
+}
+
+.treeDescriptionTable td:last-child, .treeDescriptionTable th:last-child, .treeDescriptionTable td:nth-last-child(2), .treeDescriptionTable th:nth-last-child(2)
+{
+	text-align:left;
+}
+
+.treeDescriptionDiv
+{
+	font-size:12px;
+	color:#333;
+	position:relative;
+}
+.treeItem.expanded:last-child >.treeItemTitleDiv > .treeDescriptionDiv
+{
+	margin-left:1px;
+}
+
+.treeItem.expandable.expanded > .treeItemTitleDiv > .treeDescriptionDiv
+{
+	border-left:1px solid black;
+}
+
+.treeItemTitle
+{
+	display:inline-block;
 }

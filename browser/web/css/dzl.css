@@ -48,6 +48,10 @@ input[type='file'], input[type='button']
 	border-top-width:0px;
 	border-bottom-width:0px;
 }
+.treeItem:last-child
+{
+	border-left-width:0px;
+}
 #conceptTree > div.treeItem
 {
 	border-top-width:1px;
