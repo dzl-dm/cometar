@@ -2,11 +2,11 @@ var Query = (function(prefixes){
 	var qs = prefixes + (function () {/*
 SELECT distinct ?element
 WHERE {
-	[ cs:removal [ rdf:Statement [ 
+	[ cs:removal [ a rdf:Statement;
 		rdf:subject ?element; 
 		rdf:predicate skos:notation; 
 		rdf:object REMOVEDNOTATION 
-		] ] ] .
+		] ] .
 } 
 	*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 	

@@ -1,33 +1,33 @@
 var Helper = (function()
 {	
-	var getPathsByConceptUrl = function(conceptUrl, pathCallback)
+	var getPathsByConceptIri = function(conceptIri, pathCallback)
 	{
-		var label = QueryManager.getProperty(conceptUrl, "skos:prefLabel", "lang(?result) = 'en'").value;
-		extendPath([conceptUrl], [label], pathCallback);
+		var label = QueryManager.getProperty(conceptIri, "skos:prefLabel", "lang(?result) = 'en'").value;
+		extendPath([conceptIri], [label], pathCallback);
 	}
 	
-	var extendPath = function(pathConceptUrls, pathLabels, pathCallback, paths)
+	var extendPath = function(pathConceptIris, pathLabels, pathCallback, paths)
 	{
-		var conceptUrl = pathConceptUrls[pathConceptUrls.length-1];
-		var pathConceptUrlExtensions = [];
+		var conceptIri = pathConceptIris[pathConceptIris.length-1];
+		var pathConceptIriExtensions = [];
 		var pathLabelExtensions = [];
-		QueryManager.getParentElements(conceptUrl,
+		QueryManager.getParentElements(conceptIri,
 			function(e){
-				pathConceptUrlExtensions.push(e);
+				pathConceptIriExtensions.push(e);
 				var label = QueryManager.getProperty(e, "skos:prefLabel", "lang(?result) = 'en'").value;
 				pathLabelExtensions.push(label);
 			},
 			function()
 			{
-				if (pathConceptUrlExtensions.length == 0)
+				if (pathConceptIriExtensions.length == 0)
 				{
-					pathCallback([pathConceptUrls.reverse(), pathLabels.reverse()]);
+					pathCallback([pathConceptIris.reverse(), pathLabels.reverse()]);
 				}
-				for (var i = 0; i < pathConceptUrlExtensions.length; i++)
+				for (var i = 0; i < pathConceptIriExtensions.length; i++)
 				{
-					var newPathConceptUrls = $.merge($.merge( [], pathConceptUrls ), [pathConceptUrlExtensions[i]]);
+					var newPathConceptIris = $.merge($.merge( [], pathConceptIris ), [pathConceptIriExtensions[i]]);
 					var newPathLabels = $.merge($.merge( [], pathLabels ), [pathLabelExtensions[i]]);
-					extendPath(newPathConceptUrls, newPathLabels, pathCallback);
+					extendPath(newPathConceptIris, newPathLabels, pathCallback);
 				}
 			}
 		);	
@@ -124,7 +124,8 @@ var Helper = (function()
 		["http://www.w3.org/2004/02/skos/core#member", "collection member"],
 		["http://www.w3.org/2004/02/skos/core#editorialNote", "editorial note"],
 		["http://www.w3.org/ns/prov#wasDerivedFrom", "previous concept identifier"],
-		["http://data.dzl.de/ont/dwh#", ""],
+		["http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf", "specification of concept"],
+		//["http://data.dzl.de/ont/dwh#", ""],
 		["http://sekmi.de/histream/dwh#dateRestriction", "date"]
 	];
 	
@@ -167,7 +168,7 @@ var Helper = (function()
 		return s;		
 	}
 	
-	var getCurrentConceptUrl = function(){
+	var getCurrentConceptIri = function(){
 		for (var i = 0; i < urlShorts.length; i++)
 		{
 			if (location.hash.indexOf(urlShorts[i][1]) == 1) 
@@ -179,19 +180,19 @@ var Helper = (function()
 		}
 	}
 	
-	var setCurrentConceptUrl = function(conceptUrl){
+	var setCurrentConceptIri = function(conceptIri){
 		var options = "";
 		if (location.hash.indexOf("?") > -1) options = location.hash.substr(location.hash.indexOf("?"));
-		location.hash = getCometarWebUrlByConceptUrl(conceptUrl) + options;
+		location.hash = getCometarWebUrlByConceptIri(conceptIri) + options;
 	}
 	
-	var getCometarWebUrlByConceptUrl = function(conceptUrl)
+	var getCometarWebUrlByConceptIri = function(conceptIri)
 	{
 		for (var i = 0; i < urlShorts.length; i++)
 		{
-			if (conceptUrl.indexOf(urlShorts[i][0]) > -1) 
+			if (conceptIri.indexOf(urlShorts[i][0]) > -1) 
 			{
-				return urlShorts[i][1]+conceptUrl.substr(urlShorts[i][0].length);
+				return urlShorts[i][1]+conceptIri.substr(urlShorts[i][0].length);
 			}
 		}
 	}
@@ -257,19 +258,19 @@ var Helper = (function()
 	}
 	
 	return {
-		getPathsByConceptUrl: getPathsByConceptUrl,
+		getPathsByConceptIri: getPathsByConceptIri,
 		getAuthenticationToken: getAuthenticationToken,
 		getAuthenticationUsername: getAuthenticationUsername,
 		authenticated: authenticated,
 		setCookie: setCookie,
 		getCookie: getCookie,
-		getCurrentConceptUrl: getCurrentConceptUrl,
-		setCurrentConceptUrl: setCurrentConceptUrl,
+		getCurrentConceptIri: getCurrentConceptIri,
+		setCurrentConceptIri: setCurrentConceptIri,
 		getReadableString: getReadableString,
 		getQueryParameter: getQueryParameter,
 		levenstheinDistance: levenstheinDistance,
 		customHide: customHide,
-		getCometarWebUrlByConceptUrl: getCometarWebUrlByConceptUrl,
+		getCometarWebUrlByConceptIri: getCometarWebUrlByConceptIri,
 		startLoading: startLoading,
 		stopLoading: stopLoading,
 		getPrefixedIri: getPrefixedIri,

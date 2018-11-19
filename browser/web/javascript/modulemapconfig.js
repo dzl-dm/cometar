@@ -6,7 +6,7 @@ var MapConfigModule = (function(){
 		});
 	}
 	
-	var getMapConfigDiv = function(conceptUrl){
+	var getMapConfigDiv = function(conceptIri){
 		var resultDiv = $("<div>").css("flex-direction","column");
 		
 		var ta = $("<textarea style='width:100%; height:300px' id='configTA'></textarea>");
@@ -180,12 +180,12 @@ var MapConfigModule = (function(){
 				$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; has multiple new notations.");	
 				continue;
 			}*/
-			var deprecatedConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
+			var deprecatedConceptIri = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
 			var deprecatedConcept = QueryManager.getElementByRemovedNotation(notation);
 			if (deprecatedConcept) 
 			{
-				deprecatedConceptUrl += Helper.getCometarWebUrlByConceptUrl(deprecatedConcept);
-				$("#divNotationFeedback").append("<br/><a href='"+deprecatedConceptUrl+"'>"+notation+"</a> is not a valid code (anymore). ");
+				deprecatedConceptIri += Helper.getCometarWebUrlByConceptIri(deprecatedConcept);
+				$("#divNotationFeedback").append("<br/><a href='"+deprecatedConceptIri+"'>"+notation+"</a> is not a valid code (anymore). ");
 			}
 			else
 			{
@@ -197,9 +197,9 @@ var MapConfigModule = (function(){
 				if (validXml) configString = configString.replace(regex, "\"" + newNotation + "\"");
 				else configString = configString.replace((i==0?"":",") + notation + (i==deprecatedNotations.length?"":","), (i==0?"":",") + newNotation + (i==deprecatedNotations.length?"":","));
 				$("#newDataSourceDownloadLink").css("display", "block");
-				var newConceptUrl = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
-				newConceptUrl += Helper.getCometarWebUrlByConceptUrl(QueryManager.getByProperty("skos:notation", newNotation));
-				$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; was replaced with <a href='" + newConceptUrl + "'>"+newNotation+"</a>.");
+				var newConceptIri = window.location.protocol + "//" + (window.location.hostname?window.location.hostname:"") + window.location.pathname + "#";
+				newConceptIri += Helper.getCometarWebUrlByConceptIri(QueryManager.getByProperty("skos:notation", newNotation));
+				$("#divNotationFeedback").append("<br/>&quot;"+notation+"&quot; was replaced with <a href='" + newConceptIri + "'>"+newNotation+"</a>.");
 			}
 			else
 			{

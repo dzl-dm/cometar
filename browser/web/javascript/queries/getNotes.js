@@ -5,8 +5,11 @@ WHERE {
 	?commit a prov:Activity ;
 		prov:endedAtTime ?enddate ;
 		prov:qualifiedUsage [ ?action ?addorremove ] .
-		?addorremove rdf:Statement [ rdf:subject ?subject; rdf:predicate ?predicate; rdf:object ?object ] .
-		FILTER NOT EXISTS { ?addorremove rdf:comment "derived" . }
+		?addorremove a rdf:Statement; 
+			rdf:subject ?subject; 
+			rdf:predicate ?predicate; 
+			rdf:object ?object .
+		FILTER NOT EXISTS { ?addorremove rdf:comment "hidden" . }
 		FILTER (?subject IN (ELEMENTS) )
 } 
 ORDER BY DESC(SUBSTR(STR(?enddate),1,10)) DESC(?predicate) DESC(?enddate)    
@@ -14,8 +17,7 @@ ORDER BY DESC(SUBSTR(STR(?enddate),1,10)) DESC(?predicate) DESC(?enddate)
 	
 	return function(e, callback, completeCallback)
 	{
-		var previousConceptIdentifiers = [];
-		QueryManager.getPreviousConceptIdentifiers(e,previousConceptIdentifiers);
+		var previousConceptIdentifiers = QueryManager.getPreviousConceptIdentifiers(e);
 		queryString = qs.replace(/ELEMENTS/g, previousConceptIdentifiers.join() );
 		if (callback != undefined)
 		{
