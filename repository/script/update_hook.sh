@@ -74,6 +74,7 @@ fi
 echo "-------------"
 
 rm -rf "$TEMPDIR/*"
+chown -R www-data:www-data "$TEMPDIR"
 
 exit $exitcode
 
