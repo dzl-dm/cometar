@@ -1,10 +1,12 @@
 var Query = (function(prefixes){
 	var qs = prefixes + (function () {/*
-SELECT DISTINCT ?enlabel (GROUP_CONCAT(DISTINCT ?code; SEPARATOR=", ") AS ?codes) (GROUP_CONCAT(DISTINCT ?unit; SEPARATOR=", ") AS ?units)
+SELECT DISTINCT ?enlabel (GROUP_CONCAT(DISTINCT ?code; SEPARATOR=", ") AS ?codes) (GROUP_CONCAT(DISTINCT ?unit; SEPARATOR=", ") AS ?units) (COUNT(?c) as ?ismod) (COUNT(?status) as ?isdraft)
 WHERE {
 	ELEMENT skos:prefLabel ?enlabel FILTER (lang(?enlabel)='en') .
 	OPTIONAL { ELEMENT skos:notation ?code } .
 	OPTIONAL { ELEMENT :unit ?unit } .
+	OPTIONAL { ELEMENT skos:broader* [ rdf:partOf ?c ]}
+	OPTIONAL { ELEMENT :status ?status FILTER (?status = "draft") } .
 }   
 GROUP BY ?enlabel
 	*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
