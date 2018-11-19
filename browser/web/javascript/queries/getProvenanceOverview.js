@@ -19,7 +19,7 @@ order by DESC(?enddate )
 		var queryString = qs.replace(/FROMDATE/g, "'"+fromDate.toISOString()+"'^^xsd:dateTime").replace(/UNTILDATE/g, "'"+untilDate.toISOString()+"'^^xsd:dateTime");
 		if (callback != undefined)
 		{
-			QueryManager.query(queryString, function(r) { callback(r) }, function(){ if (completeCallback != undefined) completeCallback() });
+			return QueryManager.query(queryString, function(r) { callback(r) }, function(){ if (completeCallback != undefined) completeCallback() });
 		}
 		else 
 		{

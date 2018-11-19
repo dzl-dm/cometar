@@ -82,7 +82,7 @@ var ModuleManager = (function(){
 			contentDiv.html("");
 			$.each(clickedTab.clickFunctions, function(j, f)
 			{
-				var content = f(Helper.getCurrentConceptUrl());
+				var content = f(Helper.getCurrentConceptIri());
 				contentDiv.append(content);
 			});
 			$(".activeModuleContentDiv").removeClass("activeModuleContentDiv");

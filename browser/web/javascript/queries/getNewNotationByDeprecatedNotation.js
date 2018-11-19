@@ -3,11 +3,11 @@ var Query = (function(prefixes){
 SELECT ?notation
 WHERE 
 {
-	[ cs:removal [ rdf:Statement [ 
+	[ cs:removal [ a rdf:Statement;
 			rdf:subject ?oldconcept;
 			rdf:predicate skos:notation;
 			rdf:object OLDNOTATION
-		] ] ] .
+		] ] .
 	?newconcept skos:notation ?notation .
 	?newconcept prov:wasDerivedFrom* ?oldconcept .
 }  

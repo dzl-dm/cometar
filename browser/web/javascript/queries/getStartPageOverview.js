@@ -3,10 +3,10 @@ var Query = (function(prefixes){
 SELECT DISTINCT ?element (SUBSTR(STR(?tempdate),1,10) as ?timestamp) ?author ?label ?predicate
 WHERE { 
 	?commit prov:qualifiedUsage [ 
-			?addororem [ rdf:Statement [ 
+			?addororem [ a rdf:Statement;
 				rdf:subject ?element;
 				rdf:predicate ?predicate
-			] ]
+			]
 		] ;
 		prov:endedAtTime ?tempdate ;
 		prov:wasAssociatedWith ?author .
