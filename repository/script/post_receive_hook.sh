@@ -52,3 +52,5 @@ echo "Refreshing patient count..."
 echo "Refreshing patient count..." >> "$LOGFILE" 
 PGPASSWORD=$I2B2DMPW /usr/bin/psql -q --host=$I2B2HOST --username=$I2B2DMUSER --dbname=$I2B2DBNAME -f "$SCRIPTDIR/patient_count.sql"
 echo -------------------------------------
+chown -R www-data:www-data "$TEMPDIR"
+chown -R www-data:www-data "$PROVENANCESCRIPTDIR"
