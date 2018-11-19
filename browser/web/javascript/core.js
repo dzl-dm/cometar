@@ -5,9 +5,9 @@ var CB = (function(){
 			.html(html);
 		loadTooltipFunctionality(container);
 		$(window).bind( 'hashchange', function(e) {
-			var conceptUrl = Helper.getCurrentConceptUrl();
+			var conceptIri = Helper.getCurrentConceptIri();
 			TreeManager.openSelectMark({
-				IRIs: [conceptUrl],
+				IRIs: [conceptIri],
 				closeFalsePathsBeforeOpening: true,
 				oneSelectedIri: true
 			});
@@ -33,17 +33,16 @@ var CB = (function(){
 		}).promise();
 	}
 	
-	var showCurrentConcept = function(){
+	var showCurrentConceptInTree = function(){
 		if (location.hash != "")
 		{
-			var conceptUrl = Helper.getCurrentConceptUrl();
+			var conceptIri = Helper.getCurrentConceptIri();
 			TreeManager.openSelectMark({
-				IRIs: [conceptUrl],
+				IRIs: [conceptIri],
 				closeFalsePathsBeforeOpening: true,
 				oneSelectedIri: true
 			});
 		}
-		ModuleManager.showTab("details");
 	}
 	
 	var html = function(){
@@ -158,7 +157,7 @@ var CB = (function(){
 		loadModules: loadModules,
 		loadQueries: loadQueries,
 		loadTree: loadTree,
-		showCurrentConcept: showCurrentConcept
+		showCurrentConceptInTree: showCurrentConceptInTree
 	}
 }());
 
@@ -168,7 +167,10 @@ $.fn.ontologieManager = function() {
 	CB.loadQueries()
 		.then(function(){
 			CB.loadTree();
-			CB.showCurrentConcept();
+			ModuleManager.showTab("details");
+		})
+		.then(function(){		
+			CB.showCurrentConceptInTree();
 		});
 }
 
@@ -193,7 +195,7 @@ var TreeManager = (function(){
 				.data("treeobject", this)
 				.click(function(e){
 					e.stopPropagation();
-					Helper.setCurrentConceptUrl(iri);
+					Helper.setCurrentConceptIri(iri);
 					//if ($(this).hasClass("expandable")) expandOrCollapse();
 				});
 				
@@ -247,7 +249,7 @@ var TreeManager = (function(){
 		
 		var setTitle = function(label)
 		{
-			treeItemDiv.children(".treeItemTitleDiv").prepend(label);				
+			treeItemDiv.children(".treeItemTitleDiv").prepend($("<div class='treeItemTitle'>"+label+"</div>"));				
 		}
 		
 		var setHasChildren = function(){
@@ -264,7 +266,10 @@ var TreeManager = (function(){
 			if(stat == "draft") treeItemDiv.addClass("isOnDraft");
 			else if(stat == "obsolete") treeItemDiv.addClass("isObsolete");
 			else if(stat == "new") treeItemDiv.addClass("isNew");
-			treeItemDiv.children(".treeItemTitleDiv").append("<div class='treeItemStatusDiv "+stat+"'>"+stat+"</div>");
+			var div = $("<div class='treeItemStatusDiv "+stat+"'>"+stat+"</div>");
+			if (treeItemDiv.children(".treeItemTitleDiv").children(".treeItemTitle").length > 0)
+				treeItemDiv.children(".treeItemTitleDiv").children(".treeItemTitle").after(div);
+			else treeItemDiv.children(".treeItemTitleDiv").prepend(div);
 		}
 		
 		var setIsCollection = function(){
@@ -354,8 +359,8 @@ var TreeManager = (function(){
 	
 	var appendSearchMatches = function(queryResultItem, pattern)
 	{
-		var conceptURL = queryResultItem["concept"].value;
-		var textDiv = $("#searchResultDiv div[rdf-iri='"+conceptURL+"']");
+		var conceptIri = queryResultItem["concept"].value;
+		var textDiv = $("#searchResultDiv div[rdf-iri='"+conceptIri+"']");
 		if (queryResultItem["label2"] && queryResultItem["label2"].value.toUpperCase().indexOf(pattern.toUpperCase()) > -1) 
 		{
 			var appendString = queryResultItem["label2"].value;
@@ -447,13 +452,14 @@ var TreeManager = (function(){
 		getItemDiv(iri).addClass("currentDetailsSource");
 	}
 	/*
-		a.IRIs, a.dontUnmark, a.oneSelectedIri, a.dontClosePaths, a.markMapping
+		a.IRIs, a.dontUnmark, a.oneSelectedIri, a.dontClosePaths, a.markMapping, a.descriptions
 	*/
 	var openSelectMark = function(a){
 		if (!Array.isArray(a.IRIs)) a.IRIs=a.IRIs.split(";");
 		if (a.IRIs.length==0||a.IRIs[0]==undefined) return;
 		//before opening
 		if (!a.dontUnmark) {
+			$(".treeDescriptionDiv").remove();
 			$(".pathPart").removeClass("pathPart");
 			$(".currentDetailsSource").removeClass("currentDetailsSource");
 		}
@@ -504,7 +510,7 @@ var TreeManager = (function(){
 			markItemAsSelected(a.IRIs[0]);
 		}
 		if (a.markMapping) {
-			TreeElementsMarker.setFields(a.IRIs, pathParts);
+			TreeElementsMarker.setFields(a.IRIs, pathParts, a.descriptions);
 			TreeElementsMarker.mark();
 		}			
 	}
@@ -526,12 +532,14 @@ var TreeManager = (function(){
 				}
 				else
 				{
-					var conceptUrl = $(itemDiv).attr("rdf-iri");
-					if (mappedElements != undefined && mappedElements.indexOf(conceptUrl) > -1){
+					var conceptIri = $(itemDiv).attr("rdf-iri");
+					var iriIsMapped = mappedElements != undefined && mappedElements.indexOf(conceptIri) > -1;
+					var iriIsPathPart = mappedPathFields != undefined && mappedPathFields.indexOf(conceptIri) > -1;
+					if (iriIsMapped){
 						$(itemDiv).addClass("mappedInConfig");
-						if (mappingDescriptions != undefined) $(itemDiv).prepend("<div style='font-size:12px;color:#333'>map: " + mappingDescriptions[mappedElements.indexOf(conceptUrl)] + "</div>");
+						if (mappingDescriptions != undefined) $(itemDiv).children(".treeItemTitleDiv").append("<div class='treeDescriptionDiv'>" + mappingDescriptions[mappedElements.indexOf(conceptIri)] + "</div>");
 					}
-					else if (mappedPathFields != undefined && mappedPathFields.indexOf(conceptUrl) > -1){
+					else if (iriIsPathPart){
 						$(itemDiv).addClass("mappedInConfigPathPart");
 					}	
 				}
@@ -554,9 +562,9 @@ var TreeManager = (function(){
 		},200);
 	}
 	
-	var unmarkTreeItems = function(excludeConceptUrl)
+	var unmarkTreeItems = function(excludeConceptIri)
 	{
-		$("div.currentDetailsSource[rdf-iri!='"+excludeConceptUrl+"']").removeClass("currentDetailsSource");
+		$("div.currentDetailsSource[rdf-iri!='"+excludeConceptIri+"']").removeClass("currentDetailsSource");
 	}
 	
 	return {
