@@ -15,7 +15,7 @@ WHERE {
 		queryString = qs.replace(/ELEMENT/g, "<" + e + ">" );
 		if (callback != undefined)
 		{
-			QueryManager.query(queryString, function(r) { callback(r) });
+			return QueryManager.query(queryString, function(r) { callback(r) });
 		}
 		else 
 		{

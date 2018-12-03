@@ -6,13 +6,19 @@ WHERE {
 }      
 	*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 	
-	return function(e)
+	return function(e, callback, completeCallback)
 	{
+		
 		var result = [];
 		queryString = qs.replace(/ELEMENT/g, "<" + e + ">" );	
-		QueryManager.syncquery(queryString, function(r){
-			result.push("<"+r["a"].value+">");
-		});	
-		return result;
+		if (callback != undefined)
+		{
+			return QueryManager.query(queryString, function(r) { callback("<"+r["a"].value+">") }, function(){ if (completeCallback != undefined) completeCallback() });
+		}
+		else 
+		{
+			QueryManager.syncquery(queryString, function(r){ result.push("<"+r["a"].value+">") });
+			return result;
+		}	
 	}
 });

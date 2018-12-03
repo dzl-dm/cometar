@@ -9,7 +9,9 @@ var CB = (function(){
 			TreeManager.openSelectMark({
 				IRIs: [conceptIri],
 				closeFalsePathsBeforeOpening: true,
-				oneSelectedIri: true
+				oneSelectedIri: true,
+				keepDescriptions: true,
+				openPaths: true
 			});
 			ModuleManager.showTab("details");
 		});
@@ -40,7 +42,9 @@ var CB = (function(){
 			TreeManager.openSelectMark({
 				IRIs: [conceptIri],
 				closeFalsePathsBeforeOpening: true,
-				oneSelectedIri: true
+				oneSelectedIri: true,
+				keepDescriptions: true,
+				openPaths: true
 			});
 		}
 	}
@@ -166,11 +170,14 @@ $.fn.ontologieManager = function() {
 	CB.loadModules();
 	CB.loadQueries()
 		.then(function(){
-			CB.loadTree();
+			CB.loadTree()
+			.then(function(){		
+				CB.showCurrentConceptInTree();
+			});
 			ModuleManager.showTab("details");
 		})
-		.then(function(){		
-			CB.showCurrentConceptInTree();
+		.then(function(){
+			testfunction()
 		});
 }
 
@@ -187,6 +194,7 @@ var TreeManager = (function(){
 	var TreeItem = function(){	
 		var treeItemDiv;
 		var iri;
+		var loadingStatus = $.Deferred();
 		var init = function(elementiri, parentDiv) {
 			iri = elementiri;
 			treeItemDiv = $("<div>")
@@ -213,7 +221,27 @@ var TreeManager = (function(){
 		
 			parentDiv.append(treeItemDiv);
 			$(document).trigger("tree:treeItemCreated", treeItemDiv);
-			treeItemDiv.show();//(100);	
+			
+			treeItemDiv.show(100);
+			
+			$.when(
+				QueryManager.getProperty(elementiri, "skos:prefLabel", "lang(?result) = 'en'", function(r){
+					setTitle(r.value);
+				}),
+				QueryManager.getMultiProperties(elementiri, [ "skos:narrower", "rdf:hasPart", "skos:member" ], function(r){
+					setHasChildren();
+				}),
+				QueryManager.getProperty(elementiri, "rdf:partOf", function(r){
+					setIsModifier();
+				}),
+				QueryManager.getProperty(elementiri, "rdf:type", function(r){
+					if (r.value == "http://www.w3.org/2004/02/skos/core#Collection") setIsCollection();
+				}),
+				QueryManager.getProperty(elementiri, ":status", function(r){
+					setStatus(r.value);
+				})
+			).then(loadingStatus.resolve);
+			loadingStatus.promise();
 			
 			return this;
 		}
@@ -243,7 +271,8 @@ var TreeManager = (function(){
 		{
 			if (treeItemDiv.hasClass("expandable") && treeItemDiv.hasClass("expanded")){
 				treeItemDiv.removeClass("expanded").addClass("collapsed");
-				treeItemDiv.children("div.treeItem").remove();
+				treeItemDiv.children("div.treeItem").hide(100,function(){this.remove()});
+				//treeItemDiv.children("div.treeItem").remove();
 			}
 		}
 		
@@ -285,14 +314,77 @@ var TreeManager = (function(){
 			setTitle: setTitle,
 			collapse: collapse,
 			expand: expand,
-			setHasChildren: setHasChildren,
-			setIsModifier: setIsModifier,
-			setStatus: setStatus,
-			setIsCollection: setIsCollection
+			loadingStatus: loadingStatus
+			// setHasChildren: setHasChildren,
+			// setIsModifier: setIsModifier,
+			// setStatus: setStatus,
+			// setIsCollection: setIsCollection
 		};
 	};
+	var adjustFixedTitles = function(){
+		$(".treeItemTitle.fixed")
+			.removeClass("fixed")
+			.css("marginTop","2px")
+			.css("marginBottom","0px");
+		/* the path of selected element 
+		var ti = $(".treeItem.currentDetailsSource"); */
+		/* the path of toppest element */
+		//$("#testdiv1").remove();
+		//$("#testdiv2").remove();
+		//$("body").append("<div id='testdiv1' style='position:fixed; height:1px; width:300px; background-color: red !important;'></div>");
+		//$("body").append("<div id='testdiv2' style='position:fixed; height:1px; width:300px; background-color: red !important;'></div>");
+		var getsubtoppest = function(parentTreeItem, reservedspace){
+			var ti;
+			//$("#testdiv1").css("top",$("#conceptTree").offset().top+reservedspace+"px");
+			//$("#testdiv2").css("top",parentTreeItem.offset().top + parentTreeItem.outerHeight()+"px");
+			while (!ti || ti.next(".treeItem").length>0){
+				ti = ti?ti.next(".treeItem"):parentTreeItem.children(".treeItem").first();
+				if (ti
+					&& (parentTreeItem.offset().top + parentTreeItem.outerHeight() > $("#conceptTree").offset().top+reservedspace)
+					&& (ti.next(".treeItem").length == 0 
+						|| ti.next(".treeItem").offset().top-$("#conceptTree").offset().top >= reservedspace))
+				{
+					if (ti.children(".treeItem").length == 0) return ti;
+					else {
+						titemp = getsubtoppest(ti,reservedspace+ti.children(".treeItemTitleDiv").children(".treeItemTitle").outerHeight()+15);
+						return titemp || ti;
+					}
+				}
+			}
+		}
+		var ti = getsubtoppest($("#conceptTree"),-2);
+		ti = ti.parent(".treeItem");
+		if (ti.length == 0) return;
+		var pathtitledivs = [];	
+		while (ti[0]) {
+			pathtitledivs.push(ti.children(".treeItemTitleDiv"));
+			ti = ti.parent(".treeItem");
+		}
+		var lasttop = $("#conceptTree").offset().top;
+		for (var i = pathtitledivs.length-1; i >= 0; i--){
+			//$("#testdiv1").css("top",lasttop+"px");
+			var titop = pathtitledivs[i].parent().offset().top;
+			var diff = lasttop-titop;
+			if (diff > 0) {
+				pathtitledivs[i]
+					.children(".treeItemTitle")
+					.addClass("fixed")
+					.css("marginTop",(diff-9)+"px");
+				lasttop+=pathtitledivs[i].children(".treeItemTitle").outerHeight();
+			//$("#testdiv2").css("top",lasttop+pathtitledivs[i].children(".treeItemTitle").outerHeight()+"px");
+			}
+		}
+	}
 	var init = function()
 	{
+		var observer = new MutationObserver(function(mutations) {
+			adjustFixedTitles();
+		});			
+		observer.observe($("#conceptTree")[0], { 
+			childList: true,
+			subtree: true
+		});
+		$("#conceptTree").scroll(adjustFixedTitles);
 		var dfd = $.Deferred();
 		initMenu();
 		var processItems = [];
@@ -315,24 +407,7 @@ var TreeManager = (function(){
 	var createTreeItem = function(url, treeItemDiv){
 		var dfd = $.Deferred();
 		var ti = (new TreeItem()).init(url, treeItemDiv);
-		$.when(
-			QueryManager.getProperty(url, "skos:prefLabel", "lang(?result) = 'en'", function(r){
-				ti.setTitle(r.value);
-			}),
-			QueryManager.getMultiProperties(url, [ "skos:narrower", "rdf:hasPart", "skos:member" ], function(r){
-				ti.setHasChildren();
-			}),
-			QueryManager.getProperty(url, "rdf:partOf", function(r){
-				ti.setIsModifier();
-			}),
-			QueryManager.getProperty(url, "rdf:type", function(r){
-				if (r.value == "http://www.w3.org/2004/02/skos/core#Collection") ti.setIsCollection();
-			}),
-			QueryManager.getProperty(url, ":status", function(r){
-				ti.setStatus(r.value);
-			})
-		).then(dfd.resolve);
-		return dfd.promise();		
+		return ti.loadingStatus;		
 	}
 	
 	var initMenu = function()
@@ -376,6 +451,11 @@ var TreeManager = (function(){
 			var appendString = queryResultItem["notation"].value;
 			appendSearchMatchInfo(textDiv, "Notation", appendString);			
 		}
+		if (queryResultItem["oldnotation"] && queryResultItem["oldnotation"].value.toUpperCase().indexOf(pattern.toUpperCase()) > -1) 
+		{
+			var appendString = queryResultItem["oldnotation"].value;
+			appendSearchMatchInfo(textDiv, "Old Notation", appendString);			
+		}
 		if (queryResultItem["description"] && queryResultItem["description"].value.toUpperCase().indexOf(pattern.toUpperCase()) > -1) 
 		{
 			var appendString = queryResultItem["description"].value;
@@ -406,19 +486,33 @@ var TreeManager = (function(){
 	
 	var appendSearchMatchInfo = function(div, type, appendString)
 	{
-		if (div.html().indexOf(appendString) == -1)
-			div.append("<div class='treeItemInfoDiv'><div class='treeItemInfoTypeDiv'>"+type+": </div>"+appendString+"</div>");
+		var doAppend = true;
+		div.children(".treeItemInfoDiv").each(function(){
+			$(this).children(".treeItemInfoTextDiv").each(function(){
+				if ($(this).text() == appendString) doAppend = false;
+			});
+		});
+		if (doAppend)
+			div.append("<div class='treeItemInfoDiv'><div class='treeItemInfoTypeDiv'>"+type+": </div><div class='treeItemInfoTextDiv'>"+appendString+"</div></div>");
 	}
 	
 	var markSearchMatches = function(pattern)
 	{
-		$("#searchResultDiv .treeItemTitleDiv:contains('"+pattern+"'), #searchResultDiv .treeItemInfoDiv:contains('"+pattern+"')").each(function(){
-			var re = new RegExp("("+pattern+")","gi");
-			var infoTypeDiv = $(this).children(".treeItemInfoTypeDiv").remove()[0];
-			var newHtml = "";
-			if (infoTypeDiv != undefined) newHtml += infoTypeDiv.outerHTML;
-			newHtml += $(this).html().replace(re,"<span class='searchHighlight'>$1</span>");
-			$(this).html(newHtml);
+		// $("#searchResultDiv .treeItemTitleDiv:contains('"+pattern+"'), #searchResultDiv .treeItemInfoDiv:contains('"+pattern+"')").each(function(){
+			// var re = new RegExp("("+pattern+")","gi");
+			// var infoTypeDiv = $(this).children(".treeItemInfoTypeDiv").remove()[0];
+			// var newHtml = "";
+			// if (infoTypeDiv != undefined) newHtml += infoTypeDiv.outerHTML;
+			// newHtml += $(this).html().replace(re,"<span class='searchHighlight'>$1</span>");
+			// $(this).html(newHtml);
+		// });
+		$("#searchResultDiv .treeItem").each(function(){
+			$(this).data("treeobject").loadingStatus.then(function(){
+				$("#searchResultDiv .treeItemTitleDiv:contains('"+pattern+"'), #searchResultDiv .treeItemInfoTextDiv:contains('"+pattern+"')").each(function(){
+					var re = new RegExp("("+pattern+")","gi");
+					$(this).html($(this).text().replace(re,"<span class='searchHighlight'>$1</span>"));
+				});
+			});
 		});
 	}
 	
@@ -452,18 +546,23 @@ var TreeManager = (function(){
 		getItemDiv(iri).addClass("currentDetailsSource");
 	}
 	/*
-		a.IRIs, a.dontUnmark, a.oneSelectedIri, a.dontClosePaths, a.markMapping, a.descriptions
+		a.IRIs, a.dontUnmark, a.oneSelectedIri, a.dontClosePaths, a.markMapping, a.descriptions, a.keepDescriptions, a.openPaths, a.growWidth
 	*/
 	var openSelectMark = function(a){
 		if (!Array.isArray(a.IRIs)) a.IRIs=a.IRIs.split(";");
 		if (a.IRIs.length==0||a.IRIs[0]==undefined) return;
 		//before opening
 		if (!a.dontUnmark) {
-			$(".treeDescriptionDiv").remove();
 			$(".pathPart").removeClass("pathPart");
 			$(".currentDetailsSource").removeClass("currentDetailsSource");
 		}
+		if (!a.keepDescriptions){
+			$(".treeDescriptionDiv").remove();			
+		}
 		if (a.oneSelectedIri) markItemAsSelected(a.IRIs[0]);
+		if (a.growWidth) $("#conceptTreeContainer").animate({
+			width: "50%"
+		}, 500);
 		
 		//opening
 		var pathParts = [];
@@ -471,37 +570,43 @@ var TreeManager = (function(){
 			pathParts.push(iri);
 		}).done(function(){
 			if (!a.dontClosePaths) closeFalsePaths(pathParts);
-			var checkIfAllOpened = function(){
-				for (var i = pathParts.length-1; i >=0 ; i--){		
-					var pathPartDiv = getItemDiv(pathParts[i]);
-					if (pathPartDiv.length == 0 || pathPartDiv.hasClass("collapsed")) {
-						return false;
-					}
-				}
-				return true;
-			}
-			//recursively open paths until all are opened
-			var expandNextItem = function() {
-				if (checkIfAllOpened()) {
-					afterOpening(a, pathParts);
-					return;
-				}
-				//open every pathpart treeitem
-				for (var i = pathParts.length-1; i >=0 ; i--)
-				{
-					//open all occurences of one treeitem
-					var pathPartDivs = getItemDiv(pathParts[i]);
-					for (var j = 0; j < pathPartDivs.length; j++)
-					{
-						var pathPartDiv = $(pathPartDivs[0]);
-						if (pathPartDiv.hasClass("collapsed")){
-							pathPartDiv.data("treeobject").expand().then(expandNextItem);
-							return;
+			if (a.openPaths){
+				var checkIfAllOpened = function(){
+					for (var i = pathParts.length-1; i >=0 ; i--){		
+						var pathPartDiv = getItemDiv(pathParts[i]);
+						if (pathPartDiv.length == 0 || pathPartDiv.hasClass("collapsed")) {
+							return false;
 						}
 					}
-				}	
-			};
-			expandNextItem();
+					return true;
+				}
+				//recursively open paths until all are opened
+				var expandNextItem = function() {
+					if (checkIfAllOpened()) {
+						afterOpening(a, pathParts);
+						return;
+					}
+					//open every pathpart treeitem
+					for (var i = pathParts.length-1; i >=0 ; i--)
+					{
+						//open all occurences of one treeitem
+						var pathPartDivs = getItemDiv(pathParts[i]);
+						for (var j = 0; j < pathPartDivs.length; j++)
+						{
+							var pathPartDiv = $(pathPartDivs[0]);
+							if (pathPartDiv.hasClass("collapsed")){
+								pathPartDiv.data("treeobject").expand().then(expandNextItem);
+								return;
+							}
+						}
+					}	
+					expandNextItem();
+				};
+				expandNextItem();
+			}
+			else {
+				afterOpening(a,pathParts);
+			}
 		});			
 	}		
 	var afterOpening = function(a, pathParts){
@@ -533,13 +638,14 @@ var TreeManager = (function(){
 				else
 				{
 					var conceptIri = $(itemDiv).attr("rdf-iri");
-					var iriIsMapped = mappedElements != undefined && mappedElements.indexOf(conceptIri) > -1;
-					var iriIsPathPart = mappedPathFields != undefined && mappedPathFields.indexOf(conceptIri) > -1;
-					if (iriIsMapped){
-						$(itemDiv).addClass("mappedInConfig");
-						if (mappingDescriptions != undefined) $(itemDiv).children(".treeItemTitleDiv").append("<div class='treeDescriptionDiv'>" + mappingDescriptions[mappedElements.indexOf(conceptIri)] + "</div>");
+					var elementMappingIndexes = [];
+					for (var i = 0; i < mappedElements.length; i++){
+						if (mappedElements[i]==conceptIri){
+							$(itemDiv).addClass("mappedInConfig");
+							if (mappingDescriptions != undefined) $(itemDiv).children(".treeItemTitleDiv").append($("<div class='treeDescriptionDiv'>").append(mappingDescriptions[i]));					
+						}
 					}
-					else if (iriIsPathPart){
+					if (mappedPathFields != undefined && mappedPathFields.indexOf(conceptIri) > -1){
 						$(itemDiv).addClass("mappedInConfigPathPart");
 					}	
 				}

@@ -17,16 +17,18 @@ ORDER BY DESC(SUBSTR(STR(?enddate),1,10)) DESC(?predicate) DESC(?enddate)
 	
 	return function(e, callback, completeCallback)
 	{
-		var previousConceptIdentifiers = QueryManager.getPreviousConceptIdentifiers(e);
-		queryString = qs.replace(/ELEMENTS/g, previousConceptIdentifiers.join() );
-		if (callback != undefined)
-		{
-			QueryManager.query(queryString, function(r) { callback(r) }, function(){ if (completeCallback != undefined) completeCallback() });
-		}
-		else 
-		{
-			QueryManager.syncquery(queryString, function(r){ result.push(r) });
-			return result;
-		}
+		var previousConceptIdentifiers = [];
+		QueryManager.getPreviousConceptIdentifiers(e, function(iri){previousConceptIdentifiers.push(iri)}).then(function(){
+			queryString = qs.replace(/ELEMENTS/g, previousConceptIdentifiers.join() );
+			if (callback != undefined)
+			{
+				return QueryManager.query(queryString, function(r) { callback(r) }, function(){ if (completeCallback != undefined) completeCallback() });
+			}
+			else 
+			{
+				QueryManager.syncquery(queryString, function(r){ result.push(r) });
+				return result;
+			}
+		});
 	}
 });
