@@ -370,15 +370,17 @@ var TreeManager = (function(){
 					.children(".treeItemTitle")
 					.addClass("fixed")
 					.css("marginTop",(diff-9)+"px");
-				lasttop+=pathtitledivs[i].children(".treeItemTitle").outerHeight();
+				lasttop+=pathtitledivs[i].children(".treeItemTitle").outerHeight()+(i==pathtitledivs.length-1?1:0);
 			//$("#testdiv2").css("top",lasttop+pathtitledivs[i].children(".treeItemTitle").outerHeight()+"px");
 			}
 		}
 	}
 	var init = function()
 	{
+		var adjustFixedTitlesTimeout;
 		var observer = new MutationObserver(function(mutations) {
-			adjustFixedTitles();
+			clearTimeout(adjustFixedTitlesTimeout);
+			adjustFixedTitlesTimeout = setTimeout(adjustFixedTitles,100);
 		});			
 		observer.observe($("#conceptTree")[0], { 
 			childList: true,
