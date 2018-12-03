@@ -324,7 +324,7 @@ var TreeManager = (function(){
 	var adjustFixedTitles = function(){
 		$(".treeItemTitle.fixed")
 			.removeClass("fixed")
-			.css("marginTop","2px")
+			//.css("marginTop","2px")
 			.css("marginBottom","0px");
 		/* the path of selected element 
 		var ti = $(".treeItem.currentDetailsSource"); */
@@ -360,7 +360,7 @@ var TreeManager = (function(){
 			pathtitledivs.push(ti.children(".treeItemTitleDiv"));
 			ti = ti.parent(".treeItem");
 		}
-		var lasttop = $("#conceptTree").offset().top;
+		var lasttop = $("#conceptTree").offset().top+1;
 		for (var i = pathtitledivs.length-1; i >= 0; i--){
 			//$("#testdiv1").css("top",lasttop+"px");
 			var titop = pathtitledivs[i].parent().offset().top;
@@ -369,8 +369,11 @@ var TreeManager = (function(){
 				pathtitledivs[i]
 					.children(".treeItemTitle")
 					.addClass("fixed")
-					.css("marginTop",(diff-9)+"px");
-				lasttop+=pathtitledivs[i].children(".treeItemTitle").outerHeight()+(i==pathtitledivs.length-1?1:0);
+					//.css("width",$("#conceptTree").width()-pathtitledivs[i].offset().left-15)
+					.css("width",pathtitledivs[i].parent().width()-pathtitledivs[i].prev().width()+2)
+					.css("top",lasttop+"px");
+					//.css("marginTop",(diff-9)+"px");
+				lasttop+=pathtitledivs[i].children(".treeItemTitle").outerHeight();
 			//$("#testdiv2").css("top",lasttop+pathtitledivs[i].children(".treeItemTitle").outerHeight()+"px");
 			}
 		}
@@ -379,14 +382,17 @@ var TreeManager = (function(){
 	{
 		var adjustFixedTitlesTimeout;
 		var observer = new MutationObserver(function(mutations) {
-			clearTimeout(adjustFixedTitlesTimeout);
-			adjustFixedTitlesTimeout = setTimeout(adjustFixedTitles,100);
+			adjustFixedTitles();
 		});			
 		observer.observe($("#conceptTree")[0], { 
 			childList: true,
 			subtree: true
 		});
-		$("#conceptTree").scroll(adjustFixedTitles);
+		$("#conceptTree").scroll(function(){
+			adjustFixedTitles();
+			//clearTimeout(adjustFixedTitlesTimeout);
+			//adjustFixedTitlesTimeout = setTimeout(adjustFixedTitles,20);
+		});
 		var dfd = $.Deferred();
 		initMenu();
 		var processItems = [];
