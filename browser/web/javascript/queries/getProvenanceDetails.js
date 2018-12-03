@@ -27,7 +27,7 @@ WHERE
 	}
 	filter (!bound(?oldobject) || !bound(?newobject) || !isLiteral(?oldobject) || !isLiteral(?newobject) || lang(?oldobject) = lang(?newobject))
 }
-ORDER BY ?sl ?subject ?predicate 
+ORDER BY ?sl ?subject ?predicate ?oldobject
 	*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 	
 	return function(commitid, callback, completeCallback)

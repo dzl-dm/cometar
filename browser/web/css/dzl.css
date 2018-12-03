@@ -15,7 +15,7 @@ body, .treeItem
 
 .treeItem.currentDetailsSource:hover, .treeItem.currentDetailsSource, .treeMenuItem, .modulesMenuItem, .discussionPostsContainerDiv, .addDiscussionPostDiv, .discussionPostsContainerDiv .firstPost
 {
-	background-color:#BFE3F2;
+	background-color:#BFE3F2 !important;
 }
 
 .modulesMenuItem:hover, .treeMenuItem:hover, .addDiscussionPostDiv.collapsed:hover, .discussionPostDiv > .addDiscussionPostDiv.collapsed:hover, input[type='button']:hover, input[type='submit']:hover
@@ -52,7 +52,7 @@ input[type='file'], input[type='button']
 {
 	border-left-width:0px;
 }
-#conceptTree > div.treeItem
+#conceptTree > div.treeItem:not(:first-of-type)
 {
 	border-top-width:1px;
 }
@@ -63,15 +63,17 @@ input[type='file'], input[type='button']
 	right:-15px;
 }
 
-.treeItem.mappedInConfig, .treeItem.fieldToMark
+.treeItem.mappedInConfigPathPart, .treeItem.fieldToMarkPath
 {
-	/*-webkit-filter:hue-rotate(270deg);
-	filter:hue-rotate(270deg);*/
+	background-color:#FFFBD5;
+}
+
+.treeItem.mappedInConfig, .treeItem.fieldToMark
+{	
 	background-color:#d8ffce;
 }
 
-.treeItem.mappedInConfigPathPart, .treeItem.fieldToMarkPath
+.treeItem.mappedInConfig.mappedInConfigPathPart
 {
-	/*background-color:#FFFFBF;*/
-	background-color:#FFFBD5;
+	background-color:#EBFDD5
 }

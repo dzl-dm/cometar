@@ -1,6 +1,6 @@
 var Query = (function(prefixes){
 	var qs = prefixes + (function () {/*
-SELECT ?element
+SELECT ?element ?label
 WHERE {
 	{
 		SELECT ?element
@@ -37,6 +37,7 @@ WHERE {
 			?element skos:member SUBELEMENT .
 		}
 	}
+	?element skos:prefLabel ?label filter(lang(?label)='en')
 }    
 	*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 	
@@ -46,11 +47,11 @@ WHERE {
 		var queryString = qs.replace(/SUBELEMENT/g, "<" + e + ">" );
 		if (callback != undefined)
 		{
-			QueryManager.query(queryString, function(r) { callback(r["element"].value) }, function(){ if (completeCallback != undefined) completeCallback() });
+			QueryManager.query(queryString, function(r) { callback(r) }, function(){ if (completeCallback != undefined) completeCallback() });
 		}
 		else 
 		{
-			QueryManager.syncquery(queryString, function(r){ result.push(r["element"].value) });
+			QueryManager.syncquery(queryString, function(r){ result.push(r) });
 			return result;
 		}		
 	}

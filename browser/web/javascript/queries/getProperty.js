@@ -26,6 +26,7 @@ WHERE {
 		}
 		else 
 		{
+			console.log("jo");
 			QueryManager.syncquery(queryString, function(r){ result.push(r["result"]) });
 			if (result.length == 1) return result[0];
 			return result;

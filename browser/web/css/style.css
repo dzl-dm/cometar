@@ -91,6 +91,7 @@
 	overflow-y:auto;
 	overflow-x:hidden;
 	height:100%;
+	border-top:1px solid black;
 }
 
 #treeContent
@@ -118,14 +119,14 @@
 
 #conceptTree > div
 {
-	margin-top:0px;
+	margin-top:10px;
 	border-left:0px;
 	margin-left:0px;
 }
 
 #conceptTree > div:first-child
 {
-	margin-top:10px;	
+	margin-top:0px;	
 }
 
 .treeItem
@@ -142,23 +143,37 @@
 	clear:left;
 	display:none;
 }
+.treeItemTitleDiv
+{
+	background-color:inherit;
+	position:relative;	
+}
+.treeItemTitle.fixed
+{
+	position:absolute;
+	width:100%;
+	padding-left:10px;
+	padding-bottom:5px;
+	padding-top:9px;
+	margin-left:-10px;
+	background-color:inherit;
+	z-index:1000;
+	/*margin-left:20px;
+	padding-left:9px;*/
+	border-bottom:1px solid black;
+	/*border-left:1px solid #0492D0 !important;*/
+}
+
+.treeItemTitle.fixed + .treeDescriptionDiv
+{
+	position:relative;
+	padding-top:22px;
+}
 
 #searchDiv .expandDiv
 {
 	width:0px;
 }
-
-/*.treeItem span
-{
-	display:inline-block;
-	margin-left:5px;
-	margin-bottom:5px;
-}
-
-.treeItem:hover
-{
-	background-color:#DDD;
-}*/
 
 .treeItem:last-child
 {
@@ -180,6 +195,8 @@
 	width:31px;
 	display:block;
 	float:left;
+	margin-right:-31px;
+	position:relative;
 }
 
 .treeItem > .treeItem:last-child > .expandDiv
@@ -209,15 +226,14 @@
 	background-image:url('../images/plusCollection.gif');
 }
 
-.treeItem.isModifier
+.treeItem.isModifier, .treeItem.isModifier .treeItem
 {
-	filter: hue-rotate(270deg);	
 	font-style:italic;
+	color:green;
 }
 
 .treeItem.isModifier .treeItemStatusDiv
 {
-	filter: hue-rotate(90deg);
 	font-style:normal;
 }
 
@@ -266,7 +282,7 @@
 	min-height:23px;
 	margin-top:2px;
 	clear:right;
-	margin-left:20px;
+	margin-left:30px;
 }
 
 .expanded > .treeItemTitleDiv
@@ -346,6 +362,7 @@
 	justify-content: space-evenly;
 	align-items: center;
 	padding:10px;
+	border-top:1px solid black;
 }
 
 #logoDiv img
@@ -853,7 +870,7 @@ div.infoButton:hover
 	width:90px;
 	margin-top:3px;
 	padding-left:5px;
-	display:none;
+	/*display:none;*/
 	cursor:pointer;
 }
 .provenance_bar_row_date.odd
@@ -934,7 +951,7 @@ div.infoButton:hover
 {
 	opacity: 0.3;
 }
-.provenance_bar_cell.hidden
+.provenance_bar_cell.hidden:not(.highlight)
 {
 	/*display:none !important;*/
 	opacity:0.1;
@@ -1020,6 +1037,12 @@ div.button:hover{
 	color:#0492D0;
 }
 
+.treeDescriptionItemMoved
+{
+	background-color:#FFEBD8;
+	padding:10px;
+}
+
 .treeDescriptionTable
 {
 	border-spacing: 0px;
@@ -1065,7 +1088,14 @@ div.button:hover{
 {
 	margin-left:1px;
 }
-
+.treeItem.expanded:last-child >.treeItemTitleDiv >.treeDescriptionDiv
+{
+	margin-left:-9px !important;
+}
+.treeItem.expanded >.treeItemTitleDiv >.treeDescriptionDiv
+{
+	margin-left:-10px !important;
+}
 .treeItem.expandable.expanded > .treeItemTitleDiv > .treeDescriptionDiv
 {
 	border-left:1px solid black;

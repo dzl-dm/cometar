@@ -2,8 +2,9 @@ var Helper = (function()
 {	
 	var getPathsByConceptIri = function(conceptIri, pathCallback)
 	{
-		var label = QueryManager.getProperty(conceptIri, "skos:prefLabel", "lang(?result) = 'en'").value;
-		extendPath([conceptIri], [label], pathCallback);
+		QueryManager.getProperty(conceptIri, "skos:prefLabel", "lang(?result) = 'en'",function(label){
+			extendPath([conceptIri], [label.value], pathCallback);
+		});
 	}
 	
 	var extendPath = function(pathConceptIris, pathLabels, pathCallback, paths)
@@ -13,9 +14,8 @@ var Helper = (function()
 		var pathLabelExtensions = [];
 		QueryManager.getParentElements(conceptIri,
 			function(e){
-				pathConceptIriExtensions.push(e);
-				var label = QueryManager.getProperty(e, "skos:prefLabel", "lang(?result) = 'en'").value;
-				pathLabelExtensions.push(label);
+				pathConceptIriExtensions.push(e["element"].value);
+				pathLabelExtensions.push(e["label"].value);
 			},
 			function()
 			{
@@ -125,6 +125,8 @@ var Helper = (function()
 		["http://www.w3.org/2004/02/skos/core#editorialNote", "editorial note"],
 		["http://www.w3.org/ns/prov#wasDerivedFrom", "previous concept identifier"],
 		["http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf", "specification of concept"],
+		["http://www.w3.org/2004/02/skos/core#topConceptOf", "top concept of"],
+		["http://www.w3.org/2004/02/skos/core#Collection", "collection"],
 		//["http://data.dzl.de/ont/dwh#", ""],
 		["http://sekmi.de/histream/dwh#dateRestriction", "date"]
 	];
@@ -277,3 +279,70 @@ var Helper = (function()
 		getFullIri: getFullIri
 	}
 }());
+
+
+//zum Testen
+var Configuration = Configuration || {};
+$.extend(Configuration, {
+	Display: {
+		iriToHumanReadable: {	
+			"http://purl.org/dc/elements/1.1/description": "description",
+			"http://www.w3.org/2004/02/skos/core#prefLabel": "label",
+			"http://www.w3.org/2004/02/skos/core#altLabel": "alternative label",
+			"http://www.w3.org/2004/02/skos/core#notation": "code",
+			"http://www.w3.org/2004/02/skos/core#broader": "parent element",
+			"http://www.w3.org/2004/02/skos/core#narrower": "child element",
+			"http://www.w3.org/2004/02/skos/core#Concept": "concept",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#hasPart": "modifier",
+			"http://sekmi.de/histream/dwh#restriction": "datatype",
+			"http://data.dzl.de/ont/dwh#status": "status",
+			"http://data.dzl.de/ont/dwh#unit": "unit",
+			"http://purl.org/dc/elements/1.1/creator": "author",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#about": "concept identifier",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "classification",
+			"http://sekmi.de/histream/dwh#integerRestriction": "integer",
+			"http://sekmi.de/histream/dwh#stringRestriction": "string",
+			"http://sekmi.de/histream/dwh#floatRestriction": "float",
+			"http://sekmi.de/histream/dwh#partialDateRestriction": "partial date",
+			"http://www.w3.org/2004/02/skos/core#member": "collection member",
+			"http://www.w3.org/2004/02/skos/core#editorialNote": "editorial note",
+			"http://www.w3.org/ns/prov#wasDerivedFrom": "previous concept identifier",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf": "specification of concept",
+			"http://www.w3.org/2004/02/skos/core#topConceptOf": "top concept of",
+			"http://www.w3.org/2004/02/skos/core#Collection": "collection",
+			//"http://data.dzl.de/ont/dwh#", "",
+			"http://sekmi.de/histream/dwh#dateRestriction": "date"
+		},
+		shortDate: function(date){
+			return date.toLocaleDateString("de-DE", {day: '2-digit', month: '2-digit', year: 'numeric'});
+		}
+	},
+	readable: function(s){
+		$.each(Configuration.display.iriToHumanReadable, function(key, value) {
+			var regex = new RegExp(key, "g");
+			s = s.replace(regex, value);
+		});
+		$.each(Configuration.display.urlShorts, function(key, value) {
+			var regex = new RegExp(key, "g");
+			s = s.replace(regex, value);
+		});
+		return s;		
+	}
+});
+
+var testfunction = function(){	
+	// var d = $("<div style='position:fixed;width:1000px;height:1000px;background-color:white;border:1px solid black;z-index:100000000'>");
+	// $("body").append(d);
+	// Provenance.loadOverview(new Date("2018-11-01"))
+	// .then(function(){
+		// d.append(Provenance.getCommitsVisualization());
+		// Provenance.loadDetails(function(){
+			// /*var vrc = Provenance.commits["4644493494f4fced17e8b6793a6d4dcfd41d1689"].visualRepresentation();
+			// console.log(vrc.html());
+			// var vrd = Provenance.days["09.01.2018"].getVisualRepresentation();
+			// console.log(vrd);
+			// var vra = Provenance.atomicChanges["Fri, 19 Jan 2018 08:59:31 GMThttp://data.dzl.de/ont/dwh#COPD1Ahttp://purl.org/dc/elements/1.1/description"].getVisualRepresentation();
+			// console.log(vra);*/
+		// });
+	// });
+}

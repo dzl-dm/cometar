@@ -165,8 +165,13 @@ var MapConfigModule = (function(){
 		var config = readConfig();
 		var categorization = categorizeMappedOrDeprecated(config.dzlIds, config.mappingDescriptions);
 		createUpdatedConfigurationFile(config.configString, categorization.deprecatedNotations, config.isXml);
-		mappedPathFields = QueryManager.getPathPartsOfMultipleElements(categorization.mappedElements);
-		TreeManager.TreeElementsMarker.setFields(categorization.mappedElements, mappedPathFields, config.mappingDescriptions).mark();
+		//mappedPathFields = QueryManager.getPathPartsOfMultipleElements(categorization.mappedElements);
+		//TreeManager.TreeElementsMarker.setFields(categorization.mappedElements, mappedPathFields, config.mappingDescriptions).mark();
+		TreeManager.openSelectMark({
+			IRIs: categorization.mappedElements,
+			markMapping: true,
+			descriptions: config.mappingDescriptions
+		});	
 	}
 	
 	var createUpdatedConfigurationFile = function(configString, deprecatedNotations, validXml)
