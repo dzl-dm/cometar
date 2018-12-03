@@ -52,7 +52,11 @@ input[type='file'], input[type='button']
 {
 	border-left-width:0px;
 }
-#conceptTree > div.treeItem:not(:first-of-type)
+#conceptTree > div.treeItem:first-of-type
+{
+	border-top-color:white !important;
+}
+#conceptTree > div.treeItem
 {
 	border-top-width:1px;
 }
