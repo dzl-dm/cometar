@@ -72,6 +72,7 @@ ProvenanceModule = (function(){
 	}
 	var getProvenanceDiv = function(conceptIri){
 		if (!resultDiv) {
+			Provenance.setSelection({untilDate: new Date(Date.now())});
 			resultDiv = Configuration.Provenance.Display.Module();
 			loadMore(4);
 		}
