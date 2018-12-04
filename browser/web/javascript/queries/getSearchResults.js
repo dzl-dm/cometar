@@ -21,7 +21,7 @@ WHERE {
 	OPTIONAL { ?concept :status ?status } . 
 	OPTIONAL { ?concept dc:creator ?creator } . 
 	OPTIONAL { 
-		?concept prov:wasDerivedFrom* [ skos:notation ?oldnotation ] 
+		?concept prov:wasDerivedFrom+ [ skos:notation ?oldnotation ] 
 	} . 
 	FILTER ((regex(?label, 'EXPRESSION', 'i') 
 		|| regex(?label2, 'EXPRESSION', 'i') 
@@ -33,14 +33,24 @@ WHERE {
 		|| regex(?status, 'EXPRESSION', 'i') 
 		|| regex(?creator, 'EXPRESSION', 'i') ) 
 		&& (lang(?label) = 'en')
-		&& (?notation != ?oldnotation)) . 
+		&& (!bound(?notation) || !bound(?oldnotation) || (?notation != ?oldnotation))
+	) . 
 } 
 ORDER BY ASC(lcase(?label))  
 	*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
 	
-	return function(e, callback)
-	{
-		queryString = qs.replace(/EXPRESSION/g, e );
-		QueryManager.syncquery(queryString, callback);	
+	return function(e, callback, completeCallback)
+	{		
+		var result = [];
+		queryString = qs.replace(/EXPRESSION/g, e );	
+		if (callback != undefined)
+		{
+			return QueryManager.query(queryString, function(r) { callback(r) }, function(){ if (completeCallback != undefined) completeCallback() });
+		}
+		else 
+		{
+			QueryManager.syncquery(queryString, function(r){ result.push(r) });
+			return result;
+		}	
 	}
 });
