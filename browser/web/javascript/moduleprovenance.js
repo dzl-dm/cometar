@@ -196,6 +196,7 @@ var Provenance = (function(){
 					if (category == {}) return;					
 					var subjectid = r["subject"]?r["subject"].value:"";
 					var predicateid = r["predicate"].value;
+					var newobjectid = r["newobject"]?r["newobject"].value:"";
 					var shortDate = commit.date.toUTCString();
 					var lang = r["oldobject"]&&r["oldobject"]["xml:lang"]?r["oldobject"]["xml:lang"]:r["newobject"]&&r["newobject"]["xml:lang"]?r["newobject"]["xml:lang"]:"";
 					//create atomic change
@@ -209,7 +210,7 @@ var Provenance = (function(){
 							var result = r["ool"]?r["ool"].value:r["oldobject"]?r["oldobject"].value:"";
 							return Configuration.Display.iriToHumanReadable[result] || result;
 						}(),
-						newobjectid: r["newobject"]?r["newobject"].value:"",
+						newobjectid: newobjectid,
 						newobject: function(){
 							var result = r["nol"]?r["nol"].value:r["newobject"]?r["newobject"].value:"";
 							return Configuration.Display.iriToHumanReadable[result] || result;
@@ -218,7 +219,7 @@ var Provenance = (function(){
 						category: category,
 						commit: commit
 					};					
-					var acid = shortDate+subjectid+predicateid+lang;
+					var acid = shortDate+subjectid+predicateid+newobjectid+lang;
 					//merge old and new values in one atomic change
 					if (atomicChanges[acid]){
 						if (atomicChanges[acid].newobject == "") atomicChanges[acid].newobject = atomicChange.newobject;
@@ -333,8 +334,15 @@ $.extend(Configuration.Provenance,{
 		TreeDescriptionDateTable:"<table class='treeDescriptionTable'><thead><tr><th>Date</th><th>Property</th><th>Old Value</th><th>New Value</th></tr></thead></table>",
 		TreeDescription: function(interval, changeObject, changeObjects){
 			if (changeObject.predicateid == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+				|| changeObject.predicateid == "http://www.w3.org/2004/02/skos/core#topConceptOf"
+				|| changeObject.predicateid == "http://data.dzl.de/ont/dwh#topLevelNode"
+				|| changeObject.predicateid == "http://www.w3.org/2004/02/skos/core#inScheme"
 				|| changeObject.predicateid == "http://www.w3.org/ns/prov#wasDerivedFrom")
 				return {};
+			if (changeObject.subjectid.substring(0,1)=="b"){
+				console.log(changeObject.subjectid+" is blank node.");
+				return {};
+			}
 			var check = true;
 			$.each(changeObjects,function(key,changeObject2){
 				if (changeObject2 == changeObject) return true;
@@ -357,7 +365,6 @@ $.extend(Configuration.Provenance,{
 			}
 			if ((changeObject.predicateid == "http://www.w3.org/2004/02/skos/core#broader" || changeObject.predicateid == "http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf")
 				&& changeObject.oldobjectid != "" && changeObject.newobjectid == ""){
-					console.log(changeObject.oldobjectid);
 					return {
 						changeSubject: changeObject.oldobjectid,
 						domObject: $("<div class='treeDescriptionItemMoved'>"+changeObject.commit.date.toLocaleDateString("de-DE", {day: '2-digit', month: '2-digit', year: 'numeric'})+": "+changeObject.subject + " has been removed.</div>")
