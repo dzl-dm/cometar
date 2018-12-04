@@ -44,6 +44,7 @@ var QueryManager = (function(){
 				loadQuery("getNotes"),
 				loadQuery("getPreviousConceptIdentifiers"),
 				loadQuery("getProvenanceOverview"),
+				loadQuery("getProvenanceOverviewByCommitId"),
 				loadQuery("getProvenanceDetails"),
 				loadQuery("getPathParts"),
 				loadQuery("getTopElements"),

@@ -23,10 +23,14 @@ var CB = (function(){
 		if (Helper.getQueryParameter("mode")!="advanced") ModuleManager.hideMenu();
 	}
 	
+	var loadQueriesDfd;
 	var loadQueries = function(){
-		return $.Deferred(function(dfd){
-			QueryManager.init().done(dfd.resolve);
-		}).promise();
+		if (!loadQueriesDfd) {
+			loadQueriesDfd = $.Deferred(function(dfd){
+				QueryManager.init().done(dfd.resolve);
+			}).promise();
+		}
+		return loadQueriesDfd;
 	}
 	
 	var loadTree = function(){
@@ -324,6 +328,7 @@ var TreeManager = (function(){
 	var adjustFixedTitles = function(){
 		$(".treeItemTitle.fixed")
 			.removeClass("fixed")
+			.css("width","auto")
 			//.css("marginTop","2px")
 			.css("marginBottom","0px");
 		/* the path of selected element 
@@ -425,17 +430,19 @@ var TreeManager = (function(){
 			$("#"+$(this).attr("target")).addClass("activeTreeContentDiv");
 			$("#conceptTreeContainer .activeMenuItemDiv").removeClass("activeMenuItemDiv");
 			$(this).addClass("activeMenuItemDiv");
+			if ($(this).text() == "search")$("#searchPatternText").focus().select();
 		});
 		$("#searchSubmitButton").click(function(){
+			$("#searchPatternText").focus().select();
 			$("#searchResultDiv").html("");
 			var pattern = $("#searchPatternText").val();
 			QueryManager.getSearchResults(pattern, function(results){
 				createTreeItemIfNotExist(results["concept"].value, $("#searchResultDiv"));
 				appendSearchMatches(results, pattern);				
+			}, function(){
+				if (/^\s*$/.test($("#searchResultDiv").html())) $("#searchResultDiv").html("<div style='padding:15px'>Keine Suchergebnisse.</div>");
 			});
-			markSearchMatches(pattern);
-			if (/^\s*$/.test($("#searchResultDiv").html())) $("#searchResultDiv").html("<div style='padding:15px'>Keine Suchergebnisse.</div>");
-			//else $("#searchResultDiv .treeItem:first").click();
+			markSearchMatches(pattern);			
 			return false;
 		});
 	}
@@ -556,7 +563,14 @@ var TreeManager = (function(){
 	/*
 		a.IRIs, a.dontUnmark, a.oneSelectedIri, a.dontClosePaths, a.markMapping, a.descriptions, a.keepDescriptions, a.openPaths, a.growWidth
 	*/
+	var treeLoadingStatus;
 	var openSelectMark = function(a){
+		if (treeLoadingStatus && treeLoadingStatus.state()=="pending") {
+			treeLoadingStatus.then(function(){openSelectMark(a)});
+			return;
+		}
+		treeLoadingStatus = $.Deferred();
+		treeLoadingStatus.promise();
 		if (!Array.isArray(a.IRIs)) a.IRIs=a.IRIs.split(";");
 		if (a.IRIs.length==0||a.IRIs[0]==undefined) return;
 		//before opening
@@ -625,7 +639,8 @@ var TreeManager = (function(){
 		if (a.markMapping) {
 			TreeElementsMarker.setFields(a.IRIs, pathParts, a.descriptions);
 			TreeElementsMarker.mark();
-		}			
+		}	
+		treeLoadingStatus.resolve();
 	}
 	
 	var TreeElementsMarker = (function()
@@ -684,6 +699,7 @@ var TreeManager = (function(){
 	return {
 		init: init,
 		openSelectMark: openSelectMark,
+		treeLoadingStatus: function(){ return treeLoadingStatus },
 		collapseAll: collapseAll,
 		TreeElementsMarker: TreeElementsMarker
 	};

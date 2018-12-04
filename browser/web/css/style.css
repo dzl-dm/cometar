@@ -154,7 +154,7 @@
 	/*width:100%;*/
 	padding-left:10px;
 	padding-bottom:5px;
-	padding-top:9px;
+	padding-top:8px;
 	margin-left:-10px;
 	background-color:inherit;
 	z-index:1000;
@@ -164,10 +164,15 @@
 	/*border-left:1px solid #0492D0 !important;*/
 }
 
+.treeItem .treeItem .treeItemTitle.fixed
+{
+	padding-top:6px;
+}
+
 .treeItemTitle.fixed + .treeDescriptionDiv
 {
 	position:relative;
-	padding-top:22px;
+	padding-top:20px;
 }
 
 #searchDiv .expandDiv
@@ -904,7 +909,7 @@ div.infoButton:hover
 }
 .provenance_bar_cell:hover:before
 {
-	content: "show in tree";
+	/*content: "show in tree";*/
 }
 
 .provenance_bar_cell:first-child
