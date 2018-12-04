@@ -207,8 +207,8 @@ var TreeManager = (function(){
 				.data("treeobject", this)
 				.click(function(e){
 					e.stopPropagation();
-					Helper.setCurrentConceptIri(iri);
-					//if ($(this).hasClass("expandable")) expandOrCollapse();
+					if (Helper.getCurrentConceptIri() == iri) expandOrCollapse();
+					else Helper.setCurrentConceptIri(iri);
 				});
 				
 			var expandDiv = $("<div>")
@@ -330,7 +330,8 @@ var TreeManager = (function(){
 			.removeClass("fixed")
 			.css("width","auto")
 			//.css("marginTop","2px")
-			.css("marginBottom","0px");
+			.css("marginBottom","0px")
+			.parent().prev(".expandDiv").show();;
 		/* the path of selected element 
 		var ti = $(".treeItem.currentDetailsSource"); */
 		/* the path of toppest element */
@@ -371,6 +372,7 @@ var TreeManager = (function(){
 			var titop = pathtitledivs[i].parent().offset().top;
 			var diff = lasttop-titop;
 			if (diff > 0) {
+				pathtitledivs[i].prev(".expandDiv").hide();
 				pathtitledivs[i]
 					.children(".treeItemTitle")
 					.addClass("fixed")
@@ -565,8 +567,13 @@ var TreeManager = (function(){
 	*/
 	var treeLoadingStatus;
 	var openSelectMark = function(a){
+		console.log("jo");
 		if (treeLoadingStatus && treeLoadingStatus.state()=="pending") {
-			treeLoadingStatus.then(function(){openSelectMark(a)});
+			console.log("tree busy...");
+			treeLoadingStatus.then(function(){
+				console.log("tree ready now.");
+				openSelectMark(a)
+			});
 			return;
 		}
 		treeLoadingStatus = $.Deferred();
@@ -634,8 +641,8 @@ var TreeManager = (function(){
 	var afterOpening = function(a, pathParts){
 		if (a.oneSelectedIri) {
 			getItem(a.IRIs[0]).expand();
-			markItemAsSelected(a.IRIs[0]);
 		}
+		markItemAsSelected(Helper.getCurrentConceptIri());
 		if (a.markMapping) {
 			TreeElementsMarker.setFields(a.IRIs, pathParts, a.descriptions);
 			TreeElementsMarker.mark();
