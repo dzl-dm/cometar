@@ -1,0 +1,165 @@
+:root {
+    --main-border-color: #0492D0;
+}
+  
+.cometarContainer
+{
+    display: flex;
+    flex-direction: row;
+	min-width:500px;
+    overflow:hidden;
+    padding:5px;
+    height:100%;
+}
+
+#conceptTreeContainer, #modulesContainer{
+    display:flex;
+    border:1px solid var(--main-border-color);
+    flex-direction: column;
+}
+
+#conceptTreeContainer
+{
+	width:25%;
+}
+
+#treeMenu, #modulesMenu
+{
+	width:100%;
+    flex-basis:40px;
+    flex-shrink:0;
+    display:flex;
+    flex-direction: row;
+}
+
+.treeMenuItem, .moduleMenuItem
+{
+    display:flex;
+    flex-grow:1;
+	height:calc (100% - 1px);
+	font-size:20px;
+	cursor:pointer;
+	background-color:#DDD;	
+	justify-content:center; 
+	align-items:center;
+    border-bottom:1px solid var(--main-border-color);
+}
+.modulesMenuItem:hover, .treeMenuItem:hover
+{
+	background-color:#999;
+}
+.treeMenuItem:not(:first-child), .modulesMenuItem:not(:first-child)
+{
+	border-left:1px solid var(--main-border-color);
+}
+
+.treeMenuItem.selectedMenuOption
+{
+    background-color:#FFF;  
+    border-bottom-width: 0px;  
+}
+
+#treeContent
+{
+	width:100%;
+	overflow-y:scroll;
+	flex-grow:1;
+}
+
+.optionDiv
+{
+    display:none;
+}
+.selectedMenuOption
+{
+    display:flex;
+}
+.selectedContentOption
+{
+    display:block;
+}
+
+.searchDiv
+{
+    
+}
+
+#searchPatternText
+{
+    
+}
+
+#searchSubmitButton
+{
+    
+}
+
+.searchResultDiv
+{
+    
+}
+
+#logoDiv
+{
+    display:flex;
+    flex-direction: row;
+    flex-basis:70px;
+    flex-shrink:0;
+	justify-content: space-evenly;
+	align-items: center;
+	padding:10px;
+    border-top:1px solid var(--main-border-color);   
+    /*overflow:hidden;*/
+}
+
+#logoDiv a
+{
+    position:relative;
+    height:100%;
+    max-height:70px;
+    width:auto;
+    max-width:50%;
+}
+#logoDiv img
+{
+    position: relative;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+#logoDiv #loadingPng
+{
+	position:absolute;
+	top:0px;
+    left:0px;    
+    max-height:100%;
+    width:auto;
+	animation: spin 2s linear infinite;
+	animation-play-state: paused;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#logoDiv #loadingPng.active
+{
+	animation-play-state:running;
+}
+
+#modulesContainer
+{
+    flex-grow: 1;
+    margin-left:10px;
+}
+
+#modulesMenu
+{
+    
+}
+
+#modulesContents
+{
+    
+}

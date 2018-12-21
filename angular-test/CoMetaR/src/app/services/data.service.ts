@@ -1,0 +1,78 @@
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class DataService {
+  dataUrl = 'https://data.dzl.de/fuseki/cometar_live/query';
+  getData(queryString:string): Observable<any[]> {
+    return this.http.get<JSONResponse>(
+      this.dataUrl+"?query="+encodeURIComponent(queryString),
+      { observe: 'response', headers:{'Accept': 'application/sparql-results+json; charset=utf-8'}}
+    ).pipe(
+      map(data => data.body.results.bindings
+        .map((binding:{}) => {
+          Object.entries(binding).forEach(
+            ([key, part]:[string,JSONResponsePart]) => {
+              if (part.datatype && part.datatype == "http://www.w3.org/2001/XMLSchema#boolean") part.value = part.value == "true";
+              delete part.datatype;
+              delete part.type;
+            }
+          );
+          return binding
+        })));
+  }
+  constructor(private http:HttpClient) { }
+}
+
+interface JSONResponse {
+  "head":{
+    "vars":[]
+  },
+  "results":{
+    "bindings":any[]
+  }
+}
+
+interface JSONResponsePart {
+  type:string,
+  "xml:lang"?:string,
+  value:any,
+  datatype?:string
+}
+
+export interface JSONResponsePartBoolean {
+  value:boolean
+}
+
+export interface JSONResponsePartLangString {
+  "xml:lang":string,
+  value:string
+}
+
+export interface JSONResponsePartUriString {
+  value:string
+}
+
+export interface JSONResponsePartString {
+  value:string
+}
+
+export const prefixes:string = `
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX : <http://data.dzl.de/ont/dwh#>
+PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>  
+PREFIX snomed:    <http://purl.bioontology.org/ontology/SNOMEDCT/>
+PREFIX xsd:	<http://www.w3.org/2001/XMLSchema#>
+PREFIX dwh:    <http://sekmi.de/histream/dwh#>
+PREFIX loinc: <http://loinc.org/owl#>
+PREFIX rdfs:	<http://www.w3.org/2000/01/rdf-schema#> 
+PREFIX prov: 	<http://www.w3.org/ns/prov#>
+PREFIX cs:		<http://purl.org/vocab/changeset/schema#>
+`;

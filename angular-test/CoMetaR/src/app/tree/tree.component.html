@@ -1,0 +1,3 @@
+<h1>This is the concept tree.</h1>
+<input [(ngModel)]="searchPattern" type='text'/> <button (click)='performSearch()'>search</button>
+<app-tree-item-list [treeItems]="treeItems$ | async"></app-tree-item-list>
