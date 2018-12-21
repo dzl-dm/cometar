@@ -1,0 +1,59 @@
+:root {
+    --main-border-color: #0492D0;
+}
+
+:host{
+    cursor: pointer;
+    background-color:white;
+    border-top:1px solid var(--main-border-color);
+    position:relative;
+    display:flex;
+    flex-direction: column;
+    width:100%;
+    margin-right:0px;
+    padding: 0px 0px 0px 0px;   
+}
+
+:host.selected{
+    background-color:#BFE3F2;    
+}
+
+:host.searchMatch > .treeItemHeading > .treeItemTitle {
+    color:red;
+}
+
+div.treeItemHeading
+{
+    position: relative;
+    min-height:25px;
+    width:100%;
+    display:flex;
+    flex-direction: row;
+}
+
+div.treeItemExpand{
+    background-image:url('src/assets/img/leafConcept.gif');
+    background-position-x: -2px;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    flex-basis:30px;
+    position:relative;
+    z-index:10;
+    flex-shrink:0;
+}
+
+div.treeItemExpand.expanded{
+    background-image:url('src/assets/img/minusConcept.gif');
+}
+
+div.treeItemExpand.collapsed{
+    background-image:url('src/assets/img/plusConcept.gif');
+}
+
+div.treeItemTitle{
+    margin-top:4px;
+}
+
+div.treeItemTitle:focus {
+    outline: 0;
+}

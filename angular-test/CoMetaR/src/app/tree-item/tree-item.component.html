@@ -1,0 +1,7 @@
+<ng-container *ngIf="showItem()">
+  <div class="treeItemHeading">
+    <div [ngClass]="getExpansionClass()" (click)="clickExpanded = !showItemList()"></div>
+    <div class='treeItemTitle' (click)="onSelect(); clickExpanded = true">{{attributes.label.value}}</div>
+  </div>
+  <app-tree-item-list *ngIf="showItemList()" [treeItems]="treeItems$ | async"></app-tree-item-list>
+</ng-container>
