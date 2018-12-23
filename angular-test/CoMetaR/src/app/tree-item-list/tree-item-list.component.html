@@ -1,1 +1,7 @@
-<app-tree-item *ngFor="let treeitem of treeItems" [treeItemAttributes]="treeitem" [ngClass]="{'selected':isSelected(treeitem), 'searchMatch':isSearchMatch(treeitem)}"></app-tree-item>
+
+
+<app-tree-item 
+    *ngFor="let treeitem of treeItems" 
+    [treeItemAttributes]="treeitem" 
+    [ngClass]="{'selected':isSelected(treeitem), 'searchMatch':isSearchMatch(treeitem)}">
+</app-tree-item>
