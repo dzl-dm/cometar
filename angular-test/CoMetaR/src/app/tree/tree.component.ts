@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TreeItemsService, TreeItemAttributes } from '../services/queries/treeitems.service';
-import { TreestateService } from '../services/treestate.service';
+import { TreeService } from '../services/tree.service';
+import { map } from 'rxjs/operators';
+import { routerNgProbeToken } from '@angular/router/src/router_module';
 
 @Component({
   selector: 'app-tree',
@@ -11,19 +13,20 @@ import { TreestateService } from '../services/treestate.service';
 })
 export class TreeComponent implements OnInit {
   private treeItems$:Observable<TreeItemAttributes[]>;
-  private searchPattern:string;
   constructor(
-    private treeitemsService: TreeItemsService, 
     private route: ActivatedRoute,
-    private treestateService: TreestateService
+    private treeService: TreeService,
+    private router: Router
   ){}
 
   ngOnInit() {    
-    this.treestateService.setRoute(this.route);
-    this.treeItems$ = this.treeitemsService.get({range:"top"});
+    console.log("jo");
+    this.treeService.setRoute(this.route);
+    this.treeItems$ = this.treeService.getTopLevelItems();
   }
 
-  private performSearch(){
-    this.treestateService.setSearchPattern(this.searchPattern);
+  private performSearch(pattern:string){
+    this.router.navigate(['/'],{queryParams: {searchpattern: pattern}, relativeTo: this.route});
+    return false;
   }
 }

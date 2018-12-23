@@ -11,19 +11,29 @@ export class SearchtreeitemService {
 
   constructor(private dataService: DataService) { }
 
-  public get(pattern:string):Observable<SearchResultAttributes[]> { 
-    const queryString = this.getQueryString(pattern);
-    return this.dataService.getData(queryString).pipe(map(data=><SearchResultAttributes[]> data))
+  private results = {'':[]};
+
+  public get(pattern:string):SearchResultAttributes[] { 
+    if (!this.results[pattern])
+    {
+      this.results[pattern] = [];
+      const queryString = this.getQueryString(pattern);
+      this.dataService.getData(queryString).subscribe(data => {
+        this.results[pattern] = data;
+      });
+    }
+    return <SearchResultAttributes[]> this.results[pattern];
   };
 
   private getQueryString(pattern:string):string {
       return `
       ${prefixes}
-      SELECT DISTINCT ?element ?label ?notation ?oldnotation (lang(?label) as ?lang) (lang(?altlabel) as ?altlang) ?altlabel ?description ?unit ?label2 (lang(?label2) as ?lang2) ?status ?creator 
+      SELECT ?element ?label ?notation ?oldnotation ?altlabel ?description ?unit ?label2 ?status ?creator 
       WHERE { 
-        ?element skos:prefLabel ?label . 
-        OPTIONAL { ?element skos:prefLabel ?label2 . FILTER (!(lang(?label2) = 'en')) } . 
-        OPTIONAL { ?element skos:notation ?notation } .
+        ?element rdf:type ?t .
+        OPTIONAL { ?element skos:prefLabel ?label FILTER ((lang(?label) = 'en') && regex(?label, '${pattern}', 'i')) } . 
+        OPTIONAL { ?element skos:prefLabel ?label2 . FILTER (!(lang(?label2) = 'en') && regex(?label2, '${pattern}', 'i')) } . 
+        OPTIONAL { ?element skos:notation ?notation FILTER(regex(?notation, '${pattern}', 'i')) } .
         OPTIONAL { 
           ?element prov:wasDerivedFrom+ ?oldconcept .
           ?cs a cs:ChangeSet ;
@@ -33,44 +43,31 @@ export class SearchtreeitemService {
               rdf:predicate skos:notation;
               rdf:object ?oldnotation
             ] .
+            FILTER(regex(?oldconcept, '${pattern}', 'i'))
         } . 	
-        OPTIONAL { ?element dc:description ?description } . 
-        OPTIONAL { ?element :unit ?unit } . 
-        OPTIONAL { ?element skos:altLabel ?altlabel } . 
-        OPTIONAL { ?element :status ?status } . 
-        OPTIONAL { ?element dc:creator ?creator } . 
-        OPTIONAL { 
-          ?element prov:wasDerivedFrom+ [ skos:notation ?oldnotation ] 
-        } . 
-        FILTER ((regex(?label, '${pattern}', 'i') 
-          || regex(?label2, '${pattern}', 'i') 
-          || regex(?altlabel, '${pattern}', 'i') 
-          || regex(?notation, '${pattern}', 'i') 
-          || regex(?oldnotation, '${pattern}', 'i') 
-          || regex(?description, '${pattern}', 'i') 
-          || regex(?unit, '${pattern}', 'i') 
-          || regex(?status, '${pattern}', 'i') 
-          || regex(?creator, '${pattern}', 'i') ) 
-          && (lang(?label) = 'en')
-          && (!bound(?notation) || !bound(?oldnotation) || (?notation != ?oldnotation))
+        OPTIONAL { ?element dc:description ?description FILTER(regex(?description, '${pattern}', 'i')) } . 
+        OPTIONAL { ?element :unit ?unit FILTER(regex(?unit, '${pattern}', 'i')) } . 
+        OPTIONAL { ?element skos:altLabel ?altlabel FILTER(regex(?altlabel, '${pattern}', 'i')) } . 
+        OPTIONAL { ?element :status ?status FILTER(regex(?status, '${pattern}', 'i')) } . 
+        OPTIONAL { ?element dc:creator ?creator FILTER(regex(?creator, '${pattern}', 'i')) } . 
+        OPTIONAL { ?element prov:wasDerivedFrom+ [ skos:notation ?oldnotation ] FILTER(regex(?oldnotation, '${pattern}', 'i')) } . 
+        FILTER (
+          (!bound(?notation) || !bound(?oldnotation) || (?notation != ?oldnotation))
         ) . 
-      } 
-      ORDER BY ASC(lcase(?label)) `;
+        FILTER (bound(?label) || bound(?notation) || bound(?oldnotation) || bound(?altLabel) || bound(?description) || bound(?unit) || bound(?label2) || bound(?status) || bound(?creator))
+      } `;
   }
 }
 
 export interface SearchResultAttributes {
   element:JSONResponsePartUriString,
-  label:JSONResponsePartString,
-  notation:JSONResponsePartString,
-  oldnotation:JSONResponsePartString,
-  lang:JSONResponsePartString,
-  altlang:JSONResponsePartString,
-  altlabel:JSONResponsePartString,
-  description:JSONResponsePartString,
-  unit:JSONResponsePartString,
-  label2:JSONResponsePartString,
-  lang2:JSONResponsePartString,
-  status:JSONResponsePartString,
-  creator:JSONResponsePartString
+  label?:JSONResponsePartString,
+  notation?:JSONResponsePartString,
+  oldnotation?:JSONResponsePartString,
+  altlabel?:JSONResponsePartString,
+  description?:JSONResponsePartString,
+  unit?:JSONResponsePartString,
+  label2?:JSONResponsePartString,
+  status?:JSONResponsePartString,
+  creator?:JSONResponsePartString
 }

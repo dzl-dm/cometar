@@ -1,11 +1,8 @@
-:root {
-    --main-border-color: #0492D0;
-}
+
 
 :host{
     cursor: pointer;
     background-color:white;
-    border-top:1px solid var(--main-border-color);
     position:relative;
     display:flex;
     flex-direction: column;
@@ -16,10 +13,6 @@
 
 :host.selected{
     background-color:#BFE3F2;    
-}
-
-:host.searchMatch > .treeItemHeading > .treeItemTitle {
-    color:red;
 }
 
 div.treeItemHeading
@@ -33,7 +26,7 @@ div.treeItemHeading
 
 div.treeItemExpand{
     background-image:url('src/assets/img/leafConcept.gif');
-    background-position-x: -2px;
+    background-position-x: -1px;
     background-position-y: center;
     background-repeat: no-repeat;
     flex-basis:30px;
@@ -56,4 +49,41 @@ div.treeItemTitle{
 
 div.treeItemTitle:focus {
     outline: 0;
+}
+
+table.searchResult {
+    background-color:#EEE;
+    margin-left:20px;
+    align-self:flex-end;
+}
+table.searchResult tr.element {
+    display:none;
+}
+table.searchResult tr td:first-child {
+    font-weight: bold;
+    width:100px;
+    text-align: right;
+    vertical-align: top;
+}
+table.searchResult td {
+    padding: 5px;
+}
+.highlightText {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.treeItemExpandLine {
+    background-color: #0492D0;
+    width:1px;
+    position:absolute;  
+    left:-0px;
+    top:-12.5px;
+}
+
+:host:not(:last-child) > .treeItemExpandLine {
+    height:100%;
+}
+:host:last-child > .treeItemExpandLine {
+    height:25px;
 }

@@ -25,8 +25,8 @@ import { BrowserComponent } from './browser/browser.component';
     FormsModule,
     RouterModule.forRoot(
       [
-        { path: ':prefix/:concept', component: TreeComponent },
-        { path: '**', component: TreeComponent }
+        { path: ':prefix/:concept', component: BrowserComponent },
+        { path: '**', component: BrowserComponent }
       ],
       { enableTracing: false } // <-- debugging purposes only
     )

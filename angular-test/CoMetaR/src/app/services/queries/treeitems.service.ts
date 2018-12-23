@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DataService, JSONResponsePartBoolean, JSONResponsePartLangString, JSONResponsePartUriString, JSONResponsePartString, prefixes } from '../data.service';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,10 +14,10 @@ export class TreeItemsService {
      * @param {enum} options.range ["top", "sub"] get top elements or subelements of iri
      * @param {string} options.iri
      */
-    public get(options) { 
+    public get(options):Observable<TreeItemAttributes[]> { 
         let {range, iri} = options;
         const queryString = this.getQueryString(iri);
-        return this.dataService.getData(queryString) 
+        return this.dataService.getData(queryString).pipe(map(data=> { return <TreeItemAttributes[]> data }))
     };
 
     private getQueryString(iri?):string {

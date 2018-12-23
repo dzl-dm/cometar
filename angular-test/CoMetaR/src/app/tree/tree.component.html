@@ -1,3 +1,7 @@
 <h1>This is the concept tree.</h1>
-<input [(ngModel)]="searchPattern" type='text'/> <button (click)='performSearch()'>search</button>
+<form>
+    <input type='text' name="searchPatternInput" #searchPatternInput/> 
+    <input type="submit" (click)='performSearch(searchPatternInput.value)' value="search"/>
+</form>
+<div *ngIf="treeService.searchActivated()">There are {{treeService.getSearchResultCount()}} concepts matching "{{treeService.getSearchPattern()}}".</div>
 <app-tree-item-list [treeItems]="treeItems$ | async"></app-tree-item-list>
