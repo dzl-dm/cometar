@@ -50,10 +50,32 @@ div.treeItemTitle{
 div.treeItemTitle:focus {
     outline: 0;
 }
+.treeItemHeading .draft, .treeItemHeading .obsolete, .treeItemHeading .new {
+	background-color:#666666;
+	font-size:10px;
+	font-family:"arial";
+	font-weight:bold;
+	padding:3px 5px 3px 5px;
+	border-radius: 3px;
+	margin-left:5px;
+	margin-top:5px;
+    color:#333;
+    height:10px;
+}
+.treeItemHeading .draft{
+	background-color:#FFEB0F;
+}
+.treeItemHeading .obsolete{
+	background-color:#FFBFBF;
+}
+.treeItemHeading .new{
+	background-color:#71E161;
+}
 
 table.searchResult {
     background-color:#EEE;
     margin-left:20px;
+    margin-right:10px;
     align-self:flex-end;
 }
 table.searchResult tr.element {

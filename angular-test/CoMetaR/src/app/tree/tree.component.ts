@@ -20,7 +20,6 @@ export class TreeComponent implements OnInit {
   ){}
 
   ngOnInit() {    
-    console.log("jo");
     this.treeService.setRoute(this.route);
     this.treeItems$ = this.treeService.getTopLevelItems();
   }
