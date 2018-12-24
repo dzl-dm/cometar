@@ -3,6 +3,7 @@
 <div class="treeItemHeading">
   <div [ngClass]="getExpansionClass()" (click)="clickExpanded = !showItemList()"></div>
   <div class='treeItemTitle' (click)="onSelect(); clickExpanded = true">{{attributes.label.value}}</div>
+  <div [class]="attributes.status ? attributes.status.value : ''">{{attributes.status ? attributes.status.value : ""}}</div>
 </div>
 <table class="searchResult" *ngIf="showSearchResult()" [ngStyle]="{'width':treeService.getInformationDivWidth()-20+'px'}">
   <tr *ngFor="let attribute of searchResultAttributes | keyvalue" [class]="attribute.key">

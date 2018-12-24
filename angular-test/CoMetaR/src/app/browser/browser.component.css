@@ -1,0 +1,12 @@
+:host{
+    flex-grow:1;
+    padding:0px;
+    display: flex;
+    flex-direction: column;
+}
+div#treeContainer {
+    display:flex;
+    flex-direction: column;
+    flex-grow:1;
+    width:500px;
+}
