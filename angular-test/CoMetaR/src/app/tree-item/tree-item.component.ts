@@ -1,11 +1,11 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-import { Observable, Subscriber, pipe } from 'rxjs';
+import { Observable } from 'rxjs';
 import { TreeItemsService, TreeItemAttributes } from '../services/queries/treeitems.service'
-import { TreeService, TreeState } from '../services/tree.service';
+import { TreeService } from '../services/tree.service';
 import { SearchResultAttributes } from '../services/queries/searchtreeitem.service';
 import { TreeItemListComponent } from '../tree-item-list/tree-item-list.component';
 import { TreeComponent } from '../tree/tree.component';
-import { filter, map } from 'rxjs/operators';
+import { withLatestFrom } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tree-item',
@@ -16,43 +16,33 @@ export class TreeItemComponent implements OnInit {
   @Input('treeItemAttributes') attributes:TreeItemAttributes;
 
   private treeItems$:Observable<TreeItemAttributes[]>;
-  private clickExpanded:boolean;
-  private searchResultAttributes = {};
+  //private isPathPart$:Observable<boolean>;
+  private searchResultAttributes$:Observable<SearchResultAttributes>;
+  private expanded:boolean;
+  private showSearchResult$:Observable<boolean>;
   constructor(
     private treeitemsService: TreeItemsService, 
     private treeService: TreeService,
     private treeComponent: TreeComponent,
     private el: ElementRef  
-  ){}
+  ){
+  }
 
   ngOnInit() {
-    this.treeItems$ = this.treeService.getSubItems(this.attributes.element.value);
-    if (this.treeService.searchActivated()) this.searchResultAttributes = this.treeService.getSearchMatch(this.attributes.element.value);
-    setTimeout(()=>this.treeService.updateInformationDivWidth(this.el.nativeElement.offsetWidth));
-  }
+    setTimeout(()=>{
+      this.treeService.updateInformationDivWidth(this.el.nativeElement.offsetWidth);
+    });
 
-  private showItemList():boolean{
-    if (this.clickExpanded != undefined) return this.clickExpanded;
-    return this.treeService.isTreePathPart(this.attributes.element.value);
-  }
-
-  private showSearchResult():boolean{
-    return this.treeService.searchActivated() 
-      && this.attributes.element 
-      && this.treeService.getSearchMatch(this.attributes.element.value)
-      && Object.keys(this.treeService.getSearchMatch(this.attributes.element.value)).length > 0
-  }
-
-  private getExpansionClass(){
-    return {
-      'treeItemExpand':true,
-      'expanded':this.attributes.hasChildren.value && this.showItemList(),
-      'collapsed':this.attributes.hasChildren.value && !this.showItemList()
-    }
+    this.treeService.isAnyPathPart$(this.attributes.element.value).pipe(
+      withLatestFrom(this.treeService.isSelected$(this.attributes.element.value))
+    ).subscribe(next => this.expanded = next.includes(true));
+    
+    this.showSearchResult$ = this.treeService.isSearchMatch$(this.attributes.element.value);
+    this.searchResultAttributes$ = this.treeService.getSearchMatch$(this.attributes.element.value);
   }
 
   private onSelect(){
-    this.treeService.onConceptSelection(this.attributes.element.value)
+    this.treeService.onConceptSelection(this.attributes.element.value);
   }
 
   private searchMatchArray(s:string):string[]{

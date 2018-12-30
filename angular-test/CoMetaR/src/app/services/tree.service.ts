@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { TreepathitemsService } from './queries/treepathitems.service';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ConfigurationService } from './configuration.service';
-import { map } from 'rxjs/operators';
+import { map, flatMap, filter } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, ReplaySubject, combineLatest } from 'rxjs';
 import { SearchtreeitemService, SearchResultAttributes } from './queries/searchtreeitem.service';
 import { TreeItemsService, TreeItemAttributes } from './queries/treeitems.service';
 
@@ -15,8 +15,11 @@ import { TreeItemsService, TreeItemAttributes } from './queries/treeitems.servic
 export class TreeService {
   private route:ActivatedRoute;
 
-  private selectedIri:string = "";
-  private searchPattern:string = "";
+  private selectedIri$:ReplaySubject<string>;
+  private selectedPaths$:Observable<string[]>;
+  private searchPaths$:Observable<string[]>;
+  private searchPattern$:ReplaySubject<string>;
+  private searchIris$:Observable<string[]>;
   private maxInformationDivWidth;
 
   constructor(
@@ -26,26 +29,42 @@ export class TreeService {
     private router: Router,
     private searchtreeitemService: SearchtreeitemService
   ) {
-
+    this.selectedIri$ = new ReplaySubject(1);
+    this.searchPattern$ = new ReplaySubject(1);
+    this.selectedPaths$ = this.selectedIri$.pipe(
+      flatMap(iri => this.treepathitemsService.get([iri]))
+    )
+    this.searchIris$ = this.searchPattern$.pipe(
+      flatMap(iri => this.searchtreeitemService.get(iri).pipe(
+        map(searchResultAttributes => searchResultAttributes.map(e => e.element.value))
+      ))
+    )
+    this.searchPaths$ = this.searchIris$.pipe(
+      flatMap(iris => this.treepathitemsService.get(iris))
+    )
   }
 
-  //routing
-  private updateTreeState():void{
-    this.route.queryParamMap.subscribe(data => {
-      let searchPattern = data.get('searchpattern') ? data.get('searchpattern') : "";      
-      this.searchPattern = searchPattern;
-    });
-    this.route.paramMap.pipe(map(data => this.extendRdfPrefix(data.get('prefix')+data.get('concept'))))
-      .subscribe(selectedIri => {
-        this.selectedIri = selectedIri;
-      });
-  }
-  public getSelectedPaths():string[]{
-    return this.treepathitemsService.get([this.selectedIri]);
-  }
+  //init (through tree component)
   public setRoute(route:ActivatedRoute){
-    this.route=route;
-    this.updateTreeState();
+    route.paramMap.pipe(
+      map(data => this.extendRdfPrefix(data.get('prefix')+data.get('concept')))
+    ).subscribe(this.selectedIri$);
+
+    route.queryParamMap.pipe(
+      map(data => data.get('searchpattern') ? data.get('searchpattern') : "")
+    ).subscribe(this.searchPattern$);
+  }
+
+  //selection
+  public onConceptSelection(iri:string):void{
+    let queryParams = {};
+    if (this.getSearchPattern()) queryParams["searchpattern"] = this.getSearchPattern();
+    this.router.navigate([this.shortenRdfPrefix(iri)],{queryParams: queryParams, relativeTo: this.route});
+  }
+  public isSelected$(iri:string):Observable<boolean>{
+    return this.selectedIri$.pipe(
+      map(selectedIri => selectedIri == iri)
+    )
   }
   private shortenRdfPrefix(s:string):string{
     Object.entries(this.configuration.getRdfPrefixMap()).forEach(
@@ -64,52 +83,68 @@ export class TreeService {
   } 
 
   //item offering
-  public getTopLevelItems():Observable<TreeItemAttributes[]>{
-    return this.treeItemPipe(this.treeitemsService.get({range:"top"}));
+  public getTopLevelItems$():Observable<TreeItemAttributes[]>{
+    return this.searchItemFilter(this.treeitemsService.get({range:"top"}));
   }
-  public getSubItems(iri):Observable<TreeItemAttributes[]>{
-    return this.treeItemPipe(this.treeitemsService.get({range:"sub",iri:iri}));
+  public getSubItems$(iri:string):Observable<TreeItemAttributes[]>{
+    return this.searchItemFilter(this.treeitemsService.get({range:"sub",iri:iri}));
   }
-  private treeItemPipe(o:Observable<TreeItemAttributes[]>):Observable<TreeItemAttributes[]>{
-    return o.pipe(
-      map(data => data.filter(treeItemAttribute => {
-        let showTreeItemAttribute = !this.searchActivated() 
-        || this.isSearchMatch(treeItemAttribute.element.value)
-        || this.getSearchPaths().length == 0
-        || this.getSearchPaths().includes(treeItemAttribute.element.value);
-        return showTreeItemAttribute;
-      }))
+  public isSelectedPathPart$(iri:string):Observable<boolean>{
+    return this.selectedPaths$.pipe(
+      map(selectedPaths => selectedPaths.includes(iri))
+    )
+  }
+  public isSearchPathPart$(iri:string):Observable<boolean>{
+    return this.searchPaths$.pipe(
+      map(searchPaths => searchPaths.includes(iri))
+    )
+  }
+  public isAnyPathPart$(iri:string):Observable<boolean>{
+    return combineLatest(this.isSelectedPathPart$(iri), this.isSearchPathPart$(iri)).pipe(
+      map(data => data.includes(true))
+    )
+  }
+  private searchItemFilter(o:Observable<TreeItemAttributes[]>):Observable<TreeItemAttributes[]>{
+    return combineLatest(o, this.searchIris$, this.searchPaths$, this.searchActivated$()).pipe(
+      map(data => {
+        let tias = <TreeItemAttributes[]> data[0];
+        let searchIris = <string[]> data[1];
+        let searchPaths = <string[]> data[2];
+        let searchActivated = <boolean> data[3];
+        if (!searchActivated) return tias;
+        else return tias.filter(tia => searchIris.includes(tia.element.value) || searchPaths.includes(tia.element.value));
+      })
     );
-  }
-  public isTreePathPart(iri):boolean{
-    return this.getSelectedPaths().includes(iri) || this.getSearchPaths().includes(iri)
   }
 
   //search
-  public getSearchPaths():string[]{
-    return this.treepathitemsService.get(this.searchtreeitemService.get(this.searchPattern).map(data => data.element.value));
+  public searchActivated$():Observable<boolean>{
+    return this.searchPattern$.pipe(
+      map(searchPattern => searchPattern != "")
+    )
+  }
+  public getSearchMatch$(iri:string):Observable<SearchResultAttributes>{
+    return this.searchPattern$.pipe(
+      flatMap(searchPattern => this.searchtreeitemService.get(searchPattern).pipe(
+        map(sras => sras.filter(sra => sra.element.value==iri)[0]),
+        filter(sra => sra != undefined)
+      ))
+    )
   }
   public getSearchPattern():string{
-    return this.searchPattern;
+    let searchPattern;
+    this.searchPattern$.subscribe(next => searchPattern = next);
+    return searchPattern;
   }
-  public searchActivated():boolean{return this.searchPattern != ""}
-  public isSearchMatch(iri:string):boolean{
-    if (this.searchtreeitemService.get(this.searchPattern).map(data => data.element.value).includes(iri)) return true;
-    return false;
+  public isSearchMatch$(iri:string):Observable<boolean>{
+    return this.searchIris$.pipe(
+      map(searchIris => searchIris.includes(iri))
+    )
   }
-  public getSearchMatch(iri:string):SearchResultAttributes{
-    return this.searchtreeitemService.get(this.searchPattern).filter(data => data.element.value==iri)[0];
-  }
-  public getSearchResultCount():number{
-    return this.searchtreeitemService.get(this.searchPattern).length;
-  }
-
-  //selection
-  public onConceptSelection(iri:string):void{
-    this.router.navigate([this.shortenRdfPrefix(iri)]);
-  }
-  public isSelected(iri:string):boolean{
-    return this.selectedIri == iri;
+  public getSearchResultCount$():Observable<number>{
+    return this.searchIris$.pipe(
+      map(iris => iris.length)
+    )
   }
 
   //appearance
@@ -120,11 +155,4 @@ export class TreeService {
   public getInformationDivWidth():number{
     return this.maxInformationDivWidth;
   }
-}
-
-export interface TreeState {
-  searchPattern:string,
-  selectedPaths:string[],
-  searchPaths:string[],
-  selectedIri:string
 }

@@ -14,7 +14,7 @@ export class TreeItemsService {
      * @param {enum} options.range ["top", "sub"] get top elements or subelements of iri
      * @param {string} options.iri
      */
-    public get(options):Observable<TreeItemAttributes[]> { 
+    public get(options):Observable<TreeItemAttributes[]> {
         let {range, iri} = options;
         const queryString = this.getQueryString(iri);
         return this.dataService.getData(queryString).pipe(map(data=> { return <TreeItemAttributes[]> data }))

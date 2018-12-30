@@ -9,22 +9,18 @@ import { map } from 'rxjs/operators';
 export class TreepathitemsService {
   constructor(private dataService: DataService) { }
 
-  private results = {};
   /**
    * 
    * @param {string[]} iris
    */
-  public get(iris:string[]):string[] { 
-    if (!this.results[iris.join(';')]){
-        this.results[iris.join(';')] = [];
-        const queryString = this.getQueryString(iris);
-        this.dataService.getData(queryString).pipe(map(
-            (data)=>data.map((e)=>e.treePathItem.value)
-        )).subscribe(data => {
-            this.results[iris.join(';')]=data;
-        });
-    }
-    return this.results[iris.join(';')];
+  public get(iris:string[]):Observable<string[]> { 
+    const queryString = this.getQueryString(iris);
+    return this.dataService.getData(queryString/*,
+        ()=>console.log(`Path items of ${iris.join(",")}...`),
+        (result)=>console.log(result.map(e=>e.treePathItem.value))*/
+      ).pipe(map(
+        (data)=>data.map(e=> e.treePathItem.value)
+    ))
   };
 
   private getQueryString(iris:string[]):string {

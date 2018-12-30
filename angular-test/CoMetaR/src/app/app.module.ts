@@ -10,6 +10,7 @@ import { TreeComponent } from './tree/tree.component';
 import { TreeItemComponent } from './tree-item/tree-item.component';
 import { TreeItemListComponent } from './tree-item-list/tree-item-list.component';
 import { BrowserComponent } from './browser/browser.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { BrowserComponent } from './browser/browser.component';
     BrowserModule,
     HttpClientModule,
     FormsModule,
+    BrowserAnimationsModule,
     RouterModule.forRoot(
       [
         { path: ':prefix/:concept', component: BrowserComponent },

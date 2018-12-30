@@ -1,20 +1,32 @@
 
 <div class='treeItemExpandLine'></div>
-<div class="treeItemHeading">
-  <div [ngClass]="getExpansionClass()" (click)="clickExpanded = !showItemList()"></div>
-  <div class='treeItemTitle' (click)="onSelect(); clickExpanded = true">{{attributes.label.value}}</div>
+<div class="treeItemHeading"
+    (click)="expanded=!expanded">
+  <div 
+    [ngClass]="{
+      'treeItemExpand':true,
+      'expanded':attributes.hasChildren.value && expanded,
+      'collapsed':attributes.hasChildren.value && !expanded
+    }" >
+  </div>
+  <div class='treeItemTitle' (click)="onSelect();$event.stopPropagation();">{{attributes.label.value}}</div>
   <div [class]="attributes.status ? attributes.status.value : ''">{{attributes.status ? attributes.status.value : ""}}</div>
 </div>
-<table class="searchResult" *ngIf="showSearchResult()" [ngStyle]="{'width':treeService.getInformationDivWidth()-20+'px'}">
-  <tr *ngFor="let attribute of searchResultAttributes | keyvalue" [class]="attribute.key">
-    <td>{{attribute.key}}</td>
-    <td>
-      <span 
-        *ngFor="let match of searchMatchArray(searchResultAttributes[attribute.key].value)" 
-        [ngClass]="{'highlightText':match.toUpperCase()==treeService.getSearchPattern().toUpperCase()}"
-        >{{match}}</span>
-    </td>
-  </tr>
-</table>
-<app-tree-item-list *ngIf="showItemList()" [treeItems]="treeItems$ | async"></app-tree-item-list>
-
+<div class="treeItemInformation">
+  <div [ngClass]="{
+    'treeItemExpandLine':true,
+    'activated':attributes.hasChildren.value && expanded
+  }"></div>
+  <table class="searchResult" *ngIf="showSearchResult$ | async" [ngStyle]="{'width':treeService.getInformationDivWidth()-20+'px'}">
+    <tr *ngFor="let attribute of searchResultAttributes$ | async | keyvalue as searchResultAttributes" [class]="attribute.key">
+      <td>{{attribute.key}}</td>
+      <td>
+        <span 
+          *ngFor="let match of searchMatchArray(attribute.value.value)" 
+          [ngClass]="{'highlightText':match.toUpperCase()==treeService.getSearchPattern().toUpperCase()}"
+          >{{match}}</span>
+      </td>
+    </tr>
+  </table>
+</div>
+<app-tree-item-list *ngIf="expanded" [conceptIri]="attributes.element.value"></app-tree-item-list>

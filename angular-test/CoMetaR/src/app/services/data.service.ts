@@ -1,14 +1,41 @@
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, Subject, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, startWith, shareReplay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
+
+  private pendings = {}
   dataUrl = 'https://data.dzl.de/fuseki/cometar_live/query';
-  getData(queryString:string): Observable<any[]> {
+
+  getData(queryString:string, logstart?:()=>void, logend?:(result:any[])=>void): Observable<any[]> {
+    /*if (logstart) logstart();
+    let resultSubject = new Subject<any[]>();
+    if (!this.pendings[queryString]){
+      let obs = this.getObservable(queryString);
+      this.pendings[queryString] = obs.toPromise();
+    }
+    this.pendings[queryString].then((data)=>{
+      //kann sein, dass das zu früh feuert, u.U. ein startsWith einbauen
+      if (logend) logend(data);
+      resultSubject.next(data);
+      resultSubject.complete();
+    });
+    return resultSubject;*/
+    if (!this.pendings[queryString]){
+      let rs = new ReplaySubject<any[]>(1);
+      this.getObservable(queryString).subscribe(rs)
+      this.pendings[queryString] = rs;
+      //this.pendings[queryString] = this.getObservable(queryString).pipe(shareReplay(1));
+    }
+    return this.pendings[queryString];
+  }
+  constructor(private http:HttpClient) { }
+
+  private getObservable(queryString:string):Observable<any[]>{
     return this.http.get<JSONResponse>(
       this.dataUrl+"?query="+encodeURIComponent(queryString),
       { observe: 'response', headers:{'Accept': 'application/sparql-results+json; charset=utf-8'}}
@@ -27,7 +54,6 @@ export class DataService {
         catchError(this.handleError)
       );
   }
-  constructor(private http:HttpClient) { }
 
   private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {

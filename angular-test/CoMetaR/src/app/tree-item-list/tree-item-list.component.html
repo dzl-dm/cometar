@@ -1,7 +1,6 @@
-
-
 <app-tree-item 
-    *ngFor="let treeitem of treeItems" 
+    @openClose
+    *ngFor="let treeitem of (treeItems$ | async)" 
     [treeItemAttributes]="treeitem" 
-    [ngClass]="{'selected':isSelected(treeitem), 'searchMatch':isSearchMatch(treeitem)}">
+    [ngClass]="{'selected':isSelected$(treeitem) | async}">
 </app-tree-item>
