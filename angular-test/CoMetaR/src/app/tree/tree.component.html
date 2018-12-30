@@ -1,8 +1,9 @@
 <form>
-    <input type='text' name="searchPatternInput" #searchPatternInput/> 
+    <input type='text' [value]="treeService.getSearchPattern()" name="searchPatternInput" #searchPatternInput/> 
     <input type="submit" (click)='performSearch(searchPatternInput.value)' value="search"/>
+    <input type="button" (click)='clearSearch()' value="x"/>
 </form>
-<div *ngIf="treeService.searchActivated()">There are {{treeService.getSearchResultCount()}} concepts matching "{{treeService.getSearchPattern()}}".</div>
+<div *ngIf="treeService.searchActivated$() | async">There are {{searchResultCount}} concepts matching "{{treeService.getSearchPattern()}}".</div>
 <div id="tree">
-    <app-tree-item-list [treeItems]="treeItems$ | async"></app-tree-item-list>
+    <app-tree-item-list [conceptIri]="'root'"></app-tree-item-list>
 </div>

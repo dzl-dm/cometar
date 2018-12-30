@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { DataService, prefixes } from '../data.service';
-import { Observable } from 'rxjs';
+import { Observable, Subject, of } from 'rxjs';
 import { JSONResponsePartLangString, JSONResponsePartUriString, JSONResponsePartBoolean, JSONResponsePartString } from '../data.service';
-import { map } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -11,18 +11,10 @@ export class SearchtreeitemService {
 
   constructor(private dataService: DataService) { }
 
-  private results = {'':[]};
-
-  public get(pattern:string):SearchResultAttributes[] { 
-    if (!this.results[pattern])
-    {
-      this.results[pattern] = [];
+  public get(pattern:string):Observable<SearchResultAttributes[]> { 
+      if (pattern == "") return of([]);
       const queryString = this.getQueryString(pattern);
-      this.dataService.getData(queryString).subscribe(data => {
-        this.results[pattern] = data;
-      });
-    }
-    return <SearchResultAttributes[]> this.results[pattern];
+      return this.dataService.getData(queryString);
   };
 
   private getQueryString(pattern:string):string {

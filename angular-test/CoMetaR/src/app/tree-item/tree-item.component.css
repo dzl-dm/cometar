@@ -72,6 +72,13 @@ div.treeItemTitle:focus {
 	background-color:#71E161;
 }
 
+.treeItemInformation{
+    width:100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
 table.searchResult {
     background-color:#EEE;
     margin-left:20px;
@@ -108,4 +115,9 @@ table.searchResult td {
 }
 :host:last-child > .treeItemExpandLine {
     height:25px;
+}
+
+:host > .treeItemInformation > .treeItemExpandLine.activated {
+    left:21px;
+    height:100%;
 }
