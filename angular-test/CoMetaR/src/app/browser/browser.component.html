@@ -1,4 +1,11 @@
-<h1>CoMetaR</h1>
-<div id="treeContainer">
-    <app-tree></app-tree>
+<div id="browser" (mousemove)='onTreeResizeDrag($event)' (mouseup)='onTreeResizeEnd($event)'>
+    <div id="treeResizeContainer" [style.width.px]="width">
+        <div id="treeContainer" [style.width.px]="width-10">
+            <app-tree></app-tree>
+        </div>
+        <div id="treeResizeComponent"  
+            (mousedown)='onTreeResizeStart($event)'
+        ></div>
+    </div>
+    <div id="rest"></div>
 </div>

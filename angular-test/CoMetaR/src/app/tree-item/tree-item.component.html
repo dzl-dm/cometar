@@ -12,12 +12,15 @@
   <div class='treeItemTitle' (click)="onSelect();$event.stopPropagation();">{{attributes.label.value}}</div>
   <div [class]="attributes.status ? attributes.status.value : ''">{{attributes.status ? attributes.status.value : ""}}</div>
 </div>
-<div class="treeItemInformation">
+<div class="treeItemInformation" [ngStyle]="{
+    'padding-left':(informationDivLeftOffset$ | async) +'px',
+    'width':'calc(100% - ' + ((informationDivLeftOffset$ | async) + 10) +'px)'
+  }">
   <div [ngClass]="{
     'treeItemExpandLine':true,
     'activated':attributes.hasChildren.value && expanded
   }"></div>
-  <table class="searchResult" *ngIf="showSearchResult$ | async" [ngStyle]="{'width':treeService.getInformationDivWidth()-20+'px'}">
+  <table class="searchResult" *ngIf="showSearchResult$ | async">
     <tr *ngFor="let attribute of searchResultAttributes$ | async | keyvalue as searchResultAttributes" [class]="attribute.key">
       <td>{{attribute.key}}</td>
       <td>
@@ -30,3 +33,4 @@
   </table>
 </div>
 <app-tree-item-list *ngIf="expanded" [conceptIri]="attributes.element.value"></app-tree-item-list>
+<!-- [ngStyle]="{'width':'calc(100% - ' + (informationDivLeftOffset$ | async) +'px)'}" -->

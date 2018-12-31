@@ -16,10 +16,10 @@ export class TreeItemComponent implements OnInit {
   @Input('treeItemAttributes') attributes:TreeItemAttributes;
 
   private treeItems$:Observable<TreeItemAttributes[]>;
-  //private isPathPart$:Observable<boolean>;
   private searchResultAttributes$:Observable<SearchResultAttributes>;
   private expanded:boolean;
   private showSearchResult$:Observable<boolean>;
+  private informationDivLeftOffset$:Observable<number>;
   constructor(
     private treeitemsService: TreeItemsService, 
     private treeService: TreeService,
@@ -30,7 +30,7 @@ export class TreeItemComponent implements OnInit {
 
   ngOnInit() {
     setTimeout(()=>{
-      this.treeService.updateInformationDivWidth(this.el.nativeElement.offsetWidth);
+      this.informationDivLeftOffset$ = this.treeService.updateInformationDivMaxLeft(this.el.nativeElement);
     });
 
     this.treeService.isAnyPathPart$(this.attributes.element.value).pipe(
@@ -39,7 +39,7 @@ export class TreeItemComponent implements OnInit {
     
     this.showSearchResult$ = this.treeService.isSearchMatch$(this.attributes.element.value);
     this.searchResultAttributes$ = this.treeService.getSearchMatch$(this.attributes.element.value);
-  }
+  }  
 
   private onSelect(){
     this.treeService.onConceptSelection(this.attributes.element.value);
