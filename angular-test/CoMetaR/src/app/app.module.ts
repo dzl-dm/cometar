@@ -18,7 +18,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     TreeComponent,
     TreeItemComponent,
     TreeItemListComponent,
-    BrowserComponent
+    BrowserComponent,
   ],
   imports: [
     BrowserModule,

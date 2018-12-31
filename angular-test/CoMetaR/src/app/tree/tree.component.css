@@ -3,6 +3,7 @@
     flex-direction: column;
     flex-grow:1;
     margin:10px;
+    position: relative !important; /*for inner element positioning*/
 }
 form {
     display:flex;

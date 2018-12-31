@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ConfigurationService } from './configuration.service';
 import { map, flatMap, filter } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { Observable, ReplaySubject, combineLatest } from 'rxjs';
+import { Observable, ReplaySubject, combineLatest, Subject, BehaviorSubject } from 'rxjs';
 import { SearchtreeitemService, SearchResultAttributes } from './queries/searchtreeitem.service';
 import { TreeItemsService, TreeItemAttributes } from './queries/treeitems.service';
 
@@ -20,7 +20,6 @@ export class TreeService {
   private searchPaths$:Observable<string[]>;
   private searchPattern$:ReplaySubject<string>;
   private searchIris$:Observable<string[]>;
-  private maxInformationDivWidth;
 
   constructor(
     private treeitemsService: TreeItemsService, 
@@ -148,11 +147,40 @@ export class TreeService {
   }
 
   //appearance
-  public updateInformationDivWidth(width:number){
-    if (!this.maxInformationDivWidth) this.maxInformationDivWidth = width;
-    else this.maxInformationDivWidth = Math.min(this.maxInformationDivWidth,width);
+  private maxLeft=0;
+  private updateWidthSubject = new BehaviorSubject<number>(this.maxLeft);
+  public updateInformationDivMaxLeft(el):Observable<number>{
+    let left = this.getPosition(el).x;
+    if (this.maxLeft < left) this.updateWidthSubject.next(left);
+    this.maxLeft = Math.max(this.maxLeft,left);
+    return this.updateWidthSubject.pipe(map(newMaxLeft => newMaxLeft - left));
   }
   public getInformationDivWidth():number{
-    return this.maxInformationDivWidth;
+    let treeWidth = document.getElementsByTagName("APP-TREE")[0].clientWidth;
+    return treeWidth-this.maxLeft-20;
+  }
+  private getPosition(el) {
+    let xPos = 0;
+    let yPos = 0;
+    while (el.tagName != "APP-TREE") {
+      /*if (el.tagName == "body") {
+        // deal with browser quirks with body/window/document and page scroll
+        var xScroll = el.scrollLeft || document.documentElement.scrollLeft;
+        var yScroll = el.scrollTop || document.documentElement.scrollTop;
+   
+        xPos += (el.offsetLeft - xScroll + el.clientLeft);
+        yPos += (el.offsetTop - yScroll + el.clientTop);
+      } else {*/
+        // for all other non-BODY elements
+        xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
+        yPos += (el.offsetTop - el.scrollTop + el.clientTop);
+      //}
+   
+      el = el.offsetParent;
+    }
+    return {
+      x: xPos,
+      y: yPos
+    };
   }
 }

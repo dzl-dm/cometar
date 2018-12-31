@@ -81,9 +81,6 @@ div.treeItemTitle:focus {
 
 table.searchResult {
     background-color:#EEE;
-    margin-left:20px;
-    margin-right:10px;
-    align-self:flex-end;
 }
 table.searchResult tr.element {
     display:none;

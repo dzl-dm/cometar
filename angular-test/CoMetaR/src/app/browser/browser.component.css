@@ -2,11 +2,32 @@
     flex-grow:1;
     padding:0px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: stretch;
+}
+div#browser{
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width:100%;
+}
+div#treeResizeContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
 }
 div#treeContainer {
     display:flex;
     flex-direction: column;
+    box-sizing: border-box;
+}
+div#rest {
+    background-color:blue;
     flex-grow:1;
-    width:500px;
+}
+#treeResizeComponent {
+    width:10px;
+    height:100%;
+    background-color:red;
+    cursor: e-resize;
 }
