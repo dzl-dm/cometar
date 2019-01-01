@@ -22,12 +22,13 @@ div#treeContainer {
     box-sizing: border-box;
 }
 div#rest {
-    background-color:blue;
+    background-color:#0492D0;
     flex-grow:1;
 }
 #treeResizeComponent {
-    width:10px;
+    width:5px;
+    border-right:5px solid white;
     height:100%;
-    background-color:red;
+    background-color:#0492D0;
     cursor: e-resize;
 }
