@@ -9,7 +9,7 @@
       'collapsed':attributes.hasChildren.value && !expanded
     }" >
   </div>
-  <div class='treeItemTitle' (click)="onSelect();$event.stopPropagation();">{{attributes.label.value}}</div>
+  <div [ngClass]="{'treeItemTitle':true,'isModifier':attributes.isModifier.value}" (click)="onSelect();$event.stopPropagation();">{{attributes.label.value}}</div>
   <div [class]="attributes.status ? attributes.status.value : ''">{{attributes.status ? attributes.status.value : ""}}</div>
 </div>
 <div class="treeItemInformation" [ngStyle]="{
@@ -33,4 +33,3 @@
   </table>
 </div>
 <app-tree-item-list *ngIf="expanded" [conceptIri]="attributes.element.value"></app-tree-item-list>
-<!-- [ngStyle]="{'width':'calc(100% - ' + (informationDivLeftOffset$ | async) +'px)'}" -->

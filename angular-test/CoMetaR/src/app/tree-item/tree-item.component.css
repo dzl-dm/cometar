@@ -71,6 +71,11 @@ div.treeItemTitle:focus {
 .treeItemHeading .new{
 	background-color:#71E161;
 }
+.treeItemTitle.isModifier
+{
+	font-style:italic;
+	color:green;
+}
 
 .treeItemInformation{
     width:100%;

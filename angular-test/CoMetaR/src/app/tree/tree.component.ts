@@ -15,11 +15,13 @@ export class TreeComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private treeService: TreeService,
-    private router: Router
+    private router: Router,
+    private el: ElementRef  
   ){}
 
   ngOnInit() {    
     this.treeService.setRoute(this.route);
+    this.treeService.registerTreeDomElement(this.el.nativeElement);
     this.treeService.getSearchResultCount$().subscribe(count => this.searchResultCount = count);
   }
 
@@ -31,5 +33,8 @@ export class TreeComponent implements OnInit {
   private clearSearch(){
     this.router.navigate([],{relativeTo: this.route});
     return false;   
+  }
+  private onscroll(event){
+    this.treeService.onTreeScroll(event.target.scrollTop);
   }
 }

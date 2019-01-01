@@ -30,13 +30,13 @@ export class TreeItemsService {
             OPTIONAL { ?element skos:narrower ?sub . }
             OPTIONAL { ?element rdf:hasPart ?sub . }
             OPTIONAL { ?element skos:member ?sub . }
-            OPTIONAL { ?element rdf:partOf ?top . }
+            OPTIONAL { ?element skos:broader* [ rdf:partOf ?top ] . }
             ?element rdf:type ?type .
             OPTIONAL { ?element :status ?status . }
         } 
         GROUP BY ?element ?label ?type ?status  
         HAVING bound(?element)
-        ORDER BY ?label`;
+        ORDER BY ?isModifier ?label`;
     }
     private getSubElementsFilter(iri):string{
         return `
