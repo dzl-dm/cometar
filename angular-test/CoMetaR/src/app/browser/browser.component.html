@@ -1,11 +1,19 @@
 <div id="browser" (mousemove)='onTreeResizeDrag($event)' (mouseup)='onTreeResizeEnd($event)'>
     <div id="treeResizeContainer" [style.width.px]="width">
         <div id="treeContainer" [style.width.px]="width-10">
-            <app-tree></app-tree>
+            <app-tree [width]="width"></app-tree>
         </div>
         <div id="treeResizeComponent"  
             (mousedown)='onTreeResizeStart($event)'
         ></div>
     </div>
-    <div id="rest"></div>
+    <div id="rest">
+        <div id="moduleMenu">
+            <div class="moduleMenuItem" (click)="navigateModule('details')">Details</div>
+            <div class="moduleMenuItem" (click)="navigateModule('provenance')">Provenance</div>
+        </div>
+        <div id="moduleContent" [@routeAnimations]="prepareRoute(outlet)">
+            <router-outlet #outlet="outlet"></router-outlet>
+        </div>
+    </div>
 </div>

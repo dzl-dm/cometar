@@ -35,7 +35,7 @@ export class SearchtreeitemService {
               rdf:predicate skos:notation;
               rdf:object ?oldnotation
             ] .
-            FILTER(regex(?oldconcept, '${pattern}', 'i'))
+            FILTER(regex(?oldnotation, '${pattern}', 'i'))
         } . 	
         OPTIONAL { ?element dc:description ?description FILTER(regex(?description, '${pattern}', 'i')) } . 
         OPTIONAL { ?element :unit ?unit FILTER(regex(?unit, '${pattern}', 'i')) } . 

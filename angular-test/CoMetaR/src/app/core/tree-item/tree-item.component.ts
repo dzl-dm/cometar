@@ -1,11 +1,12 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs';
-import { TreeItemsService, TreeItemAttributes } from '../services/queries/treeitems.service'
-import { TreeService } from '../services/tree.service';
-import { SearchResultAttributes } from '../services/queries/searchtreeitem.service';
+import { Observable, interval } from 'rxjs';
+import { TreeItemsService, TreeItemAttributes } from '../../services/queries/treeitems.service'
+import { TreeDataService } from '../services/tree-data.service';
+import { TreeStyleService } from "../services/tree-style.service";
+import { SearchResultAttributes } from '../../services/queries/searchtreeitem.service';
 import { TreeItemListComponent } from '../tree-item-list/tree-item-list.component';
 import { TreeComponent } from '../tree/tree.component';
-import { withLatestFrom } from 'rxjs/operators';
+import { withLatestFrom, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tree-item',
@@ -22,7 +23,8 @@ export class TreeItemComponent implements OnInit {
   private informationDivLeftOffset$:Observable<number>;
   constructor(
     private treeitemsService: TreeItemsService, 
-    private treeService: TreeService,
+    private treeDataService: TreeDataService,
+    private treeStyleService: TreeStyleService,
     private treeComponent: TreeComponent,
     private el: ElementRef  
   ){
@@ -30,25 +32,25 @@ export class TreeItemComponent implements OnInit {
 
   ngOnInit() {
     setTimeout(()=>{
-      this.informationDivLeftOffset$ = this.treeService.updateInformationDivMaxLeft(this.el.nativeElement);
+      this.informationDivLeftOffset$ = this.treeStyleService.updateInformationDivMaxLeft(this.el.nativeElement);
     });
 
-    this.treeService.isAnyPathPart$(this.attributes.element.value).pipe(
-      withLatestFrom(this.treeService.isSelected$(this.attributes.element.value))
+    this.treeDataService.isAnyPathPart$(this.attributes.element.value).pipe(
+      withLatestFrom(this.treeDataService.isSelected$(this.attributes.element.value))
     ).subscribe(next => this.expanded = next.includes(true));
     
-    this.showSearchResult$ = this.treeService.isSearchMatch$(this.attributes.element.value);
-    this.searchResultAttributes$ = this.treeService.getSearchMatch$(this.attributes.element.value);
+    this.showSearchResult$ = this.treeDataService.isSearchMatch$(this.attributes.element.value);
+    this.searchResultAttributes$ = this.treeDataService.getSearchMatch$(this.attributes.element.value);
   }  
 
   private onSelect(){
-    this.treeService.onConceptSelection(this.attributes.element.value);
+    this.treeDataService.onConceptSelection(this.attributes.element.value);
   }
 
   private searchMatchArray(s:string):string[]{
     let index = 0;
     let result:string[] = [];
-    let pattern = this.treeService.getSearchPattern();
+    let pattern = this.treeDataService.getSearchPattern();
     let counter = 0;
     while (index < s.length && counter < 10){
       let newindex = s.toUpperCase().indexOf(pattern.toUpperCase(),index);

@@ -2,7 +2,6 @@
     display:flex;
     flex-direction: column;
     flex-grow:1;
-    margin:10px;
 }
 form {
     display:flex;
@@ -10,9 +9,11 @@ form {
     flex-shrink: 0;
     align-content: stretch;
     height:40px;
+    margin:5px;
 }
 form input:first-child{
     flex-grow:1;
+    width:40px;
     padding-left:15px;
     font-size:20px;
     background-color:white;
@@ -20,13 +21,14 @@ form input:first-child{
 }
 form input {
     border:1px solid #0492D0;
+    width:70px;
+    flex-shrink:1;
 }
 form input[type='submit'], form input[type='button'] {
     background-color:#0492D0;
     color:white;
     cursor:pointer;
     margin-left:1px;
-    width:70px;
 }
 form input[type='submit']:hover, form input[type='button']:hover {
     background-color:#BFE3F2;
@@ -39,20 +41,16 @@ div#tree {
     flex-grow:1;
     overflow:auto;
     position: relative !important; /*for inner element positioning*/
-    margin-left:-21px;
 }
 div#scrollHeadings{
-    max-width:inherit;
     position: fixed;
     z-index:20;
 }
 div#scrollHeadings > div > div {
+    background-color:white;
+    opacity: 0.9;
     height:20px;
     padding-left:9px;
     padding-top:4px;
-    padding-right:20px;
-    background-color:white;
-    opacity: 0.8;
-    display:inline-block;
     border-bottom:1px solid #0492D0;
 }
