@@ -1,0 +1,29 @@
+<div class="additionalDetails">
+  <div *ngFor="let detail of additionalDetails | keyvalue">
+    <div class="detail" *ngIf="detail.value.values.length > 0">
+      <div class='detailHeading'>
+        {{detail.value.name}}
+      </div>
+      <div class='detailContent'>
+        <div *ngFor="let value of detail.value.values">
+          {{value}}
+        </div>   
+      </div>
+    </div>
+  </div>
+</div>
+<div class="coreDetails">
+  <div *ngFor="let detail of coreDetails | keyvalue">
+    <div class="detail">
+      <div class='detailHeading'>
+        {{detail.value.name}}
+      </div>
+      <div class='detailContent'>
+        <div *ngFor="let value of detail.value.values">
+          {{value}}
+          <div *ngIf="detail.value.copy" (click)="copyToClipboard(value)" class="copy"></div>
+        </div>      
+      </div>
+    </div>
+  </div>  
+</div>

@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { TreeService } from './tree.service';
+import { TreeStyleService } from './tree-style.service';
 
-describe('TreeService', () => {
+describe('TreeStyleService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: TreeService = TestBed.get(TreeService);
+    const service: TreeStyleService = TestBed.get(TreeStyleService);
     expect(service).toBeTruthy();
   });
 });

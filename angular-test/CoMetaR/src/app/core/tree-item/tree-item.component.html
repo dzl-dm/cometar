@@ -13,8 +13,8 @@
   <div [class]="attributes.status ? attributes.status.value : ''">{{attributes.status ? attributes.status.value : ""}}</div>
 </div>
 <div class="treeItemInformation" [ngStyle]="{
-    'padding-left':(informationDivLeftOffset$ | async) +'px',
-    'width':'calc(100% - ' + ((informationDivLeftOffset$ | async) + 10) +'px)'
+    'padding-left':((informationDivLeftOffset$ | async) + 10) +'px',
+    'width':'calc(100% - ' + ((informationDivLeftOffset$ | async) + 20) +'px)'
   }">
   <div [ngClass]="{
     'treeItemExpandLine':true,
@@ -26,7 +26,7 @@
       <td>
         <span 
           *ngFor="let match of searchMatchArray(attribute.value.value)" 
-          [ngClass]="{'highlightText':match.toUpperCase()==treeService.getSearchPattern().toUpperCase()}"
+          [ngClass]="{'highlightText':match.toUpperCase()==treeDataService.getSearchPattern().toUpperCase()}"
           >{{match}}</span>
       </td>
     </tr>

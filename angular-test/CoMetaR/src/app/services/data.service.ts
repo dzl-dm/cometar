@@ -12,19 +12,6 @@ export class DataService {
   dataUrl = 'https://data.dzl.de/fuseki/cometar_live/query';
 
   getData(queryString:string, logstart?:()=>void, logend?:(result:any[])=>void): Observable<any[]> {
-    /*if (logstart) logstart();
-    let resultSubject = new Subject<any[]>();
-    if (!this.pendings[queryString]){
-      let obs = this.getObservable(queryString);
-      this.pendings[queryString] = obs.toPromise();
-    }
-    this.pendings[queryString].then((data)=>{
-      //kann sein, dass das zu früh feuert, u.U. ein startsWith einbauen
-      if (logend) logend(data);
-      resultSubject.next(data);
-      resultSubject.complete();
-    });
-    return resultSubject;*/
     if (!this.pendings[queryString]){
       let rs = new ReplaySubject<any[]>(1);
       this.getObservable(queryString).subscribe(rs)
@@ -89,20 +76,24 @@ interface JSONResponsePart {
 }
 
 export interface JSONResponsePartBoolean {
-  value:boolean
+  value:boolean,
+  name?:string
 }
 
 export interface JSONResponsePartLangString {
   "xml:lang":string,
-  value:string
+  value:string,
+  name?:string
 }
 
 export interface JSONResponsePartUriString {
-  value:string
+  value:string,
+  name?:string
 }
 
 export interface JSONResponsePartString {
-  value:string
+  value:string,
+  name?:string
 }
 
 export const prefixes:string = `

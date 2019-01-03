@@ -1,0 +1,43 @@
+:host{
+    display:flex;
+    flex-grow:1;
+    flex-direction: row;
+    align-content: stretch;
+}
+div.detail{
+    margin-top:0px;
+    margin-bottom:5px;
+    background-color:white;
+    padding:15px;
+}
+div.detailHeading{
+    padding:5px;
+    display: inline-block;
+    font-size:20px;
+}
+div.detailContent{
+    padding:5px;
+}
+div.additionalDetails .detail {
+    background-color:#EEE;
+}
+div.additionalDetails{
+    flex-basis:65%;
+    padding:10px;
+}
+div.coreDetails{
+    padding:10px;
+    flex-basis:35%;
+    background-color:white;
+    border-left:3px solid #0492D0;
+    margin-top:10px;
+}
+div.copy{
+    background-image: url('../../../assets/img/copytoclipboard.gif');
+    background-size: 13px;
+    background-repeat: no-repeat;
+    width:15px;
+    height:15px;
+    display: inline-block;
+    cursor:copy;
+}

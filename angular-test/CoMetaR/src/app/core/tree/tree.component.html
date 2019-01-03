@@ -1,0 +1,13 @@
+<form>
+    <input type='text' [value]="treeDataService.getSearchPattern()" name="searchPatternInput" #searchPatternInput placeholder="search term"/> 
+    <input type="submit" (click)='performSearch(searchPatternInput.value)' value="search"/>
+    <input type="button" (click)='clearSearch()' [value]="'x '+(searchResultCount?searchResultCount:'')"/>
+</form>
+<div id="tree" (scroll)="onscroll($event)">
+    <app-tree-item-list [conceptIri]="'root'" class="topLevel"></app-tree-item-list>
+    <div id="scrollHeadings" [style.width.px]="width-10">
+        <div *ngFor="let scrollHeading of (treeStyleService.scrollHeadingsSubject$ | async); let i = index">
+            <div [style.marginLeft.px]="21+i*21">{{scrollHeading}}</div>
+        </div>
+    </div>
+</div>

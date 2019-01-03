@@ -18,7 +18,7 @@
 div.treeItemHeading
 {
     position: relative;
-    min-height:25px;
+    min-height:30px;
     width:100%;
     display:flex;
     flex-direction: row;
@@ -109,14 +109,14 @@ table.searchResult td {
     width:1px;
     position:absolute;  
     left:-0px;
-    top:-12.5px;
+    top:-15px;
 }
 
 :host:not(:last-child) > .treeItemExpandLine {
     height:100%;
 }
 :host:last-child > .treeItemExpandLine {
-    height:25px;
+    height:30px;
 }
 
 :host > .treeItemInformation > .treeItemExpandLine.activated {

@@ -1,16 +1,71 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { trigger, transition, style, query, animateChild, group, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-browser',
   templateUrl: './browser.component.html',
-  styleUrls: ['./browser.component.css']
+  styleUrls: ['./browser.component.css'],
+  animations: [
+    trigger('routeAnimations', [
+      transition('Details => Provenance', [
+        style({ position: 'relative' }),
+        query(':enter, :leave', [
+          style({
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%'
+          })
+        ]),
+        query(':enter', [
+          style({ left: '100%'})
+        ]),
+        query(':leave', animateChild()),
+        group([
+          query(':leave', [
+            animate('300ms ease-out', style({ left: '-100%'}))
+          ]),
+          query(':enter', [
+            animate('300ms ease-out', style({ left: '0%'}))
+          ])
+        ]),
+        query(':enter', animateChild()),
+      ]),
+      transition('Provenance => Details', [
+        style({ position: 'relative' }),
+        query(':enter, :leave', [
+          style({
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%'
+          })
+        ]),
+        query(':enter', [
+          style({ left: '-100%'})
+        ]),
+        query(':leave', animateChild()),
+        group([
+          query(':leave', [
+            animate('300ms ease-out', style({ left: '100%'}))
+          ]),
+          query(':enter', [
+            animate('300ms ease-out', style({ left: '0%'}))
+          ])
+        ]),
+        query(':enter', animateChild()),
+      ])
+    ])
+  ]
 })
 export class BrowserComponent implements OnInit {
+  title = 'CoMetaR';
 
   private width = 500;
   constructor(
-    private route:ActivatedRoute
+    private route:ActivatedRoute,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -25,8 +80,8 @@ export class BrowserComponent implements OnInit {
     this.savedX = event.clientX;
     return false;
   }
-  private onTreeResizeDrag(event: MouseEvent) {
-    if (!this.treeResizing) return false;
+  private onTreeResizeDrag(event: MouseEvent) {    
+    if (!this.treeResizing) return true;
     event.stopPropagation();
     let diff = event.clientX - this.savedX;
     this.savedX += diff;
@@ -35,5 +90,13 @@ export class BrowserComponent implements OnInit {
   }
   private onTreeResizeEnd(event: MouseEvent) {
     this.treeResizing = false;
+  }
+
+  private navigateModule(source:string){    
+    this.router.navigate([source],{ queryParamsHandling: "merge" });
+  }
+
+  private prepareRoute(outlet: RouterOutlet) {
+    return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
 }

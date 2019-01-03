@@ -1,4 +1,4 @@
-:host {
+:host:not(.topLevel) {
     margin-left:21px;
     width:calc(100% - 21px);
 }
