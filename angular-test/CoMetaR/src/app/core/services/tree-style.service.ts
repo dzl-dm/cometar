@@ -19,7 +19,11 @@ export class TreeStyleService {
       }
     });
   }
-  public updateInformationDivMaxLeft(el:HTMLElement):Observable<number>{
+  /**
+   * right now only return a number for the information div intent as Observable
+   * @param el 
+   */
+  public createdTreeItem(el:HTMLElement):Observable<number>{
     let left = this.getPosition(el).x;
     if (this.maxLeft < left) this.updateWidthSubject.next(left);
     this.maxLeft = Math.max(this.maxLeft,left);
@@ -29,7 +33,7 @@ export class TreeStyleService {
     if (!el) return;
     let xPos = 0;
     let yPos = 0;
-    while (el != this.treeDomElement) {
+    while (el != this.treeDomElement && el != undefined) {
       xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
       yPos += (el.offsetTop - el.scrollTop + el.clientTop);
       el = <HTMLElement> el.offsetParent;

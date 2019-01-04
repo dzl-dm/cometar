@@ -2,7 +2,6 @@
 
 :host{
     cursor: pointer;
-    background-color:white;
     position:relative;
     display:flex;
     flex-direction: column;
@@ -25,9 +24,9 @@ div.treeItemHeading
 }
 
 div.treeItemExpand{
-    background-image:url('src/assets/img/leafConcept.gif');
+    /*background-image:url('src/assets/img/leafConcept.gif');*/
     background-position-x: -1px;
-    background-position-y: center;
+    background-position-y: 0px;
     background-repeat: no-repeat;
     flex-basis:30px;
     position:relative;
@@ -44,7 +43,7 @@ div.treeItemExpand.collapsed{
 }
 
 div.treeItemTitle{
-    margin-top:4px;
+    padding-top:7px;
 }
 
 div.treeItemTitle:focus {
@@ -103,7 +102,7 @@ table.searchResult td {
     font-weight: bold;
     text-decoration: underline;
 }
-
+/*
 .treeItemExpandLine {
     background-color: #0492D0;
     width:1px;
@@ -122,4 +121,4 @@ table.searchResult td {
 :host > .treeItemInformation > .treeItemExpandLine.activated {
     left:21px;
     height:100%;
-}
+}*/

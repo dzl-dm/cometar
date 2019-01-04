@@ -32,6 +32,9 @@ div.coreDetails{
     border-left:3px solid #0492D0;
     margin-top:10px;
 }
+div.unfilled {
+    color:#EEE;
+}
 div.copy{
     background-image: url('../../../assets/img/copytoclipboard.gif');
     background-size: 13px;

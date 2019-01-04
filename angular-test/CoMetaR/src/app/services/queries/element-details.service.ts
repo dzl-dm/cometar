@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataService, JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartString, prefixes } from '../data.service';
+import { DataService, JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartString, prefixes, JSONResponsePartNumber } from '../data.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -17,7 +17,7 @@ export class ElementDetailsService {
   private getQueryString(iri?):string {
       return `
       ${prefixes}
-      SELECT ?element ?type ?label ?status ?description ?unit ?altlabel ?author ?domain ?editnote ?modifier ?notation
+      SELECT ?element ?type ?label ?status ?description ?unit ?altlabel ?author ?domain ?editnote ?modifier ?modifierlabel ?notation
       WHERE {	          
           <${iri}> skos:prefLabel ?label.
           <${iri}> rdf:type ?type .
@@ -30,8 +30,8 @@ export class ElementDetailsService {
           OPTIONAL { <${iri}> skos:editorialNote ?editnote . }
           OPTIONAL { <${iri}> skos:notation ?notation . }
           OPTIONAL { 
-            <${iri}> skos:broader* [ rdf:hasPart [ skos:narrower* ?m ] ] .
-            ?m skos:prefLabel ?modifier FILTER (lang(?modifier)='en') .
+            <${iri}> skos:broader* [ rdf:hasPart ?modifier ] . 
+            ?modifier skos:prefLabel ?modifierlabel FILTER (lang(?modifierlabel)='en') .
           }
       } 
       `;
@@ -49,6 +49,7 @@ export interface OntologyElementDetails {
   domain?:JSONResponsePartString,
   editnote?:JSONResponsePartLangString,
   modifier?:JSONResponsePartUriString,
+  modifierlabel?:JSONResponsePartString,
   status?:JSONResponsePartString,
   notation?:JSONResponsePartString
 }
