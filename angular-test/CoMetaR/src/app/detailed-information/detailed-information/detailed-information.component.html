@@ -5,9 +5,13 @@
         {{detail.value.name}}
       </div>
       <div class='detailContent'>
-        <div *ngFor="let value of detail.value.values">
-          {{value}}
-        </div>   
+        <div *ngIf="detail.key=='modifier'; else normalValue">
+          <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri"></app-tree-item>
+          <!--<app-tree-item-list *ngFor="let iri of detail.value.values" [conceptIri]="iri"></app-tree-item-list>-->
+        </div>
+        <ng-template #normalValue>
+          <div *ngFor="let value of detail.value.values" [innerHTML]="value"></div>
+        </ng-template>
       </div>
     </div>
   </div>
@@ -15,7 +19,7 @@
 <div class="coreDetails">
   <div *ngFor="let detail of coreDetails | keyvalue">
     <div class="detail">
-      <div class='detailHeading'>
+      <div [ngClass]="{'detailHeading':true, 'unfilled':detail.value.values.length == 0}">
         {{detail.value.name}}
       </div>
       <div class='detailContent'>

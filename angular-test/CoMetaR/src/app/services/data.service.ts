@@ -91,6 +91,11 @@ export interface JSONResponsePartUriString {
   name?:string
 }
 
+export interface JSONResponsePartNumber {
+  value:number,
+  name?:string
+}
+
 export interface JSONResponsePartString {
   value:string,
   name?:string

@@ -7,25 +7,27 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TreeItemsService {
-  constructor(private dataService: DataService) { }
+    constructor(
+        private dataService: DataService
+    ) {  }
 
     /**
      * 
-     * @param {enum} options.range ["top", "sub"] get top elements or subelements of iri
+     * @param {enum} options.range ["top", "sub", "single"] get top elements or subelements of iri
      * @param {string} options.iri
      */
     public get(options):Observable<TreeItemAttributes[]> {
         let {range, iri} = options;
-        const queryString = this.getQueryString(iri);
+        const queryString = this.getQueryString(range,iri);
         return this.dataService.getData(queryString).pipe(map(data=> { return <TreeItemAttributes[]> data }))
     };
 
-    private getQueryString(iri?):string {
+    private getQueryString(range,iri?):string {
         return `
         ${prefixes}
         SELECT ?element ?type ?label (COUNT(?sub)>0 as ?hasChildren) (COUNT(?top)>0 as ?isModifier) ?status
         WHERE {	          
-            ${iri?this.getSubElementsFilter(iri):this.getTopElementsFilter()}
+            ${range=="sub"?this.getSubElementsFilter(iri):range=="top"?this.getTopElementsFilter():this.getSingleElementFilter(iri)}
             ?element skos:prefLabel ?label FILTER (lang(?label)='en').
             OPTIONAL { ?element skos:narrower ?sub . }
             OPTIONAL { ?element rdf:hasPart ?sub . }
@@ -66,6 +68,11 @@ export class TreeItemsService {
             SELECT ?element
             WHERE { ?element skos:topConceptOf :Scheme . }
         } `
+    }
+    private getSingleElementFilter(iri):string{
+        return `
+            FILTER (?element = <${iri}>)
+        `
     }
 }
 

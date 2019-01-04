@@ -1,8 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { TreeItemAttributes } from '../../services/queries/treeitems.service'
 import { TreeDataService } from '../services/tree-data.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { Observable, of } from 'rxjs';
+import { TreeItemComponent } from '../tree-item/tree-item.component';
 
 @Component({
   selector: 'app-tree-item-list',
@@ -29,8 +30,13 @@ export class TreeItemListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    if (this.conceptIri == "root") this.treeItems$ = this.treeDataService.getTopLevelItems$();
-    else this.treeItems$ = this.treeDataService.getSubItems$(this.conceptIri);
+  }
+
+  private getTreeItems(){
+    let result = [];
+    if (this.conceptIri == "root") this.treeDataService.getTopLevelItems$().subscribe(data => result = data);
+    else this.treeDataService.getSubItems$(this.conceptIri).subscribe(data => result = data);
+    return result;
   }
 
   isSelected$(treeItem:TreeItemAttributes):Observable<boolean>{

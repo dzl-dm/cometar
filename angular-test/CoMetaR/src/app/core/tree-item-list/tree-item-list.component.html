@@ -1,6 +1,6 @@
 <app-tree-item 
     @openClose
-    *ngFor="let treeitem of (treeItems$ | async)" 
+    *ngFor="let treeitem of getTreeItems()" 
     [treeItemAttributes]="treeitem" 
     [ngClass]="{'selected':isSelected$(treeitem) | async, 'topLevel':conceptIri == 'root'}">
 </app-tree-item>

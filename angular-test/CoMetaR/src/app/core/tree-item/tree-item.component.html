@@ -1,5 +1,5 @@
 
-<div class='treeItemExpandLine'></div>
+<!--<div class='treeItemExpandLine'></div>-->
 <div class="treeItemHeading"
     (click)="expanded=!expanded">
   <div 
@@ -16,10 +16,10 @@
     'padding-left':((informationDivLeftOffset$ | async) + 10) +'px',
     'width':'calc(100% - ' + ((informationDivLeftOffset$ | async) + 20) +'px)'
   }">
-  <div [ngClass]="{
+  <!--<div [ngClass]="{
     'treeItemExpandLine':true,
     'activated':attributes.hasChildren.value && expanded
-  }"></div>
+  }"></div>-->
   <table class="searchResult" *ngIf="showSearchResult$ | async">
     <tr *ngFor="let attribute of searchResultAttributes$ | async | keyvalue as searchResultAttributes" [class]="attribute.key">
       <td>{{attribute.key}}</td>
