@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TreeItemAttributes } from '../../services/queries/treeitems.service';
+import { TreeItemAttributes } from '../services/queries/treeitems.service';
 import { TreeDataService } from '../services/tree-data.service';
 import { TreeStyleService } from "../services/tree-style.service";
 

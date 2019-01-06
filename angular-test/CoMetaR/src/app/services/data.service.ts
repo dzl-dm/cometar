@@ -101,6 +101,11 @@ export interface JSONResponsePartString {
   name?:string
 }
 
+export interface JSONResponsePartDate {
+  value:Date,
+  name?:string
+}
+
 export const prefixes:string = `
 PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX : <http://data.dzl.de/ont/dwh#>

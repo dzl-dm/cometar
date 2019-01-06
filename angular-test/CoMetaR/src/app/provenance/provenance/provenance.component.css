@@ -1,6 +1,11 @@
 :host{
     display:flex;
     flex-grow:1;
-    flex-direction: row;
+    flex-direction: column;
     align-content: stretch;
+}
+.day{
+    display: flex;
+    flex-direction: row;
+    flex-shrink:0;
 }

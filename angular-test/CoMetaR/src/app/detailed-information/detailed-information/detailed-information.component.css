@@ -22,12 +22,12 @@ div.additionalDetails .detail {
     background-color:#EEE;
 }
 div.additionalDetails{
-    flex-basis:65%;
+    width:65%;
     padding:10px;
 }
 div.coreDetails{
     padding:10px;
-    flex-basis:35%;
+    width:35%;
     background-color:white;
     border-left:3px solid #0492D0;
     margin-top:10px;

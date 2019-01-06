@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataService, JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartString, prefixes, JSONResponsePartNumber } from '../data.service';
+import { DataService, JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartString, prefixes, JSONResponsePartNumber } from '../services/data.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
