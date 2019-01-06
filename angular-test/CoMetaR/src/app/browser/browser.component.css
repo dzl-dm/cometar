@@ -1,9 +1,9 @@
 :host{
-    flex-grow:1;
     padding:0px;
     display: flex;
     flex-direction: row;
     align-items: stretch;
+    width:100%;
 }
 div#browser{
     display: flex;
@@ -21,7 +21,7 @@ div#treeContainer {
     display:flex;
     flex-direction: column;
 }
-div#rest {
+div#modules {
     flex-grow:1;
     display:flex;
     flex-direction: column;
@@ -30,22 +30,29 @@ div#moduleMenu {
     background-color:white;
     display: flex;
     flex-direction: row;
+    flex-shrink: 0;
     justify-content: space-evenly;
     align-items: stretch;
-    height:50px;
-    background-color:#0492D0;
+    height:40px;
+    margin:5px;
 }
 div#moduleContent {   
     flex-grow:1;
     display: flex; 
     overflow:auto;
+    width:100%;
 }
 div.moduleMenuItem {
     cursor: pointer;
     color:white;
     flex-grow: 1;
     text-align: center;
-    padding:15px;
+    padding:12px;
+    background-color:#0492D0;
+    border:1px solid #0492D0;
+}
+div.moduleMenuItem:not(:first-child){
+    margin-left:1px;
 }
 div.moduleMenuItem:hover{
     background-color:#BFE3F2;

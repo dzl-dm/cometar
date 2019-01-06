@@ -31,5 +31,10 @@
       </td>
     </tr>
   </table>
+  <table>
+    <tr *ngFor="let conceptInformation of conceptInformation$ | async | keyvalue">
+        <td *ngFor="let cell of conceptInformation.value.cells">{{cell}}</td>
+    </tr>
+  </table>
 </div>
-<app-tree-item-list *ngIf="expanded" [conceptIri]="attributes.element.value"></app-tree-item-list>
+<app-tree-item-list *ngIf="expanded" [expanded]="initialExpanded" [conceptIri]="attributes.element.value"></app-tree-item-list>

@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-import { DataService, prefixes } from '../data.service';
-import { Observable, Subject, of } from 'rxjs';
-import { JSONResponsePartLangString, JSONResponsePartUriString, JSONResponsePartBoolean, JSONResponsePartString } from '../data.service';
-import { map, startWith } from 'rxjs/operators';
+import { DataService, prefixes, JSONResponsePartUriString, JSONResponsePartString } from '../../../services/data.service';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'

@@ -1,13 +1,13 @@
 <div id="browser" (mousemove)='onTreeResizeDrag($event)' (mouseup)='onTreeResizeEnd($event)'>
     <div id="treeResizeContainer" [style.width.px]="width">
-        <div id="treeContainer" [style.width.px]="width-10">
+        <div id="treeContainer" [style.width.px]="width-5">
             <app-tree [width]="width"></app-tree>
         </div>
         <div id="treeResizeComponent"  
             (mousedown)='onTreeResizeStart($event)'
         ></div>
     </div>
-    <div id="rest">
+    <div id="modules" [style.width]="'calc(100% - '+width+'px)'">
         <div id="moduleMenu">
             <div class="moduleMenuItem" (click)="navigateModule('details')">Details</div>
             <div class="moduleMenuItem" (click)="navigateModule('provenance')">Provenance</div>

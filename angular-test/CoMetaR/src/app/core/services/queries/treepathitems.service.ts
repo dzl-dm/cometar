@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataService, prefixes } from '../data.service';
+import { DataService, prefixes } from '../../../services/data.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 

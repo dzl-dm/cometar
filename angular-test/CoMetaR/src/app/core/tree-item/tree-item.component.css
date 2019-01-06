@@ -77,14 +77,17 @@ div.treeItemTitle:focus {
 }
 
 .treeItemInformation{
+    background-color:#EEE;
     width:100%;
     display: flex;
     flex-direction: column;
     position: relative;
 }
+.treeItemInformation table td {
+    border:1px solid black;
+}
 
 table.searchResult {
-    background-color:#EEE;
 }
 table.searchResult tr.element {
     display:none;

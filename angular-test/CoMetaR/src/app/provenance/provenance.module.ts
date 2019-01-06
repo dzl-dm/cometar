@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ProvenanceComponent } from './provenance/provenance.component';
+import { CommitComponent } from './commit/commit.component';
+import { CommitDetailsComponent } from './commit-details/commit-details.component';
+import { CoreModule } from '../core/core.module';
 
 @NgModule({
-  declarations: [ProvenanceComponent],
+  declarations: [ProvenanceComponent, CommitComponent, CommitDetailsComponent],
   imports: [
-    CommonModule
+    CoreModule
   ],
   exports: [
     ProvenanceComponent

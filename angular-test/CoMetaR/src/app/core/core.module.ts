@@ -8,7 +8,7 @@ import { TreeItemListComponent } from './tree-item-list/tree-item-list.component
   declarations: [
     TreeComponent,
     TreeItemComponent,
-    TreeItemListComponent,
+    TreeItemListComponent
   ],
   imports: [
     CommonModule
@@ -17,6 +17,7 @@ import { TreeItemListComponent } from './tree-item-list/tree-item-list.component
     TreeComponent,
     TreeItemComponent,
     TreeItemListComponent,
+    CommonModule
   ]
 })
 export class CoreModule { }

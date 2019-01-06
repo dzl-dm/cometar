@@ -6,8 +6,7 @@
       </div>
       <div class='detailContent'>
         <div *ngIf="detail.key=='modifier'; else normalValue">
-          <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri"></app-tree-item>
-          <!--<app-tree-item-list *ngFor="let iri of detail.value.values" [conceptIri]="iri"></app-tree-item-list>-->
+          <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true"></app-tree-item>
         </div>
         <ng-template #normalValue>
           <div *ngFor="let value of detail.value.values" [innerHTML]="value"></div>

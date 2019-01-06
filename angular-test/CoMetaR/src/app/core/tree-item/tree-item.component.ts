@@ -1,9 +1,9 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-import { Observable, interval } from 'rxjs';
-import { TreeItemsService, TreeItemAttributes } from '../../services/queries/treeitems.service'
-import { TreeDataService } from '../services/tree-data.service';
+import { Component, OnInit, Input, ElementRef } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { TreeItemsService, TreeItemAttributes } from '../services/queries/treeitems.service'
+import { TreeDataService, ConceptInformation } from '../services/tree-data.service';
 import { TreeStyleService } from "../services/tree-style.service";
-import { SearchResultAttributes } from '../../services/queries/searchtreeitem.service';
+import { SearchResultAttributes } from '../services/queries/searchtreeitem.service';
 import { withLatestFrom, map } from 'rxjs/operators';
 
 @Component({
@@ -21,12 +21,14 @@ export class TreeItemComponent implements OnInit {
     type:{value:""}
   };
   @Input() conceptIri?:string;
+  @Input('expanded') initialExpanded?:boolean;
 
   private treeItems$:Observable<TreeItemAttributes[]>;
   private searchResultAttributes$:Observable<SearchResultAttributes>;
-  private expanded:boolean;
   private showSearchResult$:Observable<boolean>;
   private informationDivLeftOffset$:Observable<number>;
+  private expanded:boolean;
+  private conceptInformation$:Observable<ConceptInformation[]>;
   constructor(
     private treeitemsService: TreeItemsService, 
     private treeDataService: TreeDataService,
@@ -37,6 +39,7 @@ export class TreeItemComponent implements OnInit {
 
   ngOnInit() {
     setTimeout(()=>{
+      //FIXME: das hier macht Chaos, wenns beim Modifier auftaucht
       this.informationDivLeftOffset$ = this.treeStyleService.createdTreeItem(this.el.nativeElement);
     });
     if (this.conceptIri) this.treeitemsService.get({range:"single",iri:this.conceptIri}).subscribe(a => {
@@ -47,11 +50,18 @@ export class TreeItemComponent implements OnInit {
   }  
   private load(){
     this.treeDataService.isAnyPathPart$(this.attributes.element.value).pipe(
-      withLatestFrom(this.treeDataService.isSelected$(this.attributes.element.value))
+      withLatestFrom(
+        this.treeDataService.isSelected$(this.attributes.element.value),
+        of(this.initialExpanded)
+      )
     ).subscribe(next => this.expanded = next.includes(true));
     
     this.showSearchResult$ = this.treeDataService.isSearchMatch$(this.attributes.element.value);
     this.searchResultAttributes$ = this.treeDataService.getSearchMatch$(this.attributes.element.value);
+    this.conceptInformation$ = this.treeDataService.conceptInformation$.pipe(
+      map(cis => cis.filter(ci => ci.concept==this.attributes.element.value))
+    )
+    this.conceptInformation$.subscribe(data => console.log(data));
   }
 
   private onSelect(){

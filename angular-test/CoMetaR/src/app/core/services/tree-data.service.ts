@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ElementRef } from '@angular/core';
 import { map, flatMap, filter, distinct, distinctUntilChanged } from 'rxjs/operators';
 import { Observable, combineLatest, ReplaySubject } from 'rxjs';
-import { SearchResultAttributes, SearchtreeitemService } from 'src/app/services/queries/searchtreeitem.service';
-import { TreeItemAttributes, TreeItemsService } from 'src/app/services/queries/treeitems.service';
+import { SearchResultAttributes, SearchtreeitemService } from './queries/searchtreeitem.service';
+import { TreeItemAttributes, TreeItemsService } from './queries/treeitems.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TreepathitemsService } from 'src/app/services/queries/treepathitems.service';
+import { TreepathitemsService } from './queries/treepathitems.service';
 import { UrlService } from '../../services/url.service'
+import { Component } from '@angular/compiler/src/core';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,9 @@ export class TreeDataService {
   private searchPaths$:Observable<string[]>;
   private searchPattern$:ReplaySubject<string>;
   private searchIris$:Observable<string[]>;
+  private informationPaths$:Observable<string[]>;
+  private conceptInformation:ConceptInformation[]=[];
+  public conceptInformation$:ReplaySubject<ConceptInformation[]> = new ReplaySubject<ConceptInformation[]>();
 
   constructor(
     private treeitemsService: TreeItemsService, 
@@ -40,7 +44,10 @@ export class TreeDataService {
     )
     this.searchPaths$ = this.searchIris$.pipe(
       flatMap(iris => this.treepathitemsService.get(iris))
-    )
+    ) 
+    this.informationPaths$ = this.conceptInformation$.pipe(
+      flatMap(cis => this.treepathitemsService.get(cis.map(ci => ci.concept)))
+    )   
   }
 
   //init (through tree component)
@@ -81,7 +88,7 @@ export class TreeDataService {
     )
   }
   public isAnyPathPart$(iri:string):Observable<boolean>{
-    return combineLatest(this.isSelectedPathPart$(iri), this.isSearchPathPart$(iri)).pipe(
+    return combineLatest(this.isSelectedPathPart$(iri), this.isSearchPathPart$(iri), this.isInformationPathPart$(iri)).pipe(
       map(data => data.includes(true))
     )
   }
@@ -127,4 +134,24 @@ export class TreeDataService {
       map(iris => iris.length)
     )
   }
+
+  //information
+  public addConceptInformation(ci:ConceptInformation[]){
+    console.log(ci);
+    this.conceptInformation = ci;// this.conceptInformation.concat(ci);
+    console.log(this.conceptInformation);
+    this.conceptInformation$.next(this.conceptInformation)
+  }
+  public isInformationPathPart$(iri:string):Observable<boolean>{
+    return this.informationPaths$.pipe(
+      map(informationPaths => informationPaths.includes(iri))
+    )
+  }
+}
+
+export interface ConceptInformation{
+  concept:string,
+  headings?:string[],
+  cells:string[][],
+  alignId?:string
 }

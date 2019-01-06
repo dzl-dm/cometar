@@ -1,0 +1,5 @@
+<div *ngFor="let singledata of commitMetaData | keyvalue" [style.color]="'green'">
+    {{singledata.key}}
+    {{singledata.value.value}}
+</div>
+<!--<app-commit-details [commitid]="commitMetaData.commitid.value"></app-commit-details>-->
