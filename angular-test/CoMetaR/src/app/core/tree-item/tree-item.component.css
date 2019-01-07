@@ -1,13 +1,13 @@
 
 
 :host{
-    cursor: pointer;
     position:relative;
     display:flex;
     flex-direction: column;
     width:100%;
     margin-right:0px;
-    padding: 0px 0px 0px 0px;   
+    padding: 0px 0px 0px 0px;  
+    background-color:white; 
 }
 
 :host.selected{
@@ -16,6 +16,7 @@
 
 div.treeItemHeading
 {
+    cursor: pointer;
     position: relative;
     min-height:30px;
     width:100%;
@@ -82,13 +83,45 @@ div.treeItemTitle:focus {
     display: flex;
     flex-direction: column;
     position: relative;
+    padding-top:5px;
+    padding-bottom:5px;
+    padding-right:5px;
+}
+.treeItemInformation table {
+    border-spacing: 0px;
+    max-width:100%;
 }
 .treeItemInformation table td {
-    border:1px solid black;
+    border:1px solid #EEE;
+    padding: 2px 4px 2px 4px;
+    vertical-align: top;
+}
+.treeItemInformation table td:not(:first-child){
+    word-break: break-word;
+}
+/*.treeItemInformation table td, .treeItemInformation table table th {
+    border-bottom: 1px solid white;
+    border-right: 1px solid white;
+ }
+.treeItemInformation table tr:last-child td {
+    border-bottom: 0;
+}
+.treeItemInformation table tr td:last-child,
+.treeItemInformation table tr th:last-child {
+    border-right: 0;
+}*/
+.treeItemInformation table tr:hover td{
+    background-color:white;
+    border-top:1px solid #999;
+    border-bottom:1px solid #999;
+}
+.treeItemInformation table tr:hover td:last-child{
+    border-right:1px solid #999;
+}
+.treeItemInformation table tr:hover td:first-child{
+    border-left:1px solid #999;
 }
 
-table.searchResult {
-}
 table.searchResult tr.element {
     display:none;
 }

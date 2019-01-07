@@ -136,10 +136,12 @@ export class TreeDataService {
   }
 
   //information
-  public addConceptInformation(ci:ConceptInformation[]){
-    console.log(ci);
-    this.conceptInformation = ci;// this.conceptInformation.concat(ci);
-    console.log(this.conceptInformation);
+  public addConceptInformation(cis:ConceptInformation[]){
+    cis.forEach(ci => {
+      if (this.conceptInformation.filter(d => d.concept == ci.concept && d.sourceId == ci.sourceId).length == 0){
+        this.conceptInformation.push(ci);
+      }
+    });
     this.conceptInformation$.next(this.conceptInformation)
   }
   public isInformationPathPart$(iri:string):Observable<boolean>{
@@ -153,5 +155,6 @@ export interface ConceptInformation{
   concept:string,
   headings?:string[],
   cells:string[][],
-  alignId?:string
+  alignId?:string,
+  sourceId:string
 }

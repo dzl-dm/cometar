@@ -12,10 +12,13 @@
   <div [ngClass]="{'treeItemTitle':true,'isModifier':attributes.isModifier.value}" (click)="onSelect();$event.stopPropagation();">{{attributes.label.value}}</div>
   <div [class]="attributes.status ? attributes.status.value : ''">{{attributes.status ? attributes.status.value : ""}}</div>
 </div>
-<div class="treeItemInformation" [ngStyle]="{
-    'padding-left':((informationDivLeftOffset$ | async) + 10) +'px',
-    'width':'calc(100% - ' + ((informationDivLeftOffset$ | async) + 20) +'px)'
-  }">
+<div 
+  class="treeItemInformation" 
+  [ngStyle]="{
+    'margin-left':((intent$ | async) * 21) +'px',
+    'width':'calc(100% - ' + ((intent$ | async) * 21 + 10) +'px)'
+  }"
+  *ngIf="showInformationDiv$ | async ">
   <!--<div [ngClass]="{
     'treeItemExpandLine':true,
     'activated':attributes.hasChildren.value && expanded
@@ -32,9 +35,14 @@
     </tr>
   </table>
   <table>
-    <tr *ngFor="let conceptInformation of conceptInformation$ | async | keyvalue">
-        <td *ngFor="let cell of conceptInformation.value.cells">{{cell}}</td>
-    </tr>
+    <ng-container *ngFor="let conceptInformation of conceptInformation$ | async; let isFirst = first">
+      <tr *ngIf="isFirst">
+          <th *ngFor="let cell of conceptInformation.headings">{{cell}}</th>
+      </tr>
+      <tr *ngFor="let rows of conceptInformation.cells">
+          <td *ngFor="let cell of rows" [width]="100/rows.length+'%'">{{cell}}</td>
+      </tr>
+    </ng-container>
   </table>
 </div>
 <app-tree-item-list *ngIf="expanded" [expanded]="initialExpanded" [conceptIri]="attributes.element.value"></app-tree-item-list>

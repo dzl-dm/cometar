@@ -9,8 +9,6 @@ export class TreeStyleService {
 
   constructor() { }
 
-  private maxLeft=0;
-  private updateWidthSubject = new BehaviorSubject<number>(this.maxLeft);
   private treeDomElement:HTMLElement;
   public registerTreeDomElement(el:HTMLElement){
     Array.from(el.children).forEach((child:HTMLElement) => {
@@ -23,12 +21,7 @@ export class TreeStyleService {
    * right now only return a number for the information div intent as Observable
    * @param el 
    */
-  public createdTreeItem(el:HTMLElement):Observable<number>{
-    let left = this.getPosition(el).x;
-    if (this.maxLeft < left) this.updateWidthSubject.next(left);
-    this.maxLeft = Math.max(this.maxLeft,left);
-    return this.updateWidthSubject.pipe(map(newMaxLeft => newMaxLeft - left));
-  }
+
   private getPosition(el:HTMLElement) {
     if (!el) return;
     let xPos = 0;
@@ -81,5 +74,21 @@ export class TreeStyleService {
   }
   private getTitle(listitem:HTMLElement):string{
     return listitem.getElementsByClassName("treeItemHeading")[0].getElementsByClassName("treeItemTitle")[0].textContent;
+  }
+
+  private informationDivMaxParents$ = new BehaviorSubject<number>(0);
+  private maxintent = 0;
+  public getIntent(el:HTMLElement):Observable<number>{
+    let p = el.parentElement;
+    let counter = 0;
+    while (p){
+      if (p.tagName == "APP-TREE-ITEM") counter++;
+      p = p.parentElement
+    }
+    if (counter > this.maxintent){
+      this.maxintent=counter;
+      this.informationDivMaxParents$.next(counter);
+    }
+    return this.informationDivMaxParents$.pipe(map(mi => mi-counter));
   }
 }

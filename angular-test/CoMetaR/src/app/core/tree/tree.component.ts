@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TreeItemAttributes } from '../services/queries/treeitems.service';
@@ -11,7 +11,8 @@ import { TreeStyleService } from "../services/tree-style.service";
   styleUrls: ['./tree.component.css']
 })
 export class TreeComponent implements OnInit {
-  @Input() width:number;
+  @Input() width:number;  
+  @Output() claimWidth = new EventEmitter<number>();
   private treeItems$:Observable<TreeItemAttributes[]>;
   private searchResultCount;
   constructor(
@@ -26,6 +27,11 @@ export class TreeComponent implements OnInit {
     this.treeDataService.setRoute(this.route);
     this.treeStyleService.registerTreeDomElement(this.el.nativeElement);
     this.treeDataService.getSearchResultCount$().subscribe(count => this.searchResultCount = count);
+    this.claimWidth.emit(600);
+    setTimeout(() => {
+      console.log("jo");
+      this.claimWidth.emit(1000);
+    }, 2000);
   }
 
 
