@@ -1,7 +1,7 @@
 <div id="browser" (mousemove)='onTreeResizeDrag($event)' (mouseup)='onTreeResizeEnd($event)'>
     <div id="treeResizeContainer" [style.width.px]="width">
         <div id="treeContainer" [style.width.px]="width-5">
-            <app-tree [width]="width"></app-tree>
+            <app-tree [width]="width" (claimWidth)="onClaimWidth"></app-tree>
         </div>
         <div id="treeResizeComponent"  
             (mousedown)='onTreeResizeStart($event)'

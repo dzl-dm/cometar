@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ElementRef } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, combineLatest } from 'rxjs';
 import { TreeItemsService, TreeItemAttributes } from '../services/queries/treeitems.service'
 import { TreeDataService, ConceptInformation } from '../services/tree-data.service';
 import { TreeStyleService } from "../services/tree-style.service";
@@ -26,9 +26,10 @@ export class TreeItemComponent implements OnInit {
   private treeItems$:Observable<TreeItemAttributes[]>;
   private searchResultAttributes$:Observable<SearchResultAttributes>;
   private showSearchResult$:Observable<boolean>;
-  private informationDivLeftOffset$:Observable<number>;
+  private intent$:Observable<number>;
   private expanded:boolean;
   private conceptInformation$:Observable<ConceptInformation[]>;
+  private showInformationDiv$:Observable<boolean>;
   constructor(
     private treeitemsService: TreeItemsService, 
     private treeDataService: TreeDataService,
@@ -39,8 +40,7 @@ export class TreeItemComponent implements OnInit {
 
   ngOnInit() {
     setTimeout(()=>{
-      //FIXME: das hier macht Chaos, wenns beim Modifier auftaucht
-      this.informationDivLeftOffset$ = this.treeStyleService.createdTreeItem(this.el.nativeElement);
+      this.intent$ = this.treeStyleService.getIntent(this.el.nativeElement);
     });
     if (this.conceptIri) this.treeitemsService.get({range:"single",iri:this.conceptIri}).subscribe(a => {
       this.attributes = a[0];
@@ -61,7 +61,7 @@ export class TreeItemComponent implements OnInit {
     this.conceptInformation$ = this.treeDataService.conceptInformation$.pipe(
       map(cis => cis.filter(ci => ci.concept==this.attributes.element.value))
     )
-    this.conceptInformation$.subscribe(data => console.log(data));
+    this.showInformationDiv$=this.conceptInformation$.pipe(map(cis => cis.length > 0));
   }
 
   private onSelect(){

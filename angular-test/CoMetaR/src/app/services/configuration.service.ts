@@ -54,8 +54,10 @@ export class ConfigurationService {
     });
   }
   public getHumanReadableCommitDetailData(data:CommitDetails):CommitDetails{
-    return this.mergeDeep(data,{
-      predicate: { value: data.predicate?this.getHumanReadableRDFPredicate(data.predicate.value):"" }
+    return this.mergeDeep(data,<CommitDetails>{
+      predicate: { value: data.predicate?this.getHumanReadableRDFPredicate(data.predicate.value):"" },
+      ool: { value: data.ool?data.ool.value:data.oldobject?this.getHumanReadableRDFPredicate(data.oldobject.value):""},
+      nol: { value: data.nol?data.nol.value:data.newobject?this.getHumanReadableRDFPredicate(data.newobject.value):""}
     });
   }
   private rdfUrlMap = {

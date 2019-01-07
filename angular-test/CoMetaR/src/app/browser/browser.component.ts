@@ -99,4 +99,8 @@ export class BrowserComponent implements OnInit {
   private prepareRoute(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
+
+  private onClaimWidth(event){
+    console.log(event);
+  }
 }
