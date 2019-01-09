@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
-import { trigger, transition, style, query, animateChild, group, animate } from '@angular/animations';
+import { trigger, transition, style, query, animateChild, group, animate, state } from '@angular/animations';
 
 @Component({
   selector: 'app-browser',
@@ -56,6 +56,45 @@ import { trigger, transition, style, query, animateChild, group, animate } from 
         ]),
         query(':enter', animateChild()),
       ])
+    ]),
+    trigger('changeWidth',[
+/*       state('wide', style({
+        width: '{{newWidth}}px',
+      }),{
+        params: { newWidth: 0 }
+      }),
+      state('*', style({
+        width: '{{startWidth}}px',
+      }),{
+        params: { startWidth: 0 }
+      }),
+      transition('* => wide', [
+        animate('300ms ease-in')
+      ]), */
+      state('*', style({
+        width: '{{startWidth}}px',
+      }),{
+        params: { startWidth: 0 }
+      }),
+      transition('* => *', [
+        animate('300ms ease-in', style({
+          width: '{{newWidth}}px',
+        }))
+      ],{
+        params: { newWidth: 0 }
+      }), 
+/*       transition('* => *',[
+        state('*',style({
+          width: '{{startWidth}}px',
+        }),{
+          params: { startWidth: 0 }
+        }),
+        animate('300ms ease-in', style({
+          width: '{{newWidth}}px',
+        }))
+      ],{
+        params: { newWidth: 0 }
+      }) */
     ])
   ]
 })
@@ -63,6 +102,8 @@ export class BrowserComponent implements OnInit {
   title = 'CoMetaR';
 
   private width = 500;
+  private resizeToogle = false;
+  private newWidth = 0;
   constructor(
     private route:ActivatedRoute,
     private router: Router,
@@ -100,7 +141,9 @@ export class BrowserComponent implements OnInit {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
 
-  private onClaimWidth(event){
-    console.log(event);
+  private onClaimWidth(width){
+    this.newWidth = width;
+    this.resizeToogle=!this.resizeToogle;
+    this.width = width;
   }
 }

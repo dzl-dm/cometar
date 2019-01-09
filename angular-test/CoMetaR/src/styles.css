@@ -2,10 +2,12 @@
 @import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
 body, html {
     height:100%;
+    width:100%;
 }
 body {
     padding:0px;
     margin: 0px;
     display: flex;
     flex-direction: column;
+    font-family: Roboto,"Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
 }

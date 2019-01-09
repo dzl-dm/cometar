@@ -1,8 +1,8 @@
 
-<div *ngFor="let day of days" class="day">
-  <div class="date">{{day.toString() | date:'dd.MM.yyyy'}}</div>
+<div *ngFor="let day of commitMetaDataByDay" [ngClass]="{'day':true,'filled':day[1].length > 0}">
+  <div class="date">{{day[0].toString() | date:'dd.MM.yyyy'}}</div>
   <app-commit 
-    *ngFor="let metadata of getCommitMetaDataByDay$(day) | async | keyvalue" 
+    *ngFor="let metadata of day[1] | keyvalue" 
     [commitMetaData]="metadata.value" 
     class="commit">
   </app-commit>

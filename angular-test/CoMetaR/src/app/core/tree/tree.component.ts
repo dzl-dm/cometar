@@ -24,14 +24,9 @@ export class TreeComponent implements OnInit {
   ){}
 
   ngOnInit() {    
-    this.treeDataService.setRoute(this.route);
+    this.treeDataService.init(this.route,(width)=>this.claimWidth.emit(width));
     this.treeStyleService.registerTreeDomElement(this.el.nativeElement);
     this.treeDataService.getSearchResultCount$().subscribe(count => this.searchResultCount = count);
-    this.claimWidth.emit(600);
-    setTimeout(() => {
-      console.log("jo");
-      this.claimWidth.emit(1000);
-    }, 2000);
   }
 
 

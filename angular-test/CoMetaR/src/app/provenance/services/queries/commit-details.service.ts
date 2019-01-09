@@ -45,7 +45,10 @@ export class CommitDetailsService {
         FILTER NOT EXISTS { ?rem rdf:comment "hidden" } 
         FILTER NOT EXISTS { ?newsubject prov:wasDerivedFrom+ ?subject } 
       }
-      filter (!bound(?oldobject) || !bound(?newobject) || !isLiteral(?oldobject) || !isLiteral(?newobject) || lang(?oldobject) = lang(?newobject))
+      filter (
+        bound(?predicate)
+        && (!bound(?oldobject) || !bound(?newobject) || !isLiteral(?oldobject) || !isLiteral(?newobject) || lang(?oldobject) = lang(?newobject))
+      )
     }
     ORDER BY ?sl ?subject ?predicate ?oldobject`
   }

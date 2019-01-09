@@ -24,6 +24,8 @@ export class TreeDataService {
   private conceptInformation:ConceptInformation[]=[];
   public conceptInformation$:ReplaySubject<ConceptInformation[]> = new ReplaySubject<ConceptInformation[]>();
 
+  private claimWidth=(number)=>{};
+
   constructor(
     private treeitemsService: TreeItemsService, 
     private treepathitemsService: TreepathitemsService, 
@@ -51,13 +53,14 @@ export class TreeDataService {
   }
 
   //init (through tree component)
-  public setRoute(route:ActivatedRoute){
+  public init(route:ActivatedRoute, claimWidth:(number)=>void){
     route.queryParamMap.pipe(
       map(data => this.urlService.extendRdfPrefix(data.get('concept')))
     ).subscribe(this.selectedIri$);
     route.queryParamMap.pipe(
       map(data => data.get('searchpattern') ? data.get('searchpattern') : "")
     ).subscribe(this.searchPattern$);
+    this.claimWidth=claimWidth;
   }
 
   //selection
@@ -142,7 +145,8 @@ export class TreeDataService {
         this.conceptInformation.push(ci);
       }
     });
-    this.conceptInformation$.next(this.conceptInformation)
+    this.conceptInformation$.next(this.conceptInformation);
+    this.claimWidth(1000);
   }
   public isInformationPathPart$(iri:string):Observable<boolean>{
     return this.informationPaths$.pipe(
