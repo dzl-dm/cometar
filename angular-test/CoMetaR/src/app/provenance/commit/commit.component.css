@@ -1,3 +1,59 @@
 :host{
-    background-color:#BBB;
+    background-color:#EEE;
+    border-radius:5px;
+    margin-left:10px;
+    min-width:10px;
+}
+p {    
+    max-width: 300px;
+    overflow: hidden;
+    white-space: nowrap; 
+    text-overflow: ellipsis;
+    margin:5px;
+}
+:host:hover p{
+    white-space: normal;
+    word-break: break-all;
+    text-overflow: unset;
+}
+p.commitid{
+    display:none;
+}
+:host:hover{    
+    z-index:10;
+    box-shadow: 10px 10px 6px -6px #777;
+}
+
+:host:hover p.commitid{
+    display: inline-block;
+    min-width: 350px;
+}
+.categorycontainer{
+    cursor:pointer;
+    display:flex;
+    flex-direction: row;
+}
+.category{
+    height:20px;
+    position: relative;
+}
+.category:first-child{
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+.category:last-child{
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.category.structure{
+    background-color:red;
+}
+.category.progress{
+    background-color:green;
+}
+.category.literal{
+    background-color:blue;
+}
+.category.semantic{
+    background-color:yellow;
 }

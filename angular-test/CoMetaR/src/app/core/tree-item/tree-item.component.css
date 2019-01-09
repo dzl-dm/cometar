@@ -83,21 +83,28 @@ div.treeItemTitle:focus {
     display: flex;
     flex-direction: column;
     position: relative;
-    padding-top:5px;
-    padding-bottom:5px;
-    padding-right:5px;
+    padding:5px;
+    border-radius: 5px;
 }
 .treeItemInformation table {
     border-spacing: 0px;
     max-width:100%;
+    margin-top:10px;
+    margin-bottom:10px;
 }
-.treeItemInformation table td {
+.treeItemInformation table td, .treeItemInformation table th {
     border:1px solid #EEE;
     padding: 2px 4px 2px 4px;
     vertical-align: top;
 }
 .treeItemInformation table td:not(:first-child){
     word-break: break-word;
+}
+.treeItemInformation table td, .treeItemInformation table th {
+    min-width:50px;
+}
+.treeItemInformation tr {
+    display: flex;
 }
 /*.treeItemInformation table td, .treeItemInformation table table th {
     border-bottom: 1px solid white;
@@ -110,16 +117,25 @@ div.treeItemTitle:focus {
 .treeItemInformation table tr th:last-child {
     border-right: 0;
 }*/
-.treeItemInformation table tr:hover td{
+.treeItemInformation table tr:hover {
+    
+    box-shadow: 10px 10px 6px -6px #777;
+    position: relative;
+    margin-top:-8px;
+    margin-bottom:-8px;
+    margin-left:-8px;
+}
+.treeItemInformation table tr:hover td, .treeItemInformation table tr:hover th{
     background-color:white;
-    border-top:1px solid #999;
+    padding:10px;
+/*    border-top:1px solid #999;
     border-bottom:1px solid #999;
 }
 .treeItemInformation table tr:hover td:last-child{
     border-right:1px solid #999;
 }
 .treeItemInformation table tr:hover td:first-child{
-    border-left:1px solid #999;
+    border-left:1px solid #999;*/
 }
 
 table.searchResult tr.element {

@@ -15,8 +15,8 @@
 <div 
   class="treeItemInformation" 
   [ngStyle]="{
-    'margin-left':((intent$ | async) * 21) +'px',
-    'width':'calc(100% - ' + ((intent$ | async) * 21 + 10) +'px)'
+    'margin-left':((intent$ | async) * 21 + 21) +'px',
+    'width':'calc(100% - ' + ((intent$ | async) * 21 + 36) +'px)'
   }"
   *ngIf="showInformationDiv$ | async ">
   <!--<div [ngClass]="{
@@ -36,8 +36,8 @@
   </table>
   <table>
     <ng-container *ngFor="let conceptInformation of conceptInformation$ | async; let isFirst = first">
-      <tr *ngIf="isFirst">
-          <th *ngFor="let cell of conceptInformation.headings">{{cell}}</th>
+      <tr *ngIf="isFirst" >
+          <th *ngFor="let cell of conceptInformation.headings" [width]="100/conceptInformation.headings.length+'%'">{{cell}}</th>
       </tr>
       <tr *ngFor="let rows of conceptInformation.cells">
           <td *ngFor="let cell of rows" [width]="100/rows.length+'%'">{{cell}}</td>

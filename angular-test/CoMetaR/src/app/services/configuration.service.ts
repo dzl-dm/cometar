@@ -90,6 +90,44 @@ export class ConfigurationService {
     return this.rdfUrlMap[p] || p;
   }
 
+  changeCagetories = {
+		"http://www.w3.org/2004/02/skos/core#prefLabel": "literal",
+		"http://www.w3.org/2004/02/skos/core#altLabel": "literal",
+		"http://purl.org/dc/elements/1.1/description": "literal",
+		
+		"http://www.w3.org/2004/02/skos/core#narrower": "structure",
+		"http://www.w3.org/2004/02/skos/core#broader": "structure",
+		"http://www.w3.org/2004/02/skos/core#hasTopConcept": "structure",
+		"http://www.w3.org/2004/02/skos/core#topConceptOf": "structure",
+		"http://www.w3.org/2004/02/skos/core#member": "structure",
+		"http://www.w3.org/1999/02/22-rdf-syntax-ns#hasPart": "structure",
+		"http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf": "structure",
+		"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "structure",
+		"http://www.w3.org/1999/02/22-rdf-syntax-ns#about": "structure",
+		"http://data.dzl.de/ont/dwh#topLevelNode": "structure",
+		"http://www.w3.org/ns/prov#wasDerivedFrom": "structure",
+		
+		"http://data.dzl.de/ont/dwh#unit": "semantic",
+		"http://www.w3.org/2004/02/skos/core#notation": "semantic",
+		
+		"http://www.w3.org/2004/02/skos/core#editorialNote": "progress",
+		"http://data.dzl.de/ont/dwh#status": "progress",
+		"http://sekmi.de/histream/dwh#restriction": "progress",
+		
+		"http://purl.org/dc/elements/1.1/creator": undefined,
+		"http://www.w3.org/2004/02/skos/core#description": undefined,
+		"http://www.w3.org/1999/02/22-rdf-syntax-ns#isPartOf": undefined,
+		"http://www.w3.org/2004/02/skos/core#inScheme": undefined,
+		"http://www.w3.org/1999/02/22-rdf-syntax-ns#broader": undefined,
+		"http://www.w3.org/2004/02/skos/core#prefLAbel": undefined,
+		"http://purl.org/dc/elements/1.1/descriptions": undefined,
+		"http://www.w3.org/2002/07/owl#onProperty": undefined,
+		"http://www.w3.org/2002/07/owl#allValuesFrom": undefined
+	}
+  public getCategory(cd:CommitDetails):string{
+    return this.changeCagetories[cd.predicate.value];
+  }
+
   private mergeDeep(target, source) {
     let output = Object.assign({}, target);
     if (isObject(target) && isObject(source)) {

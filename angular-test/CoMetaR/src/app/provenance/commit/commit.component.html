@@ -1,5 +1,10 @@
-<div *ngFor="let singledata of commitMetaData | keyvalue" [style.color]="'green'">
-    {{singledata.key}}
-    {{singledata.value.value}}
+<!-- <div *ngIf="commitDetails.length > 0" (click)="onClick()"> -->
+<div (click)="onClick()" class='categorycontainer'>
+    <div *ngFor="let category of categories | keyvalue" 
+        [ngClass]="['category',category.key]" 
+        [style.width.px]="category.value*10">
+    </div>
 </div>
+<p class='commitid'>Commit-ID:<br>{{commitMetaData.commitid.value}}</p>
+<p>{{commitMetaData.message.value}}</p>
 <!--<app-commit-details [commitid]="commitMetaData.commitid.value"></app-commit-details>-->

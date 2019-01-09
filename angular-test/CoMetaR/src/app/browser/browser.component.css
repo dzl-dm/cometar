@@ -20,6 +20,7 @@ div#treeResizeContainer{
 div#treeContainer {
     display:flex;
     flex-direction: column;
+    width:calc(100% - 5px);
 }
 div#modules {
     flex-grow:1;

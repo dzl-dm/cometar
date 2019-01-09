@@ -6,6 +6,17 @@
 }
 .day{
     display: flex;
+    align-items: flex-start;
     flex-direction: row;
     flex-shrink:0;
+    height:5px;
+}
+.day.filled {
+    min-height:60px;
+}
+.date {
+    display: none;
+}
+.day.filled .date {
+    display: inline-block;
 }
