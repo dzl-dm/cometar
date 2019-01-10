@@ -9,7 +9,7 @@ import { CommitDetails } from '../provenance/services/queries/commit-details.ser
 })
 export class ConfigurationService {
   constructor() { }
-  public getRdfPrefixMap(){
+  public getRdfPrefixMap():{}{
     return {
       "http://data.dzl.de/ont/dwh#": "dzl",
       "http://purl.bioontology.org/ontology/SNOMEDCT/": "snomed",
@@ -51,6 +51,7 @@ export class ConfigurationService {
   public getHumanReadableCommitMetaData(data:CommitMetaData):CommitMetaData{
     return this.mergeDeep(data,{
       commitid: { value: data.commitid.value.substr(data.commitid.value.length-40) },
+      author: { value: this.cutPrefix(data.author.value) }
     });
   }
   public getHumanReadableCommitDetailData(data:CommitDetails):CommitDetails{
@@ -88,6 +89,12 @@ export class ConfigurationService {
   }
   public getHumanReadableRDFPredicate(p:string):string{
     return this.rdfUrlMap[p] || p;
+  }
+  public cutPrefix(s:string):string{
+    Object.keys(this.getRdfPrefixMap()).forEach((key,value) => {
+      s = s.replace(key, "");
+    });
+    return s;
   }
 
   changeCagetories = {

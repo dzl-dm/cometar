@@ -7,11 +7,13 @@
     width:100%;
     margin-right:0px;
     padding: 0px 0px 0px 0px;  
-    background-color:white; 
+    border: 1px solid #0492D0;
+    box-sizing: border-box;
+    /*background-color:white; */
 }
 
 :host.selected{
-    background-color:#BFE3F2;    
+    border-color: #BFE3F2;    
 }
 
 div.treeItemHeading
