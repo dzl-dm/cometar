@@ -16,6 +16,8 @@ div#treeResizeContainer{
     flex-direction: row;
     align-items: stretch;
     flex-shrink:0;
+    background-color: #0492D0;
+    color:white;
 }
 div#treeContainer {
     display:flex;

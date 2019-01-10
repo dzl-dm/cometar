@@ -1,49 +1,67 @@
 :host{
-    background-color:#EEE;
     border-radius:5px;
     margin-left:10px;
     min-width:10px;
+    min-height:20px;
+    position: relative;
 }
 p {    
-    max-width: 300px;
-    overflow: hidden;
+    /*overflow: hidden;
     white-space: nowrap; 
-    text-overflow: ellipsis;
-    margin:5px;
+    text-overflow: ellipsis;*/
+    margin:15px;
+    display:none;
 }
 :host:hover p{
-    white-space: normal;
-    word-break: break-all;
-    text-overflow: unset;
-}
-p.commitid{
-    display:none;
+    display: block;
 }
 :host:hover{    
     z-index:10;
-    box-shadow: 10px 10px 6px -6px #777;
 }
 
-:host:hover p.commitid{
-    display: inline-block;
-    min-width: 350px;
+.commitDetails{
+    background-color:#EEE;
+    /*display:none;*/
+    position: absolute;
+    box-shadow: 10px 10px 6px -6px #777;
+    transition: min-width 0.2s, height 0.2s;
+    width:10px;
+    min-width:10px;
+    height:0px;
+    padding-top:20px;
+    border-radius: 3px;
 }
+.commitDetails div {
+    width:100%;
+    height:100%;
+    overflow:hidden;
+}
+:host:hover .commitDetails{
+    display: block;
+    overflow:auto;
+    min-width: 400px;
+    height:200px;
+}
+:host:hover .commitDetails div{
+    overflow:auto;
+}
+
 .categorycontainer{
     cursor:pointer;
     display:flex;
     flex-direction: row;
 }
 .category{
-    height:20px;
     position: relative;
+    height:20px;
 }
 .category:first-child{
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
 }
 .category:last-child{
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
 .category.structure{
     background-color:red;

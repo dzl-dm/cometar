@@ -1,6 +1,6 @@
 import { Injectable, ElementRef } from '@angular/core';
 import { map, flatMap, filter, distinct, distinctUntilChanged } from 'rxjs/operators';
-import { Observable, combineLatest, ReplaySubject } from 'rxjs';
+import { Observable, combineLatest, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { SearchResultAttributes, SearchtreeitemService } from './queries/searchtreeitem.service';
 import { TreeItemAttributes, TreeItemsService } from './queries/treeitems.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,7 +22,7 @@ export class TreeDataService {
   private searchIris$:Observable<string[]>;
   private informationPaths$:Observable<string[]>;
   private conceptInformation:ConceptInformation[]=[];
-  public conceptInformation$:ReplaySubject<ConceptInformation[]> = new ReplaySubject<ConceptInformation[]>();
+  public conceptInformation$:BehaviorSubject<ConceptInformation[]> = new BehaviorSubject<ConceptInformation[]>([]);
 
   private claimWidth=(number)=>{};
 
