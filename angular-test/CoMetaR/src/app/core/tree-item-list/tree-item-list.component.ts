@@ -32,7 +32,7 @@ export class TreeItemListComponent implements OnInit {
   ngOnInit() {
   }
 
-  private getTreeItems(){
+  public getTreeItems(){
     let result = [];
     if (this.conceptIri == "root") this.treeDataService.getTopLevelItems$().subscribe(data => result = data);
     else this.treeDataService.getSubItems$(this.conceptIri).subscribe(data => result = data);

@@ -101,9 +101,9 @@ import { trigger, transition, style, query, animateChild, group, animate, state 
 export class BrowserComponent implements OnInit {
   title = 'CoMetaR';
 
-  private width = 500;
-  private resizeToogle = false;
-  private newWidth = 0;
+  public width = 500;
+  public resizeToogle = false;
+  public newWidth = 0;
   constructor(
     private route:ActivatedRoute,
     private router: Router,
@@ -115,13 +115,13 @@ export class BrowserComponent implements OnInit {
   private savedX;
   private treeResizing=false;
 
-  private onTreeResizeStart(event: MouseEvent) {
+  public onTreeResizeStart(event: MouseEvent) {
     event.stopPropagation();
     this.treeResizing = true;
     this.savedX = event.clientX;
     return false;
   }
-  private onTreeResizeDrag(event: MouseEvent) {    
+  public onTreeResizeDrag(event: MouseEvent) {    
     if (!this.treeResizing) return true;
     event.stopPropagation();
     let diff = event.clientX - this.savedX;
@@ -129,19 +129,19 @@ export class BrowserComponent implements OnInit {
     this.width += diff;
     return false;
   }
-  private onTreeResizeEnd(event: MouseEvent) {
+  public onTreeResizeEnd(event: MouseEvent) {
     this.treeResizing = false;
   }
 
-  private navigateModule(source:string){    
+  public navigateModule(source:string){    
     this.router.navigate([source],{ queryParamsHandling: "merge" });
   }
 
-  private prepareRoute(outlet: RouterOutlet) {
+  public prepareRoute(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
 
-  private onClaimWidth(width){
+  public onClaimWidth(width){
     this.newWidth = width;
     this.resizeToogle=!this.resizeToogle;
     this.width = width;

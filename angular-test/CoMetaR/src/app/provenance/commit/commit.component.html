@@ -9,7 +9,7 @@
 <div (click)="onClick()" class='categorycontainer'>
     <div *ngFor="let category of categories | keyvalue" 
         [ngClass]="['category',category.key]" 
-        [style.width.px]="category.value*10">
+        [style.width.px]="category.value*5">
     </div>
 </div>
 <!--<app-commit-details [commitid]="commitMetaData.commitid.value"></app-commit-details>-->

@@ -65,7 +65,7 @@ export class TreeDataService {
 
   //selection
   public onConceptSelection(iri:string):void{
-    this.router.navigate([],{ queryParams: {concept: this.urlService.shortenRdfPrefix(iri)}, queryParamsHandling: "merge" });
+    this.router.navigate(["details"],{ queryParams: {concept: this.urlService.shortenRdfPrefix(iri)}, queryParamsHandling: "merge" });
   }
   public isSelected$(iri:string):Observable<boolean>{
     return this.selectedIri$.pipe(
@@ -139,12 +139,15 @@ export class TreeDataService {
   }
 
   //information
-  public addConceptInformation(cis:ConceptInformation[]){
-    cis.forEach(ci => {
-      if (this.conceptInformation.filter(d => d.concept == ci.concept && d.sourceId == ci.sourceId).length == 0){
-        this.conceptInformation.push(ci);
-      }
-    });
+  public addConceptInformation(cis:ConceptInformation[], replaceAll:boolean=false){
+    if (replaceAll) this.conceptInformation = cis;
+    else {
+      cis.forEach(ci => {
+        if (this.conceptInformation.filter(d => d.concept == ci.concept && d.sourceId == ci.sourceId).length == 0){
+          this.conceptInformation.push(ci);
+        }
+      });
+    }
     this.conceptInformation$.next(this.conceptInformation);
     this.claimWidth(1000);
   }

@@ -41,16 +41,18 @@ div#tree {
     flex-grow:1;
     overflow:auto;
     position: relative !important; /*for inner element positioning*/
+    margin-bottom:5px;
 }
 div#scrollHeadings{
+    opacity: 0.9;
     position: fixed;
     z-index:20;
+    padding-bottom:5px;
 }
 div#scrollHeadings > div > div {
-    background-color:white;
-    opacity: 0.9;
-    height:20px;
+    background-color:#0492D0;
+    height:25px;
     padding-left:9px;
     padding-top:4px;
-    border-bottom:1px solid #0492D0;
+    border-bottom:1px solid white;
 }
