@@ -26,10 +26,10 @@ export class TreeItemComponent implements OnInit {
   private treeItems$:Observable<TreeItemAttributes[]>;
   private searchResultAttributes$:Observable<SearchResultAttributes>;
   private showSearchResult$:Observable<boolean>;
-  private intent$:Observable<number>;
-  private expanded:boolean;
+  public intent$:Observable<number>;
+  public expanded:boolean;
   private conceptInformation$:Observable<ConceptInformation[]>;
-  private showInformationDiv$:Observable<boolean>;
+  public showInformationDiv$:Observable<boolean>;
   constructor(
     private treeitemsService: TreeItemsService, 
     private treeDataService: TreeDataService,
@@ -61,10 +61,12 @@ export class TreeItemComponent implements OnInit {
     this.conceptInformation$ = this.treeDataService.conceptInformation$.pipe(
       map(cis => cis.filter(ci => ci.concept==this.attributes.element.value))
     )
-    this.showInformationDiv$=this.conceptInformation$.pipe(map(cis => cis.length > 0));
+    this.showInformationDiv$=this.conceptInformation$.pipe(
+      withLatestFrom(this.showSearchResult$),
+      map(data => data[0].length > 0 || data[1]));
   }
 
-  private onSelect(){
+  public onSelect(){
     this.treeDataService.onConceptSelection(this.attributes.element.value);
   }
 

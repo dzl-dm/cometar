@@ -7,13 +7,17 @@
     width:100%;
     margin-right:0px;
     padding: 0px 0px 0px 0px;  
-    border: 1px solid #0492D0;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
     box-sizing: border-box;
     /*background-color:white; */
 }
 
 :host.selected{
-    border-color: #BFE3F2;    
+    border-left: 1px solid #BFE3F2; 
+    border-top: 1px solid #BFE3F2; 
+    border-bottom: 1px solid #BFE3F2; 
+    border-right:0px solid #BFE3F2; 
 }
 
 div.treeItemHeading
@@ -60,9 +64,9 @@ div.treeItemTitle:focus {
 	padding:3px 5px 3px 5px;
 	border-radius: 3px;
 	margin-left:5px;
-	margin-top:5px;
+	margin-top:7px;
     color:#333;
-    height:10px;
+    height:18px;
 }
 .treeItemHeading .draft{
 	background-color:#FFEB0F;
@@ -76,17 +80,17 @@ div.treeItemTitle:focus {
 .treeItemTitle.isModifier
 {
 	font-style:italic;
-	color:green;
 }
 
 .treeItemInformation{
-    background-color:#EEE;
+    background-color:white;
+    color:#333;
     width:100%;
     display: flex;
     flex-direction: column;
     position: relative;
     padding:5px;
-    border-radius: 5px;
+    border-radius: 3px;
 }
 .treeItemInformation table {
     border-spacing: 0px;
@@ -95,18 +99,21 @@ div.treeItemTitle:focus {
     margin-bottom:10px;
 }
 .treeItemInformation table td, .treeItemInformation table th {
-    border:1px solid #EEE;
+    border:0px solid #EEE;
     padding: 2px 4px 2px 4px;
     vertical-align: top;
+    flex-shrink:0;
 }
 .treeItemInformation table td:not(:first-child){
     word-break: break-word;
 }
 .treeItemInformation table td, .treeItemInformation table th {
     min-width:50px;
+    box-sizing: border-box;
 }
-.treeItemInformation tr {
+.treeItemInformation table tr {
     display: flex;
+    border:1px solid white;
 }
 /*.treeItemInformation table td, .treeItemInformation table table th {
     border-bottom: 1px solid white;
@@ -122,14 +129,15 @@ div.treeItemTitle:focus {
 .treeItemInformation table tr:hover {
     
     box-shadow: 10px 10px 6px -6px #777;
+    border:1px solid #EEE;
     position: relative;
     margin-top:-8px;
     margin-bottom:-8px;
-    margin-left:-8px;
 }
 .treeItemInformation table tr:hover td, .treeItemInformation table tr:hover th{
     background-color:white;
-    padding:10px;
+    padding-top:10px;
+    padding-bottom:10px;
 /*    border-top:1px solid #999;
     border-bottom:1px solid #999;
 }
@@ -138,6 +146,10 @@ div.treeItemTitle:focus {
 }
 .treeItemInformation table tr:hover td:first-child{
     border-left:1px solid #999;*/
+}
+.treeItemInformation table tr:hover td:not(:first-child), .treeItemInformation table tr:hover th:not(:first-child) {
+    border-left:1px solid #EEE;
+    padding-left:3px;
 }
 
 table.searchResult tr.element {
@@ -148,6 +160,9 @@ table.searchResult tr td:first-child {
     width:100px;
     text-align: right;
     vertical-align: top;
+}
+table.searchResult tr td:not(:first-child) {
+    width:calc(100% - 120px);
 }
 table.searchResult td {
     padding: 5px;

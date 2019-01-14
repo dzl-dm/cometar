@@ -11,7 +11,7 @@ import { ConfigurationService } from 'src/app/services/configuration.service';
 })
 export class ProvenanceComponent implements OnInit {
   private fromDate:Date = new Date("2018-12-13");
-  private commitMetaDataByDay=[];
+  public commitMetaDataByDay=[];
   constructor(
     private provenanceService:ProvenanceService,
     private configuration:ConfigurationService

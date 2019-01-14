@@ -14,11 +14,11 @@ export class TreeComponent implements OnInit {
   @Input() width:number;  
   @Output() claimWidth = new EventEmitter<number>();
   private treeItems$:Observable<TreeItemAttributes[]>;
-  private searchResultCount;
+  public searchResultCount;
   constructor(
     private route: ActivatedRoute,
-    private treeDataService: TreeDataService,
-    private treeStyleService: TreeStyleService,
+    public treeDataService: TreeDataService,
+    public treeStyleService: TreeStyleService,
     private router: Router,
     private el: ElementRef  
   ){}
@@ -30,15 +30,15 @@ export class TreeComponent implements OnInit {
   }
 
 
-  private performSearch(pattern:string){
+  public performSearch(pattern:string){
     this.router.navigate([],{queryParams: {searchpattern: pattern}, queryParamsHandling: "merge" });
     return false;
   }
-  private clearSearch(){
+  public clearSearch(){
     this.router.navigate([],{ queryParams: {searchpattern: null}, queryParamsHandling: "merge" });
     return false;   
   }
-  private onscroll(event){
+  public onscroll(event){
     this.treeStyleService.onTreeScroll(event.target.scrollTop);
   }
 }

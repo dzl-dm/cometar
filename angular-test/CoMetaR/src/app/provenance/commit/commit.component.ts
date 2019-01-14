@@ -14,7 +14,7 @@ import { ConfigurationService } from 'src/app/services/configuration.service';
 export class CommitComponent implements OnInit {
   @Input() commitMetaData:CommitMetaData;
   private commitDetails:CommitDetails[]=[];
-  private categories={};
+  public categories={};
   constructor(
     private commitDetailsService:CommitDetailsService,
     private treeDataService:TreeDataService,
@@ -51,6 +51,6 @@ export class CommitComponent implements OnInit {
       ]);
       if (cia.length == 0) result.push(ci);
     });
-    this.treeDataService.addConceptInformation(result);
+    this.treeDataService.addConceptInformation(result, true);
   }
 }

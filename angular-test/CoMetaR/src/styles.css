@@ -11,3 +11,18 @@ body {
     flex-direction: column;
     font-family: Roboto,"Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
 }
+div {
+    box-sizing: border-box;
+}
+div::-webkit-scrollbar {
+    width: 10px;
+    background-color: white;
+    border-radius: 3px;
+} 
+div::-webkit-scrollbar-thumb {
+    background-color: #0492D0;
+    border-radius: 3px;
+    padding:3px;
+    border:2px solid white;
+    cursor:pointer;
+}

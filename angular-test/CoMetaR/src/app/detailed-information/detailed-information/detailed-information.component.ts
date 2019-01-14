@@ -13,8 +13,8 @@ import { MatSnackBar } from '@angular/material';
   styleUrls: ['./detailed-information.component.css']
 })
 export class DetailedInformationComponent implements OnInit {
-  private coreDetails = {};
-  private additionalDetails = {};
+  public coreDetails = {};
+  public additionalDetails = {};
   private coreDetailsSelectArray = ["label", "altlabel", "notation", "unit", "status", "domain"];
   private copySelectArray = ["notation"];
   private localizedStringArray = ["label", "altlabel"];

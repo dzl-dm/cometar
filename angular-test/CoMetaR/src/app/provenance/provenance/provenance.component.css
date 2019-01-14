@@ -1,6 +1,12 @@
 :host{
     display:flex;
     flex-grow:1;
+    margin:10px;
+    flex-direction: row;
+    width:calc(100% - 20px);
+    overflow:auto;
+}
+.container {
     flex-direction: column;
     align-content: stretch;
 }

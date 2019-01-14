@@ -32,15 +32,18 @@ p {
     border-radius: 3px;
 }
 .commitDetails div {
-    width:100%;
-    height:100%;
+    width:calc(100% - 10px);
+    height:calc(100% - 10px);
     overflow:hidden;
+    margin:5px;
 }
 :host:hover .commitDetails{
     display: block;
     overflow:auto;
     min-width: 400px;
     height:200px;
+    margin-top:-2px;
+    margin-left:-2px;
 }
 :host:hover .commitDetails div{
     overflow:auto;
@@ -50,6 +53,8 @@ p {
     cursor:pointer;
     display:flex;
     flex-direction: row;
+    border-radius: 3px;
+    box-shadow: 4px 4px 2px -2px #777;
 }
 .category{
     position: relative;
@@ -64,14 +69,14 @@ p {
     border-bottom-right-radius: 3px;
 }
 .category.structure{
-    background-color:red;
+    background-color:rgb(49, 165, 214);
 }
 .category.progress{
-    background-color:green;
+    background-color:rgb(77, 173, 214);;
 }
 .category.literal{
-    background-color:blue;
+    background-color:rgb(115, 182, 211);
 }
 .category.semantic{
-    background-color:yellow;
+    background-color:rgb(154, 197, 216);
 }
