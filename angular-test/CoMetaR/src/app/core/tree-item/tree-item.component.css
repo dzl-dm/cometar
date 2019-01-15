@@ -7,9 +7,9 @@
     width:100%;
     margin-right:0px;
     padding: 0px 0px 0px 0px;  
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
-    box-sizing: border-box;
+    /*border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;*/
+    border-radius: 3px;
     /*background-color:white; */
 }
 
@@ -17,7 +17,10 @@
     border-left: 1px solid #BFE3F2; 
     border-top: 1px solid #BFE3F2; 
     border-bottom: 1px solid #BFE3F2; 
-    border-right:0px solid #BFE3F2; 
+    border-right:1px solid #BFE3F2; 
+    margin-left:-1px;
+    margin-top:-1px;
+    margin-bottom:-1px;
 }
 
 div.treeItemHeading
@@ -91,6 +94,7 @@ div.treeItemTitle:focus {
     position: relative;
     padding:5px;
     border-radius: 3px;
+    margin-bottom:5px;
 }
 .treeItemInformation table {
     border-spacing: 0px;

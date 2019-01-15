@@ -26,3 +26,6 @@ div::-webkit-scrollbar-thumb {
     border:2px solid white;
     cursor:pointer;
 }
+:root {
+    --dzl-blue: #0492D0;
+}

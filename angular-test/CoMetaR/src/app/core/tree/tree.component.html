@@ -4,7 +4,7 @@
     <input type="button" (click)='clearSearch()' [value]="'x '+(searchResultCount?searchResultCount:'')"/>
 </form>
 <div id="tree" (scroll)="onscroll($event)">
-    <app-tree-item-list [conceptIri]="'root'" class="topLevel"></app-tree-item-list>
+    <app-tree-item-list [conceptIri]="'root'" class="topLevel" [style.width.px]="width-20"></app-tree-item-list>
     <div id="scrollHeadings" [style.width.px]="width-15">
         <div *ngFor="let scrollHeading of (treeStyleService.scrollHeadingsSubject$ | async); let i = index">
             <div [style.marginLeft.px]="22+i*22">{{scrollHeading}}</div>

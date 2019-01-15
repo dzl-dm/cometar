@@ -139,17 +139,17 @@ export class TreeDataService {
   }
 
   //information
-  public addConceptInformation(cis:ConceptInformation[], replaceAll:boolean=false){
-    if (replaceAll) this.conceptInformation = cis;
-    else {
-      cis.forEach(ci => {
+  public addConceptInformation(cis$:Observable<ConceptInformation[]>){
+    cis$.subscribe(cis => {
+      /*cis.forEach(ci => {
         if (this.conceptInformation.filter(d => d.concept == ci.concept && d.sourceId == ci.sourceId).length == 0){
           this.conceptInformation.push(ci);
         }
-      });
-    }
-    this.conceptInformation$.next(this.conceptInformation);
-    this.claimWidth(1000);
+      });*/
+      this.conceptInformation=cis;
+      this.conceptInformation$.next(this.conceptInformation);
+      this.claimWidth(800);
+    });
   }
   public isInformationPathPart$(iri:string):Observable<boolean>{
     return this.informationPaths$.pipe(

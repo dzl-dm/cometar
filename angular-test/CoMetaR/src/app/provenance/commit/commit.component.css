@@ -5,6 +5,14 @@
     min-height:20px;
     position: relative;
 }
+:host.selected .categorycontainer{
+    border:3px solid var(--dzl-blue);
+    background-color:var(--dzl-blue);
+    box-sizing: content-box;
+    border-radius: 3px;
+    margin-left:-3px;
+    margin-top:-3px;
+}
 p {    
     /*overflow: hidden;
     white-space: nowrap; 
@@ -42,8 +50,6 @@ p {
     overflow:auto;
     min-width: 400px;
     height:200px;
-    margin-top:-2px;
-    margin-left:-2px;
 }
 :host:hover .commitDetails div{
     overflow:auto;
