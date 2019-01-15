@@ -61,7 +61,7 @@ export class ConfigurationService {
       nol: { value: data.nol?data.nol.value:data.newobject?this.getHumanReadableRDFPredicate(data.newobject.value):""}
     });
   }
-  private rdfUrlMap = {
+  public rdfUrlMap = {
     "http://data.dzl.de/ont/dwh#status":"Status",    
 		"http://purl.org/dc/elements/1.1/description": "Description",
 		"http://www.w3.org/2004/02/skos/core#prefLabel": "Label",
@@ -85,10 +85,16 @@ export class ConfigurationService {
 		"http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf": "Specification Of Concept",
 		"http://www.w3.org/2004/02/skos/core#topConceptOf": "Top Concept Of",
 		"http://www.w3.org/2004/02/skos/core#Collection": "Collection",
-		"http://sekmi.de/histream/dwh#dateRestriction": "Date"
+    "http://sekmi.de/histream/dwh#dateRestriction": "Date",
+    "http://www.w3.org/2004/02/skos/core#hasTopConcept": "Has Top Concept",
+    "http://data.dzl.de/ont/dwh#topLevelNode": "Is Top Level Node",
+    "http://data.dzl.de/ont/dwh#unit": "Unit"
   }
   public getHumanReadableRDFPredicate(p:string):string{
     return this.rdfUrlMap[p] || p;
+  }
+  public getRDFPredicateByHumanReadableString(p:string):string[]{
+    return Object.keys(this.rdfUrlMap).filter(key=>this.rdfUrlMap[key] == p);
   }
   public cutPrefix(s:string):string{
     Object.keys(this.getRdfPrefixMap()).forEach((key,value) => {
@@ -97,7 +103,7 @@ export class ConfigurationService {
     return s;
   }
 
-  changeCagetories = {
+  public changeCategories = {
 		"http://www.w3.org/2004/02/skos/core#prefLabel": "literal",
 		"http://www.w3.org/2004/02/skos/core#altLabel": "literal",
 		"http://purl.org/dc/elements/1.1/description": "literal",
@@ -132,7 +138,17 @@ export class ConfigurationService {
 		"http://www.w3.org/2002/07/owl#allValuesFrom": undefined
 	}
   public getCategory(cd:CommitDetails):string{
-    return this.changeCagetories[cd.predicate.value];
+    return this.changeCategories[cd.predicate.value];
+  }
+  public initialCheckedPredicates={    
+		"http://www.w3.org/2004/02/skos/core#prefLabel": true,
+		"http://www.w3.org/2004/02/skos/core#altLabel": true,
+    "http://purl.org/dc/elements/1.1/description": true,
+    "http://data.dzl.de/ont/dwh#unit": true,
+		"http://www.w3.org/2004/02/skos/core#notation": true,		
+		"http://www.w3.org/2004/02/skos/core#editorialNote": true,
+		"http://data.dzl.de/ont/dwh#status": true,
+		"http://sekmi.de/histream/dwh#restriction": true,
   }
 
   private mergeDeep(target, source) {
