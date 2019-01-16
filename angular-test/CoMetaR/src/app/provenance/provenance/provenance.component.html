@@ -14,7 +14,7 @@
 <div class='options'>
   <div *ngFor="let cat of categories | keyvalue" [ngClass]="['category', cat.key]">
     <div class='category_heading'>
-        <input type="checkbox" [checked]="false" [id]="'checkbox_'+cat.key"/>
+        <input type="checkbox" [checked]="isOptionsHeadingChecked(cat.key)" [id]="'checkbox_'+cat.key" (click)="displayOptionsHeadingToggle(cat.key)"/>
         <label [for]="'checkbox_'+cat.key">{{cat.key}}</label>
     </div>
     <div *ngFor="let item of cat.value">

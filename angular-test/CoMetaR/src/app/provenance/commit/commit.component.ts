@@ -39,8 +39,9 @@ export class CommitComponent implements OnInit {
       this.commitDetails.forEach(cd => {
         let category = this.configuration.getCategory(cd);
         if (!category) return;
-        if (this.categories[category]) this.categories[category]++;
-        else this.categories[category] = 1;
+        if (!this.categories[category]) this.categories[category] = { count: 0, deprecated: 0 };
+        this.categories[category].count++;
+        if (cd.deprecatedsubject.value) this.categories[category].deprecated++;
       });
     });
     this.commitMetaDataHR=this.configuration.getHumanReadableCommitMetaData(this.commitMetaData);

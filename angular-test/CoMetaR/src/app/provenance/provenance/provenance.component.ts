@@ -15,10 +15,8 @@ import { CommitDetailsService, CommitDetails } from '../services/queries/commit-
   styleUrls: ['./provenance.component.css']
 })
 export class ProvenanceComponent implements OnInit {
-  private fromDate:Date = new Date("2018-10-13");
+  private fromDate:Date = new Date("2018-12-13");
   public commitMetaDataByDay=[];
-  public selectedCommit$:ReplaySubject<string> = new ReplaySubject<string>(1);
-  public selectedDate$:ReplaySubject<string> = new ReplaySubject<string>(1);
   public categories = {};
   private treeData$:ReplaySubject<ConceptInformation[]>=new ReplaySubject<ConceptInformation[]>(1);
   constructor(
@@ -44,21 +42,12 @@ export class ProvenanceComponent implements OnInit {
     }
 
     this.route.queryParamMap.pipe(
-      map(data => this.urlService.extendRdfPrefix(data.get('commit')))
-    ).subscribe(this.selectedCommit$);
-    this.selectedCommit$.subscribe(commitid => {
-      if (commitid != "") setTimeout(()=>{
+      map(data => [this.urlService.extendRdfPrefix(data.get('commit')),this.urlService.extendRdfPrefix(data.get('date'))])
+    ).subscribe(([commitid,date]) => {
+      setTimeout(()=>{
         this.clearTree();
-        this.loadCommitIntoTree(commitid)
-      },0);
-    });
-    this.route.queryParamMap.pipe(
-      map(data => this.urlService.extendRdfPrefix(data.get('date')))
-    ).subscribe(this.selectedDate$);
-    this.selectedDate$.subscribe(date => {
-      if (date != "") setTimeout(()=>{
-        this.clearTree();
-        this.loadDateIntoTree(date)
+        if (commitid != "") this.loadCommitIntoTree(commitid);
+        if (date != "") this.loadDateIntoTree(date);
       },0);
     });
 
@@ -85,7 +74,7 @@ export class ProvenanceComponent implements OnInit {
     this.router.navigate(["provenance"],{ queryParams: {commit: null, date: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()}, queryParamsHandling: "merge" });
   }
 
-  private getConceptInformation(commitDetails:CommitDetails[]):Observable<ConceptInformation[]>{
+  private getConceptTableInformation(commitDetails:CommitDetails[]):Observable<ConceptInformation[]>{
     let cis = new ReplaySubject<ConceptInformation[]>(1);
     this.displayOptions$.subscribe(displayOptions => {
       let result:ConceptInformation[] = [];
@@ -110,11 +99,11 @@ export class ProvenanceComponent implements OnInit {
     });
     return cis;
   }
-  private loadCommitIntoTree(commitid){   
+  private loadCommitIntoTree(commitid){  
     let result:ConceptInformation[];
     this.treeData$.subscribe(data => result = data).unsubscribe();
     this.commitDetailsService.get(commitid).subscribe(cds => {
-      this.getConceptInformation(cds).subscribe(this.treeData$);
+      this.getConceptTableInformation(cds).subscribe(this.treeData$);
     });
   }
   private clearTree(){
@@ -127,12 +116,24 @@ export class ProvenanceComponent implements OnInit {
     }));
   }
 
-  private loadDataIntoTree(cds:CommitDetails[]){
-    
-  }
-
   public displayOptionToggle(predicate:string){
     this.displayOptions[predicate] = !this.displayOptions[predicate];
+    this.displayOptions$.next(this.displayOptions);
+  }
+
+  public isOptionsHeadingChecked(category:string){
+    let result = true;
+    this.categories[category].forEach(predicate => {
+      if (this.displayOptions[predicate] != true) result = false;
+    });
+    return result;
+  }
+
+  public displayOptionsHeadingToggle(category:string){
+    let checked = this.isOptionsHeadingChecked(category);
+    this.categories[category].forEach(predicate => {
+      this.displayOptions[predicate] = !checked
+    })
     this.displayOptions$.next(this.displayOptions);
   }
 

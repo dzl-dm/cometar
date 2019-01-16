@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { prefixes, DataService, JSONResponsePartUriString, JSONResponsePartString, JSONResponsePartLangString } from 'src/app/services/data.service';
+import { prefixes, DataService, JSONResponsePartUriString, JSONResponsePartString, JSONResponsePartLangString, JSONResponsePartBoolean } from 'src/app/services/data.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -20,7 +20,7 @@ export class CommitDetailsService {
   private getQueryString(commitid:string):string{
     return `
     ${prefixes}
-    SELECT DISTINCT ?subject ?sl ?predicate ?oldobject ?ool ?newobject ?nol
+    SELECT DISTINCT ?subject ?sl ?predicate ?oldobject ?ool ?newobject ?nol (bound(?usage2) as ?deprecatedsubject)
     WHERE	
     {
       <${commitid}> prov:qualifiedUsage ?usage .
@@ -45,6 +45,19 @@ export class CommitDetailsService {
         FILTER NOT EXISTS { ?rem rdf:comment "hidden" } 
         FILTER NOT EXISTS { ?newsubject prov:wasDerivedFrom+ ?subject } 
       }
+      OPTIONAL {
+        ?usage2 cs:removal ?rem2 .
+        ?rem2 a rdf:Statement; 
+          rdf:subject ?subject; 
+          rdf:predicate rdf:type .
+        FILTER NOT EXISTS { 
+          ?usage2 cs:addition [ 
+            a rdf:Statement; 
+            rdf:subject ?subject; 
+            rdf:predicate rdf:type
+          ]
+        }
+      }
       filter (
         bound(?predicate)
         && (!bound(?oldobject) || !bound(?newobject) || !isLiteral(?oldobject) || !isLiteral(?newobject) || lang(?oldobject) = lang(?newobject))
@@ -61,5 +74,6 @@ export interface CommitDetails {
   oldobject:JSONResponsePartUriString,
   ool:JSONResponsePartLangString,
   newobject:JSONResponsePartUriString,
-  nol:JSONResponsePartLangString
+  nol:JSONResponsePartLangString,
+  deprecatedsubject:JSONResponsePartBoolean
 }
