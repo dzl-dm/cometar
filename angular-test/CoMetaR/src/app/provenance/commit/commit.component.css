@@ -86,3 +86,11 @@ p {
 .category.semantic{
     background-color:rgb(154, 197, 216);
 }
+
+.deprecatedElements {
+    margin-top:3px;
+    position:absolute;
+    height:2px;
+    background-color: white;
+    opacity: 0.5;
+}
