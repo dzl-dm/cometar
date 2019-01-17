@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, query, animateChild, group, animate, state } from '@angular/animations';
+import { DataService } from '../services/data.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-browser',
@@ -104,12 +106,15 @@ export class BrowserComponent implements OnInit {
   public width = 500;
   public resizeToogle = false;
   public newWidth = 0;
+  public loadingStatus$:Observable<boolean>;
   constructor(
     private route:ActivatedRoute,
     private router: Router,
+    private dataService: DataService
   ) { }
 
   ngOnInit() {
+    this.loadingStatus$=this.dataService.loading;
   }
   
   private savedX;

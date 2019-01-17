@@ -5,7 +5,7 @@ import { CommitMetaData } from '../services/queries/commit-meta-data.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UrlService } from 'src/app/services/url.service';
-import { map } from 'rxjs/operators';
+import { map, flatMap } from 'rxjs/operators';
 import { ConceptInformation, TreeDataService } from 'src/app/core/services/tree-data.service';
 import { CommitDetailsService, CommitDetails } from '../services/queries/commit-details.service';
 
@@ -18,6 +18,9 @@ export class ProvenanceComponent implements OnInit {
   private fromDate:Date = new Date("2018-12-13");
   public commitMetaDataByDay=[];
   public categories = {};
+  public selectedCommit$ = new ReplaySubject<string>(1);
+  public selectedDateValue$ = new ReplaySubject<number>(1);
+  private combinedCommitDetails$:ReplaySubject<CommitDetails[]>=new ReplaySubject<CommitDetails[]>(1);
   private treeData$:ReplaySubject<ConceptInformation[]>=new ReplaySubject<ConceptInformation[]>(1);
   constructor(
     private provenanceService:ProvenanceService,
@@ -46,7 +49,9 @@ export class ProvenanceComponent implements OnInit {
     ).subscribe(([commitid,date]) => {
       setTimeout(()=>{
         this.clearTree();
+        this.selectedCommit$.next(commitid);
         if (commitid != "") this.loadCommitIntoTree(commitid);
+        this.selectedDateValue$.next(new Date(date).valueOf());
         if (date != "") this.loadDateIntoTree(date);
       },0);
     });
@@ -60,6 +65,10 @@ export class ProvenanceComponent implements OnInit {
     this.displayOptions$=new BehaviorSubject<{}>(this.displayOptions);
 
     this.treeDataService.addConceptInformation(this.treeData$);
+
+    this.combinedCommitDetails$.pipe(
+      flatMap(cds => this.getConceptTableInformation(cds))
+    ).subscribe(this.treeData$);
   }
 
   private getCommitMetaDataByDay$(day:Date):Observable<CommitMetaData[]>{
@@ -99,13 +108,42 @@ export class ProvenanceComponent implements OnInit {
     });
     return cis;
   }
-  private loadCommitIntoTree(commitid){  
-    let result:ConceptInformation[];
-    this.treeData$.subscribe(data => result = data).unsubscribe();
-    this.commitDetailsService.get(commitid).subscribe(cds => {
-      this.getConceptTableInformation(cds).subscribe(this.treeData$);
-    });
+
+  public isSelectedDate(date:Date):Observable<boolean>{
+    return this.selectedDateValue$.pipe(
+      map(selectedDate => {
+        let compareDateValue = new Date(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()).valueOf();
+        return compareDateValue == selectedDate.valueOf()
+      })
+    );
   }
+
+  private loadCommitIntoTree(commitid){  
+    this.commitDetailsService.get(commitid).subscribe(newcds => {
+      let currentcds:CommitDetails[] = [];
+      this.combinedCommitDetails$.subscribe(cds => currentcds = cds).unsubscribe();
+      this.combinedCommitDetails$.next(this.mergeCommitDetails(currentcds, newcds));
+    });
+    /*this.commitDetailsService.get(commitid).subscribe(cds => {
+      this.getConceptTableInformation(cds).subscribe(cti => {
+        let result:ConceptInformation[];
+        this.treeData$.subscribe(data => result = data).unsubscribe();
+        this.treeData$.next(cti.concat(result));
+      });
+    });*/
+  }
+
+  /**
+   * TODO: merge details
+   * 
+   */
+  private mergeCommitDetails(cds1:CommitDetails[], cds2:CommitDetails[]):CommitDetails[]{
+    cds2.forEach(cd => {
+      cds1.push(cd);
+    });
+    return cds1;
+  }
+
   private clearTree(){
     this.treeData$.next([]);
   }

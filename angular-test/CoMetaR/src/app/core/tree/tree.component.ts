@@ -15,6 +15,7 @@ export class TreeComponent implements OnInit {
   @Output() claimWidth = new EventEmitter<number>();
   private treeItems$:Observable<TreeItemAttributes[]>;
   public searchResultCount;
+  public searchDivOpened=false;
   constructor(
     private route: ActivatedRoute,
     public treeDataService: TreeDataService,
