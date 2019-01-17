@@ -6,8 +6,8 @@
     position: relative;
 }
 :host.selected .categorycontainer{
-    border:3px solid var(--dzl-blue);
-    background-color:var(--dzl-blue);
+    border:3px solid rgb(3, 102, 145);
+    background-color:rgb(3, 102, 145);
     box-sizing: content-box;
     border-radius: 3px;
     margin-left:-3px;

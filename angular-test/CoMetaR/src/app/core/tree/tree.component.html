@@ -1,11 +1,14 @@
-<form>
-    <input type='text' [value]="treeDataService.getSearchPattern()" name="searchPatternInput" #searchPatternInput placeholder="search term"/> 
-    <input type="submit" (click)='performSearch(searchPatternInput.value)' value="search"/>
-    <input type="button" (click)='clearSearch()' [value]="'x '+(searchResultCount?searchResultCount:'')"/>
-</form>
+<div id="searchDiv" [ngClass]="{'open':searchDivOpened}">
+    <form>
+        <input type='text' [value]="treeDataService.getSearchPattern()" name="searchPatternInput" #searchPatternInput placeholder="search term"/> 
+        <input type="submit" (click)='performSearch(searchPatternInput.value)' value="search"/>
+        <input type="button" (click)='clearSearch()' [value]="'x '+(searchResultCount?searchResultCount:'')"/>
+    </form>
+    <div id="toggleSearch" (click)="searchDivOpened = !searchDivOpened"><div></div></div>
+</div>
 <div id="tree" (scroll)="onscroll($event)">
     <app-tree-item-list [conceptIri]="'root'" class="topLevel" [style.width.px]="width-20"></app-tree-item-list>
-    <div id="scrollHeadings" [style.width.px]="width-15">
+    <div id="scrollHeadings" [style.width.px]="width-25">
         <div *ngFor="let scrollHeading of (treeStyleService.scrollHeadingsSubject$ | async); let i = index">
             <div [style.marginLeft.px]="22+i*22">{{scrollHeading}}</div>
         </div>

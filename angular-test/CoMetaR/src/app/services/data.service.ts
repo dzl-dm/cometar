@@ -8,16 +8,24 @@ import { map, catchError, startWith, shareReplay } from 'rxjs/operators';
 })
 export class DataService {
 
-  private pendings = {}
+  private pendings = {};
+  public loading = new BehaviorSubject<boolean>(false);
+  private busyQueries = 0;
   dataUrl = 'https://data.dzl.de/fuseki/cometar_live/query';
 
   getData(queryString:string, logstart?:()=>void, logend?:(result:any[])=>void): Observable<any[]> {
+    this.loading.next(true);
+    this.busyQueries++;
     if (!this.pendings[queryString]){
       let rs = new ReplaySubject<any[]>(1);
       this.getObservable(queryString).subscribe(rs)
       this.pendings[queryString] = rs;
       //this.pendings[queryString] = this.getObservable(queryString).pipe(shareReplay(1));
     }
+    this.pendings[queryString].subscribe(()=>{
+      this.busyQueries--;
+      if (this.busyQueries == 0) this.loading.next(false);
+    });
     return this.pendings[queryString];
   }
   constructor(private http:HttpClient) { }

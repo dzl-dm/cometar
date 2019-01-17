@@ -2,14 +2,53 @@
     display:flex;
     flex-direction: column;
     flex-grow:1;
+    overflow:auto;
+    background-color:#0492D0;
+}
+div#searchDiv{
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-content: stretch;
+    background-color:white;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    width:calc(100% - 80px);
+    margin-left:30px;
+    height:25px;
+    transition: height 0.4s;
+    position: relative;
+    padding:5px;
+}
+div#searchDiv.open{
+    height:70px;
+}
+div#toggleSearch{
+    color:black;
+    text-align:center;
+    cursor:pointer;
+    position: absolute;
+    width:100%;
+    bottom:0px;
+}
+div#searchDiv div#toggleSearch div{    
+    background-image: url('src/assets/img/lupe.png');
+    width:20px;
+    height:20px;
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    display: inline-block;
+}
+div#searchDiv.open form{
+    height:40px;
 }
 form {
-    display:flex;
+    display: flex;
     flex-direction: row;
-    flex-shrink: 0;
     align-content: stretch;
-    height:40px;
-    margin:5px;
+    height:0px;
+    overflow:hidden;
+    transition: height 0.4s;
 }
 form input:first-child{
     flex-grow:1;
@@ -23,6 +62,7 @@ form input {
     border:1px solid #0492D0;
     width:70px;
     flex-shrink:1;
+    border-radius: 3px;
 }
 form input[type='submit'], form input[type='button'] {
     background-color:#0492D0;
@@ -39,9 +79,16 @@ div#tree {
     flex-direction: column;
     align-items: stretch;
     flex-grow:1;
-    overflow:auto;
+    overflow-y:auto;
+    overflow-x:hidden;
     position: relative !important; /*for inner element positioning*/
     margin-bottom:5px;
+}
+div#tree::-webkit-scrollbar {
+    background-color: var(--dzl-blue);
+} 
+div#tree::-webkit-scrollbar-thumb {
+    background-color: white;
 }
 div#scrollHeadings{
     opacity: 0.9;
