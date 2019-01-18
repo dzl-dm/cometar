@@ -124,13 +124,6 @@ export class ProvenanceComponent implements OnInit {
       this.combinedCommitDetails$.subscribe(cds => currentcds = cds).unsubscribe();
       this.combinedCommitDetails$.next(this.mergeCommitDetails(currentcds, newcds));
     });
-    /*this.commitDetailsService.get(commitid).subscribe(cds => {
-      this.getConceptTableInformation(cds).subscribe(cti => {
-        let result:ConceptInformation[];
-        this.treeData$.subscribe(data => result = data).unsubscribe();
-        this.treeData$.next(cti.concat(result));
-      });
-    });*/
   }
 
   /**
@@ -145,7 +138,7 @@ export class ProvenanceComponent implements OnInit {
   }
 
   private clearTree(){
-    this.treeData$.next([]);
+    this.combinedCommitDetails$.next([]);
   }
 
   private loadDateIntoTree(date:string){

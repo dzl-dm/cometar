@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, query, animateChild, group, animate, state } from '@angular/animations';
 import { DataService } from '../services/data.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { combineLatest, withLatestFrom, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-browser',
@@ -10,7 +11,7 @@ import { Observable } from 'rxjs';
   styleUrls: ['./browser.component.css'],
   animations: [
     trigger('routeAnimations', [
-      transition('Details => Provenance', [
+      transition('Details => *, Provenance => UploadClientConfiguration', [
         style({ position: 'relative' }),
         query(':enter, :leave', [
           style({
@@ -34,7 +35,7 @@ import { Observable } from 'rxjs';
         ]),
         query(':enter', animateChild()),
       ]),
-      transition('Provenance => Details', [
+      transition('* => Details, UploadClientConfiguration => Provenance', [
         style({ position: 'relative' }),
         query(':enter, :leave', [
           style({
@@ -47,11 +48,11 @@ import { Observable } from 'rxjs';
         query(':enter', [
           style({ left: '-100%'})
         ]),
-        query(':leave', animateChild()),
+        query(':leave', animateChild(), { optional: true }),
         group([
           query(':leave', [
             animate('300ms ease-out', style({ left: '100%'}))
-          ]),
+          ], { optional: true }),
           query(':enter', [
             animate('300ms ease-out', style({ left: '0%'}))
           ])
@@ -60,19 +61,6 @@ import { Observable } from 'rxjs';
       ])
     ]),
     trigger('changeWidth',[
-/*       state('wide', style({
-        width: '{{newWidth}}px',
-      }),{
-        params: { newWidth: 0 }
-      }),
-      state('*', style({
-        width: '{{startWidth}}px',
-      }),{
-        params: { startWidth: 0 }
-      }),
-      transition('* => wide', [
-        animate('300ms ease-in')
-      ]), */
       state('*', style({
         width: '{{startWidth}}px',
       }),{
@@ -85,18 +73,6 @@ import { Observable } from 'rxjs';
       ],{
         params: { newWidth: 0 }
       }), 
-/*       transition('* => *',[
-        state('*',style({
-          width: '{{startWidth}}px',
-        }),{
-          params: { startWidth: 0 }
-        }),
-        animate('300ms ease-in', style({
-          width: '{{newWidth}}px',
-        }))
-      ],{
-        params: { newWidth: 0 }
-      }) */
     ])
   ]
 })
@@ -106,7 +82,6 @@ export class BrowserComponent implements OnInit {
   public width = 500;
   public resizeToogle = false;
   public newWidth = 0;
-  public loadingStatus$:Observable<boolean>;
   constructor(
     private route:ActivatedRoute,
     private router: Router,
@@ -114,7 +89,6 @@ export class BrowserComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.loadingStatus$=this.dataService.loading;
   }
   
   private savedX;

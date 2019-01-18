@@ -1,0 +1,20 @@
+:host {
+    flex-grow: 1;
+    padding:10px;
+}
+table, textarea, input[type='text'], input[type='file'] {
+    width:100%
+}
+table td {
+    vertical-align: top;
+    padding: 10px;
+}
+table td:first-child {
+    width:210px;
+}
+table td.clickable {
+    cursor:pointer;
+}
+textarea {
+    height:300px;
+}

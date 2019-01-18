@@ -2,16 +2,7 @@
     <div id="treeResizeContainer" [style.width.px]="width" [@changeWidth]="{ value:resizeToogle?'random1':'random2', params: { startWidth: this.width, newWidth: this.newWidth }}">
         <div id="treeContainer">
             <app-tree [width]="width" (claimWidth)="onClaimWidth($event)"></app-tree>
-            <div id="logos">
-                <div class='logo'>
-                    <img 
-                        id="loading" 
-                        src="assets/img/cometar_c.png"
-                        [ngClass]="{'active':(loadingStatus$ | async)}"/>
-                    <img src="assets/img/CoMetaR_Logo.png"/>
-                </div>
-                <div class='logo'><img src="assets/img/DZL_Logo.png"/></div>
-            </div>
+            <app-logos></app-logos>
         </div>
         <div id="treeResizeComponent"  
             (mousedown)='onTreeResizeStart($event)'
@@ -21,6 +12,7 @@
         <div id="moduleMenu">
             <div class="moduleMenuItem" (click)="navigateModule('details')">Details</div>
             <div class="moduleMenuItem" (click)="navigateModule('provenance')">Provenance</div>
+            <div class="moduleMenuItem" (click)="navigateModule('client-configuration')">Client Configuration</div>
         </div>
         <div id="moduleContent" [@routeAnimations]="prepareRoute(outlet)">
             <router-outlet #outlet="outlet"></router-outlet>

@@ -57,9 +57,12 @@ export class ConfigurationService {
   public getHumanReadableCommitDetailData(data:CommitDetails):CommitDetails{
     return this.mergeDeep(data,<CommitDetails>{
       predicate: { value: data.predicate?this.getHumanReadableRDFPredicate(data.predicate.value):"" },
-      ool: { value: data.ool?data.ool.value:data.oldobject?this.getHumanReadableRDFPredicate(data.oldobject.value):""},
-      nol: { value: data.nol?data.nol.value:data.newobject?this.getHumanReadableRDFPredicate(data.newobject.value):""}
+      ool: { value: this.decodeHTML(data.ool?data.ool.value:data.oldobject?this.getHumanReadableRDFPredicate(data.oldobject.value):"")},
+      nol: { value: this.decodeHTML(data.nol?data.nol.value:data.newobject?this.getHumanReadableRDFPredicate(data.newobject.value):"")}
     });
+  }
+  private decodeHTML(s:string):string{
+    return s.replace(/&quot;/g,"\"");
   }
   public rdfUrlMap = {
     "http://data.dzl.de/ont/dwh#status":"Status",    
