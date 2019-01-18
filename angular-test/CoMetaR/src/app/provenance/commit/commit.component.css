@@ -12,6 +12,7 @@
     border-radius: 3px;
     margin-left:-3px;
     margin-top:-3px;
+    margin-right:-3px;
 }
 p {    
     /*overflow: hidden;
@@ -91,6 +92,6 @@ p {
     margin-top:3px;
     position:absolute;
     height:2px;
-    background-color: white;
-    opacity: 0.5;
+    background-color: black;
+    opacity: 0.3;
 }

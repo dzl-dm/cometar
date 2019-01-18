@@ -1,0 +1,10 @@
+<div id="logos">
+    <div class='logo' (click)="navigateModule()">
+        <img 
+            id="loading" 
+            src="assets/img/cometar_c.png"
+            [ngClass]="{'active':(loadingStatus$ | async)}" (click)="navigateModule()"/>
+        <img src="assets/img/CoMetaR_Logo.png" (click)="navigateModule()"/>
+    </div>
+    <div class='logo'><img src="assets/img/DZL_Logo.png"/></div>
+</div>
