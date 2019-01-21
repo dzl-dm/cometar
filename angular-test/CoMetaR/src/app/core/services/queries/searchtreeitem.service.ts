@@ -33,7 +33,7 @@ export class SearchtreeitemService {
               rdf:predicate skos:notation;
               rdf:object ?oldnotation
             ] .
-            FILTER(regex(?oldnotation, '${pattern}', 'i'))
+            FILTER(regex(?oldnotation, '${pattern}', 'i') && ?notation != ?oldnotation)
         } . 	
         OPTIONAL { ?element dc:description ?description FILTER(regex(?description, '${pattern}', 'i')) } . 
         OPTIONAL { ?element :unit ?unit FILTER(regex(?unit, '${pattern}', 'i')) } . 
@@ -41,9 +41,6 @@ export class SearchtreeitemService {
         OPTIONAL { ?element :status ?status FILTER(regex(?status, '${pattern}', 'i')) } . 
         OPTIONAL { ?element dc:creator ?creator FILTER(regex(?creator, '${pattern}', 'i')) } . 
         OPTIONAL { ?element prov:wasDerivedFrom+ [ skos:notation ?oldnotation ] FILTER(regex(?oldnotation, '${pattern}', 'i')) } . 
-        FILTER (
-          (!bound(?notation) || !bound(?oldnotation) || (?notation != ?oldnotation))
-        ) . 
         FILTER (bound(?label) || bound(?notation) || bound(?oldnotation) || bound(?altLabel) || bound(?description) || bound(?unit) || bound(?label2) || bound(?status) || bound(?creator))
       } `;
   }
