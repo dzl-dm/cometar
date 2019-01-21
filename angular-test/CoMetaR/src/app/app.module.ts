@@ -13,12 +13,13 @@ import { ProvenanceComponent } from './provenance/provenance/provenance.componen
 import { AppComponent } from './app/app.component';
 import { MatSnackBarModule } from '@angular/material';
 import { CoreModule } from "./core/core.module";
+import { UploadClientConfigurationModule } from './upload-client-configuration/upload-client-configuration.module';
+import { UploadClientConfigurationComponent } from './upload-client-configuration/upload-client-configuration/upload-client-configuration.component';
 import { BrowserComponent } from './browser/browser.component';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    BrowserComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -28,6 +29,7 @@ import { BrowserComponent } from './browser/browser.component';
     DetailedInformationModule,
     CoreModule,
     ProvenanceModule,
+    UploadClientConfigurationModule,
     MatSnackBarModule,
     RouterModule.forRoot(
       [
@@ -37,6 +39,7 @@ import { BrowserComponent } from './browser/browser.component';
           children: [            
             { path: 'details', component: DetailedInformationComponent, data: {animation: 'Details'} }, 
             { path: 'provenance', component: ProvenanceComponent, data: {animation: 'Provenance'} },    
+            { path: 'client-configuration', component: UploadClientConfigurationComponent, data: {animation: 'UploadClientConfiguration'} },    
             { path: '**', component: ProvenanceComponent, data: {animation: 'Provenance'} },
           ]      
         }
