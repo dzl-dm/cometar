@@ -1,0 +1,13 @@
+<table>
+  <tr>
+    <td class='clickable' (click)="inputtype='csc'"><input type="radio" name="inputtype" [checked]="inputtype=='csc'"/> Comma Delimited Codes</td>
+    <td><input type="text" id="codes" [attr.disabled]="inputtype!='csc' ? '' : null"/></td>
+  </tr>
+  <tr>
+    <td class='clickable' (click)="inputtype='xml'"><input type="radio" name="inputtype" [checked]="inputtype=='xml'"/> Configuration XML</td>
+    <td>
+      <input type="file" [attr.disabled]="inputtype!='xml' ? '' : null"/>
+      <textarea id="configxml" [attr.disabled]="inputtype!='xml' ? '' : null"></textarea>
+    </td> 
+  </tr>
+</table>
