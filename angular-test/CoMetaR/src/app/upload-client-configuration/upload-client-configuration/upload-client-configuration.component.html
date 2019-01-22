@@ -6,8 +6,15 @@
   <tr>
     <td class='clickable' (click)="inputtype='xml'"><input type="radio" name="inputtype" [checked]="inputtype=='xml'"/> Configuration XML</td>
     <td>
-      <input type="file" [attr.disabled]="inputtype!='xml' ? '' : null"/>
-      <textarea id="configxml" [attr.disabled]="inputtype!='xml' ? '' : null"></textarea>
+      <input type="file" [attr.disabled]="inputtype!='xml' ? '' : null" (change)="inputFileSelected($event)"/>
+      <textarea id="configxml" [attr.disabled]="inputtype!='xml' ? '' : null" [(ngModel)]="xmlFileContent"></textarea>
     </td> 
   </tr>
+  <tr>
+    <td></td>
+    <td><input type='button' value='Analyze' (click)="analyze()"/></td>
+  </tr>
 </table>
+<div id='feedback'>
+  <div class='feedbackpart' style="margin-top:10px" *ngFor="let f of feedback">{{f}}</div>
+</div>

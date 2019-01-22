@@ -2,8 +2,9 @@
     flex-grow: 1;
     padding:10px;
 }
-table, textarea, input[type='text'], input[type='file'] {
-    width:100%
+table, textarea, input[type='text'], input[type='file'], input[type='button'] {
+    width:100%;
+    height:30px;
 }
 table td {
     vertical-align: top;

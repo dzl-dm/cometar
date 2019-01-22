@@ -34,7 +34,7 @@
       </td>
     </tr>
   </table>
-  <table>
+  <table class="conceptInformation">
     <ng-container *ngFor="let conceptInformation of conceptInformation$ | async; let isFirst = first">
       <tr *ngIf="isFirst" >
           <th *ngFor="let cell of conceptInformation.headings" [width]="100/conceptInformation.headings.length+'%'">{{cell}}</th>
