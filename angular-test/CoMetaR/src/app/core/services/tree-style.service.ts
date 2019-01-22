@@ -48,8 +48,8 @@ export class TreeStyleService {
       let childlist = this.getList(visibleListItem);
       if (childlist) Array.from(this.getListItems(childlist)).forEach((childlistitem:HTMLElement) => {
         if (foundChild)return;
-        let adjustedScrollTop = scrollTop+scrollHeadings.length*25;
-        if (this.getPosition(childlistitem).y < adjustedScrollTop && childlistitem.offsetHeight+this.getPosition(childlistitem).y-25 > adjustedScrollTop){
+        let adjustedScrollTop = scrollTop+scrollHeadings.length*20-5;
+        if (this.getPosition(childlistitem).y < adjustedScrollTop && childlistitem.offsetHeight+this.getPosition(childlistitem).y-30 > adjustedScrollTop){
           visibleListItem = childlistitem;
           scrollHeadings.push(this.getTitle(visibleListItem));
           foundChild=true;

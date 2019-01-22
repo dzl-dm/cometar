@@ -95,6 +95,8 @@ div.treeItemTitle:focus {
     padding:5px;
     border-radius: 3px;
     margin-bottom:5px;
+    box-shadow: 10px 10px 6px -6px #777;
+    border:1px solid #DDD;
 }
 .treeItemInformation table {
     border-spacing: 0px;
@@ -115,6 +117,19 @@ div.treeItemTitle:focus {
     min-width:50px;
     box-sizing: border-box;
 }
+.treeItemInformation table.conceptInformation tr:first-child {
+    border:1px solid #DDD;
+    border-bottom-width: 0px;
+    display:none;
+    height:40px;
+    background-color:white;
+}
+.treeItemInformation table.conceptInformation:hover {
+    margin-top:-31px;
+}
+.treeItemInformation table.conceptInformation:hover tr:first-child {
+    display:flex;
+}
 .treeItemInformation table tr {
     display: flex;
     border:1px solid white;
@@ -130,15 +145,16 @@ div.treeItemTitle:focus {
 .treeItemInformation table tr th:last-child {
     border-right: 0;
 }*/
+.treeItemInformation table.conceptInformation tr:first-child:hover {
+
+}
 .treeItemInformation table tr:hover {
-    
-    box-shadow: 10px 10px 6px -6px #777;
     border:1px solid #EEE;
     position: relative;
     margin-top:-8px;
     margin-bottom:-8px;
 }
-.treeItemInformation table tr:hover td, .treeItemInformation table tr:hover th{
+.treeItemInformation table tr:hover td{
     background-color:white;
     padding-top:10px;
     padding-bottom:10px;

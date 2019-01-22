@@ -17,14 +17,16 @@ div#treeResizeContainer{
     flex-direction: row;
     align-items: stretch;
     flex-shrink:0;
-    color:white;
     min-width:300px;
 }
 div#treeContainer {
     display:flex;
     flex-direction: column;
-    width:calc(100% - 5px);
-    background-color:white;
+    width:calc(100% - 20px);
+    background-color:var(--dzl-blue);
+}
+app-tree {
+    margin-bottom:20px;
 }
 div#modules {
     flex-grow:1;
@@ -70,7 +72,7 @@ div.moduleMenuItem:hover{
     color:#0492D0;
 }
 #treeResizeComponent {
-    width:5px;
+    width:20px;
     height:100%;
     cursor: e-resize;
 }
