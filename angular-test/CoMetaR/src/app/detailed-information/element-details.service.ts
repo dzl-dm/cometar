@@ -17,7 +17,7 @@ export class ElementDetailsService {
   private getQueryString(iri?):string {
       return `
       ${prefixes}
-      SELECT ?element ?type ?label ?status ?description ?unit ?altlabel ?author ?domain ?editnote ?modifier ?modifierlabel ?notation
+      SELECT ?element ?type ?label ?status ?description ?unit ?altlabel ?author ?domain ?editnote ?modifier ?modifierlabel ?notation ?related
       WHERE {	          
           <${iri}> skos:prefLabel ?label.
           <${iri}> rdf:type ?type .
@@ -29,6 +29,7 @@ export class ElementDetailsService {
           OPTIONAL { <${iri}> dwh:restriction ?domain . }
           OPTIONAL { <${iri}> skos:editorialNote ?editnote . }
           OPTIONAL { <${iri}> skos:notation ?notation . }
+          OPTIONAL { <${iri}> skos:related ?related . }
           OPTIONAL { 
             <${iri}> skos:broader* [ rdf:hasPart ?modifier ] . 
             ?modifier skos:prefLabel ?modifierlabel FILTER (lang(?modifierlabel)='en') .

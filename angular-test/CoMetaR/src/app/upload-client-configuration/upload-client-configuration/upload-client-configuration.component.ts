@@ -298,7 +298,7 @@ export class UploadClientConfigurationComponent implements OnInit {
 					return ci;
 				}
 			))
-		})).subscribe(this.treeData$);
+		})).subscribe(data => this.treeData$.next(data));
 		this.treeData$.subscribe(data => console.log(data));
     }));
   }

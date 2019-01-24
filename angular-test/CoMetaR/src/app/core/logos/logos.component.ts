@@ -20,7 +20,9 @@ export class LogosComponent implements OnInit {
     this.loadingStatus$=this.dataService.loading;
   }
 
-  public navigateModule(){    
-    this.router.navigate(["/"]);
+  public navigateModule(url?:string){    
+    console.log(url);
+    if (url) window.open(url);
+    else this.router.navigate(["/"]);
   }
 }

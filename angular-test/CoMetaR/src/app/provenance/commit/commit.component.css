@@ -62,6 +62,8 @@ p {
     flex-direction: row;
     border-radius: 3px;
     box-shadow: 4px 4px 2px -2px #777;
+    height:20px;
+    min-width:10px;
 }
 .category{
     position: relative;

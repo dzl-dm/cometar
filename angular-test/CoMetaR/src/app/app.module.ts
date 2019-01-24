@@ -15,7 +15,7 @@ import { MatSnackBarModule } from '@angular/material';
 import { CoreModule } from "./core/core.module";
 import { UploadClientConfigurationModule } from './upload-client-configuration/upload-client-configuration.module';
 import { UploadClientConfigurationComponent } from './upload-client-configuration/upload-client-configuration/upload-client-configuration.component';
-import { BrowserComponent } from './browser/browser.component';
+import { BrowserComponent } from './core/browser/browser.component';
 
 @NgModule({
   declarations: [

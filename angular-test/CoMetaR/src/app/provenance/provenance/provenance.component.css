@@ -4,6 +4,7 @@
     margin:10px;
     flex-direction: column;
     width:calc(100% - 20px);
+    position: relative;
 }
 .container {
     flex-direction: column;
@@ -12,6 +13,7 @@
     overflow:auto;
     height:300px;
     width:100%;
+    padding-bottom:200px;
 }
 .day{
     display: flex;
@@ -39,6 +41,9 @@
 }
 .day.filled .date {
     display: inline-block;
+}
+app-commit {
+    flex-shrink: 0;
 }
 .options {
     display:flex;
