@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, query, animateChild, group, animate, state } from '@angular/animations';
-import { DataService } from '../services/data.service';
-import { Observable, of } from 'rxjs';
-import { combineLatest, withLatestFrom, map } from 'rxjs/operators';
+import { DataService } from '../../services/data.service';
 
 @Component({
   selector: 'app-browser',
@@ -82,6 +80,7 @@ export class BrowserComponent implements OnInit {
   public width = 500;
   public resizeToogle = false;
   public newWidth = 0;
+  public activeModule="provenance";
   constructor(
     private route:ActivatedRoute,
     private router: Router,
@@ -113,6 +112,7 @@ export class BrowserComponent implements OnInit {
   }
 
   public navigateModule(source:string){    
+    this.activeModule=source;
     this.router.navigate([source],{ queryParamsHandling: "merge" });
   }
 

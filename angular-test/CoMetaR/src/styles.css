@@ -15,7 +15,7 @@ div {
     box-sizing: border-box;
 }
 div::-webkit-scrollbar {
-    width: 10px;
+    width: 15px;
     background-color: white;
     border-radius: 3px;
 } 

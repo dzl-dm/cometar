@@ -1,0 +1,24 @@
+<div id="menu">
+  <div id="homebutton" class="menuItem" (click)="navigateModule()"></div>
+  <div id="toggleSearch" class="menuItem" (click)="searchDivOpened = !searchDivOpened"></div>
+    <div id="helpbutton" class="menuItem helpbutton" (click)="toggleHelp(helpDiv)"></div>
+</div>
+<div id="searchDiv" [ngClass]="{'open':searchDivOpened}">
+    <form>
+        <input type='text' [value]="treeDataService.getSearchPattern()" name="searchPatternInput" #searchPatternInput placeholder="search term"/> 
+        <input type="submit" (click)='performSearch(searchPatternInput.value)' value="search"/>
+        <input type="button" (click)='clearSearch()' [value]="'x '+(searchResultCount?searchResultCount:'')"/>
+    </form>
+</div>
+<div id="helpDiv" [ngClass]="{'open':helpDivOpened}" #helpDiv>
+    <div id="opacityDiv"></div>
+    <div *ngFor="let helpItem of helpItems" 
+        class="helpItem" 
+        [style.left.px]="helpItem.left" 
+        [style.top.px]="helpItem.top"
+        [style.width.px]="helpItem.width"
+        [style.right.px]="helpItem.right"
+        [style.bottom.px]="helpItem.bottom"><h3>{{helpItem.heading}}</h3>
+        <p *ngFor="let d of helpItem.description">{{d}}</p>
+    </div>
+</div>

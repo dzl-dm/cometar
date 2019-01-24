@@ -1,4 +1,4 @@
-<div class='container'>
+<div class='container' id="provenancedata">
   <div *ngFor="let day of commitMetaDataByDay" 
     [ngClass]="{
       'day':true,
@@ -16,7 +16,7 @@
     </app-commit>
   </div>
 </div>
-<div class='options'>
+<div class='options' id="provenanceoptions">
   <div *ngFor="let cat of categories | keyvalue" [ngClass]="['category', cat.key]">
     <div class='category_heading'>
         <input type="checkbox" [checked]="isOptionsHeadingChecked(cat.key)" [id]="'checkbox_'+cat.key" (click)="displayOptionsHeadingToggle(cat.key)"/>

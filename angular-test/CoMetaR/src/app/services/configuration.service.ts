@@ -30,6 +30,7 @@ export class ConfigurationService {
       type: { name: "Type" },
       unit: { name: "Unit" },
       notation: { name: "Code" },
+      related: { name: "Related Concepts" },
     });
   }
 
@@ -91,7 +92,8 @@ export class ConfigurationService {
     "http://sekmi.de/histream/dwh#dateRestriction": "Date",
     "http://www.w3.org/2004/02/skos/core#hasTopConcept": "Has Top Concept",
     "http://data.dzl.de/ont/dwh#topLevelNode": "Is Top Level Node",
-    "http://data.dzl.de/ont/dwh#unit": "Unit"
+    "http://data.dzl.de/ont/dwh#unit": "Unit",
+    "http://www.w3.org/2004/02/skos/core#related": "Related Concepts"
   }
   public getHumanReadableRDFPredicate(p:string):string{
     return this.rdfUrlMap[p] || p;
@@ -122,6 +124,7 @@ export class ConfigurationService {
 		"http://www.w3.org/1999/02/22-rdf-syntax-ns#about": "structure",
 		"http://data.dzl.de/ont/dwh#topLevelNode": "structure",
 		"http://www.w3.org/ns/prov#wasDerivedFrom": "structure",
+		"http://www.w3.org/2004/02/skos/core#related": "structure",
 		
 		"http://data.dzl.de/ont/dwh#unit": "semantic",
 		"http://www.w3.org/2004/02/skos/core#notation": "semantic",

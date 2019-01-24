@@ -4,13 +4,16 @@
       <div class='detailHeading'>
         {{detail.value.name}}
       </div>
-      <div class='detailContent'>
-        <div *ngIf="detail.key=='modifier'; else normalValue">
-          <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true"></app-tree-item>
-        </div>
-        <ng-template #normalValue>
-          <div *ngFor="let value of detail.value.values" [innerHTML]="value"></div>
-        </ng-template>
+      <div class='detailContent' [ngSwitch]="detail.key">
+            <div *ngSwitchCase="'modifier'">
+                <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true"></app-tree-item>
+            </div>
+            <div *ngSwitchCase="'related'">
+                <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true"></app-tree-item>
+            </div>
+            <div *ngSwitchDefault>
+                <div *ngFor="let value of detail.value.values" [innerHTML]="value"></div>
+            </div>
       </div>
     </div>
   </div>

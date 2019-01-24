@@ -1,3 +1,6 @@
+:host{
+    position: relative;
+}
 div#logos {
     background-color:var(--dzl-blue);
     height:70px;
@@ -16,13 +19,13 @@ div#logos .logo{
     max-height:100%;
     text-align: center;
     position: relative;
+    cursor:pointer;
 }
 div#logos .logo:last-child{
     border-top-right-radius: 5px;
 }
 div#logos .logo:first-child{
     border-top-left-radius: 5px;
-    cursor:pointer;
 }
 div#logos img {
     max-width:100%;

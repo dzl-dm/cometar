@@ -2,7 +2,6 @@ import { Component, OnInit, Input, ElementRef, Output, EventEmitter } from '@ang
 import { CommitMetaData } from '../services/queries/commit-meta-data.service';
 import { Observable, combineLatest } from 'rxjs';
 import { CommitDetails, CommitDetailsService } from '../services/queries/commit-details.service';
-import { CommitDetailsComponent } from '../commit-details/commit-details.component';
 import { TreeDataService, ConceptInformation } from 'src/app/core/services/tree-data.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { filter, map, withLatestFrom, combineAll } from 'rxjs/operators';
