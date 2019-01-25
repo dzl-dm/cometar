@@ -11,7 +11,7 @@
     </form>
 </div>
 <div id="helpDiv" [ngClass]="{'open':helpDivOpened}" #helpDiv>
-    <div id="opacityDiv"></div>
+    <div id="opacityDiv" (click)="toggleHelp(helpDiv)"></div>
     <div *ngFor="let helpItem of helpItems" 
         class="helpItem" 
         [style.left.px]="helpItem.left" 

@@ -1,4 +1,4 @@
-<div class="additionalDetails">
+<div class="additionalDetails" id="detailed_information_additional">
   <div *ngFor="let detail of additionalDetails | keyvalue">
     <div class="detail" *ngIf="detail.value.values.length > 0">
       <div class='detailHeading'>
@@ -18,7 +18,7 @@
     </div>
   </div>
 </div>
-<div class="coreDetails">
+<div class="coreDetails" id="detailed_information_core">
   <div *ngFor="let detail of coreDetails | keyvalue">
     <div class="detail">
       <div [ngClass]="{'detailHeading':true, 'unfilled':detail.value.values.length == 0}">

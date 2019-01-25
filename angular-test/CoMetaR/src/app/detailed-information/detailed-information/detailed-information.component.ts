@@ -5,7 +5,7 @@ import { UrlService } from 'src/app/services/url.service';
 import { map, flatMap } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
 import { ConfigurationService } from 'src/app/services/configuration.service';
-import { MatSnackBar } from '@angular/material';
+import { BrowserService } from 'src/app/core/services/browser.service';
 
 @Component({
   selector: 'app-detailed-information',
@@ -25,7 +25,7 @@ export class DetailedInformationComponent implements OnInit {
     private route:ActivatedRoute,
     private urlService:UrlService,
     private configuration:ConfigurationService,
-    private snackBar: MatSnackBar
+    private browserService:BrowserService
   ) { }
 
   ngOnInit() {
@@ -73,9 +73,7 @@ export class DetailedInformationComponent implements OnInit {
       document.removeEventListener('copy', null);
     });
     document.execCommand('copy');
-    this.snackBar.open(`Text "${item}" copied to clipboard.`, `info`, {
-      duration: 2000,
-    });
+    this.browserService.snackbarNotification.next([`Text "${item}" copied to clipboard.`, `info`]);
   }
 
 }

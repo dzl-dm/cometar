@@ -15,10 +15,7 @@ export class TreepathitemsService {
    */
   public get(iris:string[]):Observable<string[]> { 
     const queryString = this.getQueryString(iris);
-    return this.dataService.getData(queryString/*,
-        ()=>console.log(`Path items of ${iris.join(",")}...`),
-        (result)=>console.log(result.map(e=>e.treePathItem.value))*/
-      ).pipe(map(
+    return this.dataService.getData(queryString).pipe(map(
         (data)=>data.map(e=> e.treePathItem.value)
     ))
   };

@@ -210,8 +210,8 @@ export class UploadClientConfigurationComponent implements OnInit {
 						<case value="St" set-concept="PRIMTHE:8" set-value=""/>
 						<case value="Sy" set-concept="PRIMTHE:16" set-value=""/>
 						<case value="OpSt" set-concept="PRIMTHE:40" set-value=""/>
-						<case value="OpSy" set-concept="PRIMTHE:48" set-value=""/>
-						<case value="StSy" set-concept="PRIMTHE:24" set-value=""/>
+						<case value="OpSy" set-concept="B:DP-" set-value=""/>
+						<case value="StSy" set-concept="asdf" set-value=""/>
 						<case value="OpStSy" set-concept="PRIMTHE:56" set-value=""/>
 						<case value="none" set-concept="PRIMTHE:0" set-value=""/>
 						<otherwise log-warning="Unexpected value" action="drop-fact"/>
@@ -299,7 +299,6 @@ export class UploadClientConfigurationComponent implements OnInit {
 				}
 			))
 		})).subscribe(data => this.treeData$.next(data));
-		this.treeData$.subscribe(data => console.log(data));
     }));
   }
 }
