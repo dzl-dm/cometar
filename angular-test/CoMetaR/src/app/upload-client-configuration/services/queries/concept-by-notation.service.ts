@@ -16,16 +16,23 @@ export class ConceptByNotationService {
    */
   public get(notation:string):Observable<string> { 
     const queryString = this.getQueryString(notation);
-    return this.dataService.getData(queryString).pipe(map(data=> data[0] && data[0].concept.value || ""))
+    return this.dataService.getData(queryString).pipe(map(data=> data[0] || ""))
   };
 
   private getQueryString(notation:string):string {
       return `
       ${prefixes}
-      SELECT DISTINCT ?concept
+      SELECT DISTINCT ?concept ?newnotation
       WHERE
       {
           ?concept skos:notation "${notation}".
+          [ cs:removal [ a rdf:Statement;
+            rdf:subject ?oldconcept;
+            rdf:predicate skos:notation;
+            rdf:object "${notation}"
+          ] ] .
+          ?newconcept skos:notation ?newnotation .
+          ?newconcept prov:wasDerivedFrom+ ?oldconcept .
       }`;
   }
 }

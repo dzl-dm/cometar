@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, query, animateChild, group, animate, state } from '@angular/animations';
 import { DataService } from '../../services/data.service';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material';
+import { BrowserService } from '../services/browser.service';
+import { SnackbarComponent } from '../snackbar/snackbar.component';
 
 @Component({
   selector: 'app-browser',
@@ -84,10 +87,25 @@ export class BrowserComponent implements OnInit {
   constructor(
     private route:ActivatedRoute,
     private router: Router,
-    private dataService: DataService
+    private dataService: DataService,
+    private snackBar: MatSnackBar,
+    private browserService: BrowserService
   ) { }
 
   ngOnInit() {
+    this.activeModule = this.router.url.split("?")[0].substr(1);
+
+    this.browserService.snackbarNotification.subscribe((notification)=> {
+      /*this.snackBar.open(notification[0], notification[1], {
+        duration: notification[1]=='error'?0:2000,
+      });*/
+      this.snackBar.openFromComponent(SnackbarComponent, {
+        data: notification,
+        duration: notification[1]=='error'?10000:2000,
+        horizontalPosition: "right",
+        verticalPosition: "bottom"
+      });
+    });
   }
   
   private savedX;

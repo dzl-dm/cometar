@@ -12,13 +12,14 @@ export class SearchtreeitemService {
   public get(pattern:string):Observable<SearchResultAttributes[]> { 
       if (pattern == "") return of([]);
       const queryString = this.getQueryString(pattern);
+      console.log(queryString);
       return this.dataService.getData(queryString);
   };
 
   private getQueryString(pattern:string):string {
       return `
       ${prefixes}
-      SELECT ?element ?label ?notation ?oldnotation ?altlabel ?description ?unit ?label2 ?status ?creator 
+      SELECT ?element ?label ?notation ?oldnotation ?altlabel ?description ?unit ?label2 ?status ?creator
       WHERE { 
         ?element rdf:type ?t .
         OPTIONAL { ?element skos:prefLabel ?label FILTER ((lang(?label) = 'en') && regex(?label, '${pattern}', 'i')) } . 

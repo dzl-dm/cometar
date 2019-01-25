@@ -73,7 +73,6 @@ export class MenuComponent implements OnInit {
     if (this.activeModule=="details") this.helpItems=this.helpItems.concat(this.detailsHelpItems);
     if (this.activeModule=="provenance") this.helpItems=this.helpItems.concat(this.provenanceHelpItems);
     if (this.activeModule=="client-configuration") this.helpItems=this.helpItems.concat(this.clientconfigurationHelpItems);
-    console.log(this.helpItems);
   }
 
   private alignHelpItems(){
@@ -130,7 +129,22 @@ export class MenuComponent implements OnInit {
     }
   ];
   
-  private detailsHelpItems:HelpItem[]=[];
+  private detailsHelpItems:HelpItem[]=[
+    {
+      relativeTo:"detailed_information_additional",
+      heading:"Concept Information and Relations",
+      relativeLeft: 10,
+      relativeTop: 150
+    },
+    {
+      relativeTo:"detailed_information_core",
+      heading:"Concept Core Information",
+      description:["Press the icon to copy respective text to your clipboard."],
+      relativeLeft: 10,
+      relativeTop: 150,
+      width:200
+    }
+  ];
   private provenanceHelpItems:HelpItem[]=[
     {
       heading:"Date",

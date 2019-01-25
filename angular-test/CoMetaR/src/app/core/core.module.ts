@@ -7,6 +7,7 @@ import { BrowserComponent } from './browser/browser.component';
 import { RouterModule, Routes } from '@angular/router';
 import { LogosComponent } from './logos/logos.component';
 import { MenuComponent } from './menu/menu.component';
+import { SnackbarComponent } from './snackbar/snackbar.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { MenuComponent } from './menu/menu.component';
     TreeItemListComponent,
     BrowserComponent,
     LogosComponent,
-    MenuComponent
+    MenuComponent,
+    SnackbarComponent
   ],
   imports: [
     CommonModule,
@@ -27,6 +29,9 @@ import { MenuComponent } from './menu/menu.component';
     TreeItemListComponent,
     BrowserComponent,
     CommonModule
+  ],
+  entryComponents: [
+    SnackbarComponent
   ]
 })
 export class CoreModule { }

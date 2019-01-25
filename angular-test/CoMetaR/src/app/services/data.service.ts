@@ -1,12 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Observable, throwError, Subject, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { Observable, throwError, Subject, BehaviorSubject, ReplaySubject, of } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { map, catchError, startWith, shareReplay } from 'rxjs/operators';
+import { map, catchError, startWith, shareReplay, retry } from 'rxjs/operators';
+import { BrowserService } from '../core/services/browser.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
+  constructor(
+    private http:HttpClient,
+    private browserService:BrowserService
+  ) { }
 
   private pendings = {};
   public loading = new BehaviorSubject<boolean>(false);
@@ -18,17 +23,25 @@ export class DataService {
     this.busyQueries++;
     if (!this.pendings[queryString]){
       let rs = new ReplaySubject<any[]>(1);
-      this.getObservable(queryString).subscribe(rs)
+      this.getObservable(queryString).subscribe(rs);
       this.pendings[queryString] = rs;
-      //this.pendings[queryString] = this.getObservable(queryString).pipe(shareReplay(1));
+
+      rs.subscribe(data => {
+        if (data instanceof HttpErrorResponse){
+          this.browserService.snackbarNotification.next([data.message,'error']);
+          this.pendings[queryString] = of([]);
+        }
+      })
     }
     this.pendings[queryString].subscribe(()=>{
       this.busyQueries--;
       if (this.busyQueries == 0) this.loading.next(false);
     });
-    return this.pendings[queryString];
+    return this.pendings[queryString].pipe(map(data => {
+      if (data instanceof HttpErrorResponse) return [];
+      else return data;
+    }));
   }
-  constructor(private http:HttpClient) { }
 
   private getObservable(queryString:string):Observable<any[]>{
     return this.http.get<JSONResponse>(
@@ -46,11 +59,14 @@ export class DataService {
           );
           return binding
         })),
-        catchError(this.handleError)
-      );
+      catchError((err)=>{
+        return of(err);
+      })
+    );
   }
 
-  private handleError(error: HttpErrorResponse) {
+  /*private handleError(error: HttpErrorResponse) {
+    console.log(error);
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('An error occurred:', error.error.message);
@@ -64,7 +80,7 @@ export class DataService {
     // return an observable with a user-facing error message
     return throwError(
       'Something bad happened; please try again later.');
-  };
+  };*/
 }
 
 interface JSONResponse {
