@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataService, prefixes } from '../../../services/data.service';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -14,10 +14,21 @@ export class TreepathitemsService {
    * @param {string[]} iris
    */
   public get(iris:string[]):Observable<string[]> { 
-    const queryString = this.getQueryString(iris);
-    return this.dataService.getData(queryString).pipe(map(
+    let obs:Observable<string[]>[]=[];
+    while (iris.length > 0){
+      let tempiris = iris.splice(0,25);
+      const queryString = this.getQueryString(tempiris);
+      obs.push(this.dataService.getData(queryString).pipe(map(
         (data)=>data.map(e=> e.treePathItem.value)
-    ))
+      )));
+    }
+    return obs.length > 0 && combineLatest(obs).pipe(map(observables => {
+      let result:string[] = [];
+      for (let o of observables) {
+        result = result.concat(o);
+      }
+      return result;
+    })) || of([""]);
   };
 
   private getQueryString(iris:string[]):string {

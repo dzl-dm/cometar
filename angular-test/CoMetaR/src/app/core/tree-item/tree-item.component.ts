@@ -61,9 +61,11 @@ export class TreeItemComponent implements OnInit {
     this.conceptInformation$ = this.treeDataService.conceptInformation$.pipe(
       map(cis => cis.filter(ci => ci.concept==this.attributes.element.value))
     )
-    this.showInformationDiv$=this.conceptInformation$.pipe(
-      withLatestFrom(this.showSearchResult$),
-      map(data => data[0].length > 0 || data[1]));
+    this.showInformationDiv$ = combineLatest(
+      this.conceptInformation$,
+      this.showSearchResult$
+    ).pipe(
+      map(data => data[0].length > 0 || data[1] ));
   }
 
   public onSelect(){

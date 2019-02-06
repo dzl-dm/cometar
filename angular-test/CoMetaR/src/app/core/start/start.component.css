@@ -1,0 +1,21 @@
+:host{
+    text-align: center;
+    flex-grow:1;
+    padding: 50px;
+    padding-top:100px;
+}
+div.logo {
+    margin-bottom:50px;
+}
+div.logo img {
+    max-width: 80%;
+}
+div.heading {
+    display:inline-block;
+    font-size:30px;
+    color:var(--dzl-blue);
+}
+div.functions{
+    margin-top:50px;
+    text-align: left;
+}

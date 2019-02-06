@@ -16,6 +16,7 @@ import { CoreModule } from "./core/core.module";
 import { UploadClientConfigurationModule } from './upload-client-configuration/upload-client-configuration.module';
 import { UploadClientConfigurationComponent } from './upload-client-configuration/upload-client-configuration/upload-client-configuration.component';
 import { BrowserComponent } from './core/browser/browser.component';
+import { StartComponent } from './core/start/start.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,7 @@ import { BrowserComponent } from './core/browser/browser.component';
             { path: 'details', component: DetailedInformationComponent, data: {animation: 'Details'} }, 
             { path: 'provenance', component: ProvenanceComponent, data: {animation: 'Provenance'} },    
             { path: 'client-configuration', component: UploadClientConfigurationComponent, data: {animation: 'UploadClientConfiguration'} },    
-            { path: '**', component: ProvenanceComponent, data: {animation: 'Provenance'} },
+            { path: '**', component: StartComponent },
           ]      
         }
       ],
