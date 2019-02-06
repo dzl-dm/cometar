@@ -8,6 +8,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LogosComponent } from './logos/logos.component';
 import { MenuComponent } from './menu/menu.component';
 import { SnackbarComponent } from './snackbar/snackbar.component';
+import { StartComponent } from './start/start.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { SnackbarComponent } from './snackbar/snackbar.component';
     BrowserComponent,
     LogosComponent,
     MenuComponent,
-    SnackbarComponent
+    SnackbarComponent,
+    StartComponent
   ],
   imports: [
     CommonModule,

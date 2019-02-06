@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataService, prefixes } from 'src/app/services/data.service';
+import { DataService, prefixes, JSONResponsePartString, JSONResponsePartUriString } from 'src/app/services/data.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -14,9 +14,9 @@ export class ConceptByNotationService {
    * 
    * @param {string[]} iris
    */
-  public get(notation:string):Observable<string> { 
+  public get(notation:string):Observable<IConceptByNotation> { 
     const queryString = this.getQueryString(notation);
-    return this.dataService.getData(queryString).pipe(map(data=> data[0] || ""))
+    return this.dataService.getData(queryString).pipe(map(data=> <IConceptByNotation>data[0] || {}))
   };
 
   private getQueryString(notation:string):string {
@@ -25,14 +25,22 @@ export class ConceptByNotationService {
       SELECT DISTINCT ?concept ?newnotation
       WHERE
       {
-          ?concept skos:notation "${notation}".
-          [ cs:removal [ a rdf:Statement;
-            rdf:subject ?oldconcept;
-            rdf:predicate skos:notation;
-            rdf:object "${notation}"
-          ] ] .
-          ?newconcept skos:notation ?newnotation .
-          ?newconcept prov:wasDerivedFrom+ ?oldconcept .
+          OPTIONAL { ?concept skos:notation "${notation}". }
+          OPTIONAL {
+            ?usage cs:removal [ a rdf:Statement;
+              rdf:subject ?oldconcept;
+              rdf:predicate skos:notation;
+              rdf:object "${notation}"
+            ] .
+            ?concept skos:notation ?newnotation .
+            ?concept prov:wasDerivedFrom+ ?oldconcept .
+            FILTER (?newnotation != "${notation}")
+          }
       }`;
   }
+}
+
+export interface IConceptByNotation {
+  concept?:JSONResponsePartUriString,
+  newnotation?:JSONResponsePartString
 }

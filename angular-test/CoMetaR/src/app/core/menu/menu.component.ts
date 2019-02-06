@@ -8,7 +8,7 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./menu.component.css']
 })
 export class MenuComponent implements OnInit {
-  @Input() activeModule:string;
+  public activeModule="provenance";
   public searchResultCount;
   public searchDivOpened=false;
   public helpDivOpened=false;
@@ -69,6 +69,7 @@ export class MenuComponent implements OnInit {
   }
 
   private selectHelpItems(){
+    this.activeModule = this.router.url.split("?")[0].substr(1);
     this.helpItems = this.coreHelpItems;
     if (this.activeModule=="details") this.helpItems=this.helpItems.concat(this.detailsHelpItems);
     if (this.activeModule=="provenance") this.helpItems=this.helpItems.concat(this.provenanceHelpItems);
@@ -126,6 +127,14 @@ export class MenuComponent implements OnInit {
       relativeTo: "loading",
       relativeLeft: -50,
       relativeTop: -120
+    },
+    {
+      heading:"Resize Bar",
+      description:["Drag left or right to resize the ontology tree."],
+      relativeTo: "treeResizeComponent",
+      relativeLeft: -125,
+      relativeTop: 350,
+      width: 150
     }
   ];
   

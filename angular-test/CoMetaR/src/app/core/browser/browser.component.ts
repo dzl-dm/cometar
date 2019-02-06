@@ -5,6 +5,8 @@ import { DataService } from '../../services/data.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material';
 import { BrowserService } from '../services/browser.service';
 import { SnackbarComponent } from '../snackbar/snackbar.component';
+import { BehaviorSubject, Subject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-browser',
@@ -83,7 +85,7 @@ export class BrowserComponent implements OnInit {
   public width = 500;
   public resizeToogle = false;
   public newWidth = 0;
-  public activeModule="provenance";
+  public activatedRoute;
   constructor(
     private route:ActivatedRoute,
     private router: Router,
@@ -93,8 +95,6 @@ export class BrowserComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.activeModule = this.router.url.split("?")[0].substr(1);
-
     this.browserService.snackbarNotification.subscribe((notification)=> {
       /*this.snackBar.open(notification[0], notification[1], {
         duration: notification[1]=='error'?0:2000,
@@ -130,12 +130,15 @@ export class BrowserComponent implements OnInit {
   }
 
   public navigateModule(source:string){    
-    this.activeModule=source;
     this.router.navigate([source],{ queryParamsHandling: "merge" });
   }
 
   public prepareRoute(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
+  }
+
+  public onRouterOutletActivate(outlet: RouterOutlet) {
+    outlet.activatedRoute.url.pipe(map(data => data[0] && data[0].path || "")).subscribe(data => this.activatedRoute = data);
   }
 
   public onClaimWidth(width){

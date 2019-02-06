@@ -12,7 +12,6 @@ export class SearchtreeitemService {
   public get(pattern:string):Observable<SearchResultAttributes[]> { 
       if (pattern == "") return of([]);
       const queryString = this.getQueryString(pattern);
-      console.log(queryString);
       return this.dataService.getData(queryString);
   };
 
@@ -34,7 +33,7 @@ export class SearchtreeitemService {
               rdf:predicate skos:notation;
               rdf:object ?oldnotation
             ] .
-            FILTER(regex(?oldnotation, '${pattern}', 'i') && ?notation != ?oldnotation)
+            FILTER(regex(?oldnotation, '${pattern}', 'i'))
         } . 	
         OPTIONAL { ?element dc:description ?description FILTER(regex(?description, '${pattern}', 'i')) } . 
         OPTIONAL { ?element :unit ?unit FILTER(regex(?unit, '${pattern}', 'i')) } . 

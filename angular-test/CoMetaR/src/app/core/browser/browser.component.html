@@ -1,7 +1,7 @@
 <div id="browser" (mousemove)='onTreeResizeDrag($event)' (mouseup)='onTreeResizeEnd($event)'>
     <div id="treeResizeContainer" [style.width.px]="width" [@changeWidth]="{ value:resizeToogle?'random1':'random2', params: { startWidth: this.width, newWidth: this.newWidth }}">
         <div id="treeContainer">
-            <app-menu [activeModule]="activeModule"></app-menu>
+            <app-menu></app-menu>
             <app-tree [width]="width" (claimWidth)="onClaimWidth($event)"></app-tree>
             <app-logos></app-logos>
         </div>
@@ -11,12 +11,12 @@
     </div>
     <div id="modules">
         <div id="moduleMenu">
-            <div class="moduleMenuItem" (click)="navigateModule('details')">Details</div>
-            <div class="moduleMenuItem" (click)="navigateModule('provenance')">Provenance</div>
-            <div class="moduleMenuItem" (click)="navigateModule('client-configuration')">Client Configuration</div>
+            <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'details'}" (click)="navigateModule('details')">Details</div>
+            <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'provenance'}" (click)="navigateModule('provenance')">Provenance</div>
+            <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'client-configuration'}" (click)="navigateModule('client-configuration')">Client Configuration</div>
         </div>
         <div id="moduleContent" [@routeAnimations]="prepareRoute(outlet)">
-            <router-outlet #outlet="outlet"></router-outlet>
+            <router-outlet #outlet="outlet" (activate)="onRouterOutletActivate(outlet)"></router-outlet>
         </div>
     </div>
 </div>

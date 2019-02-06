@@ -37,12 +37,11 @@ div#modules {
     position: relative;
 }
 div#moduleMenu {
-    background-color:#0492D0;
+    background-color:var(--dzl-blue);
     display: flex;
     flex-direction: row;
     flex-shrink: 0;
-    justify-content: space-evenly;
-    align-content: stretch;
+    border-bottom-left-radius: 5px;
     height:50px;
     padding:5px;
 }
@@ -59,19 +58,20 @@ div#moduleContent {
 }
 div.moduleMenuItem {
     cursor: pointer;
-    color:white;
     flex-grow: 1;
     text-align: center;
     padding:12px;
-    background-color:#0492D0;
-    border:1px solid #0492D0;
+    border:0px solid #0492D0;
+    color:white;
 }
 div.moduleMenuItem:not(:first-child){
     margin-left:1px;
 }
+div.moduleMenuItem.active{
+    text-decoration: underline;
+}
 div.moduleMenuItem:hover{
-    background-color:#BFE3F2;
-    color:#0492D0;
+    color:var(--soft-blue);
 }
 #treeResizeComponent {
     width:20px;

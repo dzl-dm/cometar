@@ -1,8 +1,8 @@
 <table>
-  <tr>
+  <!--<tr>
     <td class='clickable' (click)="inputtype='csc'"><input type="radio" name="inputtype" [checked]="inputtype=='csc'"/> Comma Delimited Codes</td>
     <td><input type="text" id="codes" [attr.disabled]="inputtype!='csc' ? '' : null"/></td>
-  </tr>
+  </tr>-->
   <tr>
     <td class='clickable' (click)="inputtype='xml'"><input type="radio" name="inputtype" [checked]="inputtype=='xml'"/> Configuration XML</td>
     <td>
@@ -13,6 +13,10 @@
   <tr>
     <td></td>
     <td><input type='button' value='Analyze' (click)="analyze()"/></td>
+  </tr>
+  <tr *ngIf="showUpdatedConfigurationFileDownloadButton">
+    <td></td>
+    <td><input type='button' value='Download Updated Configuration File' (click)="downloadNewFile()"/></td>
   </tr>
 </table>
 <div id='feedback'>
