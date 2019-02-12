@@ -42,8 +42,9 @@ div#moduleMenu {
     flex-direction: row;
     flex-shrink: 0;
     border-bottom-left-radius: 5px;
-    height:50px;
+    height:35px;
     padding:5px;
+    justify-content: flex-end;
 }
 div#moduleContent {   
     flex-grow:1;
@@ -58,9 +59,8 @@ div#moduleContent {
 }
 div.moduleMenuItem {
     cursor: pointer;
-    flex-grow: 1;
     text-align: center;
-    padding:12px;
+    padding:5px 15px;
     border:0px solid #0492D0;
     color:white;
 }

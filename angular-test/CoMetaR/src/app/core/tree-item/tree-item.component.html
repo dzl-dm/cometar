@@ -9,8 +9,10 @@
       'collapsed':attributes.hasChildren.value && !expanded
     }" >
   </div>
-  <div [ngClass]="{'treeItemTitle':true,'isModifier':attributes.isModifier.value}" (click)="onSelect();$event.stopPropagation();">{{attributes.label.value}}</div>
-  <div [class]="attributes.status ? attributes.status.value : ''">{{attributes.status ? attributes.status.value : ""}}</div>
+  <div [ngClass]="{'treeItemTitle':true,'isModifier':attributes.isModifier.value}" (click)="onSelect();$event.stopPropagation();">
+    {{attributes.label.value}}
+    <div [class]="attributes.status ? attributes.status.value : ''">{{attributes.status ? attributes.status.value : ""}}</div>
+  </div>
 </div>
 <div 
   class="treeItemInformation" 
@@ -45,4 +47,4 @@
     </ng-container>
   </table>
 </div>
-<app-tree-item-list *ngIf="expanded" [expanded]="initialExpanded" [conceptIri]="attributes.element.value"></app-tree-item-list>
+<app-tree-item-list *ngIf="expanded" [expanded]="initialExpanded && cascade_expand" [conceptIri]="attributes.element.value"></app-tree-item-list>

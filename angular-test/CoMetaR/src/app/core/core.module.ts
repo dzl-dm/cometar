@@ -9,6 +9,7 @@ import { LogosComponent } from './logos/logos.component';
 import { MenuComponent } from './menu/menu.component';
 import { SnackbarComponent } from './snackbar/snackbar.component';
 import { StartComponent } from './start/start.component';
+import { NoSanitizePipe } from './no-sanitize.pipe';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { StartComponent } from './start/start.component';
     LogosComponent,
     MenuComponent,
     SnackbarComponent,
-    StartComponent
+    StartComponent,
+    NoSanitizePipe
   ],
   imports: [
     CommonModule,

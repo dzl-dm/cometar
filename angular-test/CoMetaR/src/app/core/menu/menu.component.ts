@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef, Input } from '@angular/core';
 import { TreeDataService } from '../services/tree-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-menu',
@@ -34,8 +35,11 @@ export class MenuComponent implements OnInit {
     this.router.navigate([],{ queryParams: {searchpattern: null}, queryParamsHandling: "merge" });
     return false;   
   }
-  public navigateModule(){    
-    this.router.navigate(["/"]);
+  public navigateModule(s:string){    
+    if (s=="home") {
+      this.treeDataService.addConceptInformation(of([]));
+      this.router.navigate(["/"]);
+    }
   }
   public toggleHelp(helpDiv:HTMLElement){
     this.selectHelpItems();

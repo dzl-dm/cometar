@@ -59,7 +59,7 @@ div.treeItemTitle{
 div.treeItemTitle:focus {
     outline: 0;
 }
-.treeItemHeading .draft, .treeItemHeading .obsolete, .treeItemHeading .new {
+.draft, .obsolete, .new {
 	background-color:#666666;
 	font-size:10px;
 	font-family:"arial";
@@ -67,17 +67,21 @@ div.treeItemTitle:focus {
 	padding:3px 5px 3px 5px;
 	border-radius: 3px;
 	margin-left:5px;
-	margin-top:7px;
+    margin-bottom:2px;
+    margin-top:1px;
+    position: relative;
     color:#333;
     height:18px;
+    display: inline-flex;
+    vertical-align: middle;
 }
-.treeItemHeading .draft{
+.draft{
 	background-color:#FFEB0F;
 }
-.treeItemHeading .obsolete{
+.obsolete{
 	background-color:#FFBFBF;
 }
-.treeItemHeading .new{
+.new{
 	background-color:#71E161;
 }
 .treeItemTitle.isModifier
