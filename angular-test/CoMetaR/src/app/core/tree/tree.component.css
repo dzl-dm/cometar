@@ -25,7 +25,7 @@ div#scrollHeadings{
 }
 div#scrollHeadings > div > div {
     background-color:white;
-    height:20px;
+    min-height:20px;
     padding-left:9px;
     padding-top:1px;
     border-bottom:1px solid var(--dzl-blue);

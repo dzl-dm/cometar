@@ -34,7 +34,10 @@ export class TreeItemListComponent implements OnInit {
 
   public getTreeItems(){
     let result = [];
-    if (this.conceptIri == "root") this.treeDataService.getTopLevelItems$().subscribe(data => result = data);
+    if (this.conceptIri == "root") {
+      this.treeDataService.getTopLevelItems$().subscribe(data => result = data);
+      this.initialExpanded = true;
+    }
     else this.treeDataService.getSubItems$(this.conceptIri).subscribe(data => result = data);
     return result;
   }

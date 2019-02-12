@@ -42,16 +42,16 @@ export class TreeStyleService {
     let scrollHeadings:string[]=[];   
     let visibleListItem:HTMLElement = this.treeDomElement;
     let foundChild = true;
-
+    let adjustedScrollTop = scrollTop-5;
     while (foundChild){
       foundChild=false;
       let childlist = this.getList(visibleListItem);
       if (childlist) Array.from(this.getListItems(childlist)).forEach((childlistitem:HTMLElement) => {
         if (foundChild)return;
-        let adjustedScrollTop = scrollTop+scrollHeadings.length*20-5;
-        if (this.getPosition(childlistitem).y < adjustedScrollTop && childlistitem.offsetHeight+this.getPosition(childlistitem).y-30 > adjustedScrollTop){
+        if (this.getPosition(childlistitem).y < adjustedScrollTop && childlistitem.offsetHeight+this.getPosition(childlistitem).y-this.getTitle(childlistitem).offsetHeight > adjustedScrollTop){
           visibleListItem = childlistitem;
-          scrollHeadings.push(this.getTitle(visibleListItem));
+          scrollHeadings.push(this.getTitle(visibleListItem).innerHTML);
+          adjustedScrollTop+=this.getTitle(childlistitem).offsetHeight-10;
           foundChild=true;
         }
       });
@@ -72,8 +72,8 @@ export class TreeStyleService {
   private getListItems(list:HTMLElement):HTMLCollection{
     return list.children;
   }
-  private getTitle(listitem:HTMLElement):string{
-    return listitem.getElementsByClassName("treeItemHeading")[0].getElementsByClassName("treeItemTitle")[0].textContent;
+  private getTitle(listitem:HTMLElement):HTMLElement{
+    return <HTMLElement>listitem.getElementsByClassName("treeItemHeading")[0].getElementsByClassName("treeItemTitle")[0];
   }
 
   private informationDivMaxParents$ = new BehaviorSubject<number>(0);
