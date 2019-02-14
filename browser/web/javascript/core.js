@@ -567,7 +567,6 @@ var TreeManager = (function(){
 	*/
 	var treeLoadingStatus;
 	var openSelectMark = function(a){
-		console.log("jo");
 		if (treeLoadingStatus && treeLoadingStatus.state()=="pending") {
 			console.log("tree busy...");
 			treeLoadingStatus.then(function(){
