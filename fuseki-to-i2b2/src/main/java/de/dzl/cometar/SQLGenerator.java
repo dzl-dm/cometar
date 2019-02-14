@@ -36,6 +36,7 @@ public abstract class SQLGenerator {
 	}
 
 	String query_top_elements = "";
+	String query_datatype = "";
 	String query_child_elements = "";
 	String query_notations = "";
 	String query_label = "";
@@ -46,6 +47,7 @@ public abstract class SQLGenerator {
     	InputStream query_child_elements_input = getClass().getResourceAsStream("/query_child_elements.txt");
     	InputStream query_notations_input = getClass().getResourceAsStream("/query_notations.txt");
     	InputStream query_label_input = getClass().getResourceAsStream("/query_label.txt");
+    	InputStream query_datatype_input = getClass().getResourceAsStream("/query_datatype.txt");
     	InputStream query_description_input = getClass().getResourceAsStream("/query_description.txt");
     	
 		try {
@@ -53,6 +55,7 @@ public abstract class SQLGenerator {
 			query_child_elements = readFile(query_child_elements_input);
 			query_notations = readFile(query_notations_input);
 			query_label = readFile(query_label_input);
+			query_datatype = readFile(query_datatype_input);
 			query_description = readFile(query_description_input);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -67,7 +70,7 @@ public abstract class SQLGenerator {
 		writeDataSql("DELETE FROM "+data_schema+"modifier_dimension WHERE sourcesystem_cd='"+sourcesystem+"';\n");
 	}
 	
-    protected void generateSQLStatements() throws IOException {    	
+    protected void generateSQLStatements() throws IOException { 
     	long time = System.currentTimeMillis();
     	try {
 	    	initializeWriters();
@@ -120,7 +123,9 @@ public abstract class SQLGenerator {
      */
 	private void recursivelyRunThroughConceptsAndGenerateStatements(String element, String type, ArrayList<String> ancestors, boolean isModifier, String appliedPath) throws IOException
 	{		
+		String current_timestamp = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0")).format(new Date());
 		String label = getLabel(element);	
+		String datatypexml = getDatatypeXml(element, current_timestamp);
 		String description = getDescription(element);
 		if (description.isEmpty()) description = label;
     	ArrayList<ArrayList<String>> childElements = getChildren(element);
@@ -137,7 +142,6 @@ public abstract class SQLGenerator {
 		else if (childNames.size() > 0) visualAttribute = type.equals("modifier")?"DA":"FA";
 		else if (notations.size() <= 1) visualAttribute = type.equals("modifier")?"RA":"LA";
 		else visualAttribute = "MA";
-		String current_timestamp = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0")).format(new Date());
 		/*
 		 * Building two i2b2 paths, one with and one without prefixes of form:
 		 * [\i2b2]\ancestor 0\ancestor 1\...\ancestor n\concept\
@@ -152,7 +156,7 @@ public abstract class SQLGenerator {
 
 		counter+=1;	
 		//Write statements for concept. In case of not exactly one concept notation, String notation will be "NULL".
-		generateI2b2InsertStatement(c_hlevel, notation, element_path, label, description, visualAttribute, current_timestamp, isModifier, appliedPath);
+		generateI2b2InsertStatement(c_hlevel, notation, element_path, label, description, visualAttribute, current_timestamp, isModifier, appliedPath, datatypexml);
 		if (isRootElement)
 			generateTableAccessInsertStatement(element_path, label, visualAttribute);		
 		if (notation != null)
@@ -172,7 +176,7 @@ public abstract class SQLGenerator {
 				visualAttribute = "MH";
 				element_path += "MULTI\\";
 				
-				generateI2b2InsertStatement(c_hlevel, "", element_path, "MULTI", description, visualAttribute, current_timestamp, isModifier, appliedPath);
+				generateI2b2InsertStatement(c_hlevel, "", element_path, "MULTI", description, visualAttribute, current_timestamp, isModifier, appliedPath, datatypexml);
 			}		
 			//Write INSERT statements for all notations.
 			c_hlevel++;
@@ -183,7 +187,7 @@ public abstract class SQLGenerator {
 				notationPrefix = getNotationPrefix(notations.get(i));
 				notation = notationPrefix + notations.get(i).getString();
 				
-				generateI2b2InsertStatement(c_hlevel, notation, element_path_sub, label, description, visualAttribute, current_timestamp, isModifier, appliedPath);
+				generateI2b2InsertStatement(c_hlevel, notation, element_path_sub, label, description, visualAttribute, current_timestamp, isModifier, appliedPath, datatypexml);
 				if (isModifier) generateModifierDimensionInsertStatement(notation, element_path_sub, label, current_timestamp);
 				else generateConceptDimensionInsertStatement(notation, element_path_sub, label, current_timestamp);
 			}
@@ -207,7 +211,8 @@ public abstract class SQLGenerator {
 	}
 	
 	private void generateI2b2InsertStatement(int c_hlevel, String notation, String concept_long, 
-			String label, String description, String visualAttribute, String current_timestamp, boolean isModifier, String appliedPath) throws IOException
+			String label, String description, String visualAttribute, String current_timestamp, 
+			boolean isModifier, String appliedPath, String datatypexml) throws IOException
 	{
 		String statement = 
 				"INSERT INTO "+meta_schema+ontology_tablename+"("+
@@ -217,7 +222,7 @@ public abstract class SQLGenerator {
 					"update_date,download_date,import_date,sourcesystem_cd)"+
 				"VALUES("+
 					c_hlevel+",'"+concept_long+"','"+label+"','N','"+visualAttribute+"',"+
-					(notation != null ? "'"+notation+"'" : "NULL")+",NULL,"+(isModifier?"'modifier_cd'":"'concept_cd'")+","+(isModifier?"'modifier_dimension'":"'concept_dimension'")+","+(isModifier?"'modifier_path'":"'concept_path'")+","+
+					(notation != null ? "'"+notation+"'" : "NULL")+","+datatypexml+","+(isModifier?"'modifier_cd'":"'concept_cd'")+","+(isModifier?"'modifier_dimension'":"'concept_dimension'")+","+(isModifier?"'modifier_path'":"'concept_path'")+","+
 					"'T','LIKE','"+concept_long+"','"+description+"','"+(appliedPath != null? appliedPath : "@")+"',"+
 					"current_timestamp,'"+current_timestamp+"',current_timestamp,'"+sourcesystem+"'"+
 				");\n";
@@ -366,11 +371,41 @@ public abstract class SQLGenerator {
 			httpQuery.close();
 			throw new NullPointerException("Concept without prefLabel: "+concept);
 		}
-		QuerySolution solution = results.next();			
+		QuerySolution solution = results.next();
 		String label = solution.getLiteral("label").getString();
 		httpQuery.close();
 		// possibly generate error if there are multiple labels
 		return cleanLabel(label);
+	}
+	
+	private String getDatatypeXml(String concept, String current_timestamp) throws NullPointerException
+	{
+    	String queryString = query_datatype.replace("<CONCEPT>", "<"+concept+">");
+		Query query = QueryFactory.create(queryString);
+		QueryEngineHTTP httpQuery = new QueryEngineHTTP(sparqlEndpoint, query);
+		ResultSet results = httpQuery.execSelect();
+		String datatype = "";
+		if( results.hasNext() ){
+			QuerySolution solution = results.next();			
+			datatype = solution.getLiteral("datatype").getString();
+		}
+		httpQuery.close();
+		String datatypexml = "NULL";
+		if (!datatype.equals("")){
+			datatypexml = "'<ValueMetadata><Version>3.02</Version><CreationDateTime>"+current_timestamp+"</CreationDateTime><DataType>";
+			switch (datatype) {
+				case "integer":
+					datatypexml += "Integer";
+					break;
+				case "float":
+					datatypexml += "Float";
+					break;
+				default:
+					datatypexml += "Text";
+			}
+			datatypexml += "</DataType><Oktousevalues>Y</Oktousevalues></ValueMetadata>'";
+		}
+		return datatypexml;
 	}
 	
 	private String getDescription(String concept) throws NullPointerException
