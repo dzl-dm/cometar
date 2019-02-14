@@ -31,16 +31,16 @@ export class TreepathitemsService {
     })) || of([""]);
   };
 
-  private getQueryString(iris:string[]):string {
-      return `
-      ${prefixes}
-      SELECT DISTINCT ?treePathItem
-      WHERE
-      {
-          ?element skos:broader* [ rdf:partOf* [ skos:broader* ?c ] ] .
-          ?treePathItem skos:member* ?c .
-          ?treePathItem rdf:type ?type FILTER (?type IN (skos:Concept, skos:Collection)) .
-          filter (?treePathItem != ?element && ?element IN (${iris.map(e => `<${e}>`).join(',')}))
-      }`;
+  public getQueryString(iris:string[]):string {
+      return `${prefixes}
+SELECT DISTINCT ?treePathItem
+WHERE
+{
+    ?element skos:broader* [ rdf:partOf* [ skos:broader* ?c ] ] .
+    ?treePathItem skos:member* ?c .
+    ?treePathItem rdf:type ?type FILTER (?type IN (skos:Concept, skos:Collection)) .
+    filter (?treePathItem != ?element && ?element IN (${iris.map(e => `<${e}>`).join(',')}))
+}
+      `;
   }
 }

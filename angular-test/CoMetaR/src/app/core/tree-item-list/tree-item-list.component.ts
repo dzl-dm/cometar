@@ -23,7 +23,8 @@ import { Observable } from 'rxjs';
 })
 export class TreeItemListComponent implements OnInit {
   @Input() conceptIri:string;
-  @Input('expanded') initialExpanded?:boolean;
+  @Input('expanded') expanded?:boolean;
+  @Input('cascade_expand') cascade_expand?:boolean;
   private treeItems$:Observable<TreeItemAttributes[]>;
   constructor(
     private treeDataService:TreeDataService
@@ -36,7 +37,7 @@ export class TreeItemListComponent implements OnInit {
     let result = [];
     if (this.conceptIri == "root") {
       this.treeDataService.getTopLevelItems$().subscribe(data => result = data);
-      this.initialExpanded = true;
+      this.expanded = true;
     }
     else this.treeDataService.getSubItems$(this.conceptIri).subscribe(data => result = data);
     return result;

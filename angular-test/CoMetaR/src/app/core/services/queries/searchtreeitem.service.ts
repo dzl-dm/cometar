@@ -15,34 +15,33 @@ export class SearchtreeitemService {
       return this.dataService.getData(queryString);
   };
 
-  private getQueryString(pattern:string):string {
-      return `
-      ${prefixes}
-      SELECT ?element ?label ?notation ?oldnotation ?altlabel ?description ?unit ?label2 ?status ?creator
-      WHERE { 
-        ?element rdf:type ?t .
-        OPTIONAL { ?element skos:prefLabel ?label FILTER ((lang(?label) = 'en') && regex(?label, '${pattern}', 'i')) } . 
-        OPTIONAL { ?element skos:prefLabel ?label2 . FILTER (!(lang(?label2) = 'en') && regex(?label2, '${pattern}', 'i')) } . 
-        OPTIONAL { ?element skos:notation ?notation FILTER(regex(?notation, '${pattern}', 'i')) } .
-        OPTIONAL { 
-          ?element prov:wasDerivedFrom+ ?oldconcept .
-          ?cs a cs:ChangeSet ;
-            cs:removal [
-              a rdf:Statement;
-              rdf:subject ?oldconcept;
-              rdf:predicate skos:notation;
-              rdf:object ?oldnotation
-            ] .
-            FILTER(regex(?oldnotation, '${pattern}', 'i'))
-        } . 	
-        OPTIONAL { ?element dc:description ?description FILTER(regex(?description, '${pattern}', 'i')) } . 
-        OPTIONAL { ?element :unit ?unit FILTER(regex(?unit, '${pattern}', 'i')) } . 
-        OPTIONAL { ?element skos:altLabel ?altlabel FILTER(regex(?altlabel, '${pattern}', 'i')) } . 
-        OPTIONAL { ?element :status ?status FILTER(regex(?status, '${pattern}', 'i')) } . 
-        OPTIONAL { ?element dc:creator ?creator FILTER(regex(?creator, '${pattern}', 'i')) } . 
-        OPTIONAL { ?element prov:wasDerivedFrom+ [ skos:notation ?oldnotation ] FILTER(regex(?oldnotation, '${pattern}', 'i')) } . 
-        FILTER (bound(?label) || bound(?notation) || bound(?oldnotation) || bound(?altLabel) || bound(?description) || bound(?unit) || bound(?label2) || bound(?status) || bound(?creator))
-      } `;
+  public getQueryString(pattern:string):string {
+      return `${prefixes}
+SELECT ?element ?label ?notation ?oldnotation ?altlabel ?description ?unit ?label2 ?status ?creator
+WHERE { 
+  ?element rdf:type ?t .
+  OPTIONAL { ?element skos:prefLabel ?label FILTER ((lang(?label) = 'en') && regex(?label, '${pattern}', 'i')) } . 
+  OPTIONAL { ?element skos:prefLabel ?label2 . FILTER (!(lang(?label2) = 'en') && regex(?label2, '${pattern}', 'i')) } . 
+  OPTIONAL { ?element skos:notation ?notation FILTER(regex(?notation, '${pattern}', 'i')) } .
+  OPTIONAL { 
+    ?element prov:wasDerivedFrom+ ?oldconcept .
+    ?cs a cs:ChangeSet ;
+      cs:removal [
+        a rdf:Statement;
+        rdf:subject ?oldconcept;
+        rdf:predicate skos:notation;
+        rdf:object ?oldnotation
+      ] .
+      FILTER(regex(?oldnotation, '${pattern}', 'i'))
+  } . 	
+  OPTIONAL { ?element dc:description ?description FILTER(regex(?description, '${pattern}', 'i')) } . 
+  OPTIONAL { ?element :unit ?unit FILTER(regex(?unit, '${pattern}', 'i')) } . 
+  OPTIONAL { ?element skos:altLabel ?altlabel FILTER(regex(?altlabel, '${pattern}', 'i')) } . 
+  OPTIONAL { ?element :status ?status FILTER(regex(?status, '${pattern}', 'i')) } . 
+  OPTIONAL { ?element dc:creator ?creator FILTER(regex(?creator, '${pattern}', 'i')) } . 
+  OPTIONAL { ?element prov:wasDerivedFrom+ [ skos:notation ?oldnotation ] FILTER(regex(?oldnotation, '${pattern}', 'i')) } . 
+  FILTER (bound(?label) || bound(?notation) || bound(?oldnotation) || bound(?altLabel) || bound(?description) || bound(?unit) || bound(?label2) || bound(?status) || bound(?creator))
+} `;
   }
 }
 

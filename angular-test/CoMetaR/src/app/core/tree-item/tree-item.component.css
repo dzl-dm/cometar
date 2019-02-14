@@ -107,6 +107,7 @@ div.treeItemTitle:focus {
     width:100%;
     margin-top:10px;
     margin-bottom:10px;
+    overflow-x: hidden;
 }
 .treeItemInformation table td, .treeItemInformation table th {
     border:0px solid #EEE;
@@ -114,23 +115,26 @@ div.treeItemTitle:focus {
     vertical-align: top;
     flex-shrink:0;
 }
-.treeItemInformation table td{
+.treeItemInformation table td, .treeItemInformation table th{
     word-break: break-word;
 }
 .treeItemInformation table td, .treeItemInformation table th {
-    min-width:50px;
+    /*min-width:50px;*/
     box-sizing: border-box;
 }
 .treeItemInformation table.conceptInformation tr:first-child {
-    border:1px solid #DDD;
+    border:1px solid #EEE;
     border-bottom-width: 0px;
     display:none;
     padding-top:10px;
-    height:30px;
+    height:50px;
     background-color:white;
 }
+.treeItemInformation table.conceptInformation tr:first-child th {
+    overflow: hidden;
+}
 .treeItemInformation table.conceptInformation:hover {
-    margin-top:-31px;
+    margin-top:-51px;
 }
 .treeItemInformation table.conceptInformation:hover tr:first-child {
     display:flex;
@@ -138,14 +142,16 @@ div.treeItemTitle:focus {
 .treeItemInformation table tr {
     display: flex;
     border:1px solid white;
+    background-color:white;
+    position: relative;
+    width:100%;
 }
 .treeItemInformation table.conceptInformation tr:not(:first-child):hover,
 .treeItemInformation table.searchResult tr:hover {
     border:1px solid #EEE;
-    position: relative;
+    z-index:10;
     margin-top:-8px;
     margin-bottom:-8px;
-    background-color:white;
 }
 .treeItemInformation table.conceptInformation tr:not(:first-child):hover td,
 .treeItemInformation table.searchResult tr:hover td {

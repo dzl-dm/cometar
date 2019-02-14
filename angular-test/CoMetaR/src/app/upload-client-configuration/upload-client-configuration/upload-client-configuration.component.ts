@@ -64,6 +64,7 @@ export class UploadClientConfigurationComponent implements OnInit {
 					let ci:ConceptInformation = {
 						concept: result.concept && result.concept.value,
 						headings:["Column", "Value", "Mapped Value", "Unit"],
+						cellWidthPercentages:[55,15,15,15],
 						cells:this.clientConfigurationService.getTreeLines(m),
 						sourceId:"clientconfig"
 					}
@@ -82,8 +83,8 @@ export class UploadClientConfigurationComponent implements OnInit {
   }
 
   public downloadNewFile(){			
-	let thefile = new Blob([this.replacedFileContent], { type: "application/octet-stream" });
-	let url = window.URL.createObjectURL(thefile);
-	window.open(url);
+		let thefile = new Blob([this.replacedFileContent], { type: "application/octet-stream" });
+		let url = window.URL.createObjectURL(thefile);
+		window.open(url);
   }
 }
