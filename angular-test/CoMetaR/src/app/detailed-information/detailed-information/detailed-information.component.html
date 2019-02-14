@@ -6,7 +6,7 @@
       </div>
       <div class='detailContent' [ngSwitch]="detail.key">
             <div *ngSwitchCase="'modifier'">
-                <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true"></app-tree-item>
+                <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true" [cascade_expand]="true"></app-tree-item>
             </div>
             <div *ngSwitchCase="'related'">
                 <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true"></app-tree-item>

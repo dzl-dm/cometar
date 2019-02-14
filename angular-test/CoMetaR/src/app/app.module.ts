@@ -17,6 +17,8 @@ import { UploadClientConfigurationModule } from './upload-client-configuration/u
 import { UploadClientConfigurationComponent } from './upload-client-configuration/upload-client-configuration/upload-client-configuration.component';
 import { BrowserComponent } from './core/browser/browser.component';
 import { StartComponent } from './core/start/start.component';
+import { SparqlModule } from './sparql/sparql.module';
+import { SparqlComponent } from './sparql/sparql/sparql.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +34,7 @@ import { StartComponent } from './core/start/start.component';
     ProvenanceModule,
     UploadClientConfigurationModule,
     MatSnackBarModule,
+    SparqlModule,
     RouterModule.forRoot(
       [
         { path: ':prefix/:concept', redirectTo: 'details?concept=:prefix::concept' },
@@ -41,6 +44,7 @@ import { StartComponent } from './core/start/start.component';
             { path: 'details', component: DetailedInformationComponent, data: {animation: 'Details'} }, 
             { path: 'provenance', component: ProvenanceComponent, data: {animation: 'Provenance'} },    
             { path: 'client-configuration', component: UploadClientConfigurationComponent, data: {animation: 'UploadClientConfiguration'} },    
+            { path: 'sparql', component: SparqlComponent, data: {animation: 'SPARQL'} },   
             { path: '**', component: StartComponent },
           ]      
         }

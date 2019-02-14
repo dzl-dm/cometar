@@ -31,7 +31,7 @@ class ClientConfiguration {
 		if (this.config.datasource["eav-table"]) this.config.datasource["eav-table"].forEach(et => {
 			let file = et.source[0].url[0];
 			let mdat = et.mdat[0];
-			et.virtual[0].value.forEach(v => {
+			if (et.virtual && et.virtual[0].value) et.virtual[0].value.forEach(v => {
 				let column = v.$.column;
 				if (v.map[0]) {
 					this.readMapIntoMappings(v.map[0], file, column, "", 
@@ -51,15 +51,19 @@ class ClientConfiguration {
 				let column = value.$ && value.$.column || value.$ && value.$["constant-value"] == value.$.na && "constant-value";
 				let unit = c.unit && c.unit[0].$ && ( c.unit[0].$.column || "\""+c.unit[0].$["constant-value"]+"\"" );
 				let constantvalue = value.$ && value.$["constant-value"];
+				let navalue = value.$ && value.$.na;
+				let nadrop = value.$ && value.$["na-action"] == "drop-fact" || false;
+				let type = value.$["xsi:type"];
 				if (value.map) {
 					this.readMapIntoMappings(value.map[0],file,column,concept,
-						value.$ && value.$.na, 
-						value.$ && value.$["na-action"] == "drop-fact" || false, 
+						navalue, 
+						nadrop, 
 						constantvalue, 
-						unit);
+						unit,
+						type);
 				}
 				else {
-					this.getMapping(concept, value.$ && value.$.na, value.$ && value.$["na-action"] == "drop-fact" || false, unit, constantvalue).occurances.push({
+					this.getMapping(concept, navalue, nadrop, unit, constantvalue, type).occurances.push({
 						column: column,
 						file: file,
 						drop: false
@@ -79,15 +83,35 @@ class ClientConfiguration {
 	 * @param column 
 	 * @param concept 
 	 */
-	private readMapIntoMappings(map:Map, file:string, column:string, concept:string, navalue?:string, nadrop?:boolean, constantvalue?:string, unit?:string){
+	private readMapIntoMappings(map:Map, file:string, column:string, concept:string, navalue?:string, nadrop?:boolean, constantvalue?:string, unit?:string, type?:string){
 		let mapconcept = map.$ && map.$["set-concept"] || concept;
 		let cases = map.case && map.otherwise && map.case.concat(map.otherwise) || map.case || map.otherwise;
+		if (navalue != undefined 
+			&& nadrop == false 
+			&& !cases.map(c => c.$.value).includes(navalue) 
+			&& cases.filter(c => c.$["set-value"] != navalue && (!map.otherwise || map.otherwise[0] && map.otherwise[0].$.action != "drop-fact")).length > 0)
+		{
+			this.getMapping(concept, navalue, nadrop, unit, constantvalue, type).occurances.push({
+				column: column,
+				file: file,
+				value: "",
+				drop: false
+			});						
+		}
+		if (!map.otherwise){
+			this.getMapping(mapconcept, navalue, nadrop, unit, constantvalue, type).occurances.push({
+				column: column,
+				file: file,
+				value: constantvalue,
+				drop: false
+			});
+		}
 		if (cases) {
 			let excludedvalues = []; // for otherwise set-concept
 			cases.forEach(c => {
 				let caseconcept = c.$ && c.$["set-concept"] || mapconcept;
 				if (map.otherwise && c != map.otherwise[0] && c.$ && c.$.value) excludedvalues.push(c.$.value);
-				this.getMapping(caseconcept, navalue, nadrop, unit, constantvalue).occurances.push({
+				this.getMapping(caseconcept, navalue, nadrop, unit, constantvalue, type).occurances.push({
 					column: column,
 					file: file,
 					value: constantvalue || c.$ && c.$.value,
@@ -98,7 +122,7 @@ class ClientConfiguration {
 			});
 		}
 		else {
-			this.getMapping(mapconcept,navalue,nadrop,unit, constantvalue).occurances.push({
+			this.getMapping(mapconcept,navalue,nadrop,unit, constantvalue, type).occurances.push({
 				column: column,
 				file: file,
 				drop: false
@@ -106,7 +130,7 @@ class ClientConfiguration {
 		}
 	}
 
-	private getMapping(concept:string, navalue?:string, nadrop?:boolean, unit?:string, constantvalue?:string):Mapping{
+	private getMapping(concept:string, navalue?:string, nadrop?:boolean, unit?:string, constantvalue?:string, type?:string):Mapping{
 		let mapping = this.mappings.filter(m => m.concept == concept)[0];
 		if (!mapping) {
 			mapping = {
@@ -115,7 +139,8 @@ class ClientConfiguration {
 				navalue: navalue,
 				nadrop: nadrop,
 				unit: unit,
-				constantvalue: constantvalue
+				constantvalue: constantvalue,
+				type: type
 			}
 			this.mappings.push(mapping);
 		}
@@ -126,16 +151,20 @@ class ClientConfiguration {
     let result = [];
 
     let s = m.concept + ": ";
+		//if (m.concept=="L:19911-7") console.log(m);
     m.occurances.forEach(o => {
-      if (o.drop) return;
+			if (o.drop) return; //Man will als Benutzer nicht sehen, was gedropt wird. Es interessiert nur, was positiv gemapt ist.
+			let dropvalues=m.occurances.filter(occ => occ.file == o.file && occ.column == o.column && occ.drop).map(occ => occ.value);
+			//if (m.concept=="L:19911-7") console.log(dropvalues);
 
-      let column = o.file+"/"+o.column;
+      let column = o.file+" / "+o.column;
       let value = "";
       let mappedvalue = "";
       let unit = "";
 
-      let isBoolean = m.navalue != undefined && m.nadrop == false;
-      if (o.value) {
+			let isBoolean = m.navalue != undefined && m.nadrop == false;
+			//if (m.concept=="L:19911-7") console.log(o);
+      if (o.value != undefined) {
         if (o.setvalue != undefined) {
           if (m.navalue != undefined && m.navalue == o.setvalue) {
             if (m.nadrop == true) {
@@ -153,19 +182,29 @@ class ClientConfiguration {
           }
         }
         else if (o.value == m.navalue){
-          value = "\""+o.value+"\"";
-          mappedvalue = "true";
-        }
-        else value = "\""+o.value+"\"";
+					value = "\""+o.value+"\"";
+					if (o.drop)	mappedvalue = "drop";
+          else mappedvalue = "true";
+				}
+        else {
+					if (o.drop)	mappedvalue = "drop";
+					value = "\""+o.value+"\"";
+				}
       }
       else if (o.excludedvalues && o.excludedvalues.length > 0){
-        value = "NOT(\""+o.excludedvalues.join("\",\"")+"\")";
-        mappedvalue = "true";
+				value = "NOT(\""+o.excludedvalues.join("\",\"")+"\")";
+				if (o.drop)	mappedvalue = "drop";
+        else mappedvalue = "true";
       }
       else if (m.constantvalue == m.navalue) {
         mappedvalue = "true";
-      }
-      if (m.unit) unit = ""+m.unit+"";
+			}
+			else {
+				value = "NOT(\""+dropvalues.join("\",\"")+"\")";
+				mappedvalue = "source "+m.type;
+			}
+
+      if (m.unit && mappedvalue != "drop") unit = ""+m.unit+"";
       else if (!isBoolean) unit = "";
 
       result.push([column, value, mappedvalue, unit]);
@@ -210,7 +249,8 @@ interface Mapping {
 	navalue?:string,
 	nadrop?:boolean,
 	unit?:string,
-	constantvalue?:string
+	constantvalue?:string,
+	type?:string
 }
 interface Occurance {
 	file:string,

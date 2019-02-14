@@ -2,6 +2,7 @@
     @openClose
     *ngFor="let treeitem of getTreeItems()" 
     [treeItemAttributes]="treeitem" 
-    [expanded]="initialExpanded"
+    [expanded]="expanded"
+    [cascade_expand]="cascade_expand"
     [ngClass]="{'selected':isSelected$(treeitem) | async, 'topLevel':conceptIri == 'root'}">
 </app-tree-item>

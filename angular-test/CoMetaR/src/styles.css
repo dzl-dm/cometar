@@ -14,12 +14,12 @@ body {
 div {
     box-sizing: border-box;
 }
-div::-webkit-scrollbar {
+::-webkit-scrollbar {
     width: 15px;
     background-color: white;
     border-radius: 3px;
 } 
-div::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     background-color: #0492D0;
     border-radius: 3px;
     padding:3px;
@@ -29,4 +29,19 @@ div::-webkit-scrollbar-thumb {
 :root {
     --dzl-blue: #0492D0;
     --soft-blue: #BFE3F2;
+}
+input, textarea, select {
+    border:1px solid var(--dzl-blue);
+    flex-shrink:1;
+    border-radius: 3px;
+}
+input[type='submit'], input[type='button'], input[type='file'] {
+    background-color:var(--dzl-blue);
+    color:white;
+    cursor:pointer;
+    margin-left:1px;
+}
+input[type='submit']:hover, input[type='button']:hover {
+    background-color:var(--soft-blue);
+    color:#0492D0;
 }

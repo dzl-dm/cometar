@@ -14,7 +14,7 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./browser.component.css'],
   animations: [
     trigger('routeAnimations', [
-      transition('Details => *, Provenance => UploadClientConfiguration', [
+      transition('Details => *, Provenance => UploadClientConfiguration, * => SPARQL', [
         style({ position: 'relative' }),
         query(':enter, :leave', [
           style({
@@ -27,18 +27,18 @@ import { map } from 'rxjs/operators';
         query(':enter', [
           style({ left: '100%'})
         ]),
-        query(':leave', animateChild()),
+        query(':leave', animateChild(), { optional: true }),
         group([
           query(':leave', [
             animate('300ms ease-out', style({ left: '-100%'}))
-          ]),
+          ], { optional: true }),
           query(':enter', [
             animate('300ms ease-out', style({ left: '0%'}))
           ])
         ]),
         query(':enter', animateChild()),
       ]),
-      transition('* => Details, UploadClientConfiguration => Provenance', [
+      transition('* => Details, UploadClientConfiguration => Provenance, SPARQL => *', [
         style({ position: 'relative' }),
         query(':enter, :leave', [
           style({

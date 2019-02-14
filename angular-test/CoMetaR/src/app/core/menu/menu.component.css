@@ -86,19 +86,6 @@ form input:first-child{
     background-color:white;
     color:#0492D0;
 }
-form input {
-    border:1px solid #0492D0;
+form input {    
     width:70px;
-    flex-shrink:1;
-    border-radius: 3px;
-}
-form input[type='submit'], form input[type='button'] {
-    background-color:#0492D0;
-    color:white;
-    cursor:pointer;
-    margin-left:1px;
-}
-form input[type='submit']:hover, form input[type='button']:hover {
-    background-color:#BFE3F2;
-    color:#0492D0;
 }
