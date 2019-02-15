@@ -1,4 +1,4 @@
-<div class='container' id="provenancedata">
+<div class='container' id="provenancedata" #provenancedata>
   <div *ngFor="let day of commitMetaDataByDay" 
     [ngClass]="{
       'day':true,
@@ -6,17 +6,18 @@
       'selected':isSelectedDate(day[0]) | async
     }">
     <div class="date" (click)="onDaySelect(day[0])">{{day[0].toString() | date:'dd.MM.yyyy'}}</div>
-    <app-commit 
+    <app-commit
       *ngFor="let metadata of day[1] | keyvalue" 
       [commitMetaData]="metadata.value" 
       (onSelect)="onSelect($event)"
       [ngClass]="{'selected':(selectedCommit$ | async) == metadata.value.commitid.value}"
       [displayOptions$]="displayOptions$"
+      [displaycontainer]="provenancedata"
       class="commit">
     </app-commit>
   </div>
 </div>
-<div class='options' id="provenanceoptions">
+<div class='options' id="provenanceoptions" #provenanceoptions>
   <div *ngFor="let cat of categories | keyvalue" [ngClass]="['category', cat.key]">
     <div class='category_heading'>
         <input type="checkbox" [checked]="isOptionsHeadingChecked(cat.key)" [id]="'checkbox_'+cat.key" (click)="displayOptionsHeadingToggle(cat.key)"/>

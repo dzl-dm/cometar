@@ -14,16 +14,18 @@ import { filter, map, withLatestFrom, combineAll } from 'rxjs/operators';
 export class CommitComponent implements OnInit {
   @Input() commitMetaData:CommitMetaData;
   @Input() displayOptions$:Observable<{}>;
+  @Input() displaycontainer;
   @Output() onSelect: EventEmitter<string> = new EventEmitter();
   private commitDetails:CommitDetails[]=[];
   public categories={};
   public commitMetaDataHR:CommitMetaData;
   constructor(
     private commitDetailsService:CommitDetailsService,
-    private configuration:ConfigurationService
+    private configuration:ConfigurationService,
+    private ele:ElementRef
   ) { }
 
-  ngOnInit() {
+  ngOnInit() {    
     combineLatest(this.commitDetailsService.get(this.commitMetaData.commitid.value),this.displayOptions$).pipe(
       map(data => {
         let cds = data[0];
@@ -47,5 +49,10 @@ export class CommitComponent implements OnInit {
   }
   onClick(){
     this.onSelect.emit(this.commitMetaData.commitid.value);
+  }
+
+  public getCommitDetailsDirection(){
+    if (this.ele.nativeElement.offsetTop + 200 > this.displaycontainer.offsetHeight + this.displaycontainer.scrollTop) return "up";
+    else return "down"
   }
 }

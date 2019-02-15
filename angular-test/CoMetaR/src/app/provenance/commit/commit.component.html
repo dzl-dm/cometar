@@ -1,4 +1,4 @@
-<div class='commitDetails'>
+<div [ngClass]="{'commitDetails':true,'openUp':getCommitDetailsDirection()=='up'}">
     <div>
         <p>Author:<br>{{commitMetaDataHR.author.value}}</p>
         <p>Message:<br>{{commitMetaDataHR.message.value}}</p>
