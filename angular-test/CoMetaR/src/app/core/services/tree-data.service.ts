@@ -157,7 +157,7 @@ export interface ConceptInformation{
   concept:string,
   headings?:string[],
   cells:string[][],
-  cellWidthPercentages?:number[],
+  cellWidthPercentages:number[],
   cellWidthPixels?:number[],
   sourceId:string
 }

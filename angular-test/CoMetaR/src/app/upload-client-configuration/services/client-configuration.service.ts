@@ -38,7 +38,8 @@ class ClientConfiguration {
 					  v.$ && v.$.na || mdat.value && mdat.value[0].$ && mdat.value[0].$.na,
 						v.$ && v.$["na-action"]=="drop-fact" || mdat.value && mdat.value[0].$ && mdat.value[0].$["na-action"]=="drop-fact" || false,
 						v.$ && v.$["constant-value"] || mdat.value && mdat.value[0].$ && mdat.value[0].$["constant-value"],
-						mdat.unit && mdat.unit[0].$ && ( mdat.unit[0].$.column || mdat.unit[0].$["constant-value"] ));
+						mdat.unit && mdat.unit[0].$ && ( mdat.unit[0].$.column || mdat.unit[0].$["constant-value"] ),
+						v.$ && v.$["xsi:type"]);
 				}
 			});
 		});
@@ -88,6 +89,7 @@ class ClientConfiguration {
 		let cases = map.case && map.otherwise && map.case.concat(map.otherwise) || map.case || map.otherwise;
 		if (navalue != undefined 
 			&& nadrop == false 
+			&& cases
 			&& !cases.map(c => c.$.value).includes(navalue) 
 			&& cases.filter(c => c.$["set-value"] != navalue && (!map.otherwise || map.otherwise[0] && map.otherwise[0].$.action != "drop-fact")).length > 0)
 		{
@@ -243,7 +245,7 @@ class ClientConfiguration {
 	}
 }
 
-interface Mapping {
+export interface Mapping {
 	concept:string,
 	occurances:Occurance[],	
 	navalue?:string,
