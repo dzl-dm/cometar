@@ -51,8 +51,13 @@ export class CommitComponent implements OnInit {
     this.onSelect.emit(this.commitMetaData.commitid.value);
   }
 
-  public getCommitDetailsDirection(){
+  public getCommitDetailsVerticalDirection(){
     if (this.ele.nativeElement.offsetTop + 200 > this.displaycontainer.offsetHeight + this.displaycontainer.scrollTop) return "up";
     else return "down"
+  }
+
+  public getCommitDetailsHorizontalDirection(){
+    if (this.ele.nativeElement.offsetLeft + 400 > this.displaycontainer.offsetWidth + this.displaycontainer.scrollLeft) return "left";
+    else return "right"
   }
 }
