@@ -94,6 +94,7 @@ export class ProvenanceComponent implements OnInit {
         let ci:ConceptInformation = cia[0] || { 
           concept: cd.subject.value,
           headings: ["Attribute","Old Value","New Value"],
+          cellWidthPercentages: [30,35,35],
           sourceId: "Provenance",
           cells:[]
         };
