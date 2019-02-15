@@ -33,12 +33,13 @@ p {
     /*display:none;*/
     position: absolute;
     box-shadow: 10px 10px 6px -6px #777;
-    transition: min-width 0.2s, height 0.2s;
+    transition: min-width 0.2s, height 0.2s, top 0.2s;
     width:10px;
     min-width:10px;
     height:0px;
     padding-top:20px;
     border-radius: 3px;
+    top:0px;
 }
 .commitDetails div {
     width:calc(100% - 10px);
@@ -51,6 +52,11 @@ p {
     overflow:auto;
     min-width: 400px;
     height:200px;
+}
+:host:hover .commitDetails.openUp{
+    top:-180px;
+    padding-top:10px;
+    padding-bottom:30px;
 }
 :host:hover .commitDetails div{
     overflow:auto;

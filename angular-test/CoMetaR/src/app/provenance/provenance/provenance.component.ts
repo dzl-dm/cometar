@@ -15,7 +15,7 @@ import { CommitDetailsService, CommitDetails } from '../services/queries/commit-
   styleUrls: ['./provenance.component.css']
 })
 export class ProvenanceComponent implements OnInit {
-  private fromDate:Date = new Date("2018-12-13");
+  private fromDate:Date = new Date("2019-01-13");
   public commitMetaDataByDay=[];
   public categories = {};
   public selectedCommit$ = new ReplaySubject<string>(1);
@@ -171,4 +171,9 @@ export class ProvenanceComponent implements OnInit {
 
   private displayOptions = this.configuration.initialCheckedPredicates;
   public displayOptions$:BehaviorSubject<{}>;
+
+  public getTop(event){
+    console.log(event);
+    return 0;
+  }
 }
