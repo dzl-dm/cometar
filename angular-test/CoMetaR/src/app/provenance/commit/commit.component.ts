@@ -19,6 +19,7 @@ export class CommitComponent implements OnInit {
   private commitDetails:CommitDetails[]=[];
   public categories={};
   public commitMetaDataHR:CommitMetaData;
+  public mouseOvered=false;
   constructor(
     private commitDetailsService:CommitDetailsService,
     private configuration:ConfigurationService,

@@ -5,6 +5,7 @@ import { TreeDataService, ConceptInformation } from '../services/tree-data.servi
 import { TreeStyleService } from "../services/tree-style.service";
 import { SearchResultAttributes } from '../services/queries/searchtreeitem.service';
 import { withLatestFrom, map } from 'rxjs/operators';
+import { ConfigurationService } from 'src/app/services/configuration.service';
 
 @Component({
   selector: 'app-tree-item',
@@ -25,7 +26,7 @@ export class TreeItemComponent implements OnInit {
   @Input('cascade_expand') cascade_expand?:boolean;
 
   private treeItems$:Observable<TreeItemAttributes[]>;
-  private searchResultAttributes$:Observable<SearchResultAttributes>;
+  private searchResultAttributes$:Observable<SearchResultAttributes[]>;
   private showSearchResult$:Observable<boolean>;
   public intent$:Observable<number>;
   public expanded:boolean;
@@ -35,6 +36,7 @@ export class TreeItemComponent implements OnInit {
     private treeitemsService: TreeItemsService, 
     private treeDataService: TreeDataService,
     private treeStyleService: TreeStyleService,
+    private configurationService: ConfigurationService,
     private el: ElementRef  
   ){
   }
@@ -58,7 +60,14 @@ export class TreeItemComponent implements OnInit {
     ).subscribe(next => this.expanded = next.includes(true));
     
     this.showSearchResult$ = this.treeDataService.isSearchMatch$(this.attributes.element.value);
-    this.searchResultAttributes$ = this.treeDataService.getSearchMatch$(this.attributes.element.value);
+    this.searchResultAttributes$ = this.treeDataService.getSearchMatch$(this.attributes.element.value).pipe(
+      map(sras => {
+        sras.map(sra => {
+          sra.property.value = this.configurationService.getHumanReadableRDFPredicate(sra.property.value);
+        });
+        return sras;
+      })
+    );
     this.conceptInformation$ = this.treeDataService.conceptInformation$.pipe(
       map(cis => cis.filter(ci => ci.concept==this.attributes.element.value))
     )

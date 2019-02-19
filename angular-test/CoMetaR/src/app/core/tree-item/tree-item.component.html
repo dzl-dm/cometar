@@ -26,11 +26,11 @@
     'activated':attributes.hasChildren.value && expanded
   }"></div>-->
   <table class="searchResult" *ngIf="showSearchResult$ | async">
-    <tr *ngFor="let attribute of searchResultAttributes$ | async | keyvalue as searchResultAttributes" [class]="attribute.key">
-      <td>{{attribute.key}}</td>
+    <tr *ngFor="let result of searchResultAttributes$ | async">
+      <td>{{result.property.value + (result.value['xml:lang']?" ("+result.value['xml:lang']+")":"")}}</td>
       <td>
         <span 
-          *ngFor="let match of searchMatchArray(attribute.value.value)" 
+          *ngFor="let match of searchMatchArray(result.value.value)" 
           [ngClass]="{'highlightText':match.toUpperCase()==treeDataService.getSearchPattern().toUpperCase()}"
           >{{match}}</span>
       </td>
