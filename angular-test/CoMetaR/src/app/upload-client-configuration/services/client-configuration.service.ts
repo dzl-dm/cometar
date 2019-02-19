@@ -48,30 +48,49 @@ class ClientConfiguration {
 			let file = wt.source[0].url[0];
 			wt.mdat[0].concept.forEach(c => {
 				let concept = c.$.id;
-				let value = c.value[0];
-				let column = value.$ && value.$.column || value.$ && value.$["constant-value"] == value.$.na && "constant-value";
+				let value = c.value && c.value[0];
+				let column = value && value.$ && value.$.column || value && value.$ && value.$["constant-value"] == value.$.na && "constant-value";
 				let unit = c.unit && c.unit[0].$ && ( c.unit[0].$.column || "\""+c.unit[0].$["constant-value"]+"\"" );
-				let constantvalue = value.$ && value.$["constant-value"];
-				let navalue = value.$ && value.$.na;
-				let nadrop = value.$ && value.$["na-action"] == "drop-fact" || false;
-				let type = value.$["xsi:type"];
-				if (value.map) {
-					this.readMapIntoMappings(value.map[0],file,column,concept,
-						navalue, 
-						nadrop, 
-						constantvalue, 
-						unit,
-						type);
+				let constantvalue = value && value.$ && value.$["constant-value"];
+				let navalue = value && value.$ && value.$.na;
+				let nadrop = value && value.$ && value.$["na-action"] == "drop-fact" || false;
+				let type = value && value.$["xsi:type"];
+				let modifier = c.modifier && c.modifier[0];
+				let ccolumn = column+(modifier && modifier.value && modifier.value[0] && modifier.value[0].$.column?" modified by "+modifier.value[0].$.column:"");
+				if (value && value.map) {
+					this.readMapIntoMappings(value.map[0],
+						file,ccolumn,concept,
+						navalue,nadrop,constantvalue, 
+						unit,type);
 				}
 				else {
-					this.getMapping(concept, navalue, nadrop, unit, constantvalue, type).occurances.push({
-						column: column,
-						file: file,
-						drop: false
-					});					
+					this.pushMapping({
+						concept:concept, 
+						nadrop, navalue, unit, constantvalue, type, 
+						occurances:[{
+							column: ccolumn,
+							file: file,
+							drop: false
+						}]
+					});	
+				}
+				if (modifier){
+					concept = modifier.$ && modifier.$.id;
+					value = modifier.value && modifier.value[0];
+					let mcolumn = (value && value.$ && value.$.column || value && value.$ && value.$["constant-value"] == value.$.na && "constant-value") + " modifying " + column;
+					unit = modifier.unit && modifier.unit[0].$ && ( modifier.unit[0].$.column || "\""+modifier.unit[0].$["constant-value"]+"\"" );
+					constantvalue = value && value.$ && value.$["constant-value"];
+					navalue = value && value.$ && value.$.na;
+					nadrop = value && value.$ && value.$["na-action"] == "drop-fact" || false;
+					type = value && value.$["xsi:type"];
+					this.readMapIntoMappings(value.map[0],
+						file,mcolumn,concept,
+						navalue,nadrop,constantvalue, 
+						unit,type);
 				}
 			});
 		});
+		console.log(this.mappings);
 
 		return this.mappings;
 	}
@@ -87,48 +106,72 @@ class ClientConfiguration {
 	private readMapIntoMappings(map:Map, file:string, column:string, concept:string, navalue?:string, nadrop?:boolean, constantvalue?:string, unit?:string, type?:string){
 		let mapconcept = map.$ && map.$["set-concept"] || concept;
 		let cases = map.case && map.otherwise && map.case.concat(map.otherwise) || map.case || map.otherwise;
+		//na-value exists, na-value is not mapped in <map>, no other value is set to na-value, no <otherwise action='drop-fact'/>
+		// => na-value maps to "true"
 		if (navalue != undefined 
 			&& nadrop == false 
 			&& cases
 			&& !cases.map(c => c.$.value).includes(navalue) 
 			&& cases.filter(c => c.$["set-value"] != navalue && (!map.otherwise || map.otherwise[0] && map.otherwise[0].$.action != "drop-fact")).length > 0)
 		{
-			this.getMapping(concept, navalue, nadrop, unit, constantvalue, type).occurances.push({
-				column: column,
-				file: file,
-				value: "",
-				drop: false
-			});						
+			this.pushMapping({
+				concept:concept, 
+				nadrop, navalue, unit, constantvalue, type, 
+				occurances:[{
+					column: column,
+					file: file,
+					value: "",
+					drop: false
+				}]
+			});			
 		}
 		if (!map.otherwise){
-			this.getMapping(mapconcept, navalue, nadrop, unit, constantvalue, type).occurances.push({
-				column: column,
-				file: file,
-				value: constantvalue,
-				drop: false
+			this.pushMapping({
+				concept:mapconcept, 
+				nadrop, navalue, unit, constantvalue, type, 
+				occurances:[{
+					column: column,
+					file: file,
+					value: constantvalue,
+					drop: false
+				}]
 			});
 		}
 		if (cases) {
-			let excludedvalues = []; // for otherwise set-concept
+			let excludedvalues = []; // for <otherwise set-concept='x'/>
 			cases.forEach(c => {
 				let caseconcept = c.$ && c.$["set-concept"] || mapconcept;
 				if (map.otherwise && c != map.otherwise[0] && c.$ && c.$.value) excludedvalues.push(c.$.value);
-				this.getMapping(caseconcept, navalue, nadrop, unit, constantvalue, type).occurances.push({
-					column: column,
-					file: file,
-					value: constantvalue || c.$ && c.$.value,
-					drop: c.$ && c.$.action == "drop-fact" || false,
-					setvalue: c.$ && c.$["set-value"],
-					excludedvalues: map.otherwise && c == map.otherwise[0] && excludedvalues || []
+				this.pushMapping({
+					concept:caseconcept, 
+					nadrop, navalue, unit, constantvalue, type, 
+					occurances:[{
+						column: column,
+						file: file,
+						value: constantvalue || c.$ && c.$.value,
+						drop: c.$ && c.$.action == "drop-fact" || false,
+						setvalue: c.$ && c.$["set-value"],
+						excludedvalues: map.otherwise && c == map.otherwise[0] && excludedvalues || []
+					}]
 				});
 			});
 		}
 		else {
-			this.getMapping(mapconcept,navalue,nadrop,unit, constantvalue, type).occurances.push({
-				column: column,
-				file: file,
-				drop: false
+			this.pushMapping({
+				concept:mapconcept, 
+				nadrop, navalue, unit, constantvalue, type, 
+				occurances:[{column, file, drop:false}]
 			});
+		}
+	}
+
+	private pushMapping(mapping: Mapping){
+		let existingmapping = this.mappings.filter(m => m.concept == mapping.concept)[0];
+		if (!existingmapping){
+			this.mappings.push(mapping);
+		}
+		else {
+			existingmapping.occurances = existingmapping.occurances.concat(mapping.occurances);
 		}
 	}
 
@@ -298,6 +341,13 @@ interface WideMdat {
 }
 
 interface Concept {
+	$:{id:string},
+	unit: ColumnTag[],
+	value: ColumnTag[],
+	modifier: Modifier[]
+}
+
+interface Modifier {
 	$:{id:string},
 	unit: ColumnTag[],
 	value: ColumnTag[]
