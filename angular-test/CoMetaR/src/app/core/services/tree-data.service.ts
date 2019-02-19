@@ -114,11 +114,10 @@ export class TreeDataService {
       map(searchPattern => searchPattern != "")
     )
   }
-  public getSearchMatch$(iri:string):Observable<SearchResultAttributes>{
+  public getSearchMatch$(iri:string):Observable<SearchResultAttributes[]>{
     return this.searchPattern$.pipe(
       flatMap(searchPattern => this.searchtreeitemService.get(searchPattern).pipe(
-        map(sras => sras.filter(sra => sra.element.value==iri)[0]),
-        filter(sra => sra != undefined)
+        map(sras => sras.filter(sra => sra.element.value==iri))
       ))
     )
   }

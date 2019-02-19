@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataService, prefixes, JSONResponsePartUriString, JSONResponsePartString } from '../../../services/data.service';
+import { DataService, prefixes, JSONResponsePartUriString, JSONResponsePartString, JSONResponsePartLangString } from '../../../services/data.service';
 import { Observable, of } from 'rxjs';
 
 @Injectable({
@@ -17,15 +17,22 @@ export class SearchtreeitemService {
 
   public getQueryString(pattern:string):string {
       return `${prefixes}
-SELECT ?element ?label ?notation ?oldnotation ?altlabel ?description ?unit ?label2 ?status ?creator
+SELECT ?element ?property ?value
 WHERE { 
   ?element rdf:type ?t .
-  OPTIONAL { ?element skos:prefLabel ?label FILTER ((lang(?label) = 'en') && regex(?label, '${pattern}', 'i')) } . 
-  OPTIONAL { ?element skos:prefLabel ?label2 . FILTER (!(lang(?label2) = 'en') && regex(?label2, '${pattern}', 'i')) } . 
-  OPTIONAL { ?element skos:notation ?notation FILTER(regex(?notation, '${pattern}', 'i')) } .
-  OPTIONAL { 
-    ?element prov:wasDerivedFrom+ ?oldconcept .
-    ?cs a cs:ChangeSet ;
+  FILTER (?t IN (skos:Concept, skos:Collection)) .
+  {
+    SELECT ?element ?property ?value
+    WHERE { 
+      ?element ?property ?value FILTER (regex(?value, '${pattern}', 'i')) 
+    } 
+  }
+  UNION
+  {
+    SELECT ?element ("Old Code" as ?property) (?oldnotation as ?value)
+    WHERE { 
+      ?element prov:wasDerivedFrom+ ?oldconcept .
+      ?cs a cs:ChangeSet ;
       cs:removal [
         a rdf:Statement;
         rdf:subject ?oldconcept;
@@ -33,21 +40,19 @@ WHERE {
         rdf:object ?oldnotation
       ] .
       FILTER(regex(?oldnotation, '${pattern}', 'i'))
-  } . 	
-  OPTIONAL { ?element dc:description ?description FILTER(regex(?description, '${pattern}', 'i')) } . 
-  OPTIONAL { ?element :unit ?unit FILTER(regex(?unit, '${pattern}', 'i')) } . 
-  OPTIONAL { ?element skos:altLabel ?altlabel FILTER(regex(?altlabel, '${pattern}', 'i')) } . 
-  OPTIONAL { ?element :status ?status FILTER(regex(?status, '${pattern}', 'i')) } . 
-  OPTIONAL { ?element dc:creator ?creator FILTER(regex(?creator, '${pattern}', 'i')) } . 
-  OPTIONAL { ?element prov:wasDerivedFrom+ [ skos:notation ?oldnotation ] FILTER(regex(?oldnotation, '${pattern}', 'i')) } . 
-  FILTER (bound(?label) || bound(?notation) || bound(?oldnotation) || bound(?altLabel) || bound(?description) || bound(?unit) || bound(?label2) || bound(?status) || bound(?creator))
-} `;
+      FILTER NOT EXISTS { ?element skos:notation ?oldnotation }
+    } 
+  }
+}
+ORDER BY ?element ?property  `;
   }
 }
 
 export interface SearchResultAttributes {
   element:JSONResponsePartUriString,
-  label?:JSONResponsePartString,
+  property:JSONResponsePartUriString,
+  value:JSONResponsePartLangString
+  /*label?:JSONResponsePartString,
   notation?:JSONResponsePartString,
   oldnotation?:JSONResponsePartString,
   altlabel?:JSONResponsePartString,
@@ -55,5 +60,5 @@ export interface SearchResultAttributes {
   unit?:JSONResponsePartString,
   label2?:JSONResponsePartString,
   status?:JSONResponsePartString,
-  creator?:JSONResponsePartString
+  creator?:JSONResponsePartString*/
 }

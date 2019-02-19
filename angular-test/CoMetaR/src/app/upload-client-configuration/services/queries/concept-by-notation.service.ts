@@ -34,7 +34,7 @@ export class ConceptByNotationService {
             ] .
             ?concept skos:notation ?newnotation .
             ?concept prov:wasDerivedFrom+ ?oldconcept .
-            FILTER (?newnotation != "${notation}")
+            FILTER NOT EXISTS { ?concept skos:notation ?newnotation }
           }
       }`;
   }

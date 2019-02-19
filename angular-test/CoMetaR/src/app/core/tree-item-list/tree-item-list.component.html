@@ -1,3 +1,4 @@
+<div id="noResults" *ngIf="getTreeItems().length == 0">No Results.</div>
 <app-tree-item 
     @openClose
     *ngFor="let treeitem of getTreeItems()" 
