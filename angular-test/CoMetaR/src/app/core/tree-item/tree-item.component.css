@@ -90,7 +90,7 @@ div.treeItemTitle:focus {
 }
 
 .treeItemInformation{
-    background-color:white;
+    background-color:#FFFBD5;
     color:#333;
     width:100%;
     display: flex;
@@ -128,7 +128,7 @@ div.treeItemTitle:focus {
     display:none;
     padding-top:10px;
     height:50px;
-    background-color:white;
+    background-color:#FFFBD5;
 }
 .treeItemInformation table.conceptInformation tr:first-child th {
     overflow: hidden;
@@ -141,8 +141,8 @@ div.treeItemTitle:focus {
 }
 .treeItemInformation table tr {
     display: flex;
-    border:1px solid white;
-    background-color:white;
+    border:1px solid #FFFBD5;
+    background-color:#FFFBD5;
     position: relative;
     width:100%;
 }
@@ -160,7 +160,7 @@ div.treeItemTitle:focus {
 }
 .treeItemInformation table.conceptInformation tr:not(:first-child) td:not(:first-child),
 .treeItemInformation table.searchResult tr td:not(:first-child) {
-    border-left: 1px solid white;
+    border-left: 1px solid #FFFBD5;
 }
 .treeItemInformation table.conceptInformation tr:not(:first-child):hover td:not(:first-child),
 .treeItemInformation table.searchResult tr:hover td:not(:first-child) {

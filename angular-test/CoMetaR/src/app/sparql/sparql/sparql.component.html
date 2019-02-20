@@ -16,7 +16,7 @@
         <option *ngFor="let query of queries" (click)="selectionChange(query[1])">{{query[0]}}</option>
       </select></td>
     <td>
-      <textarea id="query">{{queryText}}</textarea>
+      <textarea id="query" [(ngModel)]="queryText"></textarea>
     </td>
   </tr>
   <tr>
