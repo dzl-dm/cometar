@@ -1,10 +1,15 @@
 :host {
+    display:flex;
+    flex-direction: column;
     flex-grow: 1;
     padding:10px;
 }
-table, textarea, input[type='text'], input[type='file'], input[type='button'] {
+table {
+    flex: 0 0;
+}
+textarea, input[type='text'], input[type='file'], input[type='button'] {
     width:100%;
-    height:30px;
+    height: 30px;
 }
 table td {
     vertical-align: top;
@@ -18,4 +23,10 @@ table td.clickable {
 }
 textarea {
     height:300px;
+}
+#feedback{
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    overflow: auto;
 }

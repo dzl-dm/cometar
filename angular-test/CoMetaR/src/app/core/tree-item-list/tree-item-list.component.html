@@ -1,4 +1,4 @@
-<div id="noResults" *ngIf="getTreeItems().length == 0">No Results.</div>
+<div id="noResults" *ngIf="getTreeItems().length == 0 && conceptIri == 'root'">No Results.</div>
 <app-tree-item 
     @openClose
     *ngFor="let treeitem of getTreeItems()" 

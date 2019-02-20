@@ -49,6 +49,9 @@ export class SparqlComponent implements OnInit {
     this.results=[];
     this.dataService.getData(this.queryText).subscribe(data => { 
       console.log(data);
+      if (data.length == 0 || data.length == 1 && Object.keys(data[0]).length==0) {
+        this.resultHeadings.push("No Results.");
+      }
       data.forEach(row => {
         let newRow = [];
         Object.keys(row).forEach((key,value) => {

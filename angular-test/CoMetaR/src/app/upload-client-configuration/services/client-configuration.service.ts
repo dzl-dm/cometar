@@ -44,9 +44,11 @@ class ClientConfiguration {
 			});
 		});
 
-		if (this.config.datasource["wide-table"]) this.config.datasource["wide-table"].forEach(wt => {
+		let widetables = this.config.datasource["wide-table"] || [];
+		widetables = widetables.concat(this.config.datasource["visit-table"]);
+		widetables.forEach(wt => {
 			let file = wt.source[0].url[0];
-			wt.mdat[0].concept.forEach(c => {
+			if (wt.mdat && wt.mdat[0] && wt.mdat[0].concept) wt.mdat[0].concept.forEach(c => {
 				let concept = c.$.id;
 				let value = c.value && c.value[0];
 				let column = value && value.$ && value.$.column || value && value.$ && value.$["constant-value"] == value.$.na && "constant-value";
@@ -57,6 +59,7 @@ class ClientConfiguration {
 				let type = value && value.$["xsi:type"];
 				let modifier = c.modifier && c.modifier[0];
 				let ccolumn = column+(modifier && modifier.value && modifier.value[0] && modifier.value[0].$.column?" modified by "+modifier.value[0].$.column:"");
+				if (concept=="OS:XML") console.log("jo");
 				if (value && value.map) {
 					this.readMapIntoMappings(value.map[0],
 						file,ccolumn,concept,
@@ -90,9 +93,12 @@ class ClientConfiguration {
 				}
 			});
 		});
-		console.log(this.mappings);
-
-		return this.mappings;
+		
+		//Man will als Benutzer nicht sehen, was gedropt wird. Es interessiert nur, was positiv gemapt ist.
+		return this.mappings.map(mapping => {
+			mapping.occurances = mapping.occurances.filter(occ => !occ.drop);
+			return mapping;
+		}).filter(mapping => mapping.occurances.length > 0);
 	}
 
 	/**
@@ -175,30 +181,12 @@ class ClientConfiguration {
 		}
 	}
 
-	private getMapping(concept:string, navalue?:string, nadrop?:boolean, unit?:string, constantvalue?:string, type?:string):Mapping{
-		let mapping = this.mappings.filter(m => m.concept == concept)[0];
-		if (!mapping) {
-			mapping = {
-				concept: concept,
-				occurances: [],
-				navalue: navalue,
-				nadrop: nadrop,
-				unit: unit,
-				constantvalue: constantvalue,
-				type: type
-			}
-			this.mappings.push(mapping);
-		}
-		return mapping;
-	}
-
   public getTreeLines(m:Mapping):string[][]{
     let result = [];
 
     let s = m.concept + ": ";
-		//if (m.concept=="L:19911-7") console.log(m);
+		//if (m.concept=="OS:XML") console.log(m);
     m.occurances.forEach(o => {
-			if (o.drop) return; //Man will als Benutzer nicht sehen, was gedropt wird. Es interessiert nur, was positiv gemapt ist.
 			let dropvalues=m.occurances.filter(occ => occ.file == o.file && occ.column == o.column && occ.drop).map(occ => occ.value);
 			//if (m.concept=="L:19911-7") console.log(dropvalues);
 
@@ -312,8 +300,8 @@ export interface IClientConfiguration {
     "eav-table":EAVTable[],
     meta:{},
     "patient-table":{},
-	"visit-table":{},
-	"wide-table":WideTable[]
+		"visit-table":WideTable[],
+		"wide-table":WideTable[]
   }
 }
 

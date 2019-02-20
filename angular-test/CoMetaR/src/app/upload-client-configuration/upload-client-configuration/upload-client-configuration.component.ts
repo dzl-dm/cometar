@@ -55,6 +55,7 @@ export class UploadClientConfigurationComponent implements OnInit {
 		let mappings:Mapping[] = [];
 		if (this.inputtype=="xml") parseString( this.xmlFileContent, ((err, result:IClientConfiguration) => {
 			mappings = this.clientConfigurationService.getMappings(result);
+			console.log(mappings);
 		}));
 		else mappings = this.csc_content.split(",").map(code => {
 			return <Mapping>{
