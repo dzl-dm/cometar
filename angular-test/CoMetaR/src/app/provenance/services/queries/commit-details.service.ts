@@ -20,51 +20,31 @@ export class CommitDetailsService {
   private getQueryString(commitid:string):string{
     return `
     ${prefixes}
-    SELECT DISTINCT ?subject ?sl ?predicate ?oldobject ?ool ?newobject ?nol (bound(?usage2) as ?deprecatedsubject) ?date
-    WHERE	
-    {
-      <${commitid}> prov:qualifiedUsage ?usage ;
-        prov:endedAtTime ?date .
-      ?usage ?addorremove [ a rdf:Statement; rdf:subject ?subject ] .
-      OPTIONAL {?usage cs:addition ?add .
-        ?add a rdf:Statement; 
-          rdf:subject ?subject; 
-          rdf:predicate ?predicate; 
-          rdf:object ?newobject .
-        OPTIONAL { ?subject skos:prefLabel ?sl filter (lang(?sl)='en') . }
-        OPTIONAL { ?newobject skos:prefLabel ?nol filter (isLiteral(?newobject) || lang(?nol)='en') . }
-        FILTER NOT EXISTS { ?add rdf:comment "hidden" } 
-        FILTER NOT EXISTS { ?newsubject prov:wasDerivedFrom+ ?subject } 
-      }		
-      OPTIONAL { ?usage cs:removal ?rem .
-        ?rem a rdf:Statement; 
-          rdf:subject ?subject; 
-          rdf:predicate ?predicate; 
-          rdf:object ?oldobject .
-        OPTIONAL { ?subject skos:prefLabel ?sl filter (lang(?sl)='en') . }
-        OPTIONAL { ?oldobject skos:prefLabel ?ool filter (isLiteral(?oldobject) || lang(?ool)='en') . }
-        FILTER NOT EXISTS { ?rem rdf:comment "hidden" } 
-        FILTER NOT EXISTS { ?newsubject prov:wasDerivedFrom+ ?subject } 
-      }
-      OPTIONAL {
-        ?usage2 cs:removal ?rem2 .
-        ?rem2 a rdf:Statement; 
-          rdf:subject ?subject; 
-          rdf:predicate rdf:type .
-        FILTER NOT EXISTS { 
-          ?usage2 cs:addition [ 
-            a rdf:Statement; 
-            rdf:subject ?subject; 
-            rdf:predicate rdf:type
-          ]
-        }
-      }
-      filter (
-        bound(?predicate)
-        && (!bound(?oldobject) || !bound(?newobject) || !isLiteral(?oldobject) || !isLiteral(?newobject) || lang(?oldobject) = lang(?newobject))
-      )
-    }
-    ORDER BY ?sl ?subject ?predicate ?oldobject`
+SELECT DISTINCT ?subject ?sl ?predicate ?object ?ol ?addition (!bound(?p) as ?deprecatedsubject) ?date
+WHERE	
+{
+  <${commitid}>  prov:qualifiedUsage ?usage ;
+  prov:endedAtTime ?date .
+  ?usage ?addorremove ?statement .
+  BIND(IF(?addorremove = cs:addition,true,false) as ?addition ) .
+  ?statement a rdf:Statement; 
+    rdf:subject ?subject;
+    rdf:predicate ?predicate; 
+    rdf:object ?object .
+  FILTER NOT EXISTS { ?statement rdf:comment "hidden" } 
+  FILTER NOT EXISTS { ?newsubject prov:wasDerivedFrom+ ?subject }
+  OPTIONAL { ?subject skos:prefLabel ?sl filter (lang(?sl)='en') . }
+  OPTIONAL { ?object skos:prefLabel ?ol filter (lang(?ol)='en') . }
+  
+  #identifying deprecated subjects
+  OPTIONAL {
+    ?subject ?p ?o
+  }
+  FILTER (
+    bound(?predicate)
+  )
+}
+ORDER BY ?subject ?predicate lang(?object) ?date ?addition`
   }
 }
 
@@ -72,10 +52,9 @@ export interface CommitDetails {
   subject:JSONResponsePartUriString,
   sl:JSONResponsePartLangString,
   predicate:JSONResponsePartUriString,
-  oldobject:JSONResponsePartUriString,
-  ool:JSONResponsePartLangString,
-  newobject:JSONResponsePartUriString,
-  nol:JSONResponsePartLangString,
+  object:JSONResponsePartLangString,
+  ol:JSONResponsePartLangString,
+  addition:JSONResponsePartBoolean,
   deprecatedsubject:JSONResponsePartBoolean,
   date:JSONResponsePartDate
 }

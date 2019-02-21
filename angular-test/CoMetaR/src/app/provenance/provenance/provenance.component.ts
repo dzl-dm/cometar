@@ -10,170 +10,207 @@ import { ConceptInformation, TreeDataService } from 'src/app/core/services/tree-
 import { CommitDetailsService, CommitDetails } from '../services/queries/commit-details.service';
 
 @Component({
-  selector: 'app-provenance',
-  templateUrl: './provenance.component.html',
-  styleUrls: ['./provenance.component.css']
+	selector: 'app-provenance',
+	templateUrl: './provenance.component.html',
+	styleUrls: ['./provenance.component.css']
 })
 export class ProvenanceComponent implements OnInit {
-  private fromDate:Date = new Date("2019-01-13");
-  public commitMetaDataByDay=[];
-  public categories = {};
-  public selectedCommit$ = new ReplaySubject<string>(1);
-  public selectedDateValue$ = new ReplaySubject<number>(1);
-  private combinedCommitDetails$:ReplaySubject<CommitDetails[]>=new ReplaySubject<CommitDetails[]>(1);
-  private treeData$:ReplaySubject<ConceptInformation[]>=new ReplaySubject<ConceptInformation[]>(1);
-  constructor(
-    private provenanceService:ProvenanceService,
-    public configuration:ConfigurationService,
-    private commitDetailsService:CommitDetailsService,
-    private router:Router,
-    private urlService:UrlService,
-    private treeDataService:TreeDataService,
-    private route:ActivatedRoute
-  ) { }
+	private fromDate:Date = new Date("2019-01-13");
+	public commitMetaDataByDay=[];
+	public categories = {};
+	public selectedCommit$ = new ReplaySubject<string>(1);
+	public selectedDateValue$ = new ReplaySubject<number>(1);
+	private combinedCommitDetails$:ReplaySubject<CommitDetails[]>=new ReplaySubject<CommitDetails[]>(1);
+	private treeData$:ReplaySubject<ConceptInformation[]>=new ReplaySubject<ConceptInformation[]>(1);
+	constructor(
+		private provenanceService:ProvenanceService,
+		public configuration:ConfigurationService,
+		private commitDetailsService:CommitDetailsService,
+		private router:Router,
+		private urlService:UrlService,
+		private treeDataService:TreeDataService,
+		private route:ActivatedRoute
+	) { }
 
-  ngOnInit() {
-    let index = 0;
-    for (let date = new Date(Date.now()); date >= this.fromDate; date.setHours(date.getHours() - 24)){
-      let day = new Date(date);
-      this.commitMetaDataByDay[index] =[day,[]];
-      let myindex = index;
-      this.provenanceService.getCommitMetaDataByDay$(day).subscribe(cmd => {
-        this.commitMetaDataByDay[myindex] =[day,cmd];
-      });
-      index++;
-    }
+	ngOnInit() {
+		let index = 0;
+		for (let date = new Date(Date.now()); date >= this.fromDate; date.setHours(date.getHours() - 24)){
+			let day = new Date(date);
+			this.commitMetaDataByDay[index] =[day,[]];
+			let myindex = index;
+			this.provenanceService.getCommitMetaDataByDay$(day).subscribe(cmd => {
+				this.commitMetaDataByDay[myindex] =[day,cmd];
+			});
+			index++;
+		}
 
-    this.route.queryParamMap.pipe(
-      map(data => [this.urlService.extendRdfPrefix(data.get('commit')),this.urlService.extendRdfPrefix(data.get('date'))])
-    ).subscribe(([commitid,date]) => {
-      setTimeout(()=>{
-        this.clearTree();
-        this.selectedCommit$.next(commitid);
-        if (commitid != "") this.loadCommitIntoTree(commitid);
-        this.selectedDateValue$.next(new Date(date).valueOf());
-        if (date != "") this.loadDateIntoTree(date);
-      },0);
-    });
+		this.route.queryParamMap.pipe(
+			map(data => [this.urlService.extendRdfPrefix(data.get('commit')),this.urlService.extendRdfPrefix(data.get('date'))])
+		).subscribe(([commitid,date]) => {
+			setTimeout(()=>{
+				this.clearTree();
+				this.selectedCommit$.next(commitid);
+				if (commitid != "") this.loadCommitIntoTree(commitid);
+				this.selectedDateValue$.next(new Date(date).valueOf());
+				if (date != "") this.loadDateIntoTree(date);
+			},0);
+		});
 
-    Object.keys(this.configuration.changeCategories).forEach(key => {
-      if (this.configuration.changeCategories[key] == undefined) return;
-      let value = this.configuration.changeCategories[key];
-      this.categories[value]=this.categories[value] || [];
-      this.categories[value].push(key)
-    });
-    this.displayOptions$=new BehaviorSubject<{}>(this.displayOptions);
+		Object.keys(this.configuration.changeCategories).forEach(key => {
+			if (this.configuration.changeCategories[key] == undefined) return;
+			let value = this.configuration.changeCategories[key];
+			this.categories[value]=this.categories[value] || [];
+			this.categories[value].push(key)
+		});
+		this.displayOptions$=new BehaviorSubject<{}>(this.displayOptions);
 
-    this.treeDataService.addConceptInformation(this.treeData$);
+		this.treeDataService.addConceptInformation(this.treeData$);
 
-    this.combinedCommitDetails$.pipe(
-      flatMap(cds => this.getConceptTableInformation(cds))
-    ).subscribe(this.treeData$);
-  }
+		this.combinedCommitDetails$.pipe(
+			flatMap(cds => this.getConceptTableInformation(cds))
+		).subscribe(this.treeData$);
+	}
 
-  private getCommitMetaDataByDay$(day:Date):Observable<CommitMetaData[]>{
-    return this.provenanceService.getCommitMetaDataByDay$(day);
-  }
+	private getCommitMetaDataByDay$(day:Date):Observable<CommitMetaData[]>{
+		return this.provenanceService.getCommitMetaDataByDay$(day);
+	}
 
-  public onSelect(commitid:string){
-    this.router.navigate(["provenance"],{ queryParams: {date: null, commit: this.urlService.shortenRdfPrefix(commitid)}, queryParamsHandling: "merge" });
-  }
+	public onSelect(commitid:string){
+		this.router.navigate(["provenance"],{ queryParams: {date: null, commit: this.urlService.shortenRdfPrefix(commitid)}, queryParamsHandling: "merge" });
+	}
 
-  public onDaySelect(date:Date){
-    this.router.navigate(["provenance"],{ queryParams: {commit: null, date: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()}, queryParamsHandling: "merge" });
-  }
+	public onDaySelect(date:Date){
+		this.router.navigate(["provenance"],{ queryParams: {commit: null, date: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()}, queryParamsHandling: "merge" });
+	}
 
-  private getConceptTableInformation(commitDetails:CommitDetails[]):Observable<ConceptInformation[]>{
-    let cis = new ReplaySubject<ConceptInformation[]>(1);
-    this.displayOptions$.subscribe(displayOptions => {
-      let result:ConceptInformation[] = [];
-      commitDetails.forEach(cd => {
-        if (!displayOptions[cd.predicate.value]) return;
-        cd = this.configuration.getHumanReadableCommitDetailData(cd);
-        let cia = result.filter(r => r.concept == cd.subject.value);
-        let ci:ConceptInformation = cia[0] || { 
-          concept: cd.subject.value,
-          headings: ["Attribute","Old Value","New Value"],
-          cellWidthPercentages: [30,35,35],
-          sourceId: "Provenance",
-          cells:[]
-        };
-        ci.cells.push([
-          cd.predicate?cd.predicate.value:"",
-          cd.ool?cd.ool.value:cd.oldobject?cd.oldobject.value:"",
-          cd.nol?cd.nol.value:cd.newobject?cd.newobject.value:""
-        ]);
-        if (cia.length == 0) result.push(ci);
-      });
-      cis.next(result);
-    });
-    return cis;
-  }
+	private getConceptTableInformation(commitDetails:CommitDetails[]):Observable<ConceptInformation[]>{
+		let cis = new ReplaySubject<ConceptInformation[]>(1);
+		this.displayOptions$.subscribe(displayOptions => {
+            let result:ConceptInformation[] = [];
+            let subject = "";
+            let predicate = "";
+            let lang = "";
+			commitDetails.forEach(cd => {
+                if (!displayOptions[cd.predicate.value]) return;
 
-  public isSelectedDate(date:Date):Observable<boolean>{
-    return this.selectedDateValue$.pipe(
-      map(selectedDate => {
-        let compareDateValue = new Date(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()).valueOf();
-        return compareDateValue == selectedDate.valueOf()
-      })
-    );
-  }
+                let overwritePreviousAddition = false;
+                if (subject == cd.subject.value
+                    && predicate == cd.predicate.value
+                    && (!cd.object["xml:lang"] || lang == cd.object["xml:lang"])
+                    && this.configuration.uniquePredicates.includes(predicate)) 
+                {
+                    if (!cd.addition.value) return; //removal, das nach dem ersten removal kam
+                    else overwritePreviousAddition = true; //addition, die die vorherige addition überschreibt
+                }
+                subject = cd.subject.value;
+                predicate = cd.predicate.value;
+                lang = cd.object["xml:lang"] || "";
 
-  private loadCommitIntoTree(commitid){  
-    this.commitDetailsService.get(commitid).subscribe(newcds => {
-      let currentcds:CommitDetails[] = [];
-      this.combinedCommitDetails$.subscribe(cds => currentcds = cds).unsubscribe();
-      this.combinedCommitDetails$.next(this.mergeCommitDetails(currentcds, newcds));
-    });
-  }
+				cd = this.configuration.getHumanReadableCommitDetailData(cd);
+				let cia = result.filter(r => r.concept == cd.subject.value);
+				let ci:ConceptInformation = cia[0] || { 
+					concept: cd.subject.value,
+					headings: ["Attribute","Old Value","New Value"],
+					cellWidthPercentages: [30,35,35],
+					sourceId: "Provenance",
+					cells:[]
+				};
+                let objectlabel = cd.ol?cd.ol.value:cd.object?cd.object.value:"";
+                if (overwritePreviousAddition){
+                    ci.cells[ci.cells.length -1][2]=objectlabel;
+                }
+				else ci.cells.push([
+					cd.predicate?cd.predicate.value+(lang?" ("+lang.toUpperCase()+")":""):"",
+					!cd.addition.value?objectlabel:"",
+					cd.addition.value?objectlabel:""
+				]);
+				if (cia.length == 0) result.push(ci);
+			});
+			cis.next(result);
+		});
+		return cis;
+	}
 
-  /**
-   * TODO: merge details
-   * 
-   */
-  private mergeCommitDetails(cds1:CommitDetails[], cds2:CommitDetails[]):CommitDetails[]{
-    cds2.forEach(cd => {
-      cds1.push(cd);
-    });
-    return cds1;
-  }
+	public isSelectedDate(date:Date):Observable<boolean>{
+		return this.selectedDateValue$.pipe(
+			map(selectedDate => {
+				let compareDateValue = new Date(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()).valueOf();
+				return compareDateValue == selectedDate.valueOf()
+			})
+		);
+	}
 
-  private clearTree(){
-    this.combinedCommitDetails$.next([]);
-  }
+	private loadCommitIntoTree(commitid){  
+		this.commitDetailsService.get(commitid).subscribe(newcds => {
+			let currentcds:CommitDetails[] = [];
+			this.combinedCommitDetails$.subscribe(cds => currentcds = cds).unsubscribe();
+			this.combinedCommitDetails$.next(this.mergeCommitDetails(currentcds.concat(newcds)));
+		});
+	}
 
-  private loadDateIntoTree(date:string){
-    this.provenanceService.getCommitMetaDataByDay$(new Date(date)).subscribe(data => data.forEach((cmd)=>{
-      this.loadCommitIntoTree(cmd.commitid.value);
-    }));
-  }
+	/**
+	 * TODO: merge details
+	 * 
+	 */
+	private mergeCommitDetails(cds:CommitDetails[]):CommitDetails[]{
+		let ups = this.configuration.uniquePredicates;    
+		let subjects = cds.map(cd => cd.subject);
+		subjects = subjects.filter((value, index) => subjects.indexOf(value) == index);
+		subjects.forEach(s => {
+			ups.forEach(up=>{
+				let sps = cds.filter(cd => cd.subject == s && cd.predicate.value == up);
+				let i = 0;
+				while (i < sps.length){
+					if (sps.filter((sp,index)=>
+						index > i 
+						&& sps[i].object["xml:lang"] == sp.object["xml:lang"]))
+					{
+						//sps[i] und sp (mit größerem Index) haben gleiches Subject, gleiches (unique) predicate, gleiche lang
 
-  public displayOptionToggle(predicate:string){
-    this.displayOptions[predicate] = !this.displayOptions[predicate];
-    this.displayOptions$.next(this.displayOptions);
-  }
+					}
+					i++;
+				}
+			});
+		});
+		return cds;
+	}
 
-  public isOptionsHeadingChecked(category:string){
-    let result = true;
-    this.categories[category].forEach(predicate => {
-      if (this.displayOptions[predicate] != true) result = false;
-    });
-    return result;
-  }
+	private clearTree(){
+		this.combinedCommitDetails$.next([]);
+	}
 
-  public displayOptionsHeadingToggle(category:string){
-    let checked = this.isOptionsHeadingChecked(category);
-    this.categories[category].forEach(predicate => {
-      this.displayOptions[predicate] = !checked
-    })
-    this.displayOptions$.next(this.displayOptions);
-  }
+	private loadDateIntoTree(date:string){
+		this.provenanceService.getCommitMetaDataByDay$(new Date(date)).subscribe(data => data.forEach((cmd)=>{
+			this.loadCommitIntoTree(cmd.commitid.value);
+		}));
+	}
 
-  private displayOptions = this.configuration.initialCheckedPredicates;
-  public displayOptions$:BehaviorSubject<{}>;
+	public displayOptionToggle(predicate:string){
+		this.displayOptions[predicate] = !this.displayOptions[predicate];
+		this.displayOptions$.next(this.displayOptions);
+	}
 
-  public getTop(event){
-    console.log(event);
-    return 0;
-  }
+	public isOptionsHeadingChecked(category:string){
+		let result = true;
+		this.categories[category].forEach(predicate => {
+			if (this.displayOptions[predicate] != true) result = false;
+		});
+		return result;
+	}
+
+	public displayOptionsHeadingToggle(category:string){
+		let checked = this.isOptionsHeadingChecked(category);
+		this.categories[category].forEach(predicate => {
+			this.displayOptions[predicate] = !checked
+		})
+		this.displayOptions$.next(this.displayOptions);
+	}
+
+	private displayOptions = this.configuration.initialCheckedPredicates;
+	public displayOptions$:BehaviorSubject<{}>;
+
+	public getTop(event){
+		console.log(event);
+		return 0;
+	}
 }

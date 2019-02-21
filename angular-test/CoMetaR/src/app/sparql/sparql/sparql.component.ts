@@ -48,7 +48,6 @@ export class SparqlComponent implements OnInit {
     this.resultHeadings=[];
     this.results=[];
     this.dataService.getData(this.queryText).subscribe(data => { 
-      console.log(data);
       if (data.length == 0 || data.length == 1 && Object.keys(data[0]).length==0) {
         this.resultHeadings.push("No Results.");
       }
@@ -68,17 +67,23 @@ export class SparqlComponent implements OnInit {
 
   public downloadResults(){
     let resultText = "";
-    resultText+=this.resultHeadings.join(";");
+    resultText+=this.resultHeadings.map(r => "\""+r+"\"").join(";");
     resultText += "\n";
     this.results.forEach(row => {
       for (let i = 0; i < this.resultHeadings.length; i++){
         if (i > 0) resultText+=";";
+        resultText+="\"";
         resultText+=row[i]?row[i]:"";
+        resultText+="\"";
       }
       resultText += "\n";
     });
     let thefile = new Blob([resultText], { type: "application/octet-stream" });
-		let url = window.URL.createObjectURL(thefile);
-		window.open(url);
+    let anchor = document.createElement('a');
+
+    anchor.download = "result.csv";
+    anchor.href = window.URL.createObjectURL(thefile);
+    anchor.dataset.downloadurl = ['text/plain', anchor.download, anchor.href].join(':');
+    anchor.click();
   }
 }

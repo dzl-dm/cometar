@@ -24,7 +24,7 @@
       <br><br>
       <input type="button" value="Send Query" (click)="getResults()"/>
       <br><br>
-      <input type="button" value="Download Result" (click)="downloadResults()"/>
+      <input type="button" value="Download Result" (click)="downloadResults()" *ngIf="results.length > 0"/>
     </td>
     <td>
       <div id="results">
