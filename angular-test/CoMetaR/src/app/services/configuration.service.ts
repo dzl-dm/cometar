@@ -58,13 +58,19 @@ export class ConfigurationService {
   public getHumanReadableCommitDetailData(data:CommitDetails):CommitDetails{
     return this.mergeDeep(data,<CommitDetails>{
       predicate: { value: data.predicate?this.getHumanReadableRDFPredicate(data.predicate.value):"" },
-      ool: { value: this.decodeHTML(data.ool?data.ool.value:data.oldobject?this.getHumanReadableRDFPredicate(data.oldobject.value):"")},
-      nol: { value: this.decodeHTML(data.nol?data.nol.value:data.newobject?this.getHumanReadableRDFPredicate(data.newobject.value):"")}
+      ol: { value: this.decodeHTML(data.ol?data.ol.value:data.object?this.getHumanReadableRDFPredicate(data.object.value):"")}
     });
   }
   private decodeHTML(s:string):string{
     return s.replace(/&quot;/g,"\"");
   }
+  public uniquePredicates = [
+    "http://www.w3.org/2004/02/skos/core#prefLabel", 
+    "http://www.w3.org/2004/02/skos/core#altLabel",
+    "http://data.dzl.de/ont/dwh#status",
+    "http://sekmi.de/histream/dwh#restriction"
+  ]
+
   public rdfUrlMap = {
     "http://data.dzl.de/ont/dwh#status":"Status",    
 		"http://purl.org/dc/elements/1.1/description": "Description",
