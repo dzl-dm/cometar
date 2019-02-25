@@ -139,15 +139,15 @@ public abstract class SQLGenerator {
 		String notation = (notations.size() == 1)?notationPrefix + notations.get(0).getString():null;
 		String visualAttribute;
 		if (type.equals("collection")) visualAttribute = "CA";
-		else if (childNames.size() > 0) visualAttribute = type.equals("modifier")?"DA":"FA";
-		else if (notations.size() <= 1) visualAttribute = type.equals("modifier")?"RA":"LA";
+		else if (childNames.size() > 0) visualAttribute = isModifier?"DA":"FA";
+		else if (notations.size() <= 1) visualAttribute = isModifier?"RA":"LA";
 		else visualAttribute = "MA";
 		/*
 		 * Building two i2b2 paths, one with and one without prefixes of form:
 		 * [\i2b2]\ancestor 0\ancestor 1\...\ancestor n\concept\
 		 */
 		String element_path = isModifier?"\\":i2b2_path_prefix+"\\";
-		int c_hlevel = ancestors.size()+2;
+		int c_hlevel = ancestors.size()+(isModifier?1:2);
 		for (String ancestor_name : ancestors)
 		{
 			element_path += getName(ancestor_name, true)+"\\";
@@ -243,9 +243,12 @@ public abstract class SQLGenerator {
 		writeDataSql(statement);	
 	}
 	
+	private ArrayList<String> uniqueModifiers = new ArrayList<String>();
 	private void generateModifierDimensionInsertStatement(String notation, String concept_long,
 			String label, String current_timestamp) throws IOException
 	{
+		if (uniqueModifiers.indexOf(concept_long) > -1) return;
+		uniqueModifiers.add(concept_long);
 		String statement = 
 			"INSERT INTO "+data_schema+"modifier_dimension("+
 				"modifier_path,modifier_cd,name_char,update_date,"+
