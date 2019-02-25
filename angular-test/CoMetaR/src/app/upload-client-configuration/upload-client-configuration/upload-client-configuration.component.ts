@@ -75,14 +75,14 @@ export class UploadClientConfigurationComponent implements OnInit {
 					let ci:ConceptInformation
 					if (this.inputtype=="xml") ci = {
 						concept: result.concept && result.concept.value,
-						headings:["Column", "Value", "Mapped Value", "Unit"],
+						headings:["Source", "Value", "Mapped Value", "Unit"],
 						cellWidthPercentages:[55,15,15,15],
 						cells:this.clientConfigurationService.getTreeLines(m),
 						sourceId:"clientconfig"
 					}
 					else ci = {
 						concept: result.concept && result.concept.value,
-						headings:["code", "new code"],
+						headings:["Code", "New Code"],
 						cells:[[m.concept, result.newnotation && result.newnotation.value]],
 						cellWidthPercentages:[50,50],
 						sourceId:"clientconfig"

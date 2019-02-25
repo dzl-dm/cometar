@@ -39,7 +39,8 @@ class ClientConfiguration {
 						v.$ && v.$["na-action"]=="drop-fact" || mdat.value && mdat.value[0].$ && mdat.value[0].$["na-action"]=="drop-fact" || false,
 						v.$ && v.$["constant-value"] || mdat.value && mdat.value[0].$ && mdat.value[0].$["constant-value"],
 						mdat.unit && mdat.unit[0].$ && ( mdat.unit[0].$.column || mdat.unit[0].$["constant-value"] ),
-						v.$ && v.$["xsi:type"]);
+						v.$ && v.$["xsi:type"],
+						[]);
 				}
 			});
 		});
@@ -49,48 +50,64 @@ class ClientConfiguration {
 		widetables.forEach(wt => {
 			let file = wt.source[0].url[0];
 			if (wt.mdat && wt.mdat[0] && wt.mdat[0].concept) wt.mdat[0].concept.forEach(c => {
-				let concept = c.$.id;
+				let concept = c && c.$ && c.$.id || "";
 				let value = c.value && c.value[0];
 				let column = value && value.$ && value.$.column || value && value.$ && value.$["constant-value"] == value.$.na && "constant-value";
 				let unit = c.unit && c.unit[0].$ && ( c.unit[0].$.column || "\""+c.unit[0].$["constant-value"]+"\"" );
-				let constantvalue = value && value.$ && value.$["constant-value"];
-				let navalue = value && value.$ && value.$.na;
+				let constantvalue = c.$["constant-value"];
+				if (constantvalue == undefined) constantvalue = value && value.$ && value.$["constant-value"];
+				let navalue = c.$.na;
+				if (navalue == undefined) navalue = value && value.$ && value.$.na;
 				let nadrop = value && value.$ && value.$["na-action"] == "drop-fact" || false;
 				let type = value && value.$["xsi:type"];
-				let modifier = c.modifier && c.modifier[0];
-				let ccolumn = column+(modifier && modifier.value && modifier.value[0] && modifier.value[0].$.column?" modified by "+modifier.value[0].$.column:"");
-				if (concept=="OS:XML") console.log("jo");
+				let modifiers = c.modifier || [];
+				let modifiercolumns = modifiers.map(m => m.value && m.value[0] && (m.value[0].$.column || m.value[0].$["constant-value"]!=undefined && column)).filter(m => m!=undefined);
 				if (value && value.map) {
 					this.readMapIntoMappings(value.map[0],
-						file,ccolumn,concept,
+						file,column,concept,
 						navalue,nadrop,constantvalue, 
-						unit,type);
+						unit,type,modifiercolumns);
 				}
 				else {
 					this.pushMapping({
 						concept:concept, 
 						nadrop, navalue, unit, constantvalue, type, 
 						occurances:[{
-							column: ccolumn,
+							column: column,
 							file: file,
-							drop: false
+							drop: false,
+							modifiers:modifiercolumns
 						}]
 					});	
 				}
-				if (modifier){
+				modifiers.forEach(modifier => {
 					concept = modifier.$ && modifier.$.id;
 					value = modifier.value && modifier.value[0];
-					let mcolumn = (value && value.$ && value.$.column || value && value.$ && value.$["constant-value"] == value.$.na && "constant-value") + " modifying " + column;
+					let mcolumn = (value && value.$ && value.$.column || value && value.$ && value.$["constant-value"] == value.$.na && "constant-value");
 					unit = modifier.unit && modifier.unit[0].$ && ( modifier.unit[0].$.column || "\""+modifier.unit[0].$["constant-value"]+"\"" );
 					constantvalue = value && value.$ && value.$["constant-value"];
 					navalue = value && value.$ && value.$.na;
 					nadrop = value && value.$ && value.$["na-action"] == "drop-fact" || false;
 					type = value && value.$["xsi:type"];
-					this.readMapIntoMappings(value.map[0],
-						file,mcolumn,concept,
-						navalue,nadrop,constantvalue, 
-						unit,type);
-				}
+					if (value && value.map) {
+						this.readMapIntoMappings(value.map[0],
+							file,mcolumn,concept,
+							navalue,nadrop,constantvalue, 
+							unit,type,[],column);
+					}
+					else {
+						this.pushMapping({
+							concept:concept, 
+							nadrop, navalue, unit, constantvalue, type, 
+							occurances:[{
+								column: mcolumn,
+								file: file,
+								drop: false,
+								modifying: column
+							}]
+						});	
+					}
+				});
 			});
 		});
 		
@@ -109,7 +126,11 @@ class ClientConfiguration {
 	 * @param column 
 	 * @param concept 
 	 */
-	private readMapIntoMappings(map:Map, file:string, column:string, concept:string, navalue?:string, nadrop?:boolean, constantvalue?:string, unit?:string, type?:string){
+	private readMapIntoMappings(map:Map, file:string, column:string, 
+		concept:string, navalue?:string, nadrop?:boolean, 
+		constantvalue?:string, unit?:string, type?:string,
+		modifiers?:string[], modifying?:string)
+	{
 		let mapconcept = map.$ && map.$["set-concept"] || concept;
 		let cases = map.case && map.otherwise && map.case.concat(map.otherwise) || map.case || map.otherwise;
 		//na-value exists, na-value is not mapped in <map>, no other value is set to na-value, no <otherwise action='drop-fact'/>
@@ -127,7 +148,9 @@ class ClientConfiguration {
 					column: column,
 					file: file,
 					value: "",
-					drop: false
+					drop: false,
+					modifiers,
+					modifying
 				}]
 			});			
 		}
@@ -139,7 +162,9 @@ class ClientConfiguration {
 					column: column,
 					file: file,
 					value: constantvalue,
-					drop: false
+					drop: false,
+					modifiers,
+					modifying
 				}]
 			});
 		}
@@ -157,7 +182,9 @@ class ClientConfiguration {
 						value: constantvalue || c.$ && c.$.value,
 						drop: c.$ && c.$.action == "drop-fact" || false,
 						setvalue: c.$ && c.$["set-value"],
-						excludedvalues: map.otherwise && c == map.otherwise[0] && excludedvalues || []
+						excludedvalues: map.otherwise && c == map.otherwise[0] && excludedvalues || [],
+						modifiers,
+						modifying
 					}]
 				});
 			});
@@ -166,7 +193,13 @@ class ClientConfiguration {
 			this.pushMapping({
 				concept:mapconcept, 
 				nadrop, navalue, unit, constantvalue, type, 
-				occurances:[{column, file, drop:false}]
+				occurances:[{
+					column, 
+					file, 
+					drop:false,
+					modifiers,
+					modifying
+				}]
 			});
 		}
 	}
@@ -185,18 +218,19 @@ class ClientConfiguration {
     let result = [];
 
     let s = m.concept + ": ";
-		//if (m.concept=="OS:XML") console.log(m);
     m.occurances.forEach(o => {
 			let dropvalues=m.occurances.filter(occ => occ.file == o.file && occ.column == o.column && occ.drop).map(occ => occ.value);
-			//if (m.concept=="L:19911-7") console.log(dropvalues);
 
-      let column = o.file+" / "+o.column;
+			let column = "";
+			if (o.column && o.column != "constant-value") column = `"${o.file}" / "${o.column}"`;
+			else if (!o.column && m.constantvalue != undefined && m.constantvalue == m.navalue) column = "constant";
+
+			if (o.modifiers && o.modifiers.length > 0) column+= " modified by " + o.modifiers.map(m => "\""+m+"\"").join(",");
+			if (o.modifying) column+= " modifying \"" + o.modifying + "\"";
       let value = "";
       let mappedvalue = "";
       let unit = "";
-
 			let isBoolean = m.navalue != undefined && m.nadrop == false;
-			//if (m.concept=="L:19911-7") console.log(o);
       if (o.value != undefined) {
         if (o.setvalue != undefined) {
           if (m.navalue != undefined && m.navalue == o.setvalue) {
@@ -291,7 +325,9 @@ interface Occurance {
 	value?:string,
 	drop?:boolean,
 	setvalue?:string,
-	excludedvalues?:string[]
+	excludedvalues?:string[],
+	modifiers?:string[],
+	modifying?:string
 }
 
 export interface IClientConfiguration {
@@ -329,14 +365,22 @@ interface WideMdat {
 }
 
 interface Concept {
-	$:{id:string},
+	$:{
+		id:string,
+		"constant-value":string,
+		na:string
+	},
 	unit: ColumnTag[],
 	value: ColumnTag[],
 	modifier: Modifier[]
 }
 
 interface Modifier {
-	$:{id:string},
+	$:{
+		id:string,
+		"constant-value":string,
+		na:string
+	},
 	unit: ColumnTag[],
 	value: ColumnTag[]
 }
