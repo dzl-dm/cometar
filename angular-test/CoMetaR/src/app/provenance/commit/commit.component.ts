@@ -27,7 +27,7 @@ export class CommitComponent implements OnInit {
   ) { }
 
   ngOnInit() {    
-    combineLatest(this.commitDetailsService.get(this.commitMetaData.commitid.value),this.displayOptions$).pipe(
+    combineLatest(this.commitDetailsService.getByCommitId(this.commitMetaData.commitid.value),this.displayOptions$).pipe(
       map(data => {
         let cds = data[0];
         let displayOptions = data[1];

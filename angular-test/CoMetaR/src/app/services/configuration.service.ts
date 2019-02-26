@@ -26,6 +26,7 @@ export class ConfigurationService {
       editnote: { name: "Editorial Notes" },
       label: { name: "Label" },
       modifier: { name: "Specifications" },
+      lastchangesdate: { name: "Last Changes" },
       status: { name: "Status" },
       type: { name: "Type" },
       unit: { name: "Unit" },

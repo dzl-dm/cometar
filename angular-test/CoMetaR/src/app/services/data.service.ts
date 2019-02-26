@@ -28,6 +28,7 @@ export class DataService {
 
       rs.subscribe(data => {
         if (data instanceof HttpErrorResponse){
+          console.log(data);
           this.browserService.snackbarNotification.next([data.message,'error']);
           this.pendings[queryString] = of([]);
         }
@@ -53,6 +54,7 @@ export class DataService {
           Object.entries(binding).forEach(
             ([key, part]:[string,JSONResponsePart]) => {
               if (part.datatype && part.datatype == "http://www.w3.org/2001/XMLSchema#boolean") part.value = part.value == "true";
+              if (part.datatype && part.datatype == "http://www.w3.org/2001/XMLSchema#dateTime") part.value = new Date(part.value);
               delete part.datatype;
               delete part.type;
             }

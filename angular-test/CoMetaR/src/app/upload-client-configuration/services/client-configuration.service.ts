@@ -54,9 +54,9 @@ class ClientConfiguration {
 				let value = c.value && c.value[0];
 				let column = value && value.$ && value.$.column || value && value.$ && value.$["constant-value"] == value.$.na && "constant-value";
 				let unit = c.unit && c.unit[0].$ && ( c.unit[0].$.column || "\""+c.unit[0].$["constant-value"]+"\"" );
-				let constantvalue = c.$["constant-value"];
+				let constantvalue = c && c.$ && c.$["constant-value"];
 				if (constantvalue == undefined) constantvalue = value && value.$ && value.$["constant-value"];
-				let navalue = c.$.na;
+				let navalue = c && c.$ && c.$.na;
 				if (navalue == undefined) navalue = value && value.$ && value.$.na;
 				let nadrop = value && value.$ && value.$["na-action"] == "drop-fact" || false;
 				let type = value && value.$["xsi:type"];

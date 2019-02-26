@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TreepathitemsService } from './queries/treepathitems.service';
 import { UrlService } from '../../services/url.service'
 import { Component } from '@angular/compiler/src/core';
+import { ConceptInformation } from '../concept-information/concept-information.component';
 
 @Injectable({
   providedIn: 'root'
@@ -150,13 +151,4 @@ export class TreeDataService {
       map(informationPaths => informationPaths.includes(iri))
     )
   }
-}
-
-export interface ConceptInformation{
-  concept:string,
-  headings?:string[],
-  cells:string[][],
-  cellWidthPercentages:number[],
-  cellWidthPixels?:number[],
-  sourceId:string
 }

@@ -67,7 +67,7 @@ export class ProvenanceComponent implements OnInit {
 		this.treeDataService.addConceptInformation(this.treeData$);
 
 		this.combinedCommitDetails$.pipe(
-			flatMap(cds => this.getConceptTableInformation(cds))
+			flatMap(cds => this.provenanceService.getConceptTableInformation(cds, this.displayOptions$))
 		).subscribe(this.treeData$);
 	}
 
@@ -83,54 +83,6 @@ export class ProvenanceComponent implements OnInit {
 		this.router.navigate(["provenance"],{ queryParams: {commit: null, date: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()}, queryParamsHandling: "merge" });
 	}
 
-	private getConceptTableInformation(commitDetails:CommitDetails[]):Observable<ConceptInformation[]>{
-		let cis = new ReplaySubject<ConceptInformation[]>(1);
-		this.displayOptions$.subscribe(displayOptions => {
-            let result:ConceptInformation[] = [];
-            let subject = "";
-            let predicate = "";
-            let lang = "";
-			commitDetails.forEach(cd => {
-                if (!displayOptions[cd.predicate.value]) return;
-
-                let overwritePreviousAddition = false;
-                if (subject == cd.subject.value
-                    && predicate == cd.predicate.value
-                    && (!cd.object["xml:lang"] || lang == cd.object["xml:lang"])
-                    && this.configuration.uniquePredicates.includes(predicate)) 
-                {
-                    if (!cd.addition.value) return; //removal, das nach dem ersten removal kam
-                    else overwritePreviousAddition = true; //addition, die die vorherige addition überschreibt
-                }
-                subject = cd.subject.value;
-                predicate = cd.predicate.value;
-                lang = cd.object["xml:lang"] || "";
-
-				cd = this.configuration.getHumanReadableCommitDetailData(cd);
-				let cia = result.filter(r => r.concept == cd.subject.value);
-				let ci:ConceptInformation = cia[0] || { 
-					concept: cd.subject.value,
-					headings: ["Attribute","Old Value","New Value"],
-					cellWidthPercentages: [30,35,35],
-					sourceId: "Provenance",
-					cells:[]
-				};
-                let objectlabel = cd.ol?cd.ol.value:cd.object?cd.object.value:"";
-                if (overwritePreviousAddition){
-                    ci.cells[ci.cells.length -1][2]=objectlabel;
-                }
-				else ci.cells.push([
-					cd.predicate?cd.predicate.value+(lang?" ("+lang.toUpperCase()+")":""):"",
-					!cd.addition.value?objectlabel:"",
-					cd.addition.value?objectlabel:""
-				]);
-				if (cia.length == 0) result.push(ci);
-			});
-			cis.next(result);
-		});
-		return cis;
-	}
-
 	public isSelectedDate(date:Date):Observable<boolean>{
 		return this.selectedDateValue$.pipe(
 			map(selectedDate => {
@@ -141,17 +93,17 @@ export class ProvenanceComponent implements OnInit {
 	}
 
 	private loadCommitIntoTree(commitid){  
-		this.commitDetailsService.get(commitid).subscribe(newcds => {
+		this.commitDetailsService.getByCommitId(commitid).subscribe(newcds => {
 			let currentcds:CommitDetails[] = [];
 			this.combinedCommitDetails$.subscribe(cds => currentcds = cds).unsubscribe();
-			this.combinedCommitDetails$.next(this.mergeCommitDetails(currentcds.concat(newcds)));
+			this.combinedCommitDetails$.next(currentcds.concat(newcds));
 		});
 	}
 
 	/**
 	 * TODO: merge details
 	 * 
-	 */
+	 
 	private mergeCommitDetails(cds:CommitDetails[]):CommitDetails[]{
 		let ups = this.configuration.uniquePredicates;    
 		let subjects = cds.map(cd => cd.subject);
@@ -173,7 +125,7 @@ export class ProvenanceComponent implements OnInit {
 			});
 		});
 		return cds;
-	}
+	}*/
 
 	private clearTree(){
 		this.combinedCommitDetails$.next([]);
@@ -185,8 +137,8 @@ export class ProvenanceComponent implements OnInit {
 		}));
 	}
 
-	public displayOptionToggle(predicate:string){
-		this.displayOptions[predicate] = !this.displayOptions[predicate];
+	public displayOptionToggle(option:string){
+		this.displayOptions[option] = !this.displayOptions[option];
 		this.displayOptions$.next(this.displayOptions);
 	}
 
@@ -209,8 +161,4 @@ export class ProvenanceComponent implements OnInit {
 	private displayOptions = this.configuration.initialCheckedPredicates;
 	public displayOptions$:BehaviorSubject<{}>;
 
-	public getTop(event){
-		console.log(event);
-		return 0;
-	}
 }

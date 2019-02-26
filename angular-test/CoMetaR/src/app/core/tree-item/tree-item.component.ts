@@ -1,11 +1,12 @@
 import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { Observable, of, combineLatest } from 'rxjs';
 import { TreeItemsService, TreeItemAttributes } from '../services/queries/treeitems.service'
-import { TreeDataService, ConceptInformation } from '../services/tree-data.service';
+import { TreeDataService } from '../services/tree-data.service';
 import { TreeStyleService } from "../services/tree-style.service";
 import { SearchResultAttributes } from '../services/queries/searchtreeitem.service';
 import { withLatestFrom, map } from 'rxjs/operators';
 import { ConfigurationService } from 'src/app/services/configuration.service';
+import { ConceptInformation } from '../concept-information/concept-information.component';
 
 @Component({
   selector: 'app-tree-item',
@@ -28,6 +29,7 @@ export class TreeItemComponent implements OnInit {
   private treeItems$:Observable<TreeItemAttributes[]>;
   private searchResultAttributes$:Observable<SearchResultAttributes[]>;
   private showSearchResult$:Observable<boolean>;
+  public searchResults$:Observable<string[][]>;
   public intent$:Observable<number>;
   public expanded:boolean;
   private conceptInformation$:Observable<ConceptInformation[]>;
@@ -68,6 +70,10 @@ export class TreeItemComponent implements OnInit {
         return sras;
       })
     );
+    this.searchResults$ = this.searchResultAttributes$.pipe(map(sras => sras.map(sra => [
+      sra.property.value + (sra.value['xml:lang']?" ("+sra.value['xml:lang']+")":""),
+      sra.value.value
+    ])));
     this.conceptInformation$ = this.treeDataService.conceptInformation$.pipe(
       map(cis => cis.filter(ci => ci.concept==this.attributes.element.value))
     )
