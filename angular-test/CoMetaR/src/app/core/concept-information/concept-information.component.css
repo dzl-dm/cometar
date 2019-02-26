@@ -1,0 +1,78 @@
+:host, .conceptInformation, table, tbody {
+    width:100%;
+    background-color:inherit;
+}
+table {
+    border-spacing: 0px;
+    margin-top:10px;
+    margin-bottom:10px;
+    overflow-x: hidden;
+    background-color:inherit;
+}
+table td, table th {
+    border:0px solid;
+    border-color: #EEE;
+    padding: 2px 4px 2px 4px;
+    vertical-align: top;
+    flex-shrink:0;
+    word-break: break-word;
+    box-sizing: border-box;
+}
+table.rowHeadingTable tr:first-child td,
+table.columnHeadingTable tr td:first-child {
+    font-weight: bold;
+}
+
+table.hiddenHeading.rowHeadingTable tr:first-child {
+    border:1px solid;
+    border-color: #EEE;
+    border-bottom-width: 0px;
+    display:none;
+    padding-top:10px;
+    height:50px;
+    background-color:inherit;
+}
+table tr:first-child th {
+    overflow: hidden;
+}
+table.hiddenHeading.rowHeadingTable:hover {
+    position: relative;
+    top:-61px;
+    margin-bottom:-51px;
+}
+table.hiddenHeading.rowHeadingTable:hover tr:first-child {
+    display:flex;
+}
+table tr {
+    display: flex;
+    border:1px solid;
+    border-color:rgba(255, 255, 255, .0);;
+    background-color:inherit;
+    position: relative;
+    width:100%;
+}
+table.hiddenHeading.rowHeadingTable tr:not(:first-child):hover {
+    border:1px solid;
+    border-color: #EEE;
+    z-index:10;
+    margin-top:-8px;
+    margin-bottom:-8px;
+}
+table.hiddenHeading.rowHeadingTable tr:not(:first-child):hover td {
+    padding-top:10px;
+    padding-bottom:10px;
+}
+table.hiddenHeading.rowHeadingTable tr:not(:first-child) td:not(:first-child) {
+    border-left: 1px solid inherit;
+}
+.treeItemInformation table.hiddenHeading.rowHeadingTable tr:not(:first-child):hover td:not(:first-child) {
+    border-left: 1px solid;
+    border-color: #EEE;
+}
+
+
+
+.highlightText {
+    font-weight: bold;
+    text-decoration: underline;
+}

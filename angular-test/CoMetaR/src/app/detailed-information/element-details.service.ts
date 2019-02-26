@@ -17,7 +17,7 @@ export class ElementDetailsService {
   private getQueryString(iri?):string {
       return `
       ${prefixes}
-      SELECT ?element ?type ?label ?status ?description ?unit ?altlabel ?author ?domain ?editnote ?modifier ?modifierlabel ?notation ?related
+      SELECT ?element ?type ?label ?status ?description ?unit ?altlabel ?author ?domain ?editnote ?modifier ?modifierlabel ?notation ?related (MAX(?changesdate) AS ?lastchangesdate)
       WHERE {	          
           <${iri}> skos:prefLabel ?label.
           <${iri}> rdf:type ?type .
@@ -34,7 +34,16 @@ export class ElementDetailsService {
             <${iri}> skos:broader* [ rdf:hasPart ?modifier ] . 
             ?modifier skos:prefLabel ?modifierlabel FILTER (lang(?modifierlabel)='en') .
           }
+          OPTIONAL {
+            ?commit prov:qualifiedUsage ?usage ;
+              prov:endedAtTime ?changesdate .
+            ?usage ?addorremove ?statement .
+            ?statement a rdf:Statement ; 
+              rdf:subject <${iri}> .
+            FILTER NOT EXISTS { ?statement rdf:comment "hidden" } 
+          }
       } 
+      GROUP BY ?element ?type ?label ?status ?description ?unit ?altlabel ?author ?domain ?editnote ?modifier ?modifierlabel ?notation ?related
       `;
   }
 }

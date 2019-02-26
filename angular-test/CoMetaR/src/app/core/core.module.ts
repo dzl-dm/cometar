@@ -10,6 +10,7 @@ import { MenuComponent } from './menu/menu.component';
 import { SnackbarComponent } from './snackbar/snackbar.component';
 import { StartComponent } from './start/start.component';
 import { NoSanitizePipe } from './no-sanitize.pipe';
+import { ConceptInformationComponent } from './concept-information/concept-information.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { NoSanitizePipe } from './no-sanitize.pipe';
     MenuComponent,
     SnackbarComponent,
     StartComponent,
-    NoSanitizePipe
+    NoSanitizePipe,
+    ConceptInformationComponent
   ],
   imports: [
     CommonModule,
@@ -32,7 +34,8 @@ import { NoSanitizePipe } from './no-sanitize.pipe';
     TreeItemComponent,
     TreeItemListComponent,
     BrowserComponent,
-    CommonModule
+    CommonModule,
+    ConceptInformationComponent
   ],
   entryComponents: [
     SnackbarComponent

@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { parseString } from 'xml2js';
-import { ConceptInformation, TreeDataService } from 'src/app/core/services/tree-data.service';
+import { TreeDataService } from 'src/app/core/services/tree-data.service';
 import { ReplaySubject, combineLatest } from 'rxjs';
 import { ClientConfigurationService, IClientConfiguration, Mapping } from '../services/client-configuration.service';
 import { ConceptByNotationService } from '../services/queries/concept-by-notation.service';
 import { map } from 'rxjs/operators';
+import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
 
 @Component({
   selector: 'app-upload-client-configuration',

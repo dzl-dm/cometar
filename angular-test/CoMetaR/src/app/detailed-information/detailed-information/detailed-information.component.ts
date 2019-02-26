@@ -3,9 +3,12 @@ import { ElementDetailsService, OntologyElementDetails } from "../element-detail
 import { ActivatedRoute } from '@angular/router';
 import { UrlService } from 'src/app/services/url.service';
 import { map, flatMap } from 'rxjs/operators';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { BrowserService } from 'src/app/core/services/browser.service';
+import { CommitDetailsService } from 'src/app/provenance/services/queries/commit-details.service';
+import { ConceptInformation } from 'src/app/core/services/tree-data.service';
+import { ProvenanceService } from 'src/app/provenance/services/provenance.service';
 
 @Component({
   selector: 'app-detailed-information',
@@ -20,12 +23,15 @@ export class DetailedInformationComponent implements OnInit {
   private localizedStringArray = ["label", "altlabel"];
   private ignoreArray = ["type", "modifierlabel"];
   private selectedIri$:BehaviorSubject<string> = new BehaviorSubject("");
+  public changeDetails$:Observable<ConceptInformation[]>;
   constructor(
     private elementDetailsService:ElementDetailsService,
     private route:ActivatedRoute,
     private urlService:UrlService,
     private configuration:ConfigurationService,
-    private browserService:BrowserService
+    private browserService:BrowserService,
+    private provenanceService:ProvenanceService,
+    private commitDetailsService:CommitDetailsService
   ) { }
 
   ngOnInit() {
@@ -74,6 +80,24 @@ export class DetailedInformationComponent implements OnInit {
     });
     document.execCommand('copy');
     this.browserService.snackbarNotification.next([`Text "${item}" copied to clipboard.`, `info`]);
+  }
+
+  public showChangeDetails=false;
+  public showMoreChangesToggle(){
+    this.showChangeDetails = !this.showChangeDetails;
+    if (this.showChangeDetails) {
+      let displayOptions = this.configuration.changeCategories;
+      Object.keys(displayOptions).forEach(key => {
+        displayOptions[key]=displayOptions[key] != undefined;
+      });
+      this.changeDetails$ = this.selectedIri$.pipe(
+        flatMap(subject => this.commitDetailsService.getBySubject(subject)),
+        flatMap(cds => this.provenanceService.getConceptTableInformation(cds, new BehaviorSubject(displayOptions)))
+      );
+    }
+    else {
+      this.changeDetails$ = of([]);
+    }
   }
 
 }

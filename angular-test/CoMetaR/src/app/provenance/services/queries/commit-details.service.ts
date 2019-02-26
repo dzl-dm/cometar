@@ -12,18 +12,23 @@ export class CommitDetailsService {
     private dataService:DataService
   ) { }
 
-  public get(commitid:string):Observable<CommitDetails[]> {
-    const queryString = this.getQueryString(commitid);
+  public getByCommitId(commitid:string):Observable<CommitDetails[]> {
+    const queryString = this.getQueryString("<"+commitid+">");
     return this.dataService.getData(queryString).pipe(map(data=> { return <CommitDetails[]> data }))
   };
 
-  private getQueryString(commitid:string):string{
+  public getBySubject(subject:string):Observable<CommitDetails[]> {
+    const queryString = this.getQueryString("?commit", subject);
+    return this.dataService.getData(queryString).pipe(map(data=> { return <CommitDetails[]> data }))
+  };
+
+  private getQueryString(commit:string, subject?:string):string{
     return `
     ${prefixes}
 SELECT DISTINCT ?subject ?sl ?predicate ?object ?ol ?addition (!bound(?p) as ?deprecatedsubject) ?date
 WHERE	
 {
-  <${commitid}>  prov:qualifiedUsage ?usage ;
+  ${commit} prov:qualifiedUsage ?usage ;
   prov:endedAtTime ?date .
   ?usage ?addorremove ?statement .
   BIND(IF(?addorremove = cs:addition,true,false) as ?addition ) .
@@ -43,8 +48,9 @@ WHERE
   FILTER (
     bound(?predicate)
   )
+  ${subject?"FILTER (?subject = <" + subject + ">).":"" }
 }
-ORDER BY ?subject ?predicate lang(?object) ?date ?addition`
+ORDER BY ?subject DESC(?date) ?predicate lang(?object) ?date ?addition`
   }
 }
 

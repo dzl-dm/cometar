@@ -1,5 +1,3 @@
-
-<!--<div class='treeItemExpandLine'></div>-->
 <div class="treeItemHeading"
     (click)="expanded=!expanded">
   <div 
@@ -20,31 +18,17 @@
     'margin-left':((intent$ | async) * 21 + 21) +'px',
     'width':'calc(100% - ' + ((intent$ | async) * 22 + 26) +'px)'
   }"
-  *ngIf="showInformationDiv$ | async ">
-  <!--<div [ngClass]="{
-    'treeItemExpandLine':true,
-    'activated':attributes.hasChildren.value && expanded
-  }"></div>-->
-  <table class="searchResult" *ngIf="showSearchResult$ | async">
-    <tr *ngFor="let result of searchResultAttributes$ | async">
-      <td>{{result.property.value + (result.value['xml:lang']?" ("+result.value['xml:lang']+")":"")}}</td>
-      <td>
-        <span 
-          *ngFor="let match of searchMatchArray(result.value.value)" 
-          [ngClass]="{'highlightText':match.toUpperCase()==treeDataService.getSearchPattern().toUpperCase()}"
-          >{{match}}</span>
-      </td>
-    </tr>
-  </table>
-  <table class="conceptInformation">
-    <ng-container *ngFor="let conceptInformation of conceptInformation$ | async; let isFirst = first">
-      <tr *ngIf="isFirst" >
-          <th *ngFor="let cell of conceptInformation.headings; let i = index" [width]="conceptInformation.cellWidthPercentages[i]+'%'">{{cell}}</th>
-      </tr>
-      <tr *ngFor="let rows of conceptInformation.cells">
-          <td *ngFor="let cell of rows; let i = index" [width]="conceptInformation.cellWidthPercentages[i]+'%'">{{cell}}</td>
-      </tr>
-    </ng-container>
-  </table>
+  *ngIf="showInformationDiv$ | async "> 
+  <app-concept-information 
+    *ngIf="showSearchResult$ | async"
+    [data]="searchResults$ | async" 
+    [headingDirection]="'column'"
+    [highlightTerm]="treeDataService.getSearchPattern()"
+    [cellWidthPercentages]="[35,65]"></app-concept-information>
+  <ng-container *ngFor="let conceptInformation of conceptInformation$ | async">
+      <app-concept-information 
+        [conceptInformation]="conceptInformation" 
+        [hiddenHeading]="true"></app-concept-information>
+  </ng-container>
 </div>
 <app-tree-item-list *ngIf="expanded" [expanded]="expanded && cascade_expand" [cascade_expand]="cascade_expand" [conceptIri]="attributes.element.value"></app-tree-item-list>

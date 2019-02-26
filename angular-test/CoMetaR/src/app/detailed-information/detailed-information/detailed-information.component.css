@@ -44,3 +44,19 @@ div.copy{
     display: inline-block;
     cursor:copy;
 }
+#showMoreChanges {
+    text-decoration: underline;
+    float:right;
+    cursor:pointer;
+}
+.changes {
+    margin-top:10px;
+}
+.changes td {
+    vertical-align: top;
+    padding: 5px;
+    word-break: break-all;
+}
+app-concept-information {
+    background-color:#EEE;
+}

@@ -8,6 +8,14 @@
             <div *ngSwitchCase="'modifier'">
                 <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true" [cascade_expand]="true"></app-tree-item>
             </div>
+            <div *ngSwitchCase="'lastchangesdate'">
+                <div>{{detail.value.values | date}} <div id="showMoreChanges" (click)="showMoreChangesToggle()">{{showChangeDetails?"show less":"show more"}}</div></div>
+                <ng-container *ngFor="let conceptInformation of changeDetails$ | async">
+                    <app-concept-information 
+                      [conceptInformation]="conceptInformation" 
+                      [hiddenHeading]="false"></app-concept-information>
+                </ng-container>
+            </div>
             <div *ngSwitchCase="'related'">
                 <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true"></app-tree-item>
             </div>

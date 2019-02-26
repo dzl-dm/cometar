@@ -1,0 +1,19 @@
+<table [ngClass]="{
+    'rowHeadingTable':headingDirection == 'row', 
+    'columnHeadingTable':headingDirection == 'column',
+    'hiddenHeading':hiddenHeading
+}">
+    <tr *ngFor="let row of data; let isFirst = first">
+        <!-- <ng-container *ngIf="isFirst; else noheading">
+            <th *ngFor="let cell of row; let i = index" [width]="cellWidthPercentages[i]+'%'">{{cell}}</th>
+        </ng-container>               
+        <ng-template #noheading>
+        </ng-template>-->
+        <td *ngFor="let cell of row; let i = index" [width]="cellWidthPercentages[i]+'%'">
+            <span 
+                *ngFor="let match of searchMatchArray(cell)" 
+                [ngClass]="{'highlightText':highlightTerm != undefined && match.toUpperCase()==highlightTerm.toUpperCase()}"
+            >{{match}}</span>
+        </td>
+    </tr>
+</table>
