@@ -6,8 +6,9 @@ import { ConfigurationService } from 'src/app/services/configuration.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UrlService } from 'src/app/services/url.service';
 import { map, flatMap } from 'rxjs/operators';
-import { ConceptInformation, TreeDataService } from 'src/app/core/services/tree-data.service';
+import { TreeDataService } from 'src/app/core/services/tree-data.service';
 import { CommitDetailsService, CommitDetails } from '../services/queries/commit-details.service';
+import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
 
 @Component({
 	selector: 'app-provenance',
@@ -18,7 +19,7 @@ export class ProvenanceComponent implements OnInit {
 	private fromDate:Date = new Date("2019-01-13");
 	public commitMetaDataByDay=[];
 	public categories = {};
-	public selectedCommit$ = new ReplaySubject<string>(1);
+	public selectedCommits$ = new ReplaySubject<string[]>(1);
 	public selectedDateValue$ = new ReplaySubject<number>(1);
 	private combinedCommitDetails$:ReplaySubject<CommitDetails[]>=new ReplaySubject<CommitDetails[]>(1);
 	private treeData$:ReplaySubject<ConceptInformation[]>=new ReplaySubject<ConceptInformation[]>(1);
@@ -45,12 +46,13 @@ export class ProvenanceComponent implements OnInit {
 		}
 
 		this.route.queryParamMap.pipe(
-			map(data => [this.urlService.extendRdfPrefix(data.get('commit')),this.urlService.extendRdfPrefix(data.get('date'))])
-		).subscribe(([commitid,date]) => {
+			map(data => [data.get('commit'),data.get('date')])
+		).subscribe(([commitids,date]) => {
 			setTimeout(()=>{
 				this.clearTree();
-				this.selectedCommit$.next(commitid);
-				if (commitid != "") this.loadCommitIntoTree(commitid);
+				let commitidsarr = commitids && commitids.split(",").map(c => this.urlService.extendRdfPrefix(c)) || [];
+				this.selectedCommits$.next(commitidsarr);
+				if (commitidsarr.length > 0) commitidsarr.forEach(cia => this.loadCommitIntoTree(cia));
 				this.selectedDateValue$.next(new Date(date).valueOf());
 				if (date != "") this.loadDateIntoTree(date);
 			},0);
@@ -76,7 +78,21 @@ export class ProvenanceComponent implements OnInit {
 	}
 
 	public onSelect(commitid:string){
-		this.router.navigate(["provenance"],{ queryParams: {date: null, commit: this.urlService.shortenRdfPrefix(commitid)}, queryParamsHandling: "merge" });
+		this.route.queryParamMap.pipe(
+			map(data => data.get('commit'))
+		).subscribe(commitids => {
+			let commitidsarr = commitids && commitids.split(",").filter(c => c != undefined && c != "").map(c => this.urlService.extendRdfPrefix(c)) || [];
+			if (!commitidsarr.includes(commitid)) commitidsarr = commitidsarr.concat(commitid);
+			else commitidsarr.splice(commitidsarr.indexOf(commitid),1);
+			commitidsarr = commitidsarr.map(c => this.urlService.shortenRdfPrefix(c));
+			this.router.navigate(["provenance"],{ queryParams: {date: null, commit: commitidsarr.join(",")}, queryParamsHandling: "merge" });
+		}).unsubscribe();
+	}
+
+	public isSelectedCommit(commitid:string){
+		let result = false;
+		this.selectedCommits$.subscribe(data => result = data.includes(commitid));
+		return result;
 	}
 
 	public onDaySelect(date:Date){

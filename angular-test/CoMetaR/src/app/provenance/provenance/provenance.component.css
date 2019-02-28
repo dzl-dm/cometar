@@ -16,13 +16,13 @@
 }
 .day{
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     flex-direction: row;
     flex-shrink:0;
     height:5px;
 }
 .day.filled {
-    min-height:60px;
+    min-height:35px;
 }
 .day.selected .date {
     border:3px solid rgb(3, 102, 145);
@@ -43,6 +43,7 @@
 }
 app-commit {
     flex-shrink: 0;
+    margin-top:5px;
 }
 .options {
     display:flex;

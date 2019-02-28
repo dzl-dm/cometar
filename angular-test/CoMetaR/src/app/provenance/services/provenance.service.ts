@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { CommitMetaDataService, CommitMetaData } from './queries/commit-meta-data.service';
 import { Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { CommitDetails } from './queries/commit-details.service';
-import { ConceptInformation } from 'src/app/core/services/tree-data.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
+import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
 
 @Injectable({
   providedIn: 'root'
