@@ -35,6 +35,9 @@ div.coreDetails{
 div.unfilled {
     color:#EEE;
 }
+div.value {
+    display: inline-block;
+}
 div.copy{
     background-image: url('../../../assets/img/copytoclipboard.gif');
     background-size: 13px;
@@ -59,4 +62,14 @@ div.copy{
 }
 app-concept-information {
     background-color:#EEE;
+}
+app-loinc-details {
+    position: absolute;
+    background-color:#EEE;    
+    border:1px solid #777;
+    box-shadow: 10px 10px 6px -6px #777;
+    width:calc(70% - 70px);
+    right:calc(30% + 60px);
+    margin-bottom:10px;
+    box-sizing: border-box;
 }

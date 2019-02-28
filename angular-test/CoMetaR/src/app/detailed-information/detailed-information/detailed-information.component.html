@@ -9,7 +9,7 @@
                 <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true" [cascade_expand]="true"></app-tree-item>
             </div>
             <div *ngSwitchCase="'lastchangesdate'">
-                <div>{{detail.value.values | date}} <div id="showMoreChanges" (click)="showMoreChangesToggle()">{{showChangeDetails?"show less":"show more"}}</div></div>
+                <div>{{detail.value.values | date:'dd.MM.yyyy'}} <div id="showMoreChanges" (click)="showMoreChangesToggle()">{{showChangeDetails?"show less":"show more"}}</div></div>
                 <ng-container *ngFor="let conceptInformation of changeDetails$ | async">
                     <app-concept-information 
                       [conceptInformation]="conceptInformation" 
@@ -34,7 +34,7 @@
       </div>
       <div class='detailContent'>
         <div *ngFor="let value of detail.value.values">
-          {{value}}
+          {{value}} 
           <div *ngIf="detail.value.copy" (click)="copyToClipboard(value)" class="copy"></div>
         </div>      
       </div>
