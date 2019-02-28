@@ -7,8 +7,9 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { BrowserService } from 'src/app/core/services/browser.service';
 import { CommitDetailsService } from 'src/app/provenance/services/queries/commit-details.service';
-import { ConceptInformation } from 'src/app/core/services/tree-data.service';
 import { ProvenanceService } from 'src/app/provenance/services/provenance.service';
+import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
+import { ExternalCodeInformationService } from '../external-code-information.service';
 
 @Component({
   selector: 'app-detailed-information',
@@ -31,7 +32,8 @@ export class DetailedInformationComponent implements OnInit {
     private configuration:ConfigurationService,
     private browserService:BrowserService,
     private provenanceService:ProvenanceService,
-    private commitDetailsService:CommitDetailsService
+    private commitDetailsService:CommitDetailsService,
+    private externalCodeInformationService:ExternalCodeInformationService
   ) { }
 
   ngOnInit() {
@@ -50,9 +52,22 @@ export class DetailedInformationComponent implements OnInit {
           //special case "type"
           if (this.ignoreArray.includes(key)) return;
           //assign to right list
+          if (key=="notation"){
+            if (detail[key].value.indexOf("L:")==0) {
+              let infosObject = this.externalCodeInformationService.getInformation(detail[key].value);
+              let infosArray = [];
+              Object.keys(infosObject).forEach(key=>infosArray.push(key+": "+infosObject[key]))
+              this.additionalDetails[key]={
+                key, 
+                name:"LOINC Information", 
+                values: infosArray
+              }
+            }
+          }
           let details = this.coreDetailsSelectArray.includes(key)?this.coreDetails:this.additionalDetails;
           //add item to details list if not exist
           details[key] = details[key]||{
+            key:key,
             name:detail[key].name,
             values:[],
             //items with copy-to-clipboard text
@@ -99,5 +114,4 @@ export class DetailedInformationComponent implements OnInit {
       this.changeDetails$ = of([]);
     }
   }
-
 }
