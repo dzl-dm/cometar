@@ -10,7 +10,7 @@
       *ngFor="let metadata of day[1] | keyvalue" 
       [commitMetaData]="metadata.value" 
       (onSelect)="onSelect($event)"
-      [ngClass]="{'selected':(selectedCommit$ | async) == metadata.value.commitid.value}"
+      [ngClass]="{'selected':isSelectedCommit(metadata.value.commitid.value)}"
       [displayOptions$]="displayOptions$"
       [displaycontainer]="provenancedata"
       class="commit">
