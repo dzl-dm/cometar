@@ -22,7 +22,6 @@ export class TreeDataService {
   private searchPattern$:ReplaySubject<string>;
   private searchIris$:Observable<string[]>;
   private informationPaths$:Observable<string[]>;
-  private conceptInformation:ConceptInformation[]=[];
   public conceptInformation$:BehaviorSubject<ConceptInformation[]> = new BehaviorSubject<ConceptInformation[]>([]);
 
   private claimWidth=(number)=>{};
@@ -141,8 +140,7 @@ export class TreeDataService {
   //information
   public addConceptInformation(cis$:Observable<ConceptInformation[]>){
     cis$.subscribe(cis => {
-      this.conceptInformation=cis;
-      this.conceptInformation$.next(this.conceptInformation);
+      this.conceptInformation$.next(cis);
       //this.claimWidth(800);
     });
   }

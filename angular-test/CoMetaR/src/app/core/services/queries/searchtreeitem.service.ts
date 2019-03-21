@@ -33,12 +33,12 @@ WHERE {
     WHERE { 
       ?element prov:wasDerivedFrom+ ?oldconcept .
       ?cs a cs:ChangeSet ;
-      cs:removal [
-        a rdf:Statement;
-        rdf:subject ?oldconcept;
-        rdf:predicate skos:notation;
-        rdf:object ?oldnotation
-      ] .
+        cs:removal [
+          a rdf:Statement;
+          rdf:subject ?oldconcept;
+          rdf:predicate skos:notation;
+          rdf:object ?oldnotation
+        ] .
       FILTER(regex(?oldnotation, '${pattern}', 'i'))
       FILTER NOT EXISTS { ?element skos:notation ?oldnotation }
     } 

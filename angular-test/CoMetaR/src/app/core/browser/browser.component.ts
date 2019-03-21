@@ -14,7 +14,7 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./browser.component.css'],
   animations: [
     trigger('routeAnimations', [
-      transition('Details => *, Provenance => UploadClientConfiguration, * => SPARQL', [
+      transition('Details => *, Provenance => UploadClientConfiguration, Provenance => SPARQL, UploadClientConfiguration => SPARQL, * => Statistics', [
         style({ position: 'relative' }),
         query(':enter, :leave', [
           style({
@@ -38,7 +38,7 @@ import { map } from 'rxjs/operators';
         ]),
         query(':enter', animateChild()),
       ]),
-      transition('* => Details, UploadClientConfiguration => Provenance, SPARQL => *', [
+      transition('* => Details, UploadClientConfiguration => Provenance, SPARQL => UploadClientConfiguration, SPARQL => Provenance, Statistics => *', [
         style({ position: 'relative' }),
         query(':enter, :leave', [
           style({

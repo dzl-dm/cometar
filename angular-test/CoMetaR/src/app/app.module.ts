@@ -19,6 +19,8 @@ import { BrowserComponent } from './core/browser/browser.component';
 import { StartComponent } from './core/start/start.component';
 import { SparqlModule } from './sparql/sparql.module';
 import { SparqlComponent } from './sparql/sparql/sparql.component';
+import { StatisticsComponent } from './statistics/statistics/statistics.component';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @NgModule({
   declarations: [
@@ -35,6 +37,7 @@ import { SparqlComponent } from './sparql/sparql/sparql.component';
     UploadClientConfigurationModule,
     MatSnackBarModule,
     SparqlModule,
+    StatisticsModule,
     RouterModule.forRoot(
       [
         { path: ':prefix/:concept', redirectTo: 'details?concept=:prefix::concept' },
@@ -45,6 +48,7 @@ import { SparqlComponent } from './sparql/sparql/sparql.component';
             { path: 'provenance', component: ProvenanceComponent, data: {animation: 'Provenance'} },    
             { path: 'client-configuration', component: UploadClientConfigurationComponent, data: {animation: 'UploadClientConfiguration'} },    
             { path: 'sparql', component: SparqlComponent, data: {animation: 'SPARQL'} },   
+            { path: 'statistics', component: StatisticsComponent, data: {animation: 'Statistics'} },   
             { path: '**', component: StartComponent },
           ]      
         }

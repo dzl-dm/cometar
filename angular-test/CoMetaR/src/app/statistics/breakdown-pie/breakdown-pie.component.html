@@ -1,0 +1,37 @@
+<div class="row">
+  <div class="col breakdownSiteChart">
+    <div class="breakdownChart"></div>
+  </div> 
+  <div class="col">
+    <div class="scrolldiv">
+      <table class="breakdownTable">
+        <tr>
+          <th>Breakdown<br><br></th>
+          <th>Total Patients</th>
+          <th *ngFor="let site of sites">{{site}}</th>
+        </tr>
+        <tr *ngFor="let p of chartData[0].labels; let i = index">
+          <td>{{p}}</td>
+          <td [ngStyle]="{'color':chartData[0].datasets[0].backgroundColor[i]=='rgba(255,255,255,1)'?'rgba(50,50,50,1)':chartData[0].datasets[0].backgroundColor[i]}">
+            {{chartData[0].datasets[0].data[i]}}
+          </td>
+          <td *ngFor="let site of sites; let j = index"
+            [ngStyle]="{'color':chartData[1].datasets[0].backgroundColor[i*5+j]}"
+            [class]="'chartElement'+(i*5+j)">
+            {{chartData[1].datasets[0].data[i*5+j]}}
+          </td>
+        </tr>
+      </table> 
+    </div>   
+    <div class="fixfirstcolumncontainer">
+        <table>
+          <tr>
+            <th>Breakdown<br><br></th>
+          </tr>
+          <tr *ngFor="let p of chartData[0].labels; let i = index">
+            <td>{{p}}</td>
+          </tr>
+        </table>
+    </div> 
+  </div>
+</div>

@@ -56,9 +56,9 @@ export class UploadClientConfigurationComponent implements OnInit {
 		let mappings:Mapping[] = [];
 		if (this.inputtype=="xml") parseString( this.xmlFileContent, ((err, result:IClientConfiguration) => {
 			mappings = this.clientConfigurationService.getMappings(result);
-			console.log(mappings);
 		}));
 		else mappings = this.csc_content.split(",").map(code => {
+			console.log(this.csc_content);
 			return <Mapping>{
 				concept: code,
 			}
@@ -92,6 +92,7 @@ export class UploadClientConfigurationComponent implements OnInit {
 				})
 			)
 		})).subscribe(data => {
+			if (data.length == 0) return;
 			this.treeData$.next(data);
 			this.showUpdatedConfigurationFileDownloadButton = replacements.length > 0;
 			for (let replacement of replacements){

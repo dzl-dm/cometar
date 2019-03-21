@@ -28,6 +28,7 @@
     </td>
     <td>
       <div id="results">
+        <div *ngIf="results.length == 0">No results.</div>
         <table *ngIf="results.length > 0">
           <tr>
             <th *ngFor="let heading of resultHeadings">{{heading}}</th>

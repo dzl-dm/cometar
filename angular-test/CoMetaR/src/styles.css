@@ -45,3 +45,7 @@ input[type='submit']:hover, input[type='button']:hover {
     background-color:var(--soft-blue);
     color:#0492D0;
 }
+
+#phenotypeBreakdownCanvas {    
+    border-radius: 50%;
+}

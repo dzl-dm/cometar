@@ -36,7 +36,10 @@ table td:first-child{
 #results {
     width:100%;
     overflow:scroll;
-    max-height:100%;
+    height:100%;
+    border:1px solid var(--dzl-blue);
+    padding:10px;
+    box-sizing: border-box;
 }
 
 #formular tr:not(:last-child) {

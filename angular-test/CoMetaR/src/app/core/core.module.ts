@@ -11,6 +11,7 @@ import { SnackbarComponent } from './snackbar/snackbar.component';
 import { StartComponent } from './start/start.component';
 import { NoSanitizePipe } from './no-sanitize.pipe';
 import { ConceptInformationComponent } from './concept-information/concept-information.component';
+import { ChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { ConceptInformationComponent } from './concept-information/concept-infor
   ],
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
+    ChartsModule
   ],
   exports: [
     TreeComponent,
