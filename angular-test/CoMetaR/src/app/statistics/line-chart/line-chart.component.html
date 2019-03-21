@@ -1,0 +1,29 @@
+
+  <div class="row">
+    <div class="col lineChart">
+    </div>
+    <div class="col" *ngIf="(chartData$ | async)">
+      <div class="scrolldiv">
+        <table>
+          <tr>
+            <th></th>
+            <th *ngFor="let label of (chartData$ | async).labels">{{getDateLabel(label)}}</th>
+          </tr>
+          <tr *ngFor="let dataset of (chartData$ | async).datasets; let i = index">
+            <td [ngStyle]="{color:dataset.borderColor || '#333'}">{{dataset.label}}</td>
+            <td *ngFor="let data of dataset.data; let j=index" [ngStyle]="{color:dataset.borderColor || '#333'}">{{data}}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="fixfirstcolumncontainer">
+          <table>
+            <tr>
+              <th><br></th>
+            </tr>
+            <tr *ngFor="let dataset of (chartData$ | async).datasets; let i = index">
+              <td [ngStyle]="{color:dataset.borderColor || '#333'}">{{dataset.label}}</td>
+            </tr>
+          </table>
+      </div> 
+    </div>
+  </div>

@@ -19,3 +19,11 @@ div.functions{
     margin-top:50px;
     text-align: left;
 }
+div.statistics {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+div.statistic {
+    width:40%;
+}

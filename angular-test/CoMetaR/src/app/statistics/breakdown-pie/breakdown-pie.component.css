@@ -1,0 +1,77 @@
+
+
+.breakdownSiteChart {
+    position: relative;
+    min-width:400px;
+    min-height:400px;
+    margin:50px;
+    border-radius: 50%;
+}
+
+.breakdownChart {
+    position: absolute;
+    height:80%;
+    width:80%;
+    border-radius: 50%;
+    top:0px;
+    left:0px;
+    margin-top:10%;
+    margin-left:10%;
+}
+
+td:first-child, th:first-child {
+    width:150px;
+    min-width:150px;
+    box-sizing: border-box;
+}
+
+.fixfirstcolumncontainer {
+    position: absolute;
+    top:0px;
+    left:0px;
+    background-color: white;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    width:100%;
+    flex-shrink:0;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.col {
+    flex-shrink:1;
+    min-width:300px;
+    position: relative;
+}
+.scrolldiv {
+    overflow-x:auto;
+}
+.col:first-child {    
+    width:40%;
+}
+.col:last-child {    
+    width:60%;
+}
+.col.full {
+    width:80%;
+}
+table th, table td {
+    padding:10px;
+    vertical-align: top;
+}
+table {
+    width:100%;
+}
+td.hovered {
+    border:1px solid #666;
+    margin:-1px;
+    display: block;
+    position: relative;
+}
+.datatable {    
+    height:400px;
+    overflow-y:scroll;
+}

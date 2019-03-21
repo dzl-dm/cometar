@@ -1,9 +1,32 @@
 <div class="logo"><img src="assets/img/CoMetaR_Logo.png"/></div>
 <div class="heading">CoMetaR - a Collaborative Metadata Repository</div>
+<div align="center"><h4>Latest Activities</h4></div>
+<div class="statistics">
+  <div class="statistic">
+    <canvas
+          baseChart width="500" height="400"
+          [datasets]="commitsDataset"
+          [labels]="commitsLabels"
+          [options]="barChartOptions"
+          [colors]="barChartColors"
+          [legend]="true"
+          [chartType]="'bar'"></canvas>  
+  </div>
+  <div class="statistic">
+    <canvas
+          baseChart width="500" height="400"
+          [datasets]="totalElementsDataset"
+          [labels]="commitsLabels"
+          [options]="lineChartOptions"
+          [colors]="lineChartColors"
+          [legend]="true"
+          [chartType]="'line'"></canvas> 
+  </div> 
+</div>
 <div class="functions">
   <p>This platform provides:</p>
   <ul>
-    <li>DZL Metadata Tree Vizualisation</li>
+    <li>DZL Metadata Tree Visualization</li>
     <li>DZL Metadata Search Function</li>
     <li>Provenance Data Visualization</li>
     <li>Upload Client Configuration User Feedback</li>

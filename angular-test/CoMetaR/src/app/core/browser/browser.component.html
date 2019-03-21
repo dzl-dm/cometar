@@ -15,6 +15,7 @@
             <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'provenance'}" (click)="navigateModule('provenance')">Provenance</div>
             <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'client-configuration'}" (click)="navigateModule('client-configuration')">Client Configuration</div>
             <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'sparql'}" (click)="navigateModule('sparql')">SPARQL</div>
+            <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'statistics'}" (click)="navigateModule('statistics')">Statistics</div>
         </div>
         <div id="moduleContent" [@routeAnimations]="prepareRoute(outlet)">
             <router-outlet #outlet="outlet" (activate)="onRouterOutletActivate(outlet)"></router-outlet>
