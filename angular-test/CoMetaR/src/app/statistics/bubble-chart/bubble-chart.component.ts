@@ -41,7 +41,7 @@ export class BubbleChartComponent implements OnInit {
   private getNewCanvas():HTMLCanvasElement{
     let canvas = document.createElement('canvas');
     canvas.height=400;
-    canvas.width=400;
+    canvas.width=600;
     return canvas;
   }
 
@@ -79,6 +79,9 @@ export class BubbleChartComponent implements OnInit {
     },
     legend: {
       display: false
+    },
+    hover: {
+      animationDuration: 0
     }
   };
 }

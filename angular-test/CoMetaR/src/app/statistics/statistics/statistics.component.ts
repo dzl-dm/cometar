@@ -11,12 +11,14 @@ import { ReplaySubject } from 'rxjs';
 export class StatisticsComponent implements OnInit {
 
   ngOnInit() {
-    this.selectGranularity(this.granularity);
+    this.updateCharts();
   }
 
-  public whichStatistics:"counts"|"breakdowns"="breakdowns";
-  public granularity:"total"|"site"|"source"|"location"="site";
-  public selectedSite="all";
+  public statisticsPage:number = 0;
+  public granularityIndex:number = 0;
+  private granularities:("total"|"site"|"source"|"location")[]=["total","site","source","location"];
+  public siteIndex:number = 0;
+  public sites=["all"].concat(this.dataService.qpfddSites);
   public totalPatientCountData$ = new ReplaySubject<ChartData>();
   public distinctFactsCountData$ = new ReplaySubject<ChartData>();
   public totalFactsCountData$ = new ReplaySubject<ChartData>();
@@ -26,18 +28,18 @@ export class StatisticsComponent implements OnInit {
   public multiPhenotypeData:ChartData;
   public i2b2usageData:ChartData;
 
-  public selectGranularity(g:"total"|"site"|"source"|"location"){
-    this.granularity = g;
+  public changeGranularity(event){
+    this.granularityIndex = event["index"];
     this.updateCharts();
   }
-  public selectSite(s:string){
-    this.selectedSite = s;
+  public changeSite(event){
+    this.siteIndex = event["index"];
     this.updateCharts();
   }
   private updateCharts(){
-    this.totalPatientCountData$.next(this.dataService.getQpfddCount(this.granularity,"total patients",this.selectedSite));
-    this.distinctFactsCountData$.next(this.dataService.getQpfddCount(this.granularity,"distinct facts",this.selectedSite));
-    this.totalFactsCountData$.next(this.dataService.getQpfddCount(this.granularity,"total facts",this.selectedSite));
+    this.totalPatientCountData$.next(this.dataService.getQpfddCount(this.granularities[this.granularityIndex],"total patients",this.sites[this.siteIndex]));
+    this.distinctFactsCountData$.next(this.dataService.getQpfddCount(this.granularities[this.granularityIndex],"distinct facts",this.sites[this.siteIndex]));
+    this.totalFactsCountData$.next(this.dataService.getQpfddCount(this.granularities[this.granularityIndex],"total facts",this.sites[this.siteIndex]));
 
     this.i2b2usageData = this.dataService.getI2b2UsageData();
 

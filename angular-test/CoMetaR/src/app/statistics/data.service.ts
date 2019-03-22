@@ -22,10 +22,10 @@ export class DataService {
       || granularity == "location" && this.qpfddLocations
       || granularity == "total" && [""];
     let datasets: ChartDataSets[] = baseArray.filter(b => {
-      return !filterSite || filterSite == "all" || mapping[b] && mapping[b].site==filterSite || mapping[b.split("::")[0]] && mapping[b.split("::")[0]].site==filterSite
+      return !filterSite || filterSite == "all" || granularity == "total" || granularity == "site" || mapping[b] && mapping[b].site==filterSite || mapping[b.split("::")[0]] && mapping[b.split("::")[0]].site==filterSite
     }).map((group,index,all) => {
       return {
-        label: granularity == "source" && (mapping[this.qpfddSources[index]] && mapping[this.qpfddSources[index]].label || "unknown")
+        label: granularity == "source" && (mapping[group] && mapping[group].label || "unknown")
           || granularity == "location" && (mapping[group.split("::")[0]] && mapping[group.split("::")[0]].label + " " + group.split("::")[1] || "unknown")
           || granularity == "site" && group
           || granularity == "total" && "Total" ,

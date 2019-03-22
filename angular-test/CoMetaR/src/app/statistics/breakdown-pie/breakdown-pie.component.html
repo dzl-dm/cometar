@@ -3,35 +3,22 @@
     <div class="breakdownChart"></div>
   </div> 
   <div class="col">
-    <div class="scrolldiv">
-      <table class="breakdownTable">
-        <tr>
-          <th>Breakdown<br><br></th>
-          <th>Total Patients</th>
-          <th *ngFor="let site of sites">{{site}}</th>
-        </tr>
-        <tr *ngFor="let p of chartData[0].labels; let i = index">
-          <td>{{p}}</td>
-          <td [ngStyle]="{'color':chartData[0].datasets[0].backgroundColor[i]=='rgba(255,255,255,1)'?'rgba(50,50,50,1)':chartData[0].datasets[0].backgroundColor[i]}">
-            {{chartData[0].datasets[0].data[i]}}
-          </td>
-          <td *ngFor="let site of sites; let j = index"
-            [ngStyle]="{'color':chartData[1].datasets[0].backgroundColor[i*5+j]}"
-            [class]="'chartElement'+(i*5+j)">
-            {{chartData[1].datasets[0].data[i*5+j]}}
-          </td>
-        </tr>
-      </table> 
-    </div>   
-    <div class="fixfirstcolumncontainer">
-        <table>
-          <tr>
-            <th>Breakdown<br><br></th>
-          </tr>
-          <tr *ngFor="let p of chartData[0].labels; let i = index">
-            <td>{{p}}</td>
-          </tr>
-        </table>
-    </div> 
+    <table mat-table [dataSource]="chartData[0].labels" class="breakdownTable">
+        <ng-container matColumnDef="rowname" sticky>
+          <th mat-header-cell *matHeaderCellDef>  </th>
+          <td mat-cell *matCellDef="let rowindex = index" [ngStyle]="{'color':chartData[0].datasets[0].backgroundColor[rowindex]=='rgba(255,255,255,1)'?'rgba(50,50,50,1)':chartData[0].datasets[0].backgroundColor[rowindex]}" > {{chartData[0].labels[rowindex]}} </td>
+        </ng-container>
+        <ng-container matColumnDef="sum">
+          <th mat-header-cell *matHeaderCellDef> Total Patients </th>
+          <td mat-cell *matCellDef="let rowindex = index" [ngStyle]="{'color':chartData[0].datasets[0].backgroundColor[rowindex]=='rgba(255,255,255,1)'?'rgba(50,50,50,1)':chartData[0].datasets[0].backgroundColor[rowindex]}"> {{chartData[0].datasets[0].data[rowindex]}} </td>
+        </ng-container>
+        <ng-container *ngFor="let site of sites; let columnindex = index" [matColumnDef]="site">
+          <th mat-header-cell *matHeaderCellDef> {{ site }} </th>
+          <td mat-cell *matCellDef="let rowindex = index" [ngClass]="{'chartElement': true}" [ngStyle]="{'color':chartData[1].datasets[0].backgroundColor[rowindex*5+columnindex]}"> {{chartData[1].datasets[0].data[rowindex*5+columnindex]}} </td>
+        </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['rowname','sum'].concat(sites); sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['rowname','sum'].concat(sites)"></tr>
+    </table>
   </div>
 </div>
