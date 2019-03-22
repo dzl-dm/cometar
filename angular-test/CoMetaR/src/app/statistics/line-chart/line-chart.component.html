@@ -1,29 +1,20 @@
 
-  <div class="row">
-    <div class="col lineChart">
-    </div>
-    <div class="col" *ngIf="(chartData$ | async)">
-      <div class="scrolldiv">
-        <table>
-          <tr>
-            <th></th>
-            <th *ngFor="let label of (chartData$ | async).labels">{{getDateLabel(label)}}</th>
-          </tr>
-          <tr *ngFor="let dataset of (chartData$ | async).datasets; let i = index">
-            <td [ngStyle]="{color:dataset.borderColor || '#333'}">{{dataset.label}}</td>
-            <td *ngFor="let data of dataset.data; let j=index" [ngStyle]="{color:dataset.borderColor || '#333'}">{{data}}</td>
-          </tr>
-        </table>
-      </div>
-      <div class="fixfirstcolumncontainer">
-          <table>
-            <tr>
-              <th><br></th>
-            </tr>
-            <tr *ngFor="let dataset of (chartData$ | async).datasets; let i = index">
-              <td [ngStyle]="{color:dataset.borderColor || '#333'}">{{dataset.label}}</td>
-            </tr>
-          </table>
-      </div> 
-    </div>
+<div class="row">
+  <div class="col lineChart">
   </div>
+  <div class="col">
+    <table mat-table [dataSource]="chartData.datasets">
+        <ng-container matColumnDef="rowname" sticky>
+          <th mat-header-cell *matHeaderCellDef>  </th>
+          <td mat-cell *matCellDef="let rowindex = index" [ngStyle]="{color:chartData.datasets[rowindex].borderColor || '#333'}"> {{chartData.datasets[rowindex].label}} </td>
+        </ng-container>
+        <ng-container *ngFor="let column of chartData.labels; let columnindex = index" [matColumnDef]="column">
+          <th mat-header-cell *matHeaderCellDef> {{ column | date:'dd.MM.yyyy' }} </th>
+          <td mat-cell *matCellDef="let rowindex = index" [ngStyle]="{color:chartData.datasets[rowindex].borderColor || '#333'}"> {{chartData.datasets[rowindex].data[columnindex]}} </td>
+        </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['rowname'].concat(chartData.labels); sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['rowname'].concat(chartData.labels)"></tr>
+    </table>
+  </div>
+</div>

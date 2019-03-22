@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 import Chart, { ChartData, ChartOptions } from 'chart.js';
+import { MatTable } from '@angular/material';
 
 @Component({
   selector: 'app-line-chart',
@@ -10,7 +11,7 @@ import Chart, { ChartData, ChartOptions } from 'chart.js';
 export class LineChartComponent implements OnInit {
   @Input('') chartData$: ReplaySubject<ChartData>;
   @Input('') chartData:ChartData;
-  @Input('') XaxeDateFormat:string;
+  @Input('') XaxeDateFormat:string = 'YYYY-M-D HH:mm:ss';
   @Input('') legend:boolean;
 
   constructor(
@@ -35,6 +36,10 @@ export class LineChartComponent implements OnInit {
       this.lineChart.data = this.chartData;
       this.lineChart.update();     
     }
+
+    if (this.chartData$) this.chartData$.subscribe(data => {
+      this.chartData = data;
+    });
   }
 
   private getNewChart(canvas:HTMLCanvasElement):Chart{
@@ -69,7 +74,7 @@ export class LineChartComponent implements OnInit {
         xAxes: [{
           type: 'time',
           time: {
-            parser: this.XaxeDateFormat || 'YYYY-M-D HH:mm:ss',
+            parser: this.XaxeDateFormat,
             displayFormats: {
               day: 'MMM YYYY'
             }
@@ -80,9 +85,16 @@ export class LineChartComponent implements OnInit {
         display: this.legend || false
       },
       tooltips: {
-        mode: "index"
+        mode: "point"
+      },
+      hover: {
+        animationDuration: 0
       }
     }
   }
   public lineChartOptions: ChartOptions;
+
+  public test(event){
+    console.log(event);
+  }
 }

@@ -18,20 +18,6 @@
     margin-top:10%;
     margin-left:10%;
 }
-
-td:first-child, th:first-child {
-    width:150px;
-    min-width:150px;
-    box-sizing: border-box;
-}
-
-.fixfirstcolumncontainer {
-    position: absolute;
-    top:0px;
-    left:0px;
-    background-color: white;
-}
-
 .row {
     display: flex;
     flex-direction: row;
@@ -46,14 +32,13 @@ td:first-child, th:first-child {
     min-width:300px;
     position: relative;
 }
-.scrolldiv {
-    overflow-x:auto;
-}
 .col:first-child {    
     width:40%;
 }
 .col:last-child {    
     width:60%;
+    overflow:auto;
+    max-height:400px;
 }
 .col.full {
     width:80%;
@@ -66,10 +51,7 @@ table {
     width:100%;
 }
 td.hovered {
-    border:1px solid #666;
-    margin:-1px;
-    display: block;
-    position: relative;
+    background-color:#DDD;
 }
 .datatable {    
     height:400px;

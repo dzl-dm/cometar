@@ -43,6 +43,9 @@ export class BreakdownPieComponent implements OnInit {
         cutoutPercentage: 10,
         legend: {      
           display:false
+        },
+        hover: {
+          animationDuration: 0
         }
       },
       data: {}
@@ -73,13 +76,14 @@ export class BreakdownPieComponent implements OnInit {
           }
           if (activeElements && activeElements.length) {
             let index = activeElements[0]["_index"];
-            let td = n.getElementsByClassName("chartElement"+index)[0];
+            let td = n.getElementsByClassName("chartElement")[index];
             let classes=td.getAttribute("class");
             td.setAttribute("class",classes + " hovered");
           }
         },
         hover: {
-          intersect: true
+          intersect: true,
+          animationDuration: 0
         },
       },
       data: {}
@@ -94,5 +98,4 @@ export class BreakdownPieComponent implements OnInit {
     canvas.setAttribute("style","border-radius:50%");
     return canvas;
   }
-
 }

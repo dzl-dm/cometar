@@ -49,3 +49,15 @@ input[type='submit']:hover, input[type='button']:hover {
 #phenotypeBreakdownCanvas {    
     border-radius: 50%;
 }
+
+th.mat-header-cell {
+    font-weight:bold;
+    font-size:14px;
+}
+th.mat-header-cell, td.mat-cell {
+    background-color:white;
+    color:#333;
+}
+.mat-tab-label .mat-tab-label-content {
+    color:#333;
+}
