@@ -61,3 +61,19 @@ th.mat-header-cell, td.mat-cell {
 .mat-tab-label .mat-tab-label-content {
     color:#333;
 }
+.mat-tab-label.mat-ripple {    
+    min-width:50px;
+}
+.mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+    background-color: var(--dzl-blue);
+    height:3px;
+}
+.mat-tab-header-pagination-chevron {
+    border-color: #999
+}
+.mat-tab-header {
+    border-bottom: 1px solid #999;
+}
+.mat-tab-group,.mat-tab-group .mat-tab-body-wrapper {
+    flex-grow: 1;
+}
