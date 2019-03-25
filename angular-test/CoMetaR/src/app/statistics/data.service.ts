@@ -203,7 +203,8 @@ export class DataService {
 
   constructor() { 
     this.qpfddJson = qpfdd["data"];
-    this.qpfddLabels = this.qpfddJson.map(d => d.date).filter(this.distinctFilter);
+    //filter additional dates for the same day
+    this.qpfddLabels = this.qpfddJson.map(d => d.date).filter((value, index, self) => self.map(d => d.substr(0,10)).indexOf(value.substr(0,10)) === index);
     this.qpfddSources = this.qpfddJson.map(d => d.source).filter(this.distinctFilter);
     this.qpfddSites = this.qpfddJson.map(d => mapping[d.source]["site"]).filter(this.distinctFilter);
     this.qpfddLocations = this.qpfddJson.filter(d => d.location!="").map(d => d.source+"::"+d.location).filter(this.distinctFilter);
