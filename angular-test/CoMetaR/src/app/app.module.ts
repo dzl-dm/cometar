@@ -40,7 +40,7 @@ import { StatisticsModule } from './statistics/statistics.module';
     StatisticsModule,
     RouterModule.forRoot(
       [
-        { path: ':prefix/:concept', redirectTo: 'details?concept=:prefix::concept' },
+        /*{ path: ':prefix/:concept', redirectTo: '/details?concept=:prefix:concept', pathMatch: 'full' },*/
         { path: '', 
           component: BrowserComponent,
           children: [            

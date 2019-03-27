@@ -91,7 +91,6 @@ export class StartComponent implements OnInit {
 
   ngOnInit() {
     this.commitHistoryService.get().subscribe(data => {
-      console.log(data);
       this.commitsLabels = data.map(d => d.date.value);
       this.commitsDataset[0]={
         data: data.map(d => d.additions.value),

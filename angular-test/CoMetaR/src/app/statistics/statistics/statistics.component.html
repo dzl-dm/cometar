@@ -1,6 +1,11 @@
 <mat-tab-group [selectedIndex]="statisticsPage">
   <mat-tab>
-    <ng-template mat-tab-label>Process</ng-template>
+    <ng-template mat-tab-label>Data Sources Progress</ng-template>
+    <h2>Imported Data Sources</h2>
+    <app-line-chart  [chartData]="dataSourcesData"></app-line-chart>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>Data Volume Progress</ng-template>
     <mat-tab-group (selectedTabChange)="changeGranularity($event)" [selectedIndex]="granularityIndex" animationDuration="0ms">
       <mat-tab>
         <ng-template mat-tab-label>Total</ng-template>          
