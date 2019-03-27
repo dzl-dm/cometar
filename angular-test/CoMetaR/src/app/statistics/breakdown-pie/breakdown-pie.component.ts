@@ -44,6 +44,25 @@ export class BreakdownPieComponent implements OnInit {
         legend: {      
           display:false
         },
+        tooltips: {
+          enabled: false,
+          position: "custom"
+        },
+        onHover: (event, activeElements) => {
+          let n: HTMLElement = this.e.nativeElement;
+          let trs = n.getElementsByClassName("breakdownTable")[0].getElementsByTagName("tr");
+          for (let i = 0; i < trs.length; i++){
+            let classes=trs[i].getAttribute("class") || "";
+            trs[i].setAttribute("class", classes.replace(" hovered",""));
+          }
+          if (activeElements && activeElements.length) {
+            let index = activeElements[0]["_index"];
+            let tr = <HTMLElement>n.getElementsByTagName("tr")[index+1];
+            let classes=tr.getAttribute("class");
+            tr.setAttribute("class",classes + " hovered");
+            n.getElementsByClassName("breakdownTable")[0].parentElement.scrollTop = tr.offsetTop - 200;
+          }
+        },
         hover: {
           animationDuration: 0
         }
@@ -76,9 +95,10 @@ export class BreakdownPieComponent implements OnInit {
           }
           if (activeElements && activeElements.length) {
             let index = activeElements[0]["_index"];
-            let td = n.getElementsByClassName("chartElement")[index];
+            let td = <HTMLElement>n.getElementsByClassName("chartElement")[index];
             let classes=td.getAttribute("class");
             td.setAttribute("class",classes + " hovered");
+            n.getElementsByClassName("breakdownTable")[0].parentElement.scrollTop = td.offsetTop - 200;
           }
         },
         hover: {
@@ -95,7 +115,7 @@ export class BreakdownPieComponent implements OnInit {
     let canvas = document.createElement('canvas');
     canvas.height=500;
     canvas.width=500;
-    canvas.setAttribute("style","border-radius:50%");
+    canvas.setAttribute("style","border-radius:50%; position:absolute; top:0px");
     return canvas;
   }
 }

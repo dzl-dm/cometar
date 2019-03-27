@@ -14,7 +14,7 @@ export class StatisticsComponent implements OnInit {
     this.updateCharts();
   }
 
-  public statisticsPage:number = 0;
+  public statisticsPage:number = 2;
   public granularityIndex:number = 0;
   private granularities:("total"|"site"|"source"|"location")[]=["total","site","source","location"];
   public siteIndex:number = 0;
@@ -27,6 +27,7 @@ export class StatisticsComponent implements OnInit {
   public specimenBreakdownData:ChartData[];
   public multiPhenotypeData:ChartData;
   public i2b2usageData:ChartData;
+  public dataSourcesData:ChartData;
 
   public changeGranularity(event){
     this.granularityIndex = event["index"];
@@ -42,6 +43,7 @@ export class StatisticsComponent implements OnInit {
     this.totalFactsCountData$.next(this.dataService.getQpfddCount(this.granularities[this.granularityIndex],"total facts",this.sites[this.siteIndex]));
 
     this.i2b2usageData = this.dataService.getI2b2UsageData();
+    this.dataSourcesData = this.dataService.getDataSourcesData();
 
     this.phenotypeBreakdownData = this.dataService.getPhenotypeBreakdownData();
     this.specimenBreakdownData = this.dataService.getSpecimenBreakdownData();
@@ -49,6 +51,6 @@ export class StatisticsComponent implements OnInit {
   }
 
   constructor(
-    private dataService: DataService
+    public dataService: DataService
   ) { }
 }

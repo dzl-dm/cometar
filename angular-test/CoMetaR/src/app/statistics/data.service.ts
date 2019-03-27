@@ -15,6 +15,44 @@ export class DataService {
     return self.indexOf(value) === index;
   }
 
+  public getDataSourcesData():ChartData{
+    this.resetColors();
+    let mappings:DataSourceMapping[] = Object.keys(mapping).map(key => mapping[key]).filter(m => m["first import"] != undefined).map(m => {
+      if (typeof m["first import"] == "string") {
+        let d = m["first import"];
+        m["first import"] = d.split(".")[2]+"-"+d.split(".")[1]+"-"+d.split(".")[0];
+      }
+      else if (Array.isArray(m["first import"])) m["first import"] = m["first import"].map(f => f.split(".")[2]+"-"+f.split(".")[1]+"-"+f.split(".")[0]);
+      return m;
+    });
+
+    let labels = mappings.map(m => {
+      if (typeof m["first import"] == "string") return [ m["first import"] ];
+      else if (Array.isArray(m["first import"])) return m["first import"];
+    }).reduce((result, next) => result.concat(next),[]).filter(this.distinctFilter).sort();
+
+    let datasets: ChartDataSets[] = this.qpfddSites.map(site => { return {
+      label: site,
+      data: labels.map(l => mappings.reduce((sum,m) => {
+        if (m.site != site) return sum;
+        if (typeof m["first import"] == "string" && m["first import"] == l) return sum+1;
+        else if (Array.isArray(m["first import"])) return sum+m["first import"].filter(f => f == l).length;
+        else return sum;
+      }, 0)),
+      backgroundColor: this.backgroundColor,
+      borderColor: this.siteColors[site]
+    }});
+    datasets = datasets.map(ds => {
+      ds.data.forEach((d, index, arr) => { arr[index]=index>0?d+arr[index-1]:d });
+      return ds;
+    })
+    datasets.push({
+      label: "Sum",
+      data: labels.map((l, index) => <number>datasets.map(d => d.data[index]).reduce((sum,a)=><number>sum+<number>a,0))
+    })
+    return {labels, datasets}
+  }
+
   public getQpfddCount(granularity:"total"|"site"|"source"|"location", valueOfInterest:"total patients"|"distinct facts"|"total facts", filterSite?:string):ChartData{
     this.resetColors();
     let baseArray:string[] = granularity == "source" && this.qpfddSources 
@@ -198,7 +236,7 @@ export class DataService {
   private phenoJson:BreakdownDataSet[]=[];
   private specimenJson:BreakdownDataSet[]=[];
   private multiPhenotypeJson=[];
-  private phenotypes: string[];
+  public phenotypes: string[];
   private i2b2usageJson:I2b2UsageDataSet[];
 
   constructor() { 
@@ -206,7 +244,7 @@ export class DataService {
     //filter additional dates for the same day
     this.qpfddLabels = this.qpfddJson.map(d => d.date).filter((value, index, self) => self.map(d => d.substr(0,10)).indexOf(value.substr(0,10)) === index);
     this.qpfddSources = this.qpfddJson.map(d => d.source).filter(this.distinctFilter);
-    this.qpfddSites = this.qpfddJson.map(d => mapping[d.source]["site"]).filter(this.distinctFilter);
+    this.qpfddSites = this.qpfddJson.map(d => mapping[d.source] && mapping[d.source]["site"]).filter(this.distinctFilter);
     this.qpfddLocations = this.qpfddJson.filter(d => d.location!="").map(d => d.source+"::"+d.location).filter(this.distinctFilter);
 
     this.phenoJson = phenobd["data"];
@@ -240,7 +278,10 @@ export class DataService {
   private getNewColor(colorAmount:number) {
     let colordiff = 208/colorAmount;
     this.colorcount++;
-    return 'rgba('+(4+this.colorcount*colordiff).toString()+',146,'+(208-this.colorcount*colordiff).toString()+',1)'
+    //return 'rgba('+(Math.round(4+this.colorcount*colordiff)).toString()+',146,'+(Math.round(208-this.colorcount*colordiff)).toString()+',1)'
+    let greytonePercentage = ((50*this.colorcount/colorAmount)+(this.colorcount%2==1?50:0))/100.0;
+    greytonePercentage/=2;
+    return 'rgba('+Math.round(4+greytonePercentage*251)+','+Math.round(146+greytonePercentage*109)+','+Math.round(208+greytonePercentage*47)+',1)'
   }
   private siteColors = {
     "ARCN": 'rgba(38,144,66,1)',
@@ -273,4 +314,10 @@ export interface I2b2UsageDataSet {
   "month": string,
   "user": string,
   "queries": number
+}
+
+export interface DataSourceMapping {
+  "label": string,
+  "site": string,
+  "first import": string | string[]
 }
