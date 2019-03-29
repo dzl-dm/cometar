@@ -80,12 +80,15 @@ export class TreeItemComponent implements OnInit {
     this.showInformationDiv$ = combineLatest(
       this.conceptInformation$,
       this.showSearchResult$
-    ).pipe(
-      map(data => data[0].length > 0 || data[1] ));
+    ).pipe(map(data => data[0].length > 0 || data[1] ));
   }
 
   public onSelect(){
     this.treeDataService.onConceptSelection(this.attributes.element.value);
+  }
+
+  public navigate(iri){
+    this.treeDataService.onConceptSelection(iri);
   }
 
   private searchMatchArray(s:string):string[]{

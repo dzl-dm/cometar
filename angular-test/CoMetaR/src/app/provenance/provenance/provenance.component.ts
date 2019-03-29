@@ -16,7 +16,7 @@ import { ConceptInformation } from 'src/app/core/concept-information/concept-inf
 	styleUrls: ['./provenance.component.css']
 })
 export class ProvenanceComponent implements OnInit {
-	private fromDate:Date = new Date("2019-01-13");
+	private fromDate:Date = new Date("2019-01-12");
 	public commitMetaDataByDay=[];
 	public categories = {};
 	public selectedCommits$ = new ReplaySubject<string[]>(1);
