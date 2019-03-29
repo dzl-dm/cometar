@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataService, JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartString, prefixes, JSONResponsePartNumber } from '../services/data.service';
+import { DataService, JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartString, prefixes, JSONResponsePartNumber, JSONResponsePartDate } from '../services/data.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -19,8 +19,8 @@ export class ElementDetailsService {
       ${prefixes}
       SELECT ?element ?type ?label ?status ?description ?unit ?altlabel ?author ?domain ?editnote ?modifier ?modifierlabel ?notation ?related (MAX(?changesdate) AS ?lastchangesdate)
       WHERE {	          
-          <${iri}> skos:prefLabel ?label.
-          <${iri}> rdf:type ?type .
+          OPTIONAL { <${iri}> skos:prefLabel ?label. }
+          OPTIONAL { <${iri}> rdf:type ?type . }
           OPTIONAL { <${iri}> skos:altLabel ?altlabel . }
           OPTIONAL { <${iri}> :status ?status . }
           OPTIONAL { <${iri}> dc:description ?description . }
@@ -42,6 +42,7 @@ export class ElementDetailsService {
               rdf:subject <${iri}> .
             FILTER NOT EXISTS { ?statement rdf:comment "hidden" } 
           }
+          FILTER(bound(?label) && bound(?type) || bound(?changesdate))
       } 
       GROUP BY ?element ?type ?label ?status ?description ?unit ?altlabel ?author ?domain ?editnote ?modifier ?modifierlabel ?notation ?related
       `;
@@ -61,5 +62,7 @@ export interface OntologyElementDetails {
   modifier?:JSONResponsePartUriString,
   modifierlabel?:JSONResponsePartString,
   status?:JSONResponsePartString,
-  notation?:JSONResponsePartString
+  notation?:JSONResponsePartString,
+  related?:JSONResponsePartUriString,
+  lastchangesdate?:JSONResponsePartDate
 }

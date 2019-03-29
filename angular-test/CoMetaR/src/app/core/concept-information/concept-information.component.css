@@ -70,9 +70,21 @@ table.hiddenHeading.rowHeadingTable tr:not(:first-child) td:not(:first-child) {
     border-color: #EEE;
 }
 
-
+.expandDiv {
+    font-size:12px;
+    text-decoration: underline;
+    padding:5px;
+    cursor:pointer;
+    text-align: right
+}
 
 .highlightText {
     font-weight: bold;
     text-decoration: underline;
+}
+
+span.conceptLink {
+    text-decoration: underline;
+    color:var(--dzl-blue);
+    cursor:pointer;
 }

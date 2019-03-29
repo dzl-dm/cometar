@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { ConfigurationService } from 'src/app/services/configuration.service';
+import { TreeDataService } from '../services/tree-data.service';
 
 @Component({
   selector: 'app-concept-information',
@@ -11,8 +13,12 @@ export class ConceptInformationComponent implements OnInit {
   @Input() hiddenHeading:boolean;
   @Input() cellWidthPercentages;
   @Input() highlightTerm:string;
-  @Input() conceptInformation:ConceptInformation
-  constructor() { }
+  @Input() collapsed:boolean;
+  @Input() conceptInformation:ConceptInformation;
+  constructor(
+    private configurationService: ConfigurationService,
+    private treeDataService: TreeDataService
+  ) { }
 
   ngOnInit() {
     if (this.conceptInformation) {
@@ -42,6 +48,15 @@ export class ConceptInformationComponent implements OnInit {
       counter++;
     }
     return result;
+  }
+
+  public isConceptIri(s:string):boolean{
+    if (this.configurationService.cutPrefix(s) != s) return true;
+    return false;
+  }
+
+  public navigateToConcept(iri:string){
+    this.treeDataService.onConceptSelection(iri);
   }
 }
 

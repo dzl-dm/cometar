@@ -55,11 +55,17 @@ div.treeItemExpand.collapsed{
 div.treeItemTitle{
     padding-top:7px;
 }
+div.treeItemTitleLabel {
+    display: inline-flex;
+}
+div.treeItemTitle.removed div.treeItemTitleLabel {
+    text-decoration: line-through;
+}
 
 div.treeItemTitle:focus {
     outline: 0;
 }
-.draft, .obsolete, .new {
+.status_div, .prov_status_div {
 	background-color:#666666;
 	font-size:10px;
 	font-family:"arial";
@@ -71,22 +77,26 @@ div.treeItemTitle:focus {
     margin-top:1px;
     position: relative;
     color:#333;
-    height:18px;
+    min-height:18px;
     display: inline-flex;
     vertical-align: middle;
 }
-.draft{
+.draft, .prov_status_div.moved{
 	background-color:#FFEB0F;
 }
-.obsolete{
-	background-color:#FFBFBF;
+.obsolete, .prov_status_div.removed{
+    background-color:#FFBFBF;
 }
-.new{
+.new, .prov_status_div.added{
 	background-color:#71E161;
+}
+.prov_status_div:hover span { 
+    text-decoration: underline;
 }
 .treeItemTitle.isModifier
 {
-	font-style:italic;
+    font-style:italic;
+    color: green;
 }
 
 .treeItemInformation{

@@ -7,9 +7,17 @@
       'collapsed':attributes.hasChildren.value && !expanded
     }" >
   </div>
-  <div [ngClass]="{'treeItemTitle':true,'isModifier':attributes.isModifier.value}" (click)="onSelect();$event.stopPropagation();">
-    {{attributes.label.value}}
-    <div [class]="attributes.status ? attributes.status.value : ''">{{attributes.status ? attributes.status.value : ""}}</div>
+  <div [ngClass]="{
+      'treeItemTitle':true,
+      'isModifier':attributes.isModifier.value,
+      removed: attributes.prov_removed
+    }" (click)="onSelect();$event.stopPropagation();">
+    <div class="treeItemTitleLabel">{{attributes.label.value}}</div>
+    <div *ngIf="attributes.status" [class]="'status_div '+ attributes.status.value">{{attributes.status ? attributes.status.value : ""}}</div>
+    <div *ngIf="attributes.prov_added" [class]="'prov_status_div added'">added</div>
+    <div *ngIf="attributes.prov_removed" [class]="'prov_status_div removed'">removed</div>
+    <div *ngIf="attributes.prov_movedTo" [class]="'prov_status_div moved'">moved to&nbsp;<span (click)="navigate(attributes.prov_movedTo.value);$event.stopPropagation();">{{attributes.prov_movedTo.value}}</span></div>
+    <div *ngIf="attributes.prov_movedFrom" [class]="'prov_status_div moved'">moved from&nbsp;<span (click)="navigate(attributes.prov_movedFrom.value);$event.stopPropagation();">{{attributes.prov_movedFrom.value}}</span></div>
   </div>
 </div>
 <div 
@@ -28,7 +36,8 @@
   <ng-container *ngFor="let conceptInformation of conceptInformation$ | async">
       <app-concept-information 
         [conceptInformation]="conceptInformation" 
-        [hiddenHeading]="true"></app-concept-information>
+        [hiddenHeading]="false"
+        [collapsed]="true"></app-concept-information>
   </ng-container>
 </div>
 <app-tree-item-list *ngIf="expanded" [expanded]="expanded && cascade_expand" [cascade_expand]="cascade_expand" [conceptIri]="attributes.element.value"></app-tree-item-list>

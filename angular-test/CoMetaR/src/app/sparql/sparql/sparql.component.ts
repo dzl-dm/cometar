@@ -34,9 +34,9 @@ export class SparqlComponent implements OnInit {
     ).subscribe(data => this.concept = data && this.urlService.extendRdfPrefix(data) || "ELEMENT_ID");
     console.log(this.concept);
     this.queries.push(["Tree Path Items", this.treePathItemsService.getQueryString([this.concept])]);
-    this.queries.push(["Top Tree Items", this.treeItemsService.getQueryString("top",this.concept)]);
-    this.queries.push(["Sub Tree Items", this.treeItemsService.getQueryString("sub",this.concept)]);
-    this.queries.push(["Single Tree Item", this.treeItemsService.getQueryString("single",this.concept)]);
+    this.queries.push(["Top Tree Items", this.treeItemsService.getCurrentTreeItemsQueryString("top",this.concept)]);
+    this.queries.push(["Sub Tree Items", this.treeItemsService.getCurrentTreeItemsQueryString("sub",this.concept)]);
+    this.queries.push(["Single Tree Item", this.treeItemsService.getCurrentTreeItemsQueryString("single",this.concept)]);
     this.queries.push(["Search Items", this.searchTreeItemService.getQueryString("Test")]);
   }
 
