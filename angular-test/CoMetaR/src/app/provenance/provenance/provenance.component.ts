@@ -16,7 +16,7 @@ import { ConceptInformation } from 'src/app/core/concept-information/concept-inf
 	styleUrls: ['./provenance.component.css']
 })
 export class ProvenanceComponent implements OnInit {
-	private fromDate:Date = new Date("2019-01-12");
+	private fromDate:Date = new Date("2019-03-01");
 	public commitMetaDataByDay=[];
 	public categories = {};
 	public selectedCommits$ = new ReplaySubject<string[]>(1);
@@ -117,8 +117,24 @@ export class ProvenanceComponent implements OnInit {
 	}
 
 	/**
-	 * TODO: merge details
+	 * TODO (or not to do?): merge details
 	 * 
+	private reduceCommitDetails(cds:CommitDetails[]):CommitDetails[]{
+		for(let i = 0; i < cds.length; i++){
+			for (let j = i+1; j < cds.length; j++){
+				if (cds[i].subject == cds[j].subject
+					&& cds[i].predicate == cds[j].predicate
+					&& cds[i].object == cds[j].object
+					&& cds[i].addition != cds[j].addition) 
+				{
+					console.log(i);
+					cds.splice(j,1);
+					cds.splice(i,1);
+				}
+			}
+		}
+		return cds;
+	}
 	 
 	private mergeCommitDetails(cds:CommitDetails[]):CommitDetails[]{
 		let ups = this.configuration.uniquePredicates;    

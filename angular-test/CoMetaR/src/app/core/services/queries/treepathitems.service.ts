@@ -1,37 +1,73 @@
 import { Injectable } from '@angular/core';
 import { DataService, prefixes } from '../../../services/data.service';
-import { Observable, combineLatest, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, combineLatest, of, ReplaySubject } from 'rxjs';
+import { map, concat, flatMap } from 'rxjs/operators';
+import { TreeItemsService } from './treeitems.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TreepathitemsService {
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private treeItemsService:TreeItemsService) {
+    combineLatest(
+      this.treeItemsService.removedTreeItems$,
+      this.treeItemsService.movedTreeItems$)
+    .pipe(map(removesandmoves => removesandmoves[0].concat(removesandmoves[1]))).subscribe(rms => {
+      rms.forEach(rm=> {
+        this.ghostiris[rm.element]=this.ghostiris[rm.element]||[];
+        let op:string[] = [rm.oldparent];
+        do {
+          this.ghostiris[rm.element]=this.ghostiris[rm.element].concat(op);
+          op = rms.filter(rm2 => op.includes(rm2.element)).map(rm2 => rm2.oldparent)
+        } while (op.length > 0)
+      });
+      this.ghostiris$.next(this.ghostiris);
+    });
+  }
 
-  /**
-   * 
-   * @param {string[]} iris
-   */
-  public get(iris:string[]):Observable<string[]> { 
-    let obs:Observable<string[]>[]=[];
-    while (iris.length > 0){
-      let tempiris = iris.splice(0,25);
-      const queryString = this.getQueryString(tempiris);
-      obs.push(this.dataService.getData(queryString).pipe(map(
-        (data)=>data.map(e=> e.treePathItem.value)
-      )));
-    }
-    return obs.length > 0 && combineLatest(obs).pipe(map(observables => {
-      let result:string[] = [];
-      for (let o of observables) {
-        result = result.concat(o);
+  private ghostiris = {};
+  private ghostiris$ = new ReplaySubject<{}>(1);
+  
+  public get(iris:string[], includeIriInPath:boolean=false):Observable<string[]> {
+    return this.ghostiris$.pipe(flatMap(ghostiris => {
+    
+      let obs:Observable<string[]>[]=[];
+      
+      let tempGhostiris = [];
+      iris.forEach(iri => tempGhostiris = tempGhostiris.concat(ghostiris[iri]||[]));
+      let iriswithghostiris = iris.concat(tempGhostiris);
+  
+      if (iris.length == 1 && iris[0] == "http://data.dzl.de/ont/dwh#minEQCO2") {
+        /*console.log(iris);
+        console.log(ghostiris[iris[0]])
+        console.log(tempGhostiris);
+        console.log(iriswithghostiris);
+        console.log(ghostiris);*/
       }
-      return result;
-    })) || of([""]);
+  
+      let pos = 0;
+      while (iriswithghostiris.length >= pos){
+        let tempiris = iriswithghostiris.slice(pos,pos+25);
+        let queryString = this.getQueryString(tempiris,includeIriInPath);
+        obs.push(this.dataService.getData(queryString).pipe(map(
+          (data)=>data.map(e=> e.treePathItem.value)
+        )));
+        pos+=25;
+      }
+      let pathiris = obs.length > 0 && combineLatest(obs).pipe(map(observables => {
+        let result:string[] = [];
+        for (let o of observables) {
+          result = result.concat(o);
+        }
+        return result;
+      })) || of([""]);    
+      pathiris = pathiris.pipe(map(iris => iris.concat(tempGhostiris)));
+      return pathiris;
+      
+    }))
   };
 
-  public getQueryString(iris:string[]):string {
+  public getQueryString(iris:string[], includeIriInPath:boolean=false):string {
       return `${prefixes}
 SELECT DISTINCT ?treePathItem
 WHERE
@@ -39,7 +75,7 @@ WHERE
     ?element skos:broader* [ rdf:partOf* [ skos:broader* ?c ] ] .
     ?treePathItem skos:member* ?c .
     ?treePathItem rdf:type ?type FILTER (?type IN (skos:Concept, skos:Collection)) .
-    filter (?treePathItem != ?element && ?element IN (${iris.map(e => `<${e}>`).join(',')}))
+    filter (${includeIriInPath?'':'?treePathItem != ?element && '}?element IN (${iris.map(e => `<${e}>`).join(',')}))
 }
       `;
   }

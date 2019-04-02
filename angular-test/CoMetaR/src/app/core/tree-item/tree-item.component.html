@@ -10,14 +10,17 @@
   <div [ngClass]="{
       'treeItemTitle':true,
       'isModifier':attributes.isModifier.value,
-      removed: attributes.prov_removed
+      'removed': (treeDataService.isProvRemoved$(attributes.element.value) | async).includes(parent) || (treeDataService.isProvMovedTo$(attributes.element.value,parent) | async).length > 0
     }" (click)="onSelect();$event.stopPropagation();">
     <div class="treeItemTitleLabel">{{attributes.label.value}}</div>
     <div *ngIf="attributes.status" [class]="'status_div '+ attributes.status.value">{{attributes.status ? attributes.status.value : ""}}</div>
-    <div *ngIf="attributes.prov_added" [class]="'prov_status_div added'">added</div>
-    <div *ngIf="attributes.prov_removed" [class]="'prov_status_div removed'">removed</div>
-    <div *ngIf="attributes.prov_movedTo" [class]="'prov_status_div moved'">moved to&nbsp;<span (click)="navigate(attributes.prov_movedTo.value);$event.stopPropagation();">{{attributes.prov_movedTo.value}}</span></div>
-    <div *ngIf="attributes.prov_movedFrom" [class]="'prov_status_div moved'">moved from&nbsp;<span (click)="navigate(attributes.prov_movedFrom.value);$event.stopPropagation();">{{attributes.prov_movedFrom.value}}</span></div>
+    <div *ngIf="(treeDataService.isProvAdded$(attributes.element.value) | async).includes(parent)" [class]="'prov_status_div added'">added</div>
+    <div *ngFor="let moveto of (treeDataService.isProvMovedTo$(attributes.element.value,parent) | async)" [class]="'prov_status_div moved'">moved to&nbsp;<span (click)="navigate(moveto);$event.stopPropagation();">{{moveto}}</span></div>
+    <div *ngFor="let movefrom of (treeDataService.isProvMovedFrom$(attributes.element.value,parent) | async)" [class]="'prov_status_div moved'">moved from&nbsp;<span (click)="navigate(movefrom);$event.stopPropagation();">{{movefrom}}</span></div>
+    <div *ngIf="(treeDataService.isProvRemoved$(attributes.element.value) | async).includes(parent)" [class]="'prov_status_div removed'">removed</div>
+    <div *ngIf="treeDataService.isProvAddedPathPart$(attributes.element.value) | async" [class]="'prov_sub_status_div added'"></div>
+    <div *ngIf="treeDataService.isProvRemovedPathPart$(attributes.element.value) | async" [class]="'prov_sub_status_div removed'"></div>
+    <div *ngIf="treeDataService.isProvMovedPathPart$(attributes.element.value) | async" [class]="'prov_sub_status_div moved'"></div>
   </div>
 </div>
 <div 
@@ -37,7 +40,7 @@
       <app-concept-information 
         [conceptInformation]="conceptInformation" 
         [hiddenHeading]="false"
-        [collapsed]="true"></app-concept-information>
+        [collapsed]="false"></app-concept-information>
   </ng-container>
 </div>
 <app-tree-item-list *ngIf="expanded" [expanded]="expanded && cascade_expand" [cascade_expand]="cascade_expand" [conceptIri]="attributes.element.value"></app-tree-item-list>

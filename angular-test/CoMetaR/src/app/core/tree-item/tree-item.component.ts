@@ -25,6 +25,7 @@ export class TreeItemComponent implements OnInit {
   @Input() conceptIri?:string;
   @Input('expanded') initialExpanded?:boolean;
   @Input('cascade_expand') cascade_expand?:boolean;
+  @Input('') parent?:string;
 
   private treeItems$:Observable<TreeItemAttributes[]>;
   private searchResultAttributes$:Observable<SearchResultAttributes[]>;
