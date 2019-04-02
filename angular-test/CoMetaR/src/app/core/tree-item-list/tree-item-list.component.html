@@ -5,5 +5,6 @@
     [treeItemAttributes]="treeitem" 
     [expanded]="expanded"
     [cascade_expand]="cascade_expand"
+    [parent]="conceptIri"
     [ngClass]="{'selected':isSelected$(treeitem) | async, 'topLevel':conceptIri == 'root'}">
 </app-tree-item>

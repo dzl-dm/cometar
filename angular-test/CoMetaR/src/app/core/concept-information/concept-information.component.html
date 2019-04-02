@@ -7,6 +7,11 @@
         'columnHeadingTable':headingDirection == 'column',
         'hiddenHeading':hiddenHeading
     }">
+        <tr *ngIf="conceptInformation">
+            <td *ngFor="let cell of conceptInformation.headings; let i = index" [width]="cellWidthPercentages[i]+'%'">
+                {{cell}}
+            </td>
+        </tr>
         <tr *ngFor="let row of data; let isFirst = first">
             <!-- <ng-container *ngIf="isFirst; else noheading">
                 <th *ngFor="let cell of row; let i = index" [width]="cellWidthPercentages[i]+'%'">{{cell}}</th>
@@ -14,10 +19,9 @@
             <ng-template #noheading>
             </ng-template>-->
             <td *ngFor="let cell of row; let i = index" [width]="cellWidthPercentages[i]+'%'">
-                <span *ngIf="isConceptIri(cell)" (click)="navigateToConcept(cell)" class="conceptLink">{{cell}}</span>
-                <ng-container *ngIf="!isConceptIri(cell)">
-                    <span  
-                        *ngFor="let match of searchMatchArray(cell)" 
+                <ng-container *ngFor="let match of matchArray(cell)">
+                    <span *ngIf="isConceptIri(match)" (click)="navigateToConcept(cell)" class="conceptLink">{{match}}</span>
+                    <span *ngIf="!isConceptIri(match)"
                         [ngClass]="{'highlightText':highlightTerm != undefined && match.toUpperCase()==highlightTerm.toUpperCase()}"
                     >{{match}}</span>
                 </ng-container>

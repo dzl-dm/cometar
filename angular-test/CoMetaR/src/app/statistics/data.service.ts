@@ -43,11 +43,11 @@ export class DataService {
       borderColor: this.siteColors[site]
     }});
     datasets = datasets.map(ds => {
-      ds.data.forEach((d, index, arr) => { 
+      (<number[]>ds.data).forEach((d, index, arr) => { 
         arr[index] = index>0 ? d+arr[index-1] : d 
       });
       return ds;
-    })
+    });
     datasets.push({
       label: "Sum",
       data: labels.map((l, index) => <number>datasets.map(d => d.data[index]).reduce((sum,a)=><number>sum+<number>a,0))

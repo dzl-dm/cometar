@@ -31,7 +31,8 @@ export class ProvenanceService {
             let subject = "";
             let predicate = "";
 			let lang = "";
-			let date:Date;
+            let date:Date;
+            //afterwards, results contains one entry for each affected concept. unique predicates like labels will appear only once
 			commitDetails.forEach(cd => {
                 if (!displayOptions[cd.predicate.value]) return;
 
@@ -48,7 +49,7 @@ export class ProvenanceService {
                 subject = cd.subject.value;
                 predicate = cd.predicate.value;
 				lang = cd.object["xml:lang"] || "";
-                 date = cd.date.value;
+                date = cd.date.value;
 
 				cd = this.configuration.getHumanReadableCommitDetailData(cd);
 				let cia = result.filter(r => r.concept == cd.subject.value);
@@ -70,7 +71,18 @@ export class ProvenanceService {
 					cd.addition.value?objectlabel:""
 				]);
 				if (cia.length == 0) result.push(ci);
-			});
+            });
+            //merge lines
+            result.forEach(ci => {
+                for (let i = 0; i < ci.cells.length; i++){
+                    let mergeParts = ci.cells.filter(c => c[0]==ci.cells[i][0] && c[1]==ci.cells[i][1]);
+                    if (mergeParts.length == 2) {
+                        if (mergeParts[0][2] != "" && mergeParts[1][3] != "") mergeParts[0][3] = mergeParts[1][3];
+                        else mergeParts[0][2] = mergeParts[1][2];
+                        ci.cells.splice(ci.cells.indexOf(mergeParts[1]),1);
+                    }
+                }
+            })
 			cis.next(result);
 		});
 		return cis;

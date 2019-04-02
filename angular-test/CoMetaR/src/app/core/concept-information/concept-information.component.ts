@@ -21,25 +21,36 @@ export class ConceptInformationComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    if (this.conceptInformation) {
-      this.conceptInformation.cells.splice(0,0,this.conceptInformation.headings);
+    if (this.conceptInformation && !this.data) {
       this.data = this.conceptInformation.cells;
       this.headingDirection="row";
       this.cellWidthPercentages = this.conceptInformation.cellWidthPercentages;
     }
   }
 
-  private searchMatchArray(s:string):string[]{
-    if (this.highlightTerm == undefined) return [s];
+  private matchArray(s:string):string[]{
     let index = 0;
     let result:string[] = [];
     let counter = 0;
-    while (index < s.length && counter < 10){
-      let newindex = s.toUpperCase().indexOf(this.highlightTerm.toUpperCase(),index);
-      if (newindex > -1) {
-        result.push(s.substring(index,newindex));
-        result.push(s.substr(newindex,this.highlightTerm.length));
-        index = newindex+this.highlightTerm.length;
+    while (index < s.length && counter < 20){
+      let newSearchIndex = this.highlightTerm && s.toUpperCase().indexOf(this.highlightTerm.toUpperCase(),index) || -1;
+      let newLinkIndex = -1;
+      Object.keys(this.configurationService.getRdfPrefixMap).forEach((key)=>{
+        let tempLinkIndex = s.toUpperCase().indexOf(key.toUpperCase(),index);
+        newLinkIndex = newLinkIndex != -1 && tempLinkIndex != -1 && Math.min(newLinkIndex,tempLinkIndex)
+          || newLinkIndex != -1 && tempLinkIndex
+          || tempLinkIndex != -1 && newLinkIndex
+      })
+      if (newSearchIndex > -1 && (newLinkIndex == -1 || newSearchIndex < newLinkIndex)) {
+        result.push(s.substring(index,newSearchIndex));
+        result.push(s.substr(newSearchIndex,this.highlightTerm.length));
+        index = newSearchIndex+this.highlightTerm.length;
+      }
+      else if (newLinkIndex > -1) {
+        let link = s.substring(newLinkIndex,s.indexOf(" ",newLinkIndex));
+        result.push(s.substring(index, newLinkIndex));
+        result.push(s.substr(newLinkIndex,link.length));
+        index = newLinkIndex+link.length;
       }
       else {
         result.push(s.substring(index));

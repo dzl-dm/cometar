@@ -81,13 +81,22 @@ div.treeItemTitle:focus {
     display: inline-flex;
     vertical-align: middle;
 }
-.draft, .prov_status_div.moved{
+.prov_sub_status_div {
+    display: inline-flex;
+    vertical-align: top;
+    position: relative;
+    height:10px;
+    width:10px;
+    border-radius:5px;
+    margin-left:5px;
+}
+.draft, .prov_status_div.moved, .prov_sub_status_div.moved{
 	background-color:#FFEB0F;
 }
-.obsolete, .prov_status_div.removed{
+.obsolete, .prov_status_div.removed, .prov_sub_status_div.removed{
     background-color:#FFBFBF;
 }
-.new, .prov_status_div.added{
+.new, .prov_status_div.added, .prov_sub_status_div.added{
 	background-color:#71E161;
 }
 .prov_status_div:hover span { 

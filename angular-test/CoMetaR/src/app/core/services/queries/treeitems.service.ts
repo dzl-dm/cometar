@@ -9,34 +9,117 @@ import { Observable, combineLatest, of, BehaviorSubject, ReplaySubject } from 'r
 export class TreeItemsService {
     constructor(
         private dataService: DataService
-    ) {  }
+    ) { 
+        this.addedTreeItems$.next([]);
+        this.removedTreeItems$.next([]);
+        this.movedTreeItems$.next([]);
+    }
 
     private set = false;
     private provTreeItemAttributes$ = new ReplaySubject<ProvTreeItemAttributes[]>();
-    private removedTreeItems:string[] = [];
-    private addedTreeItems:string[] = [];
+    public removedTreeItems$ = new ReplaySubject<ProvParentOperation[]>(1);
+    public addedTreeItems$ = new ReplaySubject<ProvParentOperation[]>(1);
+    public movedTreeItems$ = new ReplaySubject<ProvParentOperation[]>(1);
+    private removedTreeItems:ProvParentOperation[] = [];
+    private addedTreeItems:ProvParentOperation[] = [];
+    private movedTreeItems:ProvParentOperation[] = [];
+    private removedTreeItemAttributes={};
 
     public setProvTreeItemAttributes(from?:Date, until?:Date, commits?:string[]) {
-        from = new Date("2018-01-08T10:15:22+01:00");
+        from = new Date("2019-04-01T10:15:22+01:00");
         until=until || new Date(Date.now());
         until.setHours(0);until.setSeconds(0);until.setMilliseconds(0);until.setMinutes(0); //else it refreshes endlessly
         const provItemsQueryString = this.getProvTreeItemsQueryString(from.toISOString(), until.toISOString(), commits);
         this.dataService.getData(provItemsQueryString).subscribe(this.provTreeItemAttributes$);
         this.provTreeItemAttributes$.subscribe(ptias => {
+            let tempElement;
+            let tempRemovedTreeItems:ProvParentOperation[] = [];
+            let tempAddedTreeItems:ProvParentOperation[] = [];
+            let tempMovedTreeItems:ProvParentOperation[] = [];
             ptias.forEach(ptia => {
-                let provadditions = ptias.filter(ptia2 => ptia2.addorremove.value == "http://purl.org/vocab/changeset/schema#addition" && ptia2.element.value == ptia.element.value);
-                let provremovals = ptias.filter(ptia2 => ptia2.addorremove.value == "http://purl.org/vocab/changeset/schema#removal" && ptia2.element.value == ptia.element.value);
-                if (ptia.addorremove.value == "http://purl.org/vocab/changeset/schema#addition" 
-                    && provadditions.length > provremovals.length
-                    && !this.addedTreeItems.includes(ptia.element.value)) this.addedTreeItems.push(ptia.element.value);
-                else if (ptia.addorremove.value == "http://purl.org/vocab/changeset/schema#removal" 
-                    && provadditions.length < provremovals.length
-                    && !this.removedTreeItems.includes(ptia.element.value)) this.removedTreeItems.push(ptia.element.value);
+                if (!tempElement || ptia.element.value != tempElement) {
+                    this.removedTreeItems = this.removedTreeItems.concat(tempRemovedTreeItems);
+                    this.addedTreeItems = this.addedTreeItems.concat(tempAddedTreeItems);
+                    this.movedTreeItems = this.movedTreeItems.concat(tempMovedTreeItems);
+                    tempRemovedTreeItems = [];
+                    tempAddedTreeItems = [];
+                    tempMovedTreeItems = [];
+                    tempElement = ptia.element.value;
+                }
+                if (ptia.addorremove.value == "http://purl.org/vocab/changeset/schema#addition") {
+                    let negationremove = tempRemovedTreeItems.filter(r => r.oldparent == ptia.parent.value);
+                    let negationmove = tempMovedTreeItems.filter(r => r.oldparent == ptia.parent.value);
+                    if (negationremove.length > 0) tempRemovedTreeItems.splice(tempRemovedTreeItems.indexOf(negationremove[0]),1);
+                    else if (negationmove.length > 0) {
+                        tempAddedTreeItems.push({
+                            element: tempElement,
+                            newparent: negationmove[0].newparent
+                        });
+                        tempMovedTreeItems.splice(tempMovedTreeItems.indexOf(negationmove[0]),1);
+                    }
+                    else if (tempRemovedTreeItems.length > 0){
+                        let lastremove;
+                        if (tempMovedTreeItems.length > 0) lastremove = tempMovedTreeItems[0];
+                        else lastremove = tempRemovedTreeItems[tempRemovedTreeItems.length-1];
+                        tempMovedTreeItems[0]={
+                            element: tempElement,
+                            newparent: ptia.parent.value,
+                            oldparent: lastremove.oldparent
+                        };
+                        tempRemovedTreeItems.splice(tempRemovedTreeItems.length-1,1);
+                    }
+                    else tempAddedTreeItems.push({
+                        element: tempElement,
+                        newparent: ptia.parent.value
+                    })
+                }
+                if (ptia.addorremove.value == "http://purl.org/vocab/changeset/schema#removal") {
+                    let negation = tempAddedTreeItems.filter(r => r.newparent == ptia.parent.value);
+                    let negationmove = tempMovedTreeItems.filter(r => r.newparent == ptia.parent.value);
+                    if (negation.length > 0) tempAddedTreeItems.splice(tempAddedTreeItems.indexOf(negation[0]),1); 
+                    else if (negationmove.length > 0) {
+                        tempRemovedTreeItems.push({
+                            element: tempElement,
+                            oldparent: negationmove[0].oldparent
+                        });
+                        tempMovedTreeItems.splice(tempMovedTreeItems.indexOf(negationmove[0]),1);
+                    }                   
+                    else if (tempAddedTreeItems.length > 0){
+                        let lastadd;
+                        if (tempMovedTreeItems.length > 0) lastadd = tempMovedTreeItems[0];
+                        else lastadd = tempAddedTreeItems[tempAddedTreeItems.length-1];
+                        tempMovedTreeItems[0]={
+                            element: tempElement,
+                            newparent: lastadd.newparent,
+                            oldparent: ptia.parent.value
+                        };
+                        tempAddedTreeItems.splice(tempAddedTreeItems.length-1,1);
+                    }
+                    else tempRemovedTreeItems.push({
+                        element: tempElement,
+                        oldparent: ptia.parent.value
+                    })
+                }
+                /*if (ptia.element.value.indexOf("dition8")>-1) console.log(ptia);
+                if (ptia.element.value.indexOf("dition8")>-1) console.log(tempAddedTreeItems.map(a => a.newparent));
+                if (ptia.element.value.indexOf("dition8")>-1) console.log(tempRemovedTreeItems.map(a => a.oldparent));
+                if (ptia.element.value.indexOf("dition8")>-1) console.log(tempMovedTreeItems.map(a => a.element + ": " +a.oldparent + " => " +a.newparent));*/
             });
-            console.log(ptias.filter(ptia => 
-            true//ptia.element.value == "http://data.dzl.de/ont/dwh#Schadstoffexposition" || ptia.element.value.indexOf("418715001")>-1
-            ));
-        });
+            this.removedTreeItems$.next(this.removedTreeItems);
+            this.removedTreeItems.concat(this.movedTreeItems).forEach(r=>{
+                let attributes = this.removedTreeItemAttributes[r.oldparent] || []
+                attributes.push(<TreeItemAttributes>{
+                    element: {value: r.element},
+                    hasChildren: {value:false},
+                    isModifier: {value:false},
+                    label: {value:r.element,"xml:lang":'en'},
+                    type: {value:"http://www.w3.org/2004/02/skos/core#Concept"}
+                });
+                this.removedTreeItemAttributes[r.oldparent] = attributes;
+            });
+            this.addedTreeItems$.next(this.addedTreeItems);
+            this.movedTreeItems$.next(this.movedTreeItems);  
+        });   
     }
 
     /**
@@ -53,116 +136,11 @@ export class TreeItemsService {
 
         const currentTreeItemsQueryString = this.getCurrentTreeItemsQueryString(range,iri);
         
-        return combineLatest(
-            this.dataService.getData(currentTreeItemsQueryString),
-            this.provTreeItemAttributes$
-        ).pipe(
-            map((data:[TreeItemAttributes[],ProvTreeItemAttributes[]]) => {
-                if ( true || iri && iri.indexOf("substance")>-1){
-                    data[0].map(d => d.element.value).forEach((subiri => {
-                        if (this.addedTreeItems.includes(subiri)) return;
-                        //moves
-                        let provdata = data[1].filter(ptia => ptia.element.value == subiri);
-                        let provadddata = provdata.filter(ptia => ptia.addorremove.value == "http://purl.org/vocab/changeset/schema#addition");
-                        let provremovedata = provdata.filter(ptia => ptia.addorremove.value == "http://purl.org/vocab/changeset/schema#removal");
-                        if (provadddata.length > 0 && provremovedata.length > 0) {
-                            data[0].filter(tia => tia.element.value == subiri).forEach(tia => {
-                                if (provadddata[0].parent.value == iri && provremovedata[provremovedata.length - 1].parent.value != iri) {
-                                    tia.prov_movedFrom = {value:provremovedata[provremovedata.length - 1].parent.value}
-                                }
-                                else if (provremovedata[0].parent.value == iri && provadddata[0].parent.value != iri) {
-                                    tia.prov_movedTo = {value:provadddata[0].parent.value}
-                                }
-                            })
-                        }             
-                    }))
-                }
-                //additions
-                data[0].filter(tia => 
-                    this.addedTreeItems.includes(tia.element.value)
-                ).forEach(tia => tia.prov_added = {value:true})
-                //removals
-                data[1].filter(ptia => 
-                    ptia.addorremove.value == "http://purl.org/vocab/changeset/schema#removal" 
-                    && ptia.parent.value == iri
-                    && this.removedTreeItems.includes(ptia.element.value)
-                ).forEach(ptia => {
-                    if (data[0].map(tia => tia.element.value).includes(ptia.element.value)) return;
-                    data[0].push({
-                        element: ptia.element,
-                        hasChildren: {value:false},
-                        isModifier: {value:false},
-                        label: {value:ptia.element.value,"xml:lang":'en'},
-                        type: {value:"http://www.w3.org/2004/02/skos/core#Concept"},
-                        prov_removed: {value:true}
-                    })
-                })  
-                return data[0];
+        return this.dataService.getData(currentTreeItemsQueryString).pipe(
+            map((data:TreeItemAttributes[]) => {
+                return data.concat(this.removedTreeItemAttributes[iri]||[]);
             })
         );
-        //if(!from&&!commits) {
-        //    return this.dataService.getData(currentTreeItemsQueryString)
-        /*}
-        const removedTreeItemsQueryString = this.getRemovedTreeItemsQueryString(iri,from.toISOString(),until.toISOString(),commits);
-        const addedTreeItemsQueryString = this.getAddedTreeItemsQueryString(iri,from.toISOString(),until.toISOString(),commits);
-        const movedTreeItemsQueryString = this.getMovedToTreeItemsQueryString(iri,from.toISOString(),until.toISOString(),commits);
-        const provItemsQueryString = this.getProvTreeItemsQueryString(iri,from.toISOString(),until.toISOString(),commits);
-        // if (iri && iri.indexOf("substance")>-1)this.dataService.getData(addedTreeItemsQueryString).subscribe(data => console.log(data));
-        return combineLatest(
-            this.dataService.getData(currentTreeItemsQueryString),
-            this.dataService.getData(removedTreeItemsQueryString),
-            this.dataService.getData(addedTreeItemsQueryString),
-            this.dataService.getData(movedTreeItemsQueryString),
-            this.dataService.getData(provItemsQueryString)
-        ).pipe(
-            map((data:[TreeItemAttributes[],RemovedTreeItemAttributes[],AddedTreeItemAttributes[],MovedTreeItemAttributes[],ProvTreeItemAttributes[]]) => { 
-                //additions
-                data[4].filter(ptia => ptia.addorremove.value == "http://purl.org/vocab/changeset/schema#addition" && !ptia.otherparent).forEach(ptia => {
-                    data[0].filter(tia => ptia.element && tia.element.value == ptia.element.value).forEach(tia => tia.prov_added = {value:true})
-                });
-                //moves
-                if (iri && iri.indexOf("substance")>-1)console.log(data[4]);
-                data[4].filter(ptia => ptia.otherparent != undefined).forEach(ptia => {
-                    data[0].filter(tia => ptia.element && tia.element.value == ptia.element.value).forEach(tia => {
-                        if (ptia.addorremove.value == "http://purl.org/vocab/changeset/schema#addition") tia.prov_movedFrom = ptia.otherparent;
-                        else tia.prov_movedTo = ptia.otherparent;
-                    });
-                });
-                //removes
-                data[4].filter(ptia => ptia.addorremove.value == "http://purl.org/vocab/changeset/schema#removal" && !ptia.otherparent).forEach(ptia => {
-                    if (data[0].map(tia => tia.element.value).includes(ptia.element.value)) return;
-                    data[0].push({
-                        element: ptia.element,
-                        hasChildren: {value:true},
-                        isModifier: {value:false},
-                        label: {value:ptia.element.value,"xml:lang":'en'},
-                        type: {value:"http://www.w3.org/2004/02/skos/core#Concept"},
-                        prov_removed: {value:true}
-                    })
-                });
-                /*data[2].forEach(atia => {
-                    data[0].filter(tia => atia.element && tia.element.value == atia.element.value).forEach(tia => tia.prov_added = {value:true})
-                });
-                data[3].forEach(mtia => {
-                    data[0].filter(tia => mtia.element && tia.element.value == mtia.element.value).forEach(tia => {
-                        if (mtia.newparent.value == iri) tia.prov_movedFrom = mtia.oldparent;
-                        else if (mtia.oldparent.value == iri) tia.prov_movedTo = mtia.newparent;
-                    })
-                });
-                data[1].forEach(rtia => {
-                    if (!rtia.element || data[0].map(tia => tia.element.value).includes(rtia.element.value)) return;
-                    data[0].push({
-                        element: rtia.element,
-                        hasChildren: {value:true},
-                        isModifier: {value:false},
-                        label: rtia.label || {value:rtia.element.value,"xml:lang":'en'},
-                        type: rtia.type || {value:"http://www.w3.org/2004/02/skos/core#Concept"},
-                        prov_removed: {value:true}
-                    })
-                });
-                return data[0]
-            })
-        )*/
     };
 
     public getCurrentTreeItemsQueryString(range,iri?):string {
@@ -237,7 +215,7 @@ WHERE {
         
     FILTER (?addorremove IN (cs:addition,cs:removal) && ?narrower IN (skos:narrower, rdf:hasPart, skos:member)) .
 }
-ORDER BY DESC(?date)`;        
+ORDER BY ?element ?date DESC(?addorremove)`;        
     }
 }
 
@@ -247,11 +225,7 @@ export interface TreeItemAttributes {
     label:JSONResponsePartLangString,
     hasChildren:JSONResponsePartBoolean,
     isModifier:JSONResponsePartBoolean,
-    status?:JSONResponsePartString,
-    prov_movedFrom?:JSONResponsePartUriString,
-    prov_movedTo?:JSONResponsePartUriString,
-    prov_removed?:JSONResponsePartBoolean,
-    prov_added?:JSONResponsePartBoolean
+    status?:JSONResponsePartString
 }
 
 export interface ProvTreeItemAttributes {
@@ -259,4 +233,10 @@ export interface ProvTreeItemAttributes {
     date:JSONResponsePartDate,
     addorremove:JSONResponsePartUriString,
     parent:JSONResponsePartUriString
+}
+
+export interface ProvParentOperation {
+    element:string,
+    oldparent?:string,
+    newparent?:string
 }
