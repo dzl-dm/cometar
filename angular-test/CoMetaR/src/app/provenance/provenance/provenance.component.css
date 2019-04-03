@@ -21,6 +21,9 @@
     flex-shrink:0;
     height:5px;
 }
+.day:first-child {
+    margin-top:5px;
+}
 .day.filled {
     min-height:35px;
 }

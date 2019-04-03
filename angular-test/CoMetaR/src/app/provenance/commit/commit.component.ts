@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { CommitMetaData } from '../services/queries/commit-meta-data.service';
 import { Observable, combineLatest } from 'rxjs';
 import { CommitDetails, CommitDetailsService } from '../services/queries/commit-details.service';
@@ -23,7 +23,8 @@ export class CommitComponent implements OnInit {
   constructor(
     private commitDetailsService:CommitDetailsService,
     private configuration:ConfigurationService,
-    private ele:ElementRef
+    private ele:ElementRef,
+    private cd: ChangeDetectorRef
   ) { }
 
   ngOnInit() {    
@@ -45,6 +46,7 @@ export class CommitComponent implements OnInit {
         this.categories[category].count++;
         if (cd.deprecatedsubject.value) this.categories[category].deprecated++;
       });
+      this.cd.markForCheck();
     });
     this.commitMetaDataHR=this.configuration.getHumanReadableCommitMetaData(this.commitMetaData);
   }

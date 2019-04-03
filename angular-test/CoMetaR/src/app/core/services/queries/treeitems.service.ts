@@ -26,7 +26,7 @@ export class TreeItemsService {
     private removedTreeItemAttributes={};
 
     public setProvTreeItemAttributes(from?:Date, until?:Date, commits?:string[]) {
-        from = new Date("2019-04-01T10:15:22+01:00");
+        from = new Date("2019-03-01T10:15:22+01:00");
         until=until || new Date(Date.now());
         until.setHours(0);until.setSeconds(0);until.setMilliseconds(0);until.setMinutes(0); //else it refreshes endlessly
         const provItemsQueryString = this.getProvTreeItemsQueryString(from.toISOString(), until.toISOString(), commits);

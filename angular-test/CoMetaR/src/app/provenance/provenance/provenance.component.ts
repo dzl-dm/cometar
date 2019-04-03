@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ProvenanceService } from '../services/provenance.service';
 import { Observable, Subject, ReplaySubject, BehaviorSubject, combineLatest } from 'rxjs';
 import { CommitMetaData } from '../services/queries/commit-meta-data.service';
@@ -13,7 +13,8 @@ import { ConceptInformation } from 'src/app/core/concept-information/concept-inf
 @Component({
 	selector: 'app-provenance',
 	templateUrl: './provenance.component.html',
-	styleUrls: ['./provenance.component.css']
+	styleUrls: ['./provenance.component.css'],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProvenanceComponent implements OnInit {
 	private fromDate:Date = new Date("2019-03-01");
@@ -30,7 +31,8 @@ export class ProvenanceComponent implements OnInit {
 		private router:Router,
 		private urlService:UrlService,
 		private treeDataService:TreeDataService,
-		private route:ActivatedRoute
+		private route:ActivatedRoute,
+		private cd: ChangeDetectorRef
 	) { }
 
 	ngOnInit() {
