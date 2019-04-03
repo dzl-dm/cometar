@@ -20,6 +20,7 @@ export class TreeDataService {
   private selectedPaths$:Observable<string[]>;
   private searchPaths$:Observable<string[]>;
   private searchPattern$:ReplaySubject<string>;
+  public historyFrom$:ReplaySubject<string>;
   private searchIris$:Observable<string[]>;
   private informationPaths$:Observable<string[]>;
   private provAddedPaths$:Observable<string[]>;
@@ -38,6 +39,11 @@ export class TreeDataService {
   ) {
     this.selectedIri$ = new ReplaySubject(1);
     this.searchPattern$ = new ReplaySubject(1);
+    this.historyFrom$ = new ReplaySubject(1);
+    this.historyFrom$.subscribe(next => {
+      let date = next && next != "" && new Date(next) || new Date(Date.now());
+      this.treeitemsService.setProvTreeItemAttributes(date);
+    });
     this.selectedPaths$ = this.selectedIri$.pipe(
       flatMap(iri => this.treepathitemsService.get([iri]))
     )
@@ -66,6 +72,9 @@ export class TreeDataService {
     route.queryParamMap.pipe(
       map(data => data.get('searchpattern') ? data.get('searchpattern') : "")
     ).subscribe(this.searchPattern$);
+    route.queryParamMap.pipe(
+      map(data => data.get('historyfrom') ? data.get('historyfrom') : "")
+    ).subscribe(this.historyFrom$);
     this.claimWidth=claimWidth;
   }
 

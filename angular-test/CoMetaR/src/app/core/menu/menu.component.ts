@@ -1,18 +1,27 @@
-import { Component, OnInit, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { TreeDataService } from '../services/tree-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
+import { of, Observable } from 'rxjs';
+import 'hammerjs';
+import { MatSliderChange } from '@angular/material';
+import { DataService } from 'src/app/services/data.service';
+import { combineAll, combineLatest } from 'rxjs/operators';
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.css']
+  styleUrls: ['./menu.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MenuComponent implements OnInit {
   public activeModule="provenance";
   public searchResultCount;
   public searchDivOpened=false;
+  public historyDivOpened=false;
   public helpDivOpened=false;
+  public historyFrom=new Date(Date.now());
+  public historyFromDays:number;
+
   constructor(
     private router: Router,
     public treeDataService: TreeDataService,
@@ -25,11 +34,19 @@ export class MenuComponent implements OnInit {
       this.searchResultCount = count;
       this.searchDivOpened = count > 0;
     });
+    this.treeDataService.historyFrom$.subscribe(next => {
+      this.historyFrom = next && next != "" && new Date(next) || new Date(Date.now());
+      let datediff = Date.now().valueOf()-this.historyFrom.valueOf();
+      this.historyFromDays = Math.floor(datediff/1000/60/60/24);
+    });
   }
 
   public performSearch(pattern:string){
     this.router.navigate([],{queryParams: {searchpattern: pattern}, queryParamsHandling: "merge" });
     return false;
+  }
+  public performHistoryChange(){
+    this.router.navigate([],{queryParams: {historyfrom: this.historyFrom.getFullYear() +"-"+ (this.historyFrom.getMonth()+1)+"-"+this.historyFrom.getDate()}, queryParamsHandling: "merge" });
   }
   public clearSearch(){
     this.router.navigate([],{ queryParams: {searchpattern: null}, queryParamsHandling: "merge" });
@@ -56,6 +73,12 @@ export class MenuComponent implements OnInit {
       this.helpDivOpened = !this.helpDivOpened;    
       setTimeout(()=>{helpDiv.setAttribute("style","left:0px; height:100%; width:100%");},0);
     }
+  }
+
+  public changeHistoryFromLabel(event:MatSliderChange){
+    let date = new Date(Date.now());
+    date.setHours(date.getHours() - 24*event.value);
+    this.historyFrom = date;
   }
 
   private getOffset(el:HTMLElement):{left, top}{

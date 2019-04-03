@@ -37,22 +37,15 @@ export class TreepathitemsService {
       iris.forEach(iri => tempGhostiris = tempGhostiris.concat(ghostiris[iri]||[]));
       let iriswithghostiris = iris.concat(tempGhostiris);
   
-      if (iris.length == 1 && iris[0] == "http://data.dzl.de/ont/dwh#minEQCO2") {
-        /*console.log(iris);
-        console.log(ghostiris[iris[0]])
-        console.log(tempGhostiris);
-        console.log(iriswithghostiris);
-        console.log(ghostiris);*/
-      }
-  
       let pos = 0;
+      let packsize = 5;
       while (iriswithghostiris.length >= pos){
-        let tempiris = iriswithghostiris.slice(pos,pos+25);
+        let tempiris = iriswithghostiris.slice(pos,pos+packsize);
         let queryString = this.getQueryString(tempiris,includeIriInPath);
         obs.push(this.dataService.getData(queryString).pipe(map(
           (data)=>data.map(e=> e.treePathItem.value)
         )));
-        pos+=25;
+        pos+=packsize;
       }
       let pathiris = obs.length > 0 && combineLatest(obs).pipe(map(observables => {
         let result:string[] = [];

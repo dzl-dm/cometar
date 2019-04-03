@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DataService, JSONResponsePartBoolean, JSONResponsePartLangString, JSONResponsePartUriString, JSONResponsePartString, prefixes, JSONResponsePartDate } from '../../../services/data.service';
 import { map, filter, withLatestFrom, combineAll } from 'rxjs/operators';
 import { Observable, combineLatest, of, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { TreeDataService } from '../tree-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,6 @@ export class TreeItemsService {
         this.movedTreeItems$.next([]);
     }
 
-    private set = false;
-    private provTreeItemAttributes$ = new ReplaySubject<ProvTreeItemAttributes[]>();
     public removedTreeItems$ = new ReplaySubject<ProvParentOperation[]>(1);
     public addedTreeItems$ = new ReplaySubject<ProvParentOperation[]>(1);
     public movedTreeItems$ = new ReplaySubject<ProvParentOperation[]>(1);
@@ -25,13 +24,19 @@ export class TreeItemsService {
     private movedTreeItems:ProvParentOperation[] = [];
     private removedTreeItemAttributes={};
 
+    private setDate:Date;
     public setProvTreeItemAttributes(from?:Date, until?:Date, commits?:string[]) {
-        from = new Date("2019-03-01T10:15:22+01:00");
+        if (this.setDate && this.setDate.valueOf() == from.valueOf()) return;
+        from =from || new Date(Date.now());
+        this.setDate = from;
         until=until || new Date(Date.now());
         until.setHours(0);until.setSeconds(0);until.setMilliseconds(0);until.setMinutes(0); //else it refreshes endlessly
+        this.addedTreeItems=[];
+        this.movedTreeItems=[];
+        this.removedTreeItems=[];
+        this.removedTreeItemAttributes={};
         const provItemsQueryString = this.getProvTreeItemsQueryString(from.toISOString(), until.toISOString(), commits);
-        this.dataService.getData(provItemsQueryString).subscribe(this.provTreeItemAttributes$);
-        this.provTreeItemAttributes$.subscribe(ptias => {
+        this.dataService.getData(provItemsQueryString).subscribe((ptias:ProvTreeItemAttributes[]) => {
             let tempElement;
             let tempRemovedTreeItems:ProvParentOperation[] = [];
             let tempAddedTreeItems:ProvParentOperation[] = [];
@@ -105,7 +110,6 @@ export class TreeItemsService {
                 if (ptia.element.value.indexOf("dition8")>-1) console.log(tempRemovedTreeItems.map(a => a.oldparent));
                 if (ptia.element.value.indexOf("dition8")>-1) console.log(tempMovedTreeItems.map(a => a.element + ": " +a.oldparent + " => " +a.newparent));*/
             });
-            this.removedTreeItems$.next(this.removedTreeItems);
             this.removedTreeItems.concat(this.movedTreeItems).forEach(r=>{
                 let attributes = this.removedTreeItemAttributes[r.oldparent] || []
                 attributes.push(<TreeItemAttributes>{
@@ -117,22 +121,14 @@ export class TreeItemsService {
                 });
                 this.removedTreeItemAttributes[r.oldparent] = attributes;
             });
+            this.removedTreeItems$.next(this.removedTreeItems);
             this.addedTreeItems$.next(this.addedTreeItems);
             this.movedTreeItems$.next(this.movedTreeItems);  
         });   
     }
 
-    /**
-     * 
-     * @param {enum} options.range ["top", "sub", "single"] get top elements or subelements of iri
-     * @param {string} options.iri
-     */
     public get(options:{range?:"top"|"sub"|"single", iri?:string}):Observable<TreeItemAttributes[]> {
         let {range, iri} = options;
-        if (!this.set) {
-            this.setProvTreeItemAttributes();
-            this.set = true;
-        }
 
         const currentTreeItemsQueryString = this.getCurrentTreeItemsQueryString(range,iri);
         
