@@ -19,6 +19,13 @@
             <div *ngSwitchCase="'related'">
                 <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true"></app-tree-item>
             </div>
+            <div *ngSwitchCase="'loincTable'">
+              <table>
+                  <tr *ngFor="let row of detail.value.values">
+                    <td *ngFor="let cell of row">{{cell}}</td>
+                  </tr>                
+              </table>
+            </div>
             <div *ngSwitchDefault>
                 <div *ngFor="let value of detail.value.values" [innerHTML]="value"></div>
             </div>

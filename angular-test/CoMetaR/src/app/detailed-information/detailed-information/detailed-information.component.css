@@ -73,3 +73,6 @@ app-loinc-details {
     margin-bottom:10px;
     box-sizing: border-box;
 }
+table td {
+    padding:5px;
+}

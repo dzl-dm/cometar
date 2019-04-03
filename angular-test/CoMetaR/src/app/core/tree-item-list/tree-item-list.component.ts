@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { TreeItemAttributes } from '../services/queries/treeitems.service'
 import { TreeDataService } from '../services/tree-data.service';
 import { trigger, style, transition, animate } from '@angular/animations';
@@ -27,10 +27,12 @@ export class TreeItemListComponent implements OnInit {
   @Input('cascade_expand') cascade_expand?:boolean;
   private treeItems$:Observable<TreeItemAttributes[]>;
   constructor(
-    private treeDataService:TreeDataService
+    private treeDataService:TreeDataService,
+    private cd: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
+
   }
 
   public getTreeItems(){
@@ -39,7 +41,10 @@ export class TreeItemListComponent implements OnInit {
       this.treeDataService.getTopLevelItems$().subscribe(data => result = data);
       this.expanded = true;
     }
-    else this.treeDataService.getSubItems$(this.conceptIri).subscribe(data => result = data);
+    else this.treeDataService.getSubItems$(this.conceptIri).subscribe(data => { 
+      result = data;
+      this.cd.markForCheck();
+    });
     return result;
   }
 

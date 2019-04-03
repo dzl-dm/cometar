@@ -1,17 +1,18 @@
-import { Component, OnInit, Input, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Observable, of, combineLatest } from 'rxjs';
 import { TreeItemsService, TreeItemAttributes } from '../services/queries/treeitems.service'
 import { TreeDataService } from '../services/tree-data.service';
 import { TreeStyleService } from "../services/tree-style.service";
 import { SearchResultAttributes } from '../services/queries/searchtreeitem.service';
-import { withLatestFrom, map } from 'rxjs/operators';
+import { withLatestFrom, map, combineAll } from 'rxjs/operators';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { ConceptInformation } from '../concept-information/concept-information.component';
 
 @Component({
   selector: 'app-tree-item',
   templateUrl: './tree-item.component.html',
-  styleUrls: ['./tree-item.component.css']
+  styleUrls: ['./tree-item.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TreeItemComponent implements OnInit {
   @Input('treeItemAttributes') attributes?:TreeItemAttributes={
@@ -40,13 +41,15 @@ export class TreeItemComponent implements OnInit {
     private treeDataService: TreeDataService,
     private treeStyleService: TreeStyleService,
     private configurationService: ConfigurationService,
-    private el: ElementRef  
+    private el: ElementRef,
+    private cd: ChangeDetectorRef
   ){
   }
 
   ngOnInit() {
     setTimeout(()=>{
       this.intent$ = this.treeStyleService.getIntent(this.el.nativeElement);
+      this.intent$.subscribe(data => this.cd.markForCheck());
     });
     if (this.conceptIri) this.treeitemsService.get({range:"single",iri:this.conceptIri}).subscribe(a => {
       this.attributes = a[0];
@@ -60,7 +63,10 @@ export class TreeItemComponent implements OnInit {
         this.treeDataService.isSelected$(this.attributes.element.value),
         of(this.initialExpanded)
       )
-    ).subscribe(next => this.expanded = next.includes(true));
+    ).subscribe(next => { 
+      this.expanded = next.includes(true); 
+      this.cd.markForCheck();
+    });
     
     this.showSearchResult$ = this.treeDataService.isSearchMatch$(this.attributes.element.value);
     this.searchResultAttributes$ = this.treeDataService.getSearchMatch$(this.attributes.element.value).pipe(

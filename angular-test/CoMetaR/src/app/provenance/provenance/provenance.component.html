@@ -24,8 +24,8 @@
         <label [for]="'checkbox_'+cat.key">{{cat.key}}</label>
     </div>
     <div *ngFor="let item of cat.value">
-      <input type="checkbox" [checked]="displayOptions[item]" [id]="'checkbox_'+item" (click)="displayOptionToggle(item)"/>
-      <label [for]="'checkbox_'+item">{{configuration.getHumanReadableRDFPredicate(item)}}</label>
+      <input type="checkbox" [checked]="displayOptions[item]" [id]="'checkbox_'+item" (click)="displayOptionToggle(item)" [hidden]="cat.key == 'structure'"/>
+      <label [for]="'checkbox_'+item" [hidden]="cat.key == 'structure'">{{configuration.getHumanReadableRDFPredicate(item)}}</label>
     </div>
   </div>
 </div>
