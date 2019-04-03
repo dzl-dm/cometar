@@ -19,12 +19,16 @@ div#menu{
     padding-top:5px;
     padding-bottom:5px;
 }
-div#searchDiv{
+div#searchDiv, div#historyDiv{
     height:0px;
     transition: height 0.4s;
+    position: relative;
 }
-div#searchDiv.open{
+div#searchDiv.open, div#searchDiv.open form{
     height:40px;
+}
+div#historyDiv.open, div#historyDiv.open form{
+    height:60px;
 }
 div#helpDiv{
     height:0px;
@@ -60,6 +64,9 @@ div.menuItem{
 div#toggleSearch{ 
     background-image: url('src/assets/img/lupe_small.png');
 }
+div#toggleHistory{ 
+    background-image: url('src/assets/img/history_small.png');
+}
 div#homebutton{ 
     background-image: url('src/assets/img/home_small.png');
 }
@@ -67,9 +74,7 @@ div#helpbutton{
     background-image: url('src/assets/img/help_small.png');
     z-index:1001;
 }
-div#searchDiv.open form{
-    height:40px;
-}
+
 form {
     display: flex;
     flex-direction: row;
@@ -78,7 +83,7 @@ form {
     overflow:hidden;
     transition: height 0.4s;
 }
-form input:first-child{
+form input:first-child, mat-slider{
     flex-grow:1;
     width:40px;
     padding-left:15px;
@@ -88,4 +93,10 @@ form input:first-child{
 }
 form input {    
     width:70px;
+}
+#historyFromDiv {
+    color:var(--dzl-blue);
+    position: absolute;
+    left:10px;
+    top:10px;
 }

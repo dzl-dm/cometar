@@ -1,6 +1,8 @@
+
 <div id="menu">
   <div id="homebutton" class="menuItem" (click)="navigateModule('home')"></div>
   <div id="toggleSearch" class="menuItem" (click)="searchDivOpened = !searchDivOpened; searchPatternInput.focus()"></div>
+  <div id="toggleHistory" class="menuItem" (click)="historyDivOpened = !historyDivOpened"></div>
   <div id="helpbutton" class="menuItem helpbutton" (click)="toggleHelp(helpDiv)"></div>
 </div>
 <div id="searchDiv" [ngClass]="{'open':searchDivOpened}">
@@ -8,6 +10,21 @@
         <input type='text' [value]="treeDataService.getSearchPattern()" name="searchPatternInput" #searchPatternInput placeholder="search term"/> 
         <input type="submit" (click)='performSearch(searchPatternInput.value)' value="search"/>
         <input type="button" (click)='clearSearch()' [value]="'x '+(searchResultCount?searchResultCount:'')"/>
+    </form>
+</div>
+<div id="historyDiv" [ngClass]="{'open':historyDivOpened}">
+    <form>
+        <mat-slider 
+            min="0"
+            max="70"
+            step="1"
+            [value]="historyFromDays"
+            tickInterval="7"
+            (input)="changeHistoryFromLabel($event)"
+            (change)="performHistoryChange($event)"
+            invert>
+        </mat-slider>
+        <div id="historyFromDiv">{{historyFrom | date:'dd.MM.yyyy'}}</div>
     </form>
 </div>
 <div id="helpDiv" [ngClass]="{'open':helpDivOpened}" #helpDiv>
@@ -22,3 +39,4 @@
         <p *ngFor="let d of helpItem.description">{{d}}</p>
     </div>
 </div>
+<app-progressbar></app-progressbar>

@@ -8,10 +8,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { LogosComponent } from './logos/logos.component';
 import { MenuComponent } from './menu/menu.component';
 import { SnackbarComponent } from './snackbar/snackbar.component';
+import { MatSliderModule } from '@angular/material/slider'; 
+import { MatProgressBarModule } from '@angular/material/progress-bar'; 
 import { StartComponent } from './start/start.component';
 import { NoSanitizePipe } from './no-sanitize.pipe';
 import { ConceptInformationComponent } from './concept-information/concept-information.component';
 import { ChartsModule } from 'ng2-charts';
+import { ProgressbarComponent } from './progressbar/progressbar.component';
 
 @NgModule({
   declarations: [
@@ -24,12 +27,15 @@ import { ChartsModule } from 'ng2-charts';
     SnackbarComponent,
     StartComponent,
     NoSanitizePipe,
-    ConceptInformationComponent
+    ConceptInformationComponent,
+    ProgressbarComponent
   ],
   imports: [
     CommonModule,
     RouterModule,
-    ChartsModule
+    ChartsModule,
+    MatSliderModule,
+    MatProgressBarModule
   ],
   exports: [
     TreeComponent,

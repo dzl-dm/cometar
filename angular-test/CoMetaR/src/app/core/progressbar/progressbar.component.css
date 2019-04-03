@@ -1,0 +1,10 @@
+#progressDiv {
+    opacity: 1.0;
+    transition: opacity 1s;
+    transition-delay: 1s;
+    margin-top:5px;
+    margin-bottom:-4px;
+}
+#progressDiv.full {
+    opacity: 0;
+}

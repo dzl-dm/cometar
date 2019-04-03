@@ -3,6 +3,7 @@ import { Observable, throwError, Subject, BehaviorSubject, ReplaySubject, of } f
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { map, catchError, startWith, shareReplay, retry } from 'rxjs/operators';
 import { BrowserService } from '../core/services/browser.service';
+import { ProgressService } from './progress.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,8 @@ import { BrowserService } from '../core/services/browser.service';
 export class DataService {
   constructor(
     private http:HttpClient,
-    private browserService:BrowserService
+    private browserService:BrowserService,
+    private progressService:ProgressService
   ) { }
 
   private pendings = {};
@@ -22,6 +24,7 @@ export class DataService {
     this.loading.next(true);
     this.busyQueries++;
     if (!this.pendings[queryString]){
+      this.progressService.addTask();
       let rs = new ReplaySubject<any[]>(1);
       this.getObservable(queryString).subscribe(rs);
       this.pendings[queryString] = rs;
@@ -32,6 +35,7 @@ export class DataService {
           this.browserService.snackbarNotification.next([data.message,'error']);
           this.pendings[queryString] = of([]);
         }
+        this.progressService.taskDone();
       })
     }
     this.pendings[queryString].subscribe(()=>{
