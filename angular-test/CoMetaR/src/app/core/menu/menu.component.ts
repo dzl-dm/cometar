@@ -45,7 +45,7 @@ export class MenuComponent implements OnInit {
     this.router.navigate([],{queryParams: {searchpattern: pattern}, queryParamsHandling: "merge" });
     return false;
   }
-  public performHistoryChange(){
+  public performHistoryChange(event:MatSliderChange){
     this.router.navigate([],{queryParams: {historyfrom: this.historyFrom.getFullYear() +"-"+ (this.historyFrom.getMonth()+1)+"-"+this.historyFrom.getDate()}, queryParamsHandling: "merge" });
   }
   public clearSearch(){
