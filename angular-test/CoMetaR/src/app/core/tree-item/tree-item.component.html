@@ -3,8 +3,8 @@
   <div 
     [ngClass]="{
       'treeItemExpand':true,
-      'expanded':attributes.hasChildren.value && expanded,
-      'collapsed':attributes.hasChildren.value && !expanded
+      'expanded':(attributes.hasChildren.value || (isParentOfRemovedTreeItem$ | async)) && expanded,
+      'collapsed':(attributes.hasChildren.value || (isParentOfRemovedTreeItem$ | async)) && !expanded
     }" >
   </div>
   <div [ngClass]="{

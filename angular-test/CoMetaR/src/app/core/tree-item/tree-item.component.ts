@@ -36,9 +36,13 @@ export class TreeItemComponent implements OnInit {
   public expanded:boolean;
   private conceptInformation$:Observable<ConceptInformation[]>;
   public showInformationDiv$:Observable<boolean>;
+  public isParentOfRemovedTreeItem$:Observable<boolean> = this.treeitemsService.removedTreeItems$.pipe(
+    map(rtis => rtis.map(rti => rti.oldparent).includes(this.attributes.element.value))
+  );
+
   constructor(
     private treeitemsService: TreeItemsService, 
-    private treeDataService: TreeDataService,
+    public treeDataService: TreeDataService,
     private treeStyleService: TreeStyleService,
     private configurationService: ConfigurationService,
     private el: ElementRef,

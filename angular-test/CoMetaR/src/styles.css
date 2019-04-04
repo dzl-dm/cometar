@@ -86,6 +86,9 @@ mat-slider.mat-slider-horizontal .mat-slider-wrapper {
 .mat-accent .mat-slider-thumb-label {
     background-color:inherit;
 }
+.mat-slider-min-value:not(.mat-slider-thumb-label-showing) .mat-slider-thumb {
+    background-color: var(--dzl-blue);
+}
 .mat-slider-thumb-label span.mat-slider-thumb-label-text {
     color: var(--dzl-blue);
 }
