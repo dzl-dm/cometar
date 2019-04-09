@@ -1,0 +1,42 @@
+removed,http://data.dzl.de/ont/dwh#DV_0001,http://www.w3.org/2004/02/skos/core#broader,,http://purl.bioontology.org/ontology/SNOMEDCT/184305005
+removed,http://data.dzl.de/ont/dwh#DV_0002,http://www.w3.org/2004/02/skos/core#broader,,http://purl.bioontology.org/ontology/SNOMEDCT/184305005
+removed,http://purl.bioontology.org/ontology/SNOMEDCT/184305005,http://www.w3.org/2004/02/skos/core#narrower,,http://data.dzl.de/ont/dwh#DV_0001
+removed,http://purl.bioontology.org/ontology/SNOMEDCT/184305005,http://www.w3.org/2004/02/skos/core#narrower,,http://data.dzl.de/ont/dwh#DV_0002
+removed,http://purl.bioontology.org/ontology/SNOMEDCT/184305005,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/399307001
+removed,http://purl.bioontology.org/ontology/SNOMEDCT/184305005,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/87309006
+removed,http://purl.bioontology.org/ontology/SNOMEDCT/399307001,http://www.w3.org/2004/02/skos/core#broader,,http://purl.bioontology.org/ontology/SNOMEDCT/184305005
+removed,http://purl.bioontology.org/ontology/SNOMEDCT/87309006,http://www.w3.org/2004/02/skos/core#broader,,http://purl.bioontology.org/ontology/SNOMEDCT/184305005
+added,http://data.dzl.de/ont/dwh#CancerDeathRelation,http://data.dzl.de/ont/dwh#status,"",draft
+added,http://data.dzl.de/ont/dwh#CancerDeathRelation,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,,http://www.w3.org/2004/02/skos/core#Concept
+added,http://data.dzl.de/ont/dwh#CancerDeathRelation,http://www.w3.org/2004/02/skos/core#broader,,http://purl.bioontology.org/ontology/SNOMEDCT/184305005
+added,http://data.dzl.de/ont/dwh#CancerDeathRelation,http://www.w3.org/2004/02/skos/core#narrower,,http://data.dzl.de/ont/dwh#DV_0001
+added,http://data.dzl.de/ont/dwh#CancerDeathRelation,http://www.w3.org/2004/02/skos/core#narrower,,http://data.dzl.de/ont/dwh#DV_0002
+added,http://data.dzl.de/ont/dwh#CancerDeathRelation,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/399307001
+added,http://data.dzl.de/ont/dwh#CancerDeathRelation,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/87309006
+added,http://data.dzl.de/ont/dwh#CancerDeathRelation,http://www.w3.org/2004/02/skos/core#prefLabel,de,Krebs-Tod Relation
+added,http://data.dzl.de/ont/dwh#CancerDeathRelation,http://www.w3.org/2004/02/skos/core#prefLabel,en,Cancer-death relation
+added,http://data.dzl.de/ont/dwh#CauseDeathDisease,http://data.dzl.de/ont/dwh#status,"",draft
+added,http://data.dzl.de/ont/dwh#CauseDeathDisease,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,,http://www.w3.org/2004/02/skos/core#Concept
+added,http://data.dzl.de/ont/dwh#CauseDeathDisease,http://www.w3.org/2004/02/skos/core#broader,,http://purl.bioontology.org/ontology/SNOMEDCT/184305005
+added,http://data.dzl.de/ont/dwh#CauseDeathDisease,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/128601007
+added,http://data.dzl.de/ont/dwh#CauseDeathDisease,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/36334600
+added,http://data.dzl.de/ont/dwh#CauseDeathDisease,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/409623005
+added,http://data.dzl.de/ont/dwh#CauseDeathDisease,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/77465005
+added,http://data.dzl.de/ont/dwh#CauseDeathDisease,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/85232009
+added,http://data.dzl.de/ont/dwh#CauseDeathDisease,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/91302008
+added,http://data.dzl.de/ont/dwh#CauseDeathDisease,http://www.w3.org/2004/02/skos/core#prefLabel,de,Todesursache als Folge einer Erkrankung
+added,http://data.dzl.de/ont/dwh#CauseDeathDisease,http://www.w3.org/2004/02/skos/core#prefLabel,en,Cause of death as result of disease
+added,http://data.dzl.de/ont/dwh#DV_0001,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#CancerDeathRelation
+added,http://data.dzl.de/ont/dwh#DV_0002,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#CancerDeathRelation
+added,http://data.dzl.de/ont/dwh#Stammdaten,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/397731000
+added,http://purl.bioontology.org/ontology/SNOMEDCT/128601007,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#CauseDeathDisease
+added,http://purl.bioontology.org/ontology/SNOMEDCT/184305005,http://www.w3.org/2004/02/skos/core#narrower,,http://data.dzl.de/ont/dwh#CancerDeathRelation
+added,http://purl.bioontology.org/ontology/SNOMEDCT/184305005,http://www.w3.org/2004/02/skos/core#narrower,,http://data.dzl.de/ont/dwh#CauseDeathDisease
+added,http://purl.bioontology.org/ontology/SNOMEDCT/36334600,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#CauseDeathDisease
+added,http://purl.bioontology.org/ontology/SNOMEDCT/397731000,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#Stammdaten
+added,http://purl.bioontology.org/ontology/SNOMEDCT/399307001,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#CancerDeathRelation
+added,http://purl.bioontology.org/ontology/SNOMEDCT/409623005,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#CauseDeathDisease
+added,http://purl.bioontology.org/ontology/SNOMEDCT/77465005,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#CauseDeathDisease
+added,http://purl.bioontology.org/ontology/SNOMEDCT/85232009,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#CauseDeathDisease
+added,http://purl.bioontology.org/ontology/SNOMEDCT/87309006,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#CancerDeathRelation
+added,http://purl.bioontology.org/ontology/SNOMEDCT/91302008,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#CauseDeathDisease

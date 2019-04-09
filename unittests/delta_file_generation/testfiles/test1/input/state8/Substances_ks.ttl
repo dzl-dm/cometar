@@ -1,0 +1,1382 @@
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix dc:	<http://purl.org/dc/elements/1.1/> .
+@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix dwh:	<http://sekmi.de/histream/dwh#> .
+@prefix snomed: <http://purl.bioontology.org/ontology/SNOMEDCT/> .
+@prefix loinc: <http://loinc.org/owl#> .
+@prefix :	<http://data.dzl.de/ont/dwh#> .
+
+:SYSTH a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:LCTherapien ;
+	skos:prefLabel 		"Systemic Therapies"@en ;
+	skos:prefLabel 		"Systemische Therapien"@de ;
+	dc:description 		'''Systemische Therapien''' 
+.
+
+:Substanzen a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH ;
+	skos:prefLabel 		"Substances"@en ;
+	skos:prefLabel 		"Substanzen"@de ;
+	skos:altLabel 		"pharmaceutical drugs"@en ;
+	dc:description 		'''Pharmaceutical drugs used to diagnose, cure, treat or to prevent diseases.'''@en ;
+	dc:description 		'''Klinisch wirksame Substanzen zur Diagnose, Heilung, Behandlung oder der Vorsorge von Krankheiten.'''@de ;
+.
+
+:SYSTH:SCHEMA a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH ;
+	skos:prefLabel 		"Treatment Regime"@en ;
+	skos:prefLabel 		"Behandlungsschema"@de ;
+	skos:altLabel 		"mono substance or combined chemo therapy"@en ;
+	skos:altLabel 		"Einzelsubstanz oder kombinierte Chemotherapie"@de ;
+.
+
+	# SYSTH:SCHEMA 1st Level
+:SCHMEA:MONO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SCHEMA ;
+	skos:prefLabel 		"Mono Therapy"@en ;
+	skos:prefLabel 		"Monotherapie"@de ;
+.
+
+	# SYSTH:SCHEMA 1st Level
+:SCHMEA:CCT2 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SCHEMA ;
+	skos:prefLabel 		"Combined Chemo Therapy (2 Substances)"@en ;
+	skos:prefLabel 		"Schema K-CT (2 Substanzen)"@de ;
+	skos:altLabel 		"Kombinierte Chemotherapie mit zwei Substanzen"@de ;
+.
+
+	# SYSTH:SCHEMA 1st Level
+:SCHMEA:CCT3 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SCHEMA ;
+	skos:prefLabel 		"Combined Chemo Therapy (3 Substances)"@en ;
+	skos:prefLabel 		"Schema K-CT (3 Substanzen)"@de ;
+	skos:altLabel 		"Kombinierte Chemotherapie mit drei Substanzen"@de ;
+.
+
+	# SYSTH 1st Level
+:Zytostatika a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Substanzen ;
+	skos:prefLabel 		"Cytostatics"@en ;
+	skos:prefLabel 		"Zytostatika"@de ;
+	dc:description 		'''Frequently used substances in oncology to influence cell growth or cell division including supplementary substances. (Domain: DA Lung Cancer) '''@en ;
+	dc:description 		'''Häufig genutzte onkologische Substanzen zur Beeinflussung der Zellteilung oder des Zellwachstums, komplementäre Substantzen miteingeschlossen. (Domäne: DA Lung Cancer)'''@de ;
+.
+
+	#Aktuell keine weitere Unterscheidung nach der Art der Impfung
+	# SYSTH 1st Level
+:Vakzin a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Substanzen ;
+	skos:prefLabel 		"Vaccine"@en ;
+	skos:prefLabel 		"Vakzin"@de ;
+	skos:altLabel 		"Impfung"@de ;
+.
+	
+	# SYSTH 1st Level
+:SonstigeSubstanzen a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Substanzen ;
+	skos:prefLabel 		"Sonstige Substanzen"@en ;
+	skos:prefLabel 		"Other Substances"@de ;
+.
+
+	# SYSTH 1st Level
+:ImmunoSuppressor a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Substanzen ;
+	skos:prefLabel 		"Immune Suppressant Drug"@en ;
+	skos:prefLabel 		"Immunsuppressivum"@de ;
+.
+
+	# SYSTH 1st Level
+:Supportive a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Substanzen ;
+	skos:prefLabel 		"Supportive Therapy"@en ;
+	skos:prefLabel 		"Supportivtherapie"@de ;
+.
+	
+	# SYSTH 2nd Level
+:SYSTH:ALK a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Zytostatika ;
+	skos:prefLabel 		"Alkylantien"@en ;
+	skos:prefLabel 		"Alkylantien"@de ;
+	skos:notation "SYSTH:ALK" ;
+.
+
+	# SYSTH 2nd Level
+:SYSTH:ANTMETA a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Zytostatika ;
+	skos:prefLabel 		"Antimetabolite"@en ;
+	skos:prefLabel 		"Antimetabolite"@de ;
+	skos:notation "SYSTH:ANTMETA" ;
+.
+
+	# SYSTH 2nd Level
+:SYSTH:INTANTIB a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Zytostatika ;
+	skos:prefLabel 		"Interkalantien und antineoplastische Antibiotika"@en ;
+	skos:prefLabel 		"Interkalantien und antineoplastische Antibiotika"@de ;
+	skos:notation "SYSTH:INTANTIB" ;
+.
+
+	# SYSTH 2nd Level		
+:SYSTH:MITO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Zytostatika ;
+	skos:prefLabel 		"Mitose-Hemmstoffe"@en ;
+	skos:prefLabel 		"Mitose-Hemmstoffe"@de ;
+	skos:notation "SYSTH:MITO" ;
+.
+
+	# SYSTH 2nd Level
+:SYSTH:MKA a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Zytostatika ;
+	skos:prefLabel 		"Monoklonale Antikörper"@en ;
+	skos:prefLabel 		"Monoklonale Antikörper"@de ;
+	skos:notation "SYSTH:MKA" ;
+.
+
+	# SYSTH 2nd Level	
+:SYSTH:PLATIN a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Zytostatika ;
+	skos:prefLabel 		"Platinverbindung"@en ;
+	skos:prefLabel 		"Platinverbindung"@de ;
+	skos:notation "SYSTH:PLATIN" ;
+.
+
+	# SYSTH 2nd Level	
+:SYSTH:SONST a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Zytostatika ;
+	skos:prefLabel 		"Other Cytostatics"@en ;
+	skos:prefLabel 		"Andere Zytostatika"@de ;
+	skos:altLabel 		"Sammelgruppe nicht weiter klassifizierter Zytostatika oder supplementärer Wirkstoffe"@de ;
+	skos:notation "SYSTH:SONST" ;
+.
+
+	# SYSTH 2nd Level	
+:SYSTH:TOPO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Zytostatika ;
+	skos:prefLabel 		"Topoisomerase-Inhibitoren"@en ;
+	skos:prefLabel 		"Topoisomerase-Inhibitoren"@de ;
+	skos:notation "SYSTH:TOPO" ;
+.
+
+	# SYSTH 2nd Level	
+:SYSTH:TYRO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Zytostatika ;
+	skos:prefLabel 		"Tyrokinase-Inhibitoren"@en ;
+	skos:prefLabel 		"Tyrokinase-Inhibitoren"@de ;
+	skos:notation "SYSTH:TYRO" ;
+.
+
+	# Substanzen ##########################################################################
+
+	# SYSTH Substance
+:DB12001 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"ABEMACICLIB"@en ;
+	skos:prefLabel 		"ABEMACICLIB"@de ;
+	skos:notation "DB12001" ;
+.
+
+	# SYSTH Substance
+:DB08916 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"AFATINIB"@en ;
+	skos:prefLabel 		"AFATINIB"@de ;
+	skos:notation "DB08916" ;
+.
+
+	# SYSTH Substance
+:DB11363 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"ALECTINIB"@en ;
+	skos:prefLabel 		"ALECTINIB"@de ;
+	skos:notation "DB11363" ;
+.
+
+	# SYSTH Substance
+:DB06263 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:INTANTIB ;
+	skos:prefLabel 		"AMRUBICIN"@en ;
+	skos:prefLabel 		"AMRUBICIN"@de ;
+	skos:notation "DB06263" ;
+.
+
+	# SYSTH Substance
+:DB11595 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"ATEZOLIZUMAB"@en ;
+	skos:prefLabel 		"ATEZOLIZUMAB"@de ;
+	skos:notation "DB11595" ;
+.
+
+	# SYSTH Substance
+:DB06769 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:ALK ;
+	skos:prefLabel 		"BENDAMUSTINE"@en ;
+	skos:prefLabel 		"BENDAMUSTINE"@de ;
+	skos:notation "DB06769" ;
+.
+
+	# SYSTH Substance	
+:DB00112 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"BEVACIZUMAB"@en ;
+	skos:prefLabel 		"BEVACIZUMAB"@de ;
+	skos:notation "DB00112" ;
+.
+
+	# SYSTH Substance
+:DB11967 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"BINIMETINIB"@en ;
+	skos:prefLabel 		"BINIMETINIB"@de ;
+	skos:notation "DB11967" ;
+.
+
+	# SYSTH Substance
+:DB12267 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"BRIGATINIB"@en ;
+	skos:prefLabel 		"BRIGATINIB"@de ;
+	skos:notation "DB12267" ;
+.
+
+	# SYSTH Substance
+:DB11666 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"BUPARLISIB"@en ;
+	skos:prefLabel 		"BUPARLISIB"@de ;
+	skos:notation "DB11666" ;
+.
+
+	# SYSTH Substance
+:DB01101 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:ANTMETA ;
+	skos:prefLabel 		"CAPECITABINE"@en ;
+	skos:prefLabel 		"CAPECITABINE"@de ;
+	skos:notation "DB01101" ;
+.
+
+	# SYSTH Substance	
+:DB11791 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"CAPMATINIB"@en ;
+	skos:prefLabel 		"CAPMATINIB"@de ;
+	skos:notation "DB11791" ;
+.
+
+	# SYSTH Substance
+:DB00958 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:PLATIN ;
+	skos:prefLabel 		"CARBOPLATIN"@en ;
+	skos:prefLabel 		"CARBOPLATIN"@de ;
+	skos:notation "DB00958" ;
+.
+
+	# SYSTH Substance
+:DB09063 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"CERITINIB"@en ;
+	skos:prefLabel 		"CERITINIB"@de ;
+	skos:notation "DB09063" ;
+.
+
+	# SYSTH Substance
+:DB00002 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"CETUXIMAB"@en ;
+	skos:prefLabel 		"CETUXIMAB"@de ;
+	skos:notation "DB00002" ;
+.
+
+	# SYSTH Substance
+:DB00515 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:PLATIN ;
+	skos:prefLabel 		"CISPLATIN"@en ;
+	skos:prefLabel 		"CISPLATIN"@de ;
+	skos:notation "DB00515" ;
+.
+
+	# SYSTH Substance	
+:DB08865 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"CRIZOTINIB"@en ;
+	skos:prefLabel 		"CRIZOTINIB"@de ;
+	skos:notation "DB08865" ;
+.
+
+	# SYSTH Substance
+:DB00531 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:ALK ;
+	skos:prefLabel 		"CYCLOPHOSPHAMIDE"@en ;
+	skos:prefLabel 		"CYCLOPHOSPHAMIDE"@de ;
+	skos:notation "DB00531" ;
+.
+
+	# SYSTH Substance
+:DB08912 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"DABRAFENIB"@en ;
+	skos:prefLabel 		"DABRAFENIB"@de ;
+	skos:notation "DB08912" ;
+.
+
+	# SYSTH Substance
+:DB01254 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"DASATINIB"@en ;
+	skos:prefLabel 		"DASATINIB"@de ;
+	skos:notation "DB01254" ;
+.
+
+	# SYSTH Substance
+:DB01248 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MITO ;
+	skos:prefLabel 		"DOCETAXEL"@en ;
+	skos:prefLabel 		"DOCETAXEL"@de ;
+	skos:notation "DB01248" ;
+.
+
+	# SYSTH Substance	
+:DB00997 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:INTANTIB ;
+	skos:prefLabel 		"DOXORUBICIN"@en ;
+	skos:prefLabel 		"DOXORUBICIN"@de ;
+	skos:notation "DB00997" ;
+.
+
+	# SYSTH Substance
+:DB11714 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"DURVALUMAB"@en ;
+	skos:prefLabel 		"DURVALUMAB"@de ;
+	skos:notation "DB11714" ;
+.
+
+	# SYSTH Substance
+:DB00445 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:INTANTIB ;
+	skos:prefLabel 		"EPIRUBICIN"@en ;
+	skos:prefLabel 		"EPIRUBICIN"@de ;
+	skos:notation "DB00445" ;
+.
+
+	# SYSTH Substance
+:DB08871 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"ERIBULIN"@en ;
+	skos:prefLabel 		"ERIBULIN"@de ;
+	skos:notation "DB08871" ;
+.
+
+	# SYSTH Substance
+:DB00530 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"ERLOTINIB"@en ;
+	skos:prefLabel 		"ERLOTINIB"@de ;
+	skos:notation "DB00530" ;
+.
+
+	# SYSTH Substance	
+:DB00773 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TOPO ;
+	skos:prefLabel 		"ETOPOSIDE"@en ;
+	skos:prefLabel 		"ETOPOSIDE"@de ;
+	skos:notation "DB00773" ;
+.
+
+	# SYSTH Substance
+:DB01590 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:ImmunoSuppressor ;
+	skos:prefLabel 		"EVEROLIMUS"@en ;
+	skos:prefLabel 		"EVEROLIMUS"@de ;
+	skos:notation "DB01590" ;
+.
+
+	# SYSTH Substance
+:DB05595 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"FARLETUZUMAB"@en ;
+	skos:prefLabel 		"FARLETUZUMAB"@de ;
+	skos:notation "DB05595" ;
+.
+
+	# SYSTH Substance
+:DB06717 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Supportive ;
+	skos:prefLabel 		"FOSAPREPITANT"@en ;
+	skos:prefLabel 		"FOSAPREPITANT"@de ;
+	skos:notation "DB06717" ;
+.
+
+	# SYSTH Substance
+:DB00317 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"GEFITINIB"@en ;
+	skos:prefLabel 		"GEFITINIB"@de ;
+	skos:notation "DB00317" ;
+.
+
+	# SYSTH Substance	
+:DB00441 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:ANTMETA ;
+	skos:prefLabel 		"GEMCITABINE"@en ;
+	skos:prefLabel 		"GEMCITABINE"@de ;
+	skos:notation "DB00441" ;
+.
+
+	# SYSTH Substance
+:DB01181 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:ALK ;
+	skos:prefLabel 		"IFOSFAMIDE"@en ;
+	skos:prefLabel 		"IFOSFAMIDE"@de ;
+	skos:notation "DB01181" ;
+.
+
+	# SYSTH Substance
+:IMPRIME a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"IMPRIME"@en ;
+	skos:prefLabel 		"IMPRIME"@de ;
+	skos:notation "IMPRIME" ;
+.
+
+	# SYSTH Substance
+:DB13877 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"INIPARIB"@en ;
+	skos:prefLabel 		"INIPARIB"@de ;
+	skos:notation "DB13877" ;
+.
+
+	# SYSTH Substance
+:DB06186 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"IPILIMUMAB"@en ;
+	skos:prefLabel 		"IPILIMUMAB"@de ;
+	skos:notation "DB06186" ;
+.
+
+	# SYSTH Substance	
+:DB06791 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"LANREOTIDE"@en ;
+	skos:prefLabel 		"LANREOTIDE"@de ;
+	skos:notation "DB06791" ;
+.
+
+	# SYSTH Substance
+:DB06075 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"LINSITINIB"@en ;
+	skos:prefLabel 		"LINSITINIB"@de ;
+	skos:notation "DB06075" ;
+.
+
+	# SYSTH Substance
+:DB12130 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"LORLATINIB"@en ;
+	skos:prefLabel 		"LORLATINIB"@de ;
+	skos:notation "DB12130" ;
+.
+
+	# SYSTH Substance
+:DB12674 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"LURBINECTEDIN"@en ;
+	skos:prefLabel 		"LURBINECTEDIN"@de ;
+	skos:notation "DB12674" ;
+.
+
+	# SYSTH Substance
+:LY2875358  a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"LY2875358"@en ;
+	skos:prefLabel 		"LY2875358"@de ;
+	skos:notation "LY2875358" ;
+.
+
+	# SYSTH Substance	
+:PUBC23662354 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Supportive ;
+	skos:prefLabel 		"MESNA"@en ;
+	skos:prefLabel 		"MESNA"@de ;
+	skos:notation "PUBC23662354" ;
+.
+
+	# SYSTH Substance
+:DB00305 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:INTANTIB ;
+	skos:prefLabel 		"MITOMYCIN"@en ;
+	skos:prefLabel 		"MITOMYCIN"@de ;
+	skos:notation "DB00305" ;
+.
+
+	# SYSTH Substance
+:MM-121 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"MM-121"@en ;
+	skos:prefLabel 		"MM-121"@de ;
+	skos:notation "MM-121" ;
+.
+
+	# SYSTH Substance
+:DB05575 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"MOTESANIB"@en ;
+	skos:prefLabel 		"MOTESANIB"@de ;
+	skos:notation "DB05575" ;
+.
+
+	# SYSTH Substance
+:MPDL3380A a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"MPDL3380A"@en ;
+	skos:prefLabel 		"MPDL3380A"@de ;
+	skos:notation "MPDL3380A" ;
+.
+
+	# SYSTH Substance	
+:EGF816 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"NAZARTINIB"@en ;
+	skos:prefLabel 		"NAZARTINIB"@de ;
+	skos:notation "EGF816" ;
+.
+
+	# SYSTH Substance
+:DB09559 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"NECITUMUMAB"@en ;
+	skos:prefLabel 		"NECITUMUMAB"@de ;
+	skos:notation "DB09559" ;
+.
+
+	# SYSTH Substance
+:DB09079 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"NINTEDANIB"@en ;
+	skos:prefLabel 		"NINTEDANIB"@de ;
+	skos:notation "DB09079" ;
+.
+
+	# SYSTH Substance
+:DB09035 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"NIVOLUMAB"@en ;
+	skos:prefLabel 		"NIVOLUMAB"@de ;
+	skos:notation "DB09035" ;
+.
+
+	# SYSTH Substance
+:DB00104 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"OCTREOTIDE"@en ;
+	skos:prefLabel 		"OCTREOTIDE"@de ;
+	skos:notation "DB00104" ;
+.
+
+	# SYSTH Substance	
+:DB11746 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"ONARTUZUMAB"@en ;
+	skos:prefLabel 		"ONARTUZUMAB"@de ;
+	skos:notation "DB11746" ;
+.
+
+	# SYSTH Substance
+:DB09330 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"OSIMERTINIB"@en ;
+	skos:prefLabel 		"OSIMERTINIB"@de ;
+	skos:notation "DB09330" ;
+.
+
+	# SYSTH Substance
+:DB00526 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:PLATIN ;
+	skos:prefLabel 		"OXALIPLATIN"@en ;
+	skos:prefLabel 		"OXALIPLATIN"@de ;
+	skos:notation "DB00526" ;
+.
+
+	# SYSTH Substance
+:DB01229 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MITO ;
+	skos:prefLabel 		"PACLITAXEL"@en ;
+	skos:prefLabel 		"PACLITAXEL"@de ;
+	skos:notation "DB01229" ;
+.
+
+	# SYSTH Substance
+:DB06589 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"PAZOPANIB"@en ;
+	skos:prefLabel 		"PAZOPANIB"@de ;
+	skos:notation "DB06589" ;
+.
+
+	# SYSTH Substance	
+:DB09037 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"PEMBROLIZUMAB"@en ;
+	skos:prefLabel 		"PEMBROLIZUMAB"@de ;
+	skos:notation "DB09037" ;
+.
+
+	# SYSTH Substance
+:DB00642 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:ANTMETA ;
+	skos:prefLabel 		"PEMETREXED"@en ;
+	skos:prefLabel 		"PEMETREXED"@de ;
+	skos:notation "DB00642" ;
+.
+
+	# SYSTH Substance
+:DB01168 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"PROCARBAZIN"@en ;
+	skos:prefLabel 		"PROCARBAZIN"@de ;
+	skos:notation "DB01168" ;
+.
+
+	# SYSTH Substance
+:DB11662 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"RABUSERTIB"@en ;
+	skos:prefLabel 		"RABUSERTIB"@de ;
+	skos:notation "DB11662" ;
+.
+
+	# SYSTH Substance
+:DB05578 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"RAMUCIRUMAB"@en ;
+	skos:prefLabel 		"RAMUCIRUMAB"@de ;
+	skos:notation "DB05578" ;
+.
+	# SYSTH Substance	
+:DB00073 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"RITUXIMAB"@en ;
+	skos:prefLabel 		"RITUXIMAB"@de ;
+	skos:notation "DB00073" ;
+.
+
+	# SYSTH Substance
+:DB12974 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"RONICICLIB"@en ;
+	skos:prefLabel 		"RONICICLIB"@de ;
+	skos:notation "DB12974" ;
+.
+
+	# SYSTH Substance
+:DB13017 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"ROVALPITUZUMAB TESIRINE"@en ;
+	skos:prefLabel 		"ROVALPITUZUMAB TESIRINE"@de ;
+	skos:notation "DB13017" ;
+.
+
+	# SYSTH Substance
+:DB11689 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"SELUMETINIB"@en ;
+	skos:prefLabel 		"SELUMETINIB"@de ;
+	skos:notation "DB11689" ;
+.
+
+	# SYSTH Substance
+:DB00398 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"SORAFENIB"@en ;
+	skos:prefLabel 		"SORAFENIB"@de ;
+	skos:notation "DB00398" ;
+.
+
+	# SYSTH Substance	
+:DB01268 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"SUNITINIB"@en ;
+	skos:prefLabel 		"SUNITINIB"@de ;
+	skos:notation "DB01268" ;
+.
+
+	# SYSTH Substance
+:DB05426 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"TALACTOFERRIN ALPHA"@en ;
+	skos:prefLabel 		"TALACTOFERRIN ALPHA"@de ;
+	skos:notation "DB05426" ;
+.
+
+	# SYSTH Substance
+:DB00853 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:ALK ;
+	skos:prefLabel 		"TEMOZOLOMIDE"@en ;
+	skos:prefLabel 		"TEMOZOLOMIDE"@de ;
+	skos:notation "DB00853" ;
+.
+
+	# SYSTH Substance
+:DB01030 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TOPO ;
+	skos:prefLabel 		"TOPOTECAN"@en ;
+	skos:prefLabel 		"TOPOTECAN"@de ;
+	skos:notation "DB01030" ;
+.
+
+	# SYSTH Substance
+:DB05109 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"TRABECTEDIN"@en ;
+	skos:prefLabel 		"TRABECTEDIN"@de ;
+	skos:notation "DB05109" ;
+.
+
+	# SYSTH Substance	
+:DB08911 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:TYRO ;
+	skos:prefLabel 		"TRAMETINIB"@en ;
+	skos:prefLabel 		"TRAMETINIB"@de ;
+	skos:notation "DB08911" ;
+.
+
+	# SYSTH Substance
+:DB00072 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"TRASTUZUMAB"@en ;
+	skos:prefLabel 		"TRASTUZUMAB"@de ;
+	skos:notation "DB00072" ;
+.
+
+	# SYSTH Substance
+:DB11771 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MKA ;
+	skos:prefLabel 		"TREMELIMUMAB"@en ;
+	skos:prefLabel 		"TREMELIMUMAB"@de ;
+	skos:notation "DB11771" ;
+.
+
+	# SYSTH Substance
+:DB12902 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:ALK ;
+	skos:prefLabel 		"TROFOSFAMIDE"@en ;
+	skos:prefLabel 		"TROFOSFAMIDE"@de ;
+	skos:notation "DB12902" ;
+.
+
+	# SYSTH Substance
+:DB06235 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"VADIMEZAN"@en ;
+	skos:prefLabel 		"VADIMEZAN"@de ;
+	skos:notation "DB06235" ;
+.
+
+	# SYSTH Substance	
+:DB00570 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MITO ;
+	skos:prefLabel 		"VINBLASTIN"@en ;
+	skos:prefLabel 		"VINBLASTIN"@de ;
+	skos:notation "DB00570" ;
+.
+
+	# SYSTH Substance
+:DB00541 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MITO ;
+	skos:prefLabel 		"VINCRISTINE"@en ;
+	skos:prefLabel 		"VINCRISTINE"@de ;
+	skos:notation "DB00541" ;
+.
+
+	# SYSTH Substance
+:DB11641 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MITO ;
+	skos:prefLabel 		"VINFLUNINE"@en ;
+	skos:prefLabel 		"VINFLUNINE"@de ;
+	skos:notation "DB11641" ;
+.
+
+	# SYSTH Substance
+:DB00361 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:MITO ;
+	skos:prefLabel 		"VINORELBINE"@en ;
+	skos:prefLabel 		"VINORELBINE"@de ;
+	skos:notation "DB00361" ;
+.
+
+	# SYSTH Substance
+:DB02546 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SYSTH:SONST ;
+	skos:prefLabel 		"VORINOSTAT"@en ;
+	skos:prefLabel 		"VORINOSTAT"@de ;
+	skos:notation "DB02546" ;
+.
+
+	# SYSTH Substance	
+:PUBC6006 a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:Supportive ;
+	skos:prefLabel 		"FOLINSÄURE"@en ;
+	skos:prefLabel 		"FOLINSÄURE"@de ;
+	skos:notation "PUBC6006" ;
+.
+
+	# Behandlungsschema ##########################################################################
+
+	# SYSTH:SCHEMA Monotherapie
+:SCHEMA:PEM a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"PEM"@en ;
+	skos:prefLabel 		"PEM"@de ;
+	skos:notation "PEM" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:DOC a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"DOC"@en ;
+	skos:prefLabel 		"DOC"@de ;
+	skos:notation "DOC" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:GEM a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"GEM"@en ;
+	skos:prefLabel 		"GEM"@de ;
+	skos:notation "GEM" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:TOPO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"TOPO"@en ;
+	skos:prefLabel 		"TOPO"@de ;
+	skos:notation "TOPO" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:ERLO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"ERLO"@en ;
+	skos:prefLabel 		"ERLO"@de ;
+	skos:notation "ERLO" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:VIN a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"VIN"@en ;
+	skos:prefLabel 		"VIN"@de ;
+	skos:notation "VIN" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:NIVO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"NIVO"@en ;
+	skos:prefLabel 		"NIVO"@de ;
+	skos:notation "NIVO" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:PAC a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"PAC"@en ;
+	skos:prefLabel 		"PAC"@de ;
+	skos:notation "PAC" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:AFA a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"AFA"@en ;
+	skos:prefLabel 		"AFA"@de ;
+	skos:notation "AFA" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:PEMBRO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"PEMBRO"@en ;
+	skos:prefLabel 		"PEMBRO"@de ;
+	skos:notation "PEMBRO" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:GEF a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"GEF"@en ;
+	skos:prefLabel 		"GEF"@de ;
+	skos:notation "GEF" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:CRIZ a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"CRIZ"@en ;
+	skos:prefLabel 		"CRIZ"@de ;
+	skos:notation "CRIZ" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:TROFO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"TROFO"@en ;
+	skos:prefLabel 		"TROFO"@de ;
+	skos:notation "TROFO" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:OSIM a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"OSIM"@en ;
+	skos:prefLabel 		"OSIM"@de ;
+	skos:notation "OSIM" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:CERI a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"CERI"@en ;
+	skos:prefLabel 		"CERI"@de ;
+	skos:notation "CERI" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:ALEC a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:MONO ;
+	skos:prefLabel 		"ALEC"@en ;
+	skos:prefLabel 		"ALEC"@de ;
+	skos:notation "ALEC" ;
+.	
+
+	# SYSTH:SCHEMA Schema K-CT (2 Substanzen)
+:SCHEMA:CARBOVIN a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"CARBOVIN"@en ;
+	skos:prefLabel 		"CARBOVIN"@de ;
+	skos:notation "CARBOVIN" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:CARBOETO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"CARBOETO"@en ;
+	skos:prefLabel 		"CARBOETO"@de ;
+	skos:notation "CARBOETO" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:CISVIN a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"CISVIN"@en ;
+	skos:prefLabel 		"CISVIN"@de ;
+	skos:notation "CISVIN" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:CARBOPEM a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"CARBOPEM"@en ;
+	skos:prefLabel 		"CARBOPEM"@de ;
+	skos:notation "CARBOPEM" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:CARBOGEM a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"CARBOGEM"@en ;
+	skos:prefLabel 		"CARBOGEM"@de ;
+	skos:notation "CARBOGEM" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:CISETO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"CISETO"@en ;
+	skos:prefLabel 		"CISETO"@de ;
+	skos:notation "CISETO" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:CISPEM a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"CISPEM"@en ;
+	skos:prefLabel 		"CISPEM"@de ;
+	skos:notation "CISPEM" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:VINCETO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"VINCETO"@en ;
+	skos:prefLabel 		"VINCETO"@de ;
+	skos:notation "VINCETO" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:CISGEM a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"CISGEM"@en ;
+	skos:prefLabel 		"CISGEM"@de ;
+	skos:notation "CISGEM" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:DOCRAMU a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"DOCRAMU"@en ;
+	skos:prefLabel 		"DOCRAMU"@de ;
+	skos:notation "DOCRAMU" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:GEMVIN a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"GEMVIN"@en ;
+	skos:prefLabel 		"GEMVIN"@de ;
+	skos:notation "GEMVIN" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:DOCNINT a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"DOCNINT"@en ;
+	skos:prefLabel 		"DOCNINT"@de ;
+	skos:notation "DOCNINT" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:VINBETO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"VINBETO"@en ;
+	skos:prefLabel 		"VINBETO"@de ;
+	skos:notation "VINBETO" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:CISDOC a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT2 ;
+	skos:prefLabel 		"CISDOC"@en ;
+	skos:prefLabel 		"CISDOC"@de ;
+	skos:notation "CISDOC" ;
+.
+
+	# SYSTH:SCHEMA Schema K-CT (3 Substanzen)
+:SCHEMA:DOXOCYCVINC a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT3 ;
+	skos:prefLabel 		"DOXOCYCVINC"@en ;
+	skos:prefLabel 		"DOXOCYCVINC"@de ;
+	skos:notation "DOXOCYCVINC" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:CISIFOMITO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT3 ;
+	skos:prefLabel 		"CISIFOMITO"@en ;
+	skos:prefLabel 		"CISIFOMITO"@de ;
+	skos:notation "CISIFOMITO" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:CARBOPACCETUX a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT3 ;
+	skos:prefLabel 		"CARBOPACCETUX"@en ;
+	skos:prefLabel 		"CARBOPACCETUX"@de ;
+	skos:notation "CARBOPACCETUX" ;
+.
+
+	# SYSTH:SCHEMA
+:SCHEMA:CARBOPACBEV a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT3 ;
+	skos:prefLabel 		"CARBOPACBEV"@en ;
+	skos:prefLabel 		"CARBOPACBEV"@de ;
+	skos:notation "CARBOPACBEV" ;
+.	
+
+	# SYSTH:SCHEMA
+:SCHEMA:CISDOXOCYCLO a skos:Concept ;
+	dc:creator 		"Karsten Senghas";
+	:status			"draft" ;
+	skos:broader 		:SCHMEA:CCT3 ;
+	skos:prefLabel 		"CISDOXOCYCLO"@en ;
+	skos:prefLabel 		"CISDOXOCYCLO"@de ;
+	skos:notation "CISDOXOCYCLO" ;
+.		

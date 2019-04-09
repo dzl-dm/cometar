@@ -1,0 +1,168 @@
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix dc:	<http://purl.org/dc/elements/1.1/> .
+@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix dwh:	<http://sekmi.de/histream/dwh#> .
+@prefix snomed: <http://purl.bioontology.org/ontology/SNOMEDCT/> .
+@prefix loinc: <http://loinc.org/owl#> .
+@prefix :	<http://data.dzl.de/ont/dwh#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov: 	<http://www.w3.org/ns/prov#> .
+
+
+### Biometrics DA_PH ###
+
+:BiometricsPH a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader :PHSpecificParams;
+	skos:prefLabel "Biometrische Daten"@de ;
+	skos:prefLabel "Biometric data"@en ;
+	dc:description '''Biometrics allow a person to be identified and authenticated based on a set of recognizable and verifiable data, which are unique and specific to them. '''@en ;
+	:status "draft" ;
+.
+ 
+snomed:397731000 a skos:Concept ; 
+	dc:creator "GH" ; 
+	skos:broader :BiometricsPH  ;
+	skos:prefLabel "Ethnie"@de ;
+	skos:prefLabel "Ethnic group"@en ;
+	skos:notation "S:397731000" ;
+	:status "draft" ;
+.
+  
+snomed:14045001 a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader snomed:397731000 ;
+	skos:prefLabel "Caucasian"@en ;
+	skos:notation "S:14045001" ;
+	:status "draft" ;
+.
+	
+:African a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader snomed:397731000 ;
+	skos:prefLabel "African"@en ;
+	:status "draft" ;
+.	
+	
+:IndianIndio a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader snomed:397731000 ;
+	skos:prefLabel "Indian/Indio"@en ;
+	:status "draft" ;
+.	
+	
+snomed:315280000 a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader snomed:397731000 ;
+	skos:prefLabel "Asian"@en ;
+	skos:notation "S:315280000" ;
+	:status "draft" ;
+.
+
+:PacificIslanderPolynesian a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader snomed:397731000 ;
+	skos:prefLabel "Pacific Islander/Polynesian"@en ;
+	:status "draft" ;
+.	
+
+:Aboriginee a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader snomed:397731000 ;
+	skos:prefLabel "Aboriginee"@en ;
+	:status "draft" ;
+.	
+
+:Inuit a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader snomed:397731000 ;
+	skos:prefLabel "Inuit"@en ;
+	:status "draft" ;
+.	
+
+loinc:79378-6 a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader :BiometricsPH  ;
+	skos:prefLabel "Todesursache"@de ;
+	skos:prefLabel "Cause of death"@en ;
+	skos:notation "L:79378-6" ;
+	:status "draft" ;
+.
+
+snomed:85232009 a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader loinc:79378-6 ;
+	skos:prefLabel "Links Herzinsuffizienz"@de ;
+	skos:prefLabel "Left heart failure"@en ;
+	skos:notation "S:85232009" ;
+	:status "draft" ;
+.
+
+snomed:36334600 a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader loinc:79378-6 ;
+	skos:prefLabel "Maligne Erkrankungen"@de ;
+	skos:prefLabel "Malignant neoplastic disease"@en ;
+	skos:notation "S:363346000" ;
+	:status "draft" ;
+.
+
+:ICD10N17N19 a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader loinc:79378-6 ;
+	skos:prefLabel "Nierenversagen"@de ;
+	skos:prefLabel "Renal failure "@en ;
+	skos:altLabel "Renal insufficiency"@en ;
+	skos:notation "ICD10: N17 - N19" ;
+	dc:description '''Renal insufficiency refers to the limited ability of the kidneys to excrete uremic substances.'''@en ;
+	:status "draft" ;
+.
+
+snomed:128601007 a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader loinc:79378-6 ;
+	skos:prefLabel "Pulmonaler Infekt"@de ;
+	skos:prefLabel "Infectious disease of lung"@en ;
+	skos:notation "S:128601007" ;
+	:status "draft" ;
+.
+
+snomed:70995007 a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader loinc:79378-6 ;
+	skos:prefLabel "Pulmonare Hypertonie"@de ;
+	skos:prefLabel "Pulmonary hypertension"@en ;
+	skos:notation "S:70995007" ;
+	:status "draft" ;
+.
+
+snomed:409623005 a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader loinc:79378-6 ;
+	skos:prefLabel "Respiratorische Insuffizienz"@de ;
+	skos:prefLabel "Respiratory insufficiency"@en ;
+	skos:notation "S:409623005" ;
+	:status "draft" ;
+.
+
+snomed:91302008 a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader loinc:79378-6 ;
+	skos:prefLabel "Sepsis"@de ;
+	skos:prefLabel "Sepsis"@en ;
+	skos:notation "S:91302008" ;
+	:status "draft" ;
+.
+
+snomed:77465005 a skos:Concept ;
+	dc:creator "GH" ;
+	skos:broader loinc:79378-6 ;
+	skos:prefLabel "Transplantation"@de ;
+	skos:prefLabel "Transplantation"@en ;
+	skos:notation "S:77465005" ;
+	:status "draft" ;
+.
+

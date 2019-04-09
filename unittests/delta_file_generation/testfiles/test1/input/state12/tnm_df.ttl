@@ -1,0 +1,738 @@
+﻿@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+#@prefix dc:	<http://purl.org/dc/elements/1.1/> .
+@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> .
+@prefix dwh:	<http://sekmi.de/histream/dwh#> .
+@prefix snomed: <http://purl.bioontology.org/ontology/SNOMEDCT/> .
+@prefix :	<http://data.dzl.de/ont/dwh#> .
+
+
+:cTNM a skos:Concept ;
+  skos:broader :Klinisch ;
+  skos:prefLabel "cTNM"@en;
+.
+
+:pTNM a skos:Concept ;
+  skos:broader :Pathologisch ;
+  skos:prefLabel "pTNM"@en;
+.
+
+
+############################################
+######  clinical Tumor stage finding T #####
+############################################
+  
+:cTKat a skos:Concept ;
+  skos:broader :cTNM ;
+  skos:prefLabel "cT Kategorien"@de ;
+  skos:prefLabel "cT Categories"@en ;
+.
+
+snomed:58790005 a skos:Concept ;
+	skos:broader :cTKat ;
+	skos:prefLabel "cT0"@en;
+	skos:notation "S:58790005";
+.
+
+snomed:44401000 a skos:Concept ;
+	skos:broader :cTKat ;
+	skos:prefLabel "cTis"@en;
+	skos:notation "S:44401000";
+.
+
+snomed:23351008 a skos:Concept ;
+  skos:broader :cTKat ;
+  skos:prefLabel "cT1 categories"@en ;
+  skos:notation "S:23351008" ;
+.
+
+snomed:313108002 a skos:Concept ;
+  skos:broader snomed:23351008 ;
+  skos:prefLabel "cT1mic"@en ;
+  skos:notation "S:313108002" ;
+.  
+
+snomed:261646003 a skos:Concept ;
+  skos:broader snomed:23351008 ;
+  skos:prefLabel "cT1a"@en ;
+  skos:notation "S:261646003" ;
+.
+
+snomed:261649005 a skos:Concept ;
+  skos:broader snomed:23351008 ;
+  skos:prefLabel "cT1b"@en ;
+  skos:notation "S:261649005" ;
+.
+  
+snomed:261650005 a skos:Concept ;
+  skos:broader snomed:23351008 ;
+  skos:prefLabel "cT1c"@en ;
+  skos:notation "S:261650005" ;
+.  
+
+snomed:67673008 a skos:Concept ;
+  skos:broader :cTKat ;
+  skos:prefLabel "cT2 categories"@en ;
+  skos:notation "S:67673008" ;
+.
+ 
+snomed:261651009 a skos:Concept ;
+  skos:broader snomed:67673008 ;
+  skos:prefLabel "cT2a"@en ;
+  skos:notation "S:261651009" ;
+.
+  
+snomed:261652002 a skos:Concept ;
+  skos:broader snomed:67673008 ;
+  skos:prefLabel "cT2b"@en ;
+  skos:notation "S:261652002" ;
+.   
+
+snomed:14410001 a skos:Concept ;
+  skos:broader :cTKat ;
+  skos:prefLabel "cT3"@en ;
+  skos:notation "S:14410001" ;
+.
+
+snomed:65565005 a skos:Concept ;
+  skos:broader :cTKat ;
+  skos:prefLabel "cT4"@en ;
+  skos:notation "S:65565005" ;
+.
+  
+snomed:67101007 a skos:Concept ;
+  skos:broader :cTKat ;
+  skos:prefLabel "cTX"@en ;
+  skos:notation "S:67101007" ;
+.
+
+  
+############################################
+### clinical Metastasis category finding ###
+############################################
+
+:cMKat a skos:Concept ;
+  skos:broader :cTNM ;
+  skos:prefLabel "cM Kategorien"@de ;
+  skos:prefLabel "cM Categories"@en ;
+.
+
+ 
+snomed:30893008 a skos:Concept ;
+  skos:broader :cMKat ;
+  skos:prefLabel "cM0"@en ;
+  skos:notation "S:30893008" ;
+.
+ 
+ 
+snomed:55440008 a skos:Concept ;
+  skos:broader :cMKat ;
+  skos:prefLabel "cM1 categories"@en ;
+  skos:notation "S:55440008" 
+.
+  
+snomed:261927002 a skos:Concept ;
+  skos:broader snomed:55440008 ;
+  skos:prefLabel "cM1a"@en ;
+  skos:notation "S:261927002" ;
+.
+  
+snomed:261928007 a skos:Concept ;
+  skos:broader snomed:55440008 ;
+  skos:prefLabel "cM1b"@en ;
+  skos:notation "S:261928007" ;
+.
+  
+snomed:261929004 a skos:Concept ;
+  skos:broader snomed:55440008 ;
+  skos:prefLabel "cM1c"@en ;
+  skos:notation "S:261929004" ;
+.
+ 
+snomed:27167007 a skos:Concept ;
+  skos:broader :cMKat ;
+  skos:prefLabel "cMX"@en ;
+  skos:notation "S:27167007" ;
+.
+
+###########################################
+###   clinical Node category finding    ###
+########################################### 
+
+:cNKat a skos:Concept ;
+  skos:broader :cTNM ;
+  skos:prefLabel "cN Kategorien"@de ;
+  skos:prefLabel "cN Categories"@en ;
+.  
+ 
+snomed:62455006 a skos:Concept ;
+  skos:broader :cNKat ;
+  skos:prefLabel "cN0"@en ;
+  skos:notation "S:62455006" ;
+.
+  
+snomed:53623008 a skos:Concept ;
+  skos:broader :cNKat ;
+  skos:prefLabel "cN1"@en ;
+  skos:notation "S:53623008" ;
+.
+
+snomed:46059003 a skos:Concept ;
+  skos:broader :cNKat ;
+  skos:prefLabel "cN2"@en ;
+  skos:notation "S:46059003" ;
+.
+  
+snomed:5856006 a skos:Concept ;
+  skos:broader :cNKat ;
+  skos:prefLabel "cN3"@en ;
+  skos:notation "S:5856006" ;
+.
+
+snomed:79420006 a skos:Concept ;
+  skos:broader :cNKat ;
+  skos:prefLabel "cNX"@en ;
+  skos:notation "S:79420006" ;
+.    
+
+###################################
+###		clinical stage			###
+###################################  
+
+snomed:399537006 a skos:Concept ;
+  skos:broader :cTNM ;
+  skos:prefLabel "cStage"@en ;
+  skos:notation "S:399537006" ;
+.
+
+:cOccult a skos:Concept ;
+  skos:broader snomed:399537006 ;
+  skos:prefLabel "cOccult"@en ;
+  skos:notation "S:399537006:309689007" ;
+.
+
+:c0 a skos:Concept ;
+  skos:broader snomed:399537006 ;
+  skos:prefLabel "c0"@en ;
+  skos:notation "S:399537006:261613009" ;
+.
+
+:cIACategories a skos:Concept ;
+  skos:broader snomed:399537006 ;
+  skos:prefLabel "cIA Categories"@en ;
+  skos:notation "S:399537006:258215001" ;
+.
+
+:cIA1 a skos:Concept ;
+  skos:broader :cIACategories ;
+  skos:prefLabel "cIA1"@en ;
+  skos:notation "S:399537006:258215001:261632003" ;
+.
+
+:cIA2 a skos:Concept ;
+  skos:broader :cIACategories ;
+  skos:prefLabel "cIA2"@en ;
+  skos:notation "S:399537006:258215001:261633008" ;
+.
+
+:cIA3 a skos:Concept ;
+  skos:broader :cIACategories ;
+  skos:prefLabel "cIA3"@en ;
+  skos:notation "S:399537006:IA3" ;
+.
+
+:cIA a skos:Concept ;
+  skos:broader :cIACategories ;
+  skos:prefLabel "cIA"@en ;
+  skos:notation "S:399537006:258215001:261634002" ;
+.
+
+:cIB a skos:Concept ;
+  skos:broader snomed:399537006 ;
+  skos:prefLabel "cIB"@en ;
+  skos:notation "S:399537006:261635001" ;
+.
+
+:cIIA a skos:Concept ;
+  skos:broader snomed:399537006 ;
+  skos:prefLabel "cIIA"@en ;
+  skos:notation "S:399537006:261614003" ;
+.
+
+:cIIB a skos:Concept ;
+  skos:broader snomed:399537006 ;
+  skos:prefLabel "cIIB"@en ;
+  skos:notation "S:399537006:261615002" ;
+.
+
+:cIIIA a skos:Concept ;
+  skos:broader snomed:399537006 ;
+  skos:prefLabel "cIIIA"@en ;
+  skos:notation "S:399537006:261638004" ;
+.
+
+:cIIIB a skos:Concept ;
+  skos:broader snomed:399537006 ;
+  skos:prefLabel "cIIIB"@en ;
+  skos:notation "S:399537006:261639007" ;
+.
+
+:cIIIC a skos:Concept ;
+  skos:broader snomed:399537006 ;
+  skos:prefLabel "cIIIC"@en ;
+  skos:notation "S:399537006:261640009" ;
+.
+
+:cIV a skos:Concept ;
+  skos:broader snomed:399537006 ;
+  skos:prefLabel "cIV"@en ;
+  skos:notation "S:399537006:258228008" ;
+.
+
+:cIVA a skos:Concept ;
+  skos:broader snomed:399537006 ;
+  skos:prefLabel "cIVA"@en ;
+  skos:notation "S:399537006:261642001" ;
+.
+
+:cIVB a skos:Concept ;
+  skos:broader snomed:399537006 ;
+  skos:prefLabel "cIVB"@en ;
+  skos:notation "S:399537006:261643006" ;
+. 
+
+###################################
+###    pathological TNM Tumor   ### 
+###################################
+
+
+:pTKat a skos:Concept ;
+  skos:broader :pTNM ;
+  skos:prefLabel "pT Kategorien"@de ;
+  skos:prefLabel "pT Categories"@en ;
+.
+
+snomed:39880006 a skos:Concept ;
+	skos:broader	:pTKat ;
+	skos:prefLabel	"pT0"@en ;
+	skos:notation	"S:39880006" ;
+.
+
+snomed:53786006 a skos:Concept ;
+  skos:broader :pTKat ;
+  skos:prefLabel "pT1 categories"@en ;
+  skos:notation "S:53786006" ;
+.
+  
+snomed:443600004 a skos:Concept ;
+	skos:broader	snomed:53786006 ;
+	skos:prefLabel	"pT1mic"@en ;
+	skos:notation	"S:443600004" ;
+.
+  
+snomed:443357004 a skos:Concept ;
+	skos:broader	snomed:53786006 ;
+	skos:prefLabel	"pT1a"@en ;
+	skos:notation	"S:443357004" ;
+.
+
+snomed:443506002 a skos:Concept ;
+	skos:broader	snomed:53786006 ;
+	skos:prefLabel	"pT1b"@en ;
+	skos:notation	"S:443506002" ;
+.
+
+snomed:443642002 a skos:Concept ;
+	skos:broader	snomed:53786006 ;
+	skos:prefLabel	"pT1c"@en ;
+	skos:notation	"S:443642002" ;
+.
+
+snomed:80898003 a skos:Concept ;
+  skos:broader :pTKat ;
+  skos:prefLabel "pT2 categories"@en ;
+  skos:notation "S:80898003" ;
+.
+ 
+snomed:443812002 a skos:Concept ;
+  skos:broader snomed:80898003 ;
+  skos:prefLabel "pT2a"@en ;
+  skos:notation "S:443812002" ;
+.
+  
+snomed:443896000 a skos:Concept ;
+  skos:broader snomed:80898003 ;
+  skos:prefLabel "pT2b"@en ;
+  skos:notation "S:443896000" ;
+.
+  
+snomed:90402004 a skos:Concept ;
+  skos:broader :pTKat ;
+  skos:prefLabel "pT3"@en ;
+  skos:notation "S:90402004" ;
+.
+  
+snomed:6123003 a skos:Concept ;
+  skos:broader :pTKat ;
+  skos:prefLabel "pT4"@en ;
+  skos:notation "S:6123003" ;
+.
+
+snomed:43189003 a skos:Concept ;
+	skos:broader	:pTKat ;
+	skos:prefLabel	"pTX"@en ;
+	skos:notation	"S:43189003" ;
+.
+
+snomed:84921008 a skos:Concept ;
+	skos:broader	:pTKat ;
+	skos:prefLabel	"pTis"@en ;
+	skos:notation	"S:84921008" ;
+.
+
+###################################
+### pathological TNM ---> Nodes ###
+###################################
+
+:pNKat a skos:Concept ;
+  skos:broader :pTNM ;
+  skos:prefLabel "pN Kategorien"@de ;
+  skos:prefLabel "pN Categories"@en ;
+.  
+
+snomed:21917009 a skos:Concept ;
+  skos:broader :pNKat ;
+  skos:prefLabel "pN0"@en ;
+  skos:notation "S:21917009" ;
+.
+   
+snomed:45552005 a skos:Concept ;
+  skos:broader :pNKat ;
+  skos:prefLabel "pN1"@en ;
+  skos:notation "S:45552005" ;
+.
+ 
+
+snomed:15076001 a skos:Concept ;
+  skos:broader :pNKat ;
+  skos:prefLabel "pN2"@en ;
+  skos:notation "S:15076001" ;
+.
+ 
+  
+snomed:49182004 a skos:Concept ;
+  skos:broader :pNKat ;
+  skos:prefLabel "pN3"@en ;
+  skos:notation "S:49182004" ;
+.
+  
+  
+snomed:54452005 a skos:Concept ;
+  skos:broader :pNKat ;
+  skos:prefLabel "pNX"@en ;
+  skos:notation "S:54452005" ;
+.
+
+###################################
+###pathological TNM (Metastasis)###
+###################################
+
+:pMKat a skos:Concept ;
+  skos:broader :pTNM ;
+  skos:prefLabel "pM Kategorien"@de ;
+  skos:prefLabel "pM Categories"@en ;
+.
+
+snomed:19408000 a skos:Concept ;
+	skos:broader	:pMKat ;
+	skos:prefLabel	"pM0"@en ;
+	skos:notation	"S:19408000" ;
+.
+	
+snomed:14926007 a skos:Concept ;
+	skos:broader	:pMKat ;
+	skos:prefLabel	"pM1 categories"@en ;
+	skos:notation	"S:14926007" ;
+.
+	
+snomed:443841006 a skos:Concept ;
+  skos:broader snomed:14926007 ;
+  skos:prefLabel "pM1a"@en ;
+  skos:notation "S:443841006" ;
+.
+  
+snomed:443840007 a skos:Concept ;
+  skos:broader snomed:14926007 ;
+  skos:prefLabel "pM1b"@en ;
+  skos:notation "S:443840007" ;
+.
+  
+snomed:443839005 a skos:Concept ;
+  skos:broader snomed:14926007 ;
+  skos:prefLabel "pM1c"@en ;
+  skos:notation "S:443839005" ;
+.
+
+###################################
+###		pathological stage		###
+###################################
+
+snomed:405979002 a skos:Concept ;
+  skos:broader :pTNM ;
+  skos:prefLabel "P-Stadium"@de ;
+  skos:prefLabel "pStage"@en ;
+  skos:notation "S:405979002";
+.
+
+:pOccult a skos:Concept ;
+  skos:broader snomed:405979002 ;
+  skos:prefLabel "pOccult"@en ;
+  skos:notation "S:405979002:309689007" ;
+.
+
+:p0 a skos:Concept ;
+  skos:broader snomed:405979002 ;
+  skos:prefLabel "p0"@en ;
+  skos:notation "S:405979002:261613009" ;
+.
+
+:pIACategories a skos:Concept ;
+  skos:broader snomed:405979002 ;
+  skos:prefLabel "pIA Categories"@en ;
+  skos:notation "S:405979002:258215001";
+.
+
+:pIA1 a skos:Concept ;
+  skos:broader :pIACategories ;
+  skos:prefLabel "pIA1"@en ;
+  skos:notation "S:405979002:258215001:261632003" ;
+.
+
+:pIA2 a skos:Concept ;
+  skos:broader :pIACategories ;
+  skos:prefLabel "pIA2"@en ;
+  skos:notation "S:405979002:258215001:261633008" ;
+.
+
+:pIA3 a skos:Concept ;
+  skos:broader :pIACategories ;
+  skos:prefLabel "pIA3"@en ;
+  skos:notation "S:405979002:IA3" ;
+.
+
+:pIA a skos:Concept ;
+  skos:broader :pIACategories ;
+  skos:prefLabel "pIA"@en ;
+  skos:notation "S:405979002:258215001:261634002" ;
+.
+
+:pIB a skos:Concept ;
+  skos:broader snomed:405979002 ;
+  skos:prefLabel "pIB"@en ;
+  skos:notation "S:405979002:261635001" ;
+.
+
+:pIIA a skos:Concept ;
+  skos:broader snomed:405979002 ;
+  skos:prefLabel "pIIA"@en ;
+  skos:notation "S:405979002:261614003" ;
+.
+
+:pIIB a skos:Concept ;
+  skos:broader snomed:405979002 ;
+  skos:prefLabel "pIIB"@en ;
+  skos:notation "S:405979002:261615002" ;
+.
+
+:pIIIA a skos:Concept ;
+  skos:broader snomed:405979002 ;
+  skos:prefLabel "pIIIA"@en ;
+  skos:notation "S:405979002:261638004" ;
+.
+
+:pIIIB a skos:Concept ;
+  skos:broader snomed:405979002 ;
+  skos:prefLabel "pIIIB"@en ;
+  skos:notation "S:405979002:261639007" ;
+.
+
+:pIIIC a skos:Concept ;
+  skos:broader snomed:405979002 ;
+  skos:prefLabel "pIIIC"@en ;
+  skos:notation "S:405979002:261640009" ;
+.
+
+:pIV a skos:Concept ;
+	skos:broader snomed:405979002 ;
+	skos:prefLabel "pIV"@en;
+	skos:notation "S:405979002:258228008";
+.
+
+:pIVA a skos:Concept ;
+  skos:broader snomed:405979002 ;
+  skos:prefLabel "pIVA"@en ;
+  skos:notation "S:405979002:261642001" ;
+.
+
+:pIVB a skos:Concept ;
+  skos:broader snomed:405979002 ;
+  skos:prefLabel "pIVB"@en ;
+  skos:notation "S:405979002:261643006" ;
+.
+
+###################################
+###			y Descriptor		###
+###################################
+
+snomed:277649004 a skos:Concept ;
+	skos:broader :pTNM;
+	skos:prefLabel "y - During therapy/following treatment"@en;
+	skos:notation "S:277649004";
+.
+
+###################################
+###		Mofifieres for stages	###
+###################################
+
+:edition7 a skos:Concept ;
+  skos:prefLabel "edition 7"@en ;
+  rdf:partOf :cTNM ;
+#  rdf:partOf :cOccult ;
+#  rdf:partOf :c0 ;
+#  rdf:partOf :cIA ;
+#  rdf:partOf :cIB ;
+#  rdf:partOf :cIIA ;
+#  rdf:partOf :cIIB ;
+#  rdf:partOf :cIIIA ;
+#  rdf:partOf :cIIIB ;
+#  rdf:partOf :cIVA ;
+#  rdf:partOf :cIVB ;
+#  rdf:partOf :pOccult ;
+#  rdf:partOf :p0 ;
+#  rdf:partOf :pIA ;
+#  rdf:partOf :pIB ;
+#  rdf:partOf :pIIA ;
+#  rdf:partOf :pIIB ;
+#  rdf:partOf :pIIIA ;
+#  rdf:partOf :pIIIB ;
+#  rdf:partOf :pIVA ;
+#  rdf:partOf :pIVB ;
+#=======
+#  rdf:partOf :cOccult ;
+#  rdf:partOf :c0 ;
+#  rdf:partOf :cIA ;
+#  rdf:partOf :cIB ;
+#  rdf:partOf :cIIA ;
+#  rdf:partOf :cIIB ;
+#  rdf:partOf :cIIIA ;
+#  rdf:partOf :cIIIB ;
+#  rdf:partOf :cIV ;
+#  rdf:partOf :cIVA ;
+#  rdf:partOf :cIVB ;
+#  rdf:partOf :pOccult ;
+#  rdf:partOf :p0 ;
+#  rdf:partOf :pIA ;
+#  rdf:partOf :pIB ;
+#  rdf:partOf :pIIA ;
+#  rdf:partOf :pIIB ;
+#  rdf:partOf :pIIIA ;
+#  rdf:partOf :pIIIB ;
+#  rdf:partOf :pIV ;
+#  rdf:partOf :pIVA ;
+#  rdf:partOf :pIVB ;
+#  rdf:partOf snomed:261646003;
+#  rdf:partOf snomed:261649005;
+#  rdf:partOf snomed:261651009;
+#  rdf:partOf snomed:261652002;
+#  rdf:partOf snomed:14410001;
+#  rdf:partOf snomed:65565005;
+#  rdf:partOf snomed:67101007;
+#  rdf:partOf snomed:39880006;
+#  rdf:partOf snomed:443357004;
+#  rdf:partOf snomed:443506002;
+#  rdf:partOf snomed:443812002;
+#  rdf:partOf snomed:443896000;
+#  rdf:partOf snomed:90402004;
+#  rdf:partOf snomed:6123003;
+.
+
+:edition8 a skos:Concept ;
+  skos:prefLabel "edition 8"@en ;
+  rdf:partOf :cTNM ;
+#  rdf:partOf :cOccult ;
+#  rdf:partOf :c0 ;
+#  rdf:partOf :cIA1 ;
+#  rdf:partOf :cIA2 ;
+#  rdf:partOf :cIA3 ;
+#  rdf:partOf :cIB ;
+#  rdf:partOf :cIIA ;
+#  rdf:partOf :cIIB ;
+#  rdf:partOf :cIIIA ;
+#  rdf:partOf :cIIIB ;
+#  rdf:partOf :cIIIC ;
+#  rdf:partOf :cIVA ;
+#  rdf:partOf :cIVB ;
+#  rdf:partOf :pOccult ;
+#  rdf:partOf :p0 ;
+#  rdf:partOf :pIA1 ;
+#  rdf:partOf :pIA2 ;
+#  rdf:partOf :pIA3 ;
+#  rdf:partOf :pIB ;
+#  rdf:partOf :pIIA ;
+#  rdf:partOf :pIIB ;
+#  rdf:partOf :pIIIA ;
+#  rdf:partOf :pIIIB ;
+#  rdf:partOf :pIIIC ;
+#  rdf:partOf :pIVA ;
+#  rdf:partOf :pIVB ;
+#=======
+#  rdf:partOf :cOccult ;
+#  rdf:partOf :c0 ;
+#  rdf:partOf :cIA1 ;
+#  rdf:partOf :cIA2 ;
+#  rdf:partOf :cIA3 ;
+#  rdf:partOf :cIB ;
+#  rdf:partOf :cIIA ;
+#  rdf:partOf :cIIB ;
+#  rdf:partOf :cIIIA ;
+#  rdf:partOf :cIIIB ;
+#  rdf:partOf :cIIIC ;
+#  rdf:partOf :cIV ;
+#  rdf:partOf :cIVA ;
+#  rdf:partOf :cIVB ;
+#  rdf:partOf :pOccult ;
+#  rdf:partOf :p0 ;
+#  rdf:partOf :pIA1 ;
+#  rdf:partOf :pIA2 ;
+#  rdf:partOf :pIA3 ;
+#  rdf:partOf :pIB ;
+#  rdf:partOf :pIIA ;
+#  rdf:partOf :pIIB ;
+#  rdf:partOf :pIIIA ;
+#  rdf:partOf :pIIIB ;
+#  rdf:partOf :pIIIC ;
+#  rdf:partOf :pIV ;
+#  rdf:partOf :pIVA ;
+#  rdf:partOf :pIVB ;
+#  rdf:partOf snomed:261646003;
+#  rdf:partOf snomed:261649005;
+#  rdf:partOf snomed:261651009;
+#  rdf:partOf snomed:261652002;
+#  rdf:partOf snomed:14410001;
+#  rdf:partOf snomed:65565005;
+#  rdf:partOf snomed:67101007;
+#  rdf:partOf snomed:261650005;
+#  rdf:partOf snomed:67101007;
+#  rdf:partOf snomed:44401000;
+#  rdf:partOf snomed:39880006;
+#  rdf:partOf snomed:443357004;
+#  rdf:partOf snomed:443506002;
+#  rdf:partOf snomed:443812002;
+#  rdf:partOf snomed:443896000;
+#  rdf:partOf snomed:90402004;
+#  rdf:partOf snomed:6123003;
+#  rdf:partOf snomed:443642002;
+#  rdf:partOf snomed:84921008;
+#  rdf:partOf snomed:43189003;
+.

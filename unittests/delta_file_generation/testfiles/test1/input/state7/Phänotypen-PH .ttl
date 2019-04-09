@@ -1,0 +1,68 @@
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix dc:	<http://purl.org/dc/elements/1.1/> .
+@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix dwh:	<http://sekmi.de/histream/dwh#> .
+@prefix snomed: <http://purl.bioontology.org/ontology/SNOMEDCT/> .
+@prefix loinc: <http://loinc.org/owl#> .
+@prefix :	<http://data.dzl.de/ont/dwh#> .
+@prefix prov: 	<http://www.w3.org/ns/prov#> .
+
+
+
+snomed:70995007 a skos:Concept;
+  skos:broader :Phaenotypen ;
+  skos:prefLabel "Pulmonale Hypertonie (PH)"@de ;
+  skos:prefLabel "Pulmonary Hypertension (PH)"@en ;
+  skos:altLabel "Lungenhochdruck"@de ;
+  #skos:notation "B:PH" ;
+  skos:notation "S:70995007" ;
+  #dc:description '''"Die pulmonale Hypertonie (PH) ist definiert als Anstieg des mittleren pulmonal arteriellen Drucks (PAPm) auf >= 25 mmHg in Ruhe, invasiv gemessen mittels Rechtsherzkatheter (RKH)."(leitlinien.dgk.org)'''@de ;
+  dc:description '''&quot;Pulmonary hypertension (PH) is defined by a mean pulmonary artery pressure &ge; 25 mmHg at rest as assessed by right heart catheterization (RHC).&quot; (2015 ESC/ERS) '''@en ;
+  prov:wasDerivedFrom :PulmonaleHypertonie ;
+.
+
+:PAH a skos:Concept ;
+  skos:broader snomed:70995007 ;
+  skos:prefLabel "WHO Kat.1-Pulmonale-arterielle Hypertonie (PAH)"@de ;
+  skos:prefLabel "WHO Cat.1-Pulmonary Arterial Hypertension (PAH)"@en ;
+  skos:notation "B:PH-1" ;
+  #dc:description '''"Die PAH ist gekennzeichnet durch einen erhöhten Druck in den Lungenarterien, der in Ruhe über 25 mmHg und bei Belastung über 30 mmHg liegt(Normwerte: 10-15-mmHg)." (cardio-guide)'''@de ;
+  dc:description '''&quot;Pulmonary arterial hypertension (PAH) is a syndrome resulting from restricted flow through the pulmonary arterial circulation resulting in increased pulmonary vascular resistance and ultimately in right heart failure.&quot; (2009 ACCF/AHA)'''@en ;
+. 
+ 
+:PHLI a skos:Concept ;
+  skos:broader snomed:70995007 ;
+  skos:prefLabel "WHO Kat.2-PH infolge von Linksherzerkrankungen"@de ;
+  skos:prefLabel "WHO Cat.2-PH due to left heart disease (PH-LHD)"@en ;
+  skos:notation "B:PH-2" ;
+  dc:description '''&quot;PH due to left heart disease (LHD) is associated with an elevated left atrial pressure (eg, mean LA pressure &gt; 14mmHg) resulting in pulmonary venous hypertension (ie, post-capillary PH).&quot;(UpToDate)'''@en ;
+.  
+
+:PHCOPD a skos:Concept ;
+  skos:broader snomed:70995007 ;
+  skos:prefLabel "WHO Kat.3-PH infolge von chronisch obstruktiven Erkrankungen"@de ;
+  skos:prefLabel "WHO Cat.3-PH due to chronic obstructive lung disease"@en ;
+  skos:notation "B:PH-3" ;
+  dc:description '''&quot;PH associated with chronic lung disease and/or hypoxia, is elevated pulmonary pressure due to hypoxic vasoconstriction, mechanical stress of hyperinflated lungs, loss of capillaries, inflammation and toxic effects of cigarette smoke.&quot; (2015 ESC/ERS)'''@en ;
+. 
+
+:CTEPH a skos:Concept ;
+  skos:broader snomed:70995007 ;
+  skos:prefLabel "WHO Kat.4-Chronisch thromboembolische pulmonale hypertonie (CTEPH)"@de ;
+  skos:prefLabel "WHO Cat.4-Chronic thromboembolic pulmonary Hypertension (CTEPH)"@en ;
+  skos:notation "B:PH-4" ;
+  #dc:description '''"Chronisch thromboembolische pulmonale Hypertonie (CTEPH) ist eine spezielle Form von Lungenhochdruck, die dadurch charakterisiert ist, dass große Pulmonalarterien mit fibrosierenden Pulmonalembolien in 
+  #                   Kombination mit einer klassischen pulmonalen Arteriopathie obstruiert und verschlossen sind." (Zeitschrift für Gefäßmedizin 2015 12(3), 4-9)'''@de ;
+  dc:description '''&quot;Chronic Thromboembolic Pulmonary Hypertension (CTEPH) is a PH due to chronic obliteration of central pulmonary arteries by emboli, followed by pulmonary vascular remodeling process.&quot; (2015 ESC/ERS)'''@en ;
+  . 
+
+:PHUnklar a skos:Concept ;
+  skos:broader snomed:70995007 ;
+  skos:prefLabel "WHO Kat.5-PH mit unklarer Genese, multifaktoriell"@de ;
+  skos:prefLabel "WHO Cat.5-PH with unclear multifactorial mechanism"@en ;
+  skos:notation "B:PH-5" ;
+  dc:description '''&quot;Multifactorial PH is an elevated pulmonary pressure due to unknown or multifactorial mechanism.&quot; (2015 ESC/ERS).'''@en ;
+. 
