@@ -37,7 +37,11 @@ echo "export.ttl is being produced." >> "$LOGFILE"
 "$SCRIPTDIR/add_files_to_dataset.sh" -s -c -p "$conffile" -e "$LOGFILE"
 echo "Provenance..."
 echo "Provenance..." >> "$LOGFILE" 
-"$PROVENANCESCRIPTDIR/write_provenance.sh" -p "$conffile"
+newrevargument=""
+if [ "$newrev" != "" ]; then
+	newrevargument="-n $newrev"
+fi
+"$PROVENANCESCRIPTDIR/write_provenance.sh" -p "$conffile" "$newrevargument"
 "$SCRIPTDIR/add_files_to_dataset.sh" -s -h -p "$conffile" -e "$LOGFILE"
 echo "i2b2 import sql is being produced."
 echo "i2b2 import sql is being produced." >> "$LOGFILE" 

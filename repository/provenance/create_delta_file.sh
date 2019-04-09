@@ -82,8 +82,8 @@ if [ -f "$output_file" ]; then
 	success=1
 else
 	success=$("$PROVENANCESCRIPTDIR/create_checkout_file.sh" -p "$conffile" -i "$checkout_id")
-	echo -n "" > "$output_file.tmp"
 	if [ $success -eq 1 ]; then
+		echo -n "" > "$output_file.tmp"
 		#get all ids of all parsable ancestors
 		checkout_ids_ancestors_string=$(find_working_parents $checkout_id)
 		if [ -z "$checkout_id_ancestor_string" ]; then #happens only for the very first checkout
