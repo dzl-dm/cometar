@@ -1,0 +1,137 @@
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix dc:	<http://purl.org/dc/elements/1.1/> .
+@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix dwh:	<http://sekmi.de/histream/dwh#> .
+@prefix snomed: <http://purl.bioontology.org/ontology/SNOMEDCT/> .
+@prefix loinc: <http://loinc.org/owl#> .
+@prefix :	<http://data.dzl.de/ont/dwh#> .
+
+loinc:8462-4 a skos:Concept ;
+  skos:prefLabel "Diastolischer RR"@de , "Diastolic blood pressure"@en ;
+  skos:altLabel "Diastolischer Blutdruck"@de , "Diastolic blood pressure"@en ;
+  skos:notation "L:8462-4" ;
+  :unit "mm Hg" ;
+  dc:description '''Diastolic blood pressure is defined as the lowest arterial blood pressure of a cardiac cycle during diastole of the heart. (merriam-webster.com, 2018)'''@en ;
+.
+
+loinc:8480-6 a skos:Concept ;
+  skos:prefLabel "Systolischer RR"@de , "Systolic blood pressure"@en ;
+  skos:altLabel "Systolischer Blutdruck"@de , "Systolic blood pressure"@en ; 
+  skos:notation "L:8480-6" ;
+  :unit "mm Hg" ;
+  dc:description '''Systolic blood pressure is defined as the highest arterial blood pressure of a cardiac cycle occurring immediately after systole of the left ventricle of the heart. (merriam-webster.com, 2018)'''@en ;
+.
+###################################################################
+  
+:Follow-up a skos:Concept ;
+  skos:prefLabel "Follow-up"@de ;
+  skos:prefLabel "Follow-up"@en ;
+  dc:description '''Follow-up is defined as a routine examination of a patient at various intervals after start of medical or surgical treatment.'''@en ;
+.
+
+:Vitalstatus a skos:Concept ;
+  skos:broader :Follow-up ;
+  skos:prefLabel "Vitalparameter"@de ;
+  skos:prefLabel "Vital signs"@en ;
+  skos:altLabel "Vitals"@en ;
+  dc:description '''Vital signs (vitals) are a group of the 4 to 6 most important signs that indicate the status of body’s vital functions. These measurements are taken to help assess the general physical health of a person, give clues to possible diseases, and show progress toward recovery. The normal ranges for a person’s vital signs vary with age, weight, gender, and overall health. (Wikipedia, 2018)'''@en ;
+.
+
+snomed:397709008 a skos:Concept ;
+  skos:broader :Vitalstatus ;
+  skos:prefLabel "Patient verstorben"@de ;
+  skos:prefLabel "Patient deceased"@en ;
+  skos:notation "S:397709008" ;
+.
+  
+snomed:184305005 a skos:Concept ;
+  skos:broader :Follow-up ;
+  skos:prefLabel "Todesursache"@de ;
+  skos:prefLabel "Cause of death"@en ;
+  skos:notation "S:184305005" ;
+  dc:description '''In medicine, cause of death is an official determination of condition resulting in a human’s death, which may be recorded on a death certificate.'''@en ;  
+.
+  
+:DV_0002 a skos:Concept ;
+  skos:broader snomed:184305005 ;
+  skos:prefLabel "tumorbedingt verstorben"@de ;
+  skos:prefLabel "tumor related deceased"@en ;
+  skos:notation "DV_0002" ;
+.
+
+:DV_0001 a skos:Concept ;
+  skos:broader snomed:184305005 ;
+  skos:prefLabel "tumorunabhängig verstorben"@de ;
+  skos:prefLabel "independent of tumor deceased"@en ;
+  skos:notation "DV_0001" ;
+.
+
+snomed:87309006 a skos:Concept ;
+  skos:broader snomed:184305005 ;
+  skos:prefLabel "unbekannte Todesursache"@de ;
+  skos:prefLabel "unknown cause of death"@en ;
+  skos:notation "S:87309006" ;
+.
+      
+snomed:399307001 a skos:Concept ;
+  skos:broader snomed:184305005 ;
+  skos:prefLabel "lost to follow-up"@de ;
+  skos:prefLabel "lost to follow-up"@en ;
+  skos:notation "S:399307001" ;
+  dc:description '''Lost to follow-up refers to patients who at one point in time were actively participating in a clinical research trial, but have become lost at the point of follow-up in the trial (e.g. withdrawal from the clinical trial, illness, death etc.).'''@en ;
+.
+ 
+snomed:273546003 a skos:Concept ;
+  skos:broader :Follow-up ;
+  skos:prefLabel "Karnofsky Index zur Beurteilung des Allgemeinzustandes des Patienten"@de ;
+  skos:prefLabel "Karnofsky performance status for evaluation of the patient's general condition"@en ;
+  skos:notation "S:273546003" ;
+  dc:description '''Karnofsky Performance Status (also called KPS) is defined as a standard way of measuring the ability of cancer patients to perform ordinary tasks. The Karnofsky Performance Status score ranges from 1 to 100. Karnofsky Performance Status may be used to determine a patient’s prognosis, to measure changes in a patient’s ability to function, or to decide if a patient could be included in a clinical trial. (NIH National Cancer Institute, 2018) '''@en ;
+.
+ 
+:DV_00003 a skos:Concept ;
+  skos:broader :Follow-up ;
+  skos:prefLabel "Gesundheitsfragebogen: EQ-5D VAS"@de ;
+  skos:prefLabel "Health questionnaire EQ-5D VAS"@en ;
+  skos:notation "DV_0003" ;
+  dc:description '''EQ-5D is a standardized instrument for measuring generic health status. The EQ-5D descriptive system is a preference-based Health-Related Quality of Live (HRQL) measured with one question for each of the five dimensions that include mobility, self-care, usual activities, pain/discomfort, and anxiety/depression. Visual analoque scales (VAS) are psychometric measuring instruments designed to document the characteristics of disease-related symptoms severity in individual patients.'''@en ;
+.  
+ 
+loinc:8310-5 a skos:Concept ;
+  skos:broader :Vitalstatus  ;
+  skos:prefLabel "Körpertemperatur"@de , "Body temperature"@en ;
+  skos:notation "L:8310-5" ;
+  :unit "deg C" ;
+  dc:description '''Normal human body temperature, also known as normothermia or euthermia, it the typical temperature range found in humans. The normal human body temperature range is typically stated as 36.5-37.5 °C (97.7-99.5 °F). Individual body temperature depends upon the age, exertion, infection, gender, and reproductive status of the subject, the time of the day, the place in the body at which the measurement is made, and the subject’s state of consciousness, activity level, and emotional state. (Wikipedia, 2018)'''@en ;
+.
+ 
+snomed:75367002 a skos:Concept ;
+  skos:broader :Vitalstatus ;
+  skos:prefLabel "Blutdruck"@de , "Blood pressure"@en ;
+  skos:notation "S:75367002" ;
+  rdf:hasPart loinc:8462-4 ;
+  rdf:hasPart loinc:8480-6 ;
+  dc:description '''Blood pressure is the pressure of circulating blood on the walls of blood vessels. Blood pressure usually refers to the pressure in large arteries of the systemic circulation.'''@en ;
+.
+
+:respiratoryrate a skos:Concept ;
+  skos:broader :Vitalstatus ;
+  skos:prefLabel "Atemfrequenz"@de ;
+  skos:prefLabel "Respiratory rate"@en ;
+  skos:notation "L:9279-1" ;
+  :unit "breaths/min" ;
+  :status "draft" ;
+  dc:description '''Respiratory rate is the rate at which breathing occurs.The respiratory rate in humans is measured by counting the number of breaths for one minute. '''@en ; 
+.
+
+:dateofdeath a skos:Concept ;
+  skos:broader :Follow-up ;
+  skos:prefLabel "Sterbedatum"@de ;
+  skos:prefLabel "Date of death"@en ;
+  skos:notation "L:81954-0" ; #Berechnung Mortalität
+  :status "draft" ;
+  dc:description '''Date of death is defined as the exact date on which a person died.'''@en ;      
+.

@@ -1,0 +1,38 @@
+removed,http://data.dzl.de/ont/dwh#SYSTH,http://purl.org/dc/elements/1.1/description,"",Systemische Therapien
+added,http://data.dzl.de/ont/dwh#SYSTH,http://purl.org/dc/elements/1.1/description,de,Systemische Therapien
+added,http://data.dzl.de/ont/dwh#SYSTH,http://www.w3.org/2004/02/skos/core#narrower,,http://data.dzl.de/ont/dwh#SYSTH:LINE:1
+added,http://data.dzl.de/ont/dwh#SYSTH,http://www.w3.org/2004/02/skos/core#narrower,,http://data.dzl.de/ont/dwh#SYSTH:LINE:2
+added,http://data.dzl.de/ont/dwh#SYSTH,http://www.w3.org/2004/02/skos/core#narrower,,http://data.dzl.de/ont/dwh#SYSTH:LINE:3
+added,http://data.dzl.de/ont/dwh#SYSTH,http://www.w3.org/2004/02/skos/core#narrower,,http://data.dzl.de/ont/dwh#SYSTH:LINE:4
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:1,http://data.dzl.de/ont/dwh#status,"",draft
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:1,http://purl.org/dc/elements/1.1/creator,"",Karsten Senghas
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:1,http://purl.org/dc/elements/1.1/description,de,Erste onkologische Behandlungslinie
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:1,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,,http://www.w3.org/2004/02/skos/core#Concept
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:1,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#SYSTH
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:1,http://www.w3.org/2004/02/skos/core#notation,"",SYSTH:LINE:1
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:1,http://www.w3.org/2004/02/skos/core#prefLabel,de,Erstlinientherapie
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:1,http://www.w3.org/2004/02/skos/core#prefLabel,en,1st line therapy
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:2,http://data.dzl.de/ont/dwh#status,"",draft
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:2,http://purl.org/dc/elements/1.1/creator,"",Karsten Senghas
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:2,http://purl.org/dc/elements/1.1/description,de,Zweite onkologische Behandlungslinie
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:2,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,,http://www.w3.org/2004/02/skos/core#Concept
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:2,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#SYSTH
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:2,http://www.w3.org/2004/02/skos/core#notation,"",SYSTH:LINE:2
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:2,http://www.w3.org/2004/02/skos/core#prefLabel,de,Zweitlinientherapie
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:2,http://www.w3.org/2004/02/skos/core#prefLabel,en,2nd line therapy
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:3,http://data.dzl.de/ont/dwh#status,"",draft
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:3,http://purl.org/dc/elements/1.1/creator,"",Karsten Senghas
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:3,http://purl.org/dc/elements/1.1/description,de,Dritte onkologische Behandlungslinie
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:3,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,,http://www.w3.org/2004/02/skos/core#Concept
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:3,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#SYSTH
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:3,http://www.w3.org/2004/02/skos/core#notation,"",SYSTH:LINE:3
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:3,http://www.w3.org/2004/02/skos/core#prefLabel,de,Drittlinientherapie
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:3,http://www.w3.org/2004/02/skos/core#prefLabel,en,3rd line therapy
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:4,http://data.dzl.de/ont/dwh#status,"",draft
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:4,http://purl.org/dc/elements/1.1/creator,"",Karsten Senghas
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:4,http://purl.org/dc/elements/1.1/description,de,Vierte onkologische Behandlungslinie
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:4,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,,http://www.w3.org/2004/02/skos/core#Concept
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:4,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#SYSTH
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:4,http://www.w3.org/2004/02/skos/core#notation,"",SYSTH:LINE:4
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:4,http://www.w3.org/2004/02/skos/core#prefLabel,de,Viertlinientherapie
+added,http://data.dzl.de/ont/dwh#SYSTH:LINE:4,http://www.w3.org/2004/02/skos/core#prefLabel,en,4th line therapy

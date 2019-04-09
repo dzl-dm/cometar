@@ -1,0 +1,273 @@
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix dc:	<http://purl.org/dc/elements/1.1/> .
+@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix dwh:	<http://sekmi.de/histream/dwh#> .
+@prefix snomed: <http://purl.bioontology.org/ontology/SNOMEDCT/> .
+@prefix loinc: <http://loinc.org/owl#> .
+@prefix :	<http://data.dzl.de/ont/dwh#> .
+@prefix prov: 	<http://www.w3.org/ns/prov#> .
+
+
+:substance a skos:Concept;
+   skos:prefLabel "Substanz"@de , "Substance"@en ;
+.
+
+snomed:66562002 a skos:Concept ;
+  skos:broader	:substance ;
+  skos:prefLabel "Zigaretten"@de , "Cigarettes"@en ;
+  skos:notation "S:66562002" ;# Code for Cigarette smoking tobacco (substance)
+.
+
+snomed:26663004 a skos:Concept ;
+  skos:broader	:substance ;
+  skos:prefLabel "Zigarren"@de , "Cigars"@en ;
+  skos:notation "S:26663004" ;# Code for cigar smoking tobacco (substance)
+.
+
+snomed:84498003 a skos:Concept ;
+  skos:broader	:substance ;
+  skos:prefLabel "Pfeifen"@de , "Pipes"@en ;
+  skos:notation "S:84498003" ;# Code for Pipe smoking tobacco (substance)
+.
+snomed:722499006 a skos:Concept ;
+  skos:broader	:substance ; 
+  skos:prefLabel "E-Zigaretten"@de , "Electronic cigarette user"@en ;
+  skos:notation "S:722499006" ; # Code for  Electronic cigarette user (finding)
+.
+
+snomed:698289004 a skos:Concept ;
+  skos:broader	:substance ;
+  skos:prefLabel "Wasserpfeife"@de , "Shisha"@en ;
+  skos:notation "S:698289004" ; # Code for Hookah pipe smoker (finding)/Water pipe smoker
+.
+snomed:81911001 a skos:Concept ;
+  skos:broader	:substance ;
+  skos:prefLabel "Kautabak"@de , "Chewing tobacco"@en ;
+  skos:notation "S:81911001" ; # Code for Chewing tobacco (substance)
+.
+
+snomed:39789004 a skos:Concept ;
+  skos:broader	:substance ;
+  skos:prefLabel "Schnupftabak"@de , "Snuff tobacco"@en ;
+  skos:notation "S:39789004" ; # Code for Snuff tobacco (substance)
+.
+
+####### Schadstoffexposition #######
+
+snomed:418715001 a skos:Concept ;
+  skos:prefLabel "Schadstoffexposition"@de ;
+  skos:prefLabel "Exposure to pollutants"@en ;
+  dc:description '''In medicine, the exposure of living organisms to harmful environmental factors, toxic elements or compounds, as a possible trigger of health damage. Depending on the level of exposure, particulate pollutants may cause mild to severe illnesses.'''@en ;
+  skos:notation "S:418715001" ;# code for Exposure to potentially harmful entity (event)
+  prov:wasDerivedFrom :Schadstoffexposition ;
+.
+  
+snomed:365981007 a skos:Concept ;
+  skos:broader snomed:418715001 ;
+  skos:prefLabel "Rauchen"@de ;
+  skos:prefLabel "Smoking"@en ;
+  rdf:hasPart :substance ;
+  #rdf:hasPart snomed:66562002 ;
+  #rdf:hasPart snomed:26663004 ;  
+  #rdf:hasPart snomed:84498003 ;  
+  #rdf:hasPart snomed:722499006 ;
+  #rdf:hasPart snomed:698289004 ;
+  #rdf:hasPart snomed:81911001 ;
+  #rdf:hasPart snomed:39789004 ;
+  dc:description '''Smoking is the inhalation of the smoke of burning tobacco encased in cigarettes, pipes, and cigars. A smoking habit is a physical and psychological addiction to tobacco products. Besides tar, nicotine, and carbon monoxide, tobacco smoke contains 4,000 different chemicals. Tar is a sticky substance that forms into deposits in the lungs, causing lung cancer and respiratory distress. Carbon monoxide limits the amount of oxygen that the red blood cells can convey throughout your body. '''@en ;
+  skos:notation "S:365981007";# Code fuer Tobacco smoking behaviour (finding)
+  :status "draft" ;
+.
+  
+:Raucherstatus a skos:Concept ;
+  skos:broader snomed:365981007 ;
+  skos:prefLabel "Raucherstatus"@de ;
+  skos:prefLabel "Smoking status"@en ;
+  :status "draft" ;
+.
+
+snomed:266927001 a skos:Concept ;
+  skos:broader :Raucherstatus ;
+  skos:prefLabel "Aktivraucher"@de ;
+  skos:prefLabel "Active smoker"@en ;
+  dc:description '''An active smoker is a person who, at the time of the survey, smokes any tobacco product either daily or occasionally.'''@en ;
+  skos:notation "S:266927001" ; # Code fuer Tobacco smoking consumption unknown (finding)
+  #skos:notation "S:77176002  ; # Code fuer Smoker (finding)(auch Current smoker) eher diesen Code benutzen ???
+  :status "draft" ;
+.
+
+snomed:449868002 a skos:Concept ;
+  skos:broader snomed:266927001 ;
+  skos:prefLabel "Taeglicher Raucher"@de ;
+  skos:prefLabel "Every day smoker"@en ;
+  dc:description '''An every day (daily) smoker is a person, who smokes any tobacco product at least once a day.'''@en ;
+  skos:notation "S:449868002"; # Code fuer Smokes tobacco daily (finding)
+  :status "draft" ;
+.
+
+snomed:428041000124106 a skos:Concept ;
+  skos:broader snomed:266927001  ;
+  skos:prefLabel "Gelegenheitsraucher"@de ;
+  skos:prefLabel "Occasional (someday) smoker"@en ;
+  dc:description '''An occasional smoker (someday smoker) is a person, who smokes, but not every day.'''@en ;
+  skos:notation "S:428041000124106" ; # Code fuer Occasional tobacco smoker (finding)
+  :status "draft" ;
+.
+
+#snomed:8392000 a skos:Concept ;
+  #skos:broader :Raucherstatus ;
+  #skos:prefLabel "Nichtraucher"@de ;
+  #skos:prefLabel "Non-smoker"@en ;
+  #dc:description '''A non-smoker is a person who, at the time of the survey, does not smoke at all.'''@en ;
+  #skos:notation "S:8392000" ;
+  #:status "draft" ;
+  #prov:wasDerivedFrom snomed:405746006 ;
+#.
+
+#snomed:8517006 a skos:Concept ;
+  #skos:broader snomed:8392000 ;
+  #skos:prefLabel "Exraucher"@de ;
+  #skos:prefLabel "Ex-smoker"@en ;
+  #dc:description '''An ex-smoker is a person who was formerly a daily smoker but currently does not smoke at all.'''@en ;
+  #skos:notation "S:8517006" ;# Code fuer Ex-smoker (finding) (auch Former smoker)
+  #:status "draft" ;
+#.
+
+snomed:8517006 a skos:Concept ;
+  skos:broader :Raucherstatus ;
+  skos:prefLabel "Exraucher"@de ;
+  skos:prefLabel "Ex-smoker"@en ;
+  dc:description '''An ex-smoker is a person who was formerly a daily smoker but currently does not smoke at all.'''@en ;
+  skos:notation "S:8517006" ;# Code fuer Ex-smoker (finding) (auch Former smoker)
+  :status "draft" ;
+.
+
+#snomed:405746006 a skos:Concept ;
+#  skos:broader :Raucherstatus ;
+#  skos:prefLabel "Nichtraucher"@de ;
+#  skos:prefLabel "Non-smoker"@en ;
+#  dc:description '''Smoking status terminology based on the Canadian Tobacco Use Monitoring Survey (CTUMS):
+#  Non-smokers includes former smokers and never-smokers;
+#  Former smoker: a smoker who reports a minimum consumption of 100 cigarettes in his lifetime'''@en ;
+#  skos:notation "S:405746006" ;
+#.
+
+#snomed:266919005 a skos:Concept ;
+  #skos:broader snomed:8392000 ;
+  #skos:prefLabel "Nie-Raucher"@de ;
+  #skos:prefLabel "Never-smoker"@en ;
+  #dc:description '''A never-smoker is a person who either has never smoked at all or has never been a daily smoker and has smoked less than 100 cigarettes (or the equivalent amount of tobacco) in his/her lifetime.'''@en ;
+  #skos:notation "S:266919005" ;
+  #:status "draft" ;
+#.
+
+snomed:266919005 a skos:Concept ;
+  skos:broader :Raucherstatus ;
+  skos:prefLabel "Nie-Raucher"@de ;
+  skos:prefLabel "Never-smoker"@en ;
+  dc:description '''A never-smoker is a person who either has never smoked at all or has never been a daily smoker and has smoked less than 100 cigarettes (or the equivalent amount of tobacco) in his/her lifetime.'''@en ;
+  skos:notation "S:266919005" ;
+  :status "draft" ;
+.
+
+snomed:43381005 a skos:Concept ;
+  skos:broader :Raucherstatus ;
+  skos:prefLabel "Passiv-Raucher"@de ;
+  skos:prefLabel "Passive smoker"@en ;
+  dc:description '''Passive smoking is the inhalation of smoke, called second-hand smoke (SHS) or environmental tobacco smoke (ETS), by persons other than the intended “active” smoker. (Wikipedia, 2018)'''@en ;
+  skos:notation "S:43381005" ;#Code fuer Passive smoker (finding) / Exposed to second hand tobacco smoke
+ #skos:editorialNote "Alternativer Kode für Passiv-Raucher: S:714151003, Environmental tobacco smoke exposure (observable entity)" ;nicht gültig! 
+  :status "draft" ;
+  prov:wasDerivedFrom snomed:714151003 ;
+.
+
+snomed:401201003 a skos:Concept ;
+  skos:broader snomed:365981007 ;
+  skos:prefLabel "Packyears"@de ;
+  skos:prefLabel "Packyears"@en ;
+  skos:notation "S:401201003" ;
+  dwh:restriction dwh:floatRestriction ;
+  :unit "py" ;
+  #dc:description '''"Das Packungsjahr isat die Einheit, in welcher in statistischen oder medizinischen Veröffentlichungen die inhalierte Rauch-Dosis eines Zigarettenrauchers beschrieben wird. 
+  #Darauf lässt sich die Anzahl der konsumierten Zigaretten abschätzen. Diese Dosis ist entscheidend für das Risiko, beispielweise ein Bronchialkarzinom oder eine chronisch obstruktive Lungenerkrankung (COPD) zu entwickeln."(Wikipedia)'''@de ;
+  dc:description '''The pack-year is a unit for measuring the amount a person has smoked over a long period of time. It is calculated by multiplying the number of packs of cigarettes smoked per day by the number of years the person has smoked. (National Cancer Institute, 2018)'''@en ;
+  :status "draft" ;
+.
+
+snomed:307438009 a skos:Concept ;
+  skos:broader snomed:365981007 ;
+  skos:prefLabel "Anzahl pro Tag"@de ;
+  skos:prefLabel "Number per day"@en ;
+  skos:notation "S:307438009" ; #code fuer Frequency per day (qualifier value)
+  dwh:restriction dwh:floatRestriction ;
+  :unit " /day" ;
+  :status "draft" ;
+.  
+
+:DauerJahre a skos:Concept ;
+  skos:broader snomed:365981007 ;
+  skos:prefLabel "Dauer des Rauchens in Jahren"@de ;
+  skos:prefLabel "Duration of smoking"@en ;
+  dwh:restriction dwh:integerRestriction ;
+  :unit "Years";
+  skos:notation "S:365981007:103335007=258707000" ;
+  :status "draft" ;
+.  
+  
+snomed:266929003 a skos:Concept ;
+  skos:broader snomed:365981007 ;
+  skos:prefLabel "Beginn des Rauchens"@de ;
+  skos:prefLabel "Smoking started"@en ;
+  #:unit "Years" ;
+  skos:notation "S:266929003" ;
+  dwh:restriction dwh:partialDateRestriction ;
+  :status "draft" ;
+.
+
+:EndeRauchen a skos:Concept ;
+  skos:broader snomed:365981007 ;
+  skos:prefLabel "Ende des Rauchens"@de ;
+  skos:prefLabel "Smoking ended"@en ;
+  #:unit "Years" ;
+  dwh:restriction dwh:partialDateRestriction ;
+  :status "draft" ;
+.
+
+snomed:228488005 a skos:Concept ;
+  skos:broader snomed:365981007 ;
+  skos:prefLabel "Alter bei Rauchbeginn"@de ;
+  skos:prefLabel "Age at starting smoking"@en ;
+  skos:notation "S:228488005" ; 
+  :unit "Years" ;
+  dwh:restriction dwh:integerRestriction ;
+  :status "draft" ;
+.
+ 
+snomed:1221000175102 a skos:Concept ;
+  skos:broader snomed:365981007 ;
+  skos:prefLabel "Alter beim Einstellen des Rauchens "@de ;
+  skos:prefLabel "Age at ending smoking"@en ;
+  skos:notation "S:1221000175102" ;# Age at smoking cessation (observable entity)
+  :unit "Years" ;
+  dwh:restriction dwh:integerRestriction ;
+  :status "draft" ;
+. 
+   
+:BerufFreizeit  a skos:Concept ;
+  skos:broader snomed:418715001 ;
+  skos:prefLabel "Beruf/Freizeit"@de ;
+  skos:prefLabel "Professional Activities/Leisure time"@en ;
+.
+  
+snomed:86157004 a skos:Concept ;
+  skos:broader :BerufFreizeit ;
+  skos:prefLabel "Anerkannte Berufskrankheit"@de ;
+  skos:prefLabel "Recognised occupational disease"@en ;
+  skos:notation "S:86157004" ;
+  #dc:description '''"Berufskrankheiten sind arbeitsbedingte Erkrankungen, die ein Beschäftigter durch seine berufliche Tätigkeit erleidet in dem er, nach dem Kenntnisstand der Medizin, besonderen Einwirkungen (z.B. Lärm, Gefahrstoffe) in erheblich höherem Maß ausgesetzt ist, als die übrige Bevölkerung." (BfGA)@de ;
+  dc:description '''"An occupational disease is any chronic ailment that occurs as a result of work or occupational activity. An occupational disease is typically identified when it is shown that it is more prevalent in a given body of workers than in the general population, or in other worker populations."(Wikipedia)'''@en ;
+.
+

@@ -1,0 +1,516 @@
+﻿
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:	<http://www.w3.org/2002/07/owl#> .
+@prefix dc:	<http://purl.org/dc/elements/1.1/> .
+@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
+@prefix dwh:	<http://sekmi.de/histream/dwh#> .
+@prefix snomed: <http://purl.bioontology.org/ontology/SNOMEDCT/> .
+@prefix loinc: <http://loinc.org/owl#> .
+@prefix :	<http://data.dzl.de/ont/dwh#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov: 	<http://www.w3.org/ns/prov#> .
+ 
+snomed:23426006 a skos:Concept ;
+  skos:prefLabel "Lungenfunktion"@de ;
+  skos:prefLabel "Lung function"@en ;
+  skos:altLabel "Measurement of respiratory function"@en ;
+  skos:notation "S:23426006";
+.
+  
+ ################################# 
+snomed:28275007 a skos:Concept ;
+  skos:broader snomed:23426006 ;
+  skos:prefLabel "Bodyplethysmographie"@de ;
+  skos:prefLabel "Bodyplethysmography"@en ;
+  skos:altLabel "Ganzkörperplethysmographie"@de ;
+  skos:altLabel "Total body plethysmography"@en ;
+  dc:description '''Total body plethysmography measures the volume of gas in the lungs, including that wich is trapped in poorly communicating air space, of particular use in COPD and emphysema.'''@en ;
+  skos:notation "S:28275007";
+.
+
+loinc:19862-2 a skos:Concept ;
+  skos:broader snomed:28275007 ;
+  skos:prefLabel "TLC"@de ;
+  skos:prefLabel "TLC"@en ;
+  skos:altLabel "Totale Lungenkapazität"@de ;
+  skos:altLabel "Total lung capacity"@en ;
+  skos:notation "L:19862-2";
+  #skos:notation "S:57566009" ;
+  :unit "L" ;
+  :unit "mL" ;
+  dwh:restriction dwh:floatRestriction;
+  dc:description ''' "Total lung capacity (TLC) is the volume of air in the lungs at maximum inflation." (LOINC) '''@en ;
+ .
+
+:DV_0008 a skos:Concept ;
+  skos:broader snomed:28275007 ;
+  skos:prefLabel "TLC%"@de ;
+  skos:prefLabel "TLC%"@en ;
+  dc:description ''' % of predicted TLC'''@en ;
+  #skos:notation "DV_0008" ;
+  skos:notation "L:89085-5" ;
+  :unit "%" ;
+.
+
+loinc:20146-7 a skos:Concept ;
+  skos:broader snomed:28275007 ;
+  skos:prefLabel "RV"@de ;
+  skos:prefLabel "RV"@en ;
+  skos:altLabel "Residualvolumen"@de ;
+  skos:altLabel "Residual volume"@en ;
+  skos:notation "L:20146-7" ;
+  :unit "L" ;
+  dc:description '''Residual volume is the amount of air remaining in the lungs after maximum exhalation.'''@en ;
+.
+
+:DV_0005 a skos:Concept ;
+  skos:broader snomed:28275007 ;
+  skos:prefLabel "RV%"@de ;
+  skos:prefLabel "RV%"@en ;
+  dc:description ''' % of predicted RV'''@en ;
+  skos:notation "DV_0005" ;
+  :unit "%" ;
+.
+
+loinc:43252-6 a skos:Concept ;
+  skos:broader snomed:28275007 ;
+  skos:prefLabel "RV/TLC"@de ;
+  skos:prefLabel "RV/TLC"@en ;
+  #dc:description ''''''@en ;
+  skos:notation "L:43252-6" ;
+  :unit "%" ;
+  :status "draft" ;
+.
+
+loinc:20083-2 a skos:Concept ;
+  skos:broader snomed:28275007 ;
+  skos:prefLabel "Rtot"@de ;
+  skos:prefLabel "Rtot"@en ;
+ #skos:notation "L:75946-4" ;
+  skos:altLabel "Totaler Atemwegswiderstand"@de ;
+  skos:altLabel "Total airway resistance"@en ;
+ #skos:notation "S:16162007" ;
+  skos:notation "L:20083-2" ;# genauer
+  dc:description '''"Airway resistance is the resistance or limitation to gas flow in the airway." (LOINC)'''@en ;
+ #:unit "cm[H2O]/(L/s)" ;
+ #:unit "L" ;
+  :unit "kPa*s/l" ;
+  skos:editorialNote "The methodology used for the calculation of the plethysmographic resistance should always be mentioned (e.g.: RO.5 by Dubois et al., Rtot by Ulmer, Reff by Matthys et al.)." ;
+  prov:wasDerivedFrom snomed:16162007 ;
+.
+
+:DV_0004 a skos:Concept ;
+  skos:broader snomed:28275007 ;
+  skos:prefLabel "Rtot%"@de ;
+  skos:prefLabel "Rtot%"@en ;
+  dc:description ''' % of predicted Rtot'''@en ;
+  skos:notation "DV_0004" ;
+  :unit "%" ;
+  skos:editorialNote "The methodology used for the calculation of the plethysmographic resistance should always be mentioned (e.g.: RO.5 by Dubois et al., Rtot by Ulmer, Reff by Matthys et al.)." ;
+.
+
+:DV_0006 a skos:Concept ;
+  skos:broader snomed:28275007 ;
+  skos:prefLabel "sRT"@de ;
+  skos:prefLabel "sRT"@en ;
+  skos:altLabel "Totaler spezifischer Atemwegswiderstand"@de ;
+  skos:altLabel "Total specific airway resistance"@en ;
+  #dc:description '''"...ist eine aus der Wechselwirkung von Lungenvolumen und Atemwegswiderstand entstehende Messgröße." (Empfehlungen Ganzkörperplethysmographie)'''@de ;
+  dc:description '''"...is a measure resulting from the interaction of lung volume and airway resistance."'''@en ;
+  skos:notation "DV_0006" ;
+  :unit "kPa*s" ;
+  skos:editorialNote "The methodology used for the calculation of the plethysmographic resistance should always be mentioned (e.g.: RO.5 by Dubois et al., Rtot by Ulmer, Reff by Matthys et al.)." ;
+.
+
+:DV_0007 a skos:Concept ;
+  skos:broader snomed:28275007 ;
+  skos:prefLabel "sRT%"@de ;
+  skos:prefLabel "sRT%"@en ;
+  dc:description ''' % of predicted sRT'''@en ;
+  skos:notation "DV_0007" ;
+  :unit "%" ;
+  skos:editorialNote "The methodology used for the calculation of the plethysmographic resistance should always be mentioned (e.g.: RO.5 by Dubois et al., Rtot by Ulmer, Reff by Matthys et al.)." ;
+.
+
+:tidalvolume a skos:Concept ;
+  skos:broader snomed:28275007 ;
+  skos:prefLabel "Atemzugvolumen (AZV)"@de ;
+  skos:prefLabel "Tidal volume"@en ;
+  dc:description '''Als Atemzugvolumen (AZV) bezeichnet man die Gasmenge, die pro Atemzug ein- und anschließend wieder ausgeatmet wird.'''@de ;
+  dc:description '''Tidal volume is the lung volume representing the normal volume of air displaced between normal inhalation and exhalation when extra effort is not applied.'''@en ;
+  skos:notation "L:76221-1" ;
+  :unit "mL" ;
+  :status "draft" ;
+.
+##################################
+snomed:54715006 a skos:Concept ;
+  skos:broader snomed:23426006 ;
+  skos:prefLabel "Diffusionskapazität der Lunge"@de ;#Diffusionskapazität (DLCO oder TCO)
+  skos:prefLabel "Diffusing capacity of lung"@en ;
+  dc:description '''"Diffusing capacity of the lung measures the transfer of gas from air in the lung, to the red blood cells in lung blood vessels. 
+                     It is a part of a comprehensive series of pulmonary function tests to determine the overall ability of the lung to transport gas intoand out of the blood." (Wikipedia)'''@en ;
+  skos:notation "S:54715006" ;
+.
+
+loinc:19911-7 a skos:Concept ;
+  skos:broader snomed:54715006 ;
+  skos:prefLabel "DLCO absolut "@de ;
+  skos:prefLabel "DLCO absolute"@en ;
+  skos:altLabel "Kohlenmonoxid-Diffusionskapazität"@de ;
+  skos:altLabel "Diffusion capacity.carbon monoxide"@en ;
+  skos:notation "L:19911-7" ;
+  dc:description '''"Diffusing capacity (or DLCO) is the carbon monoxide uptake from a single inspiration in a standard time (usually 10 sec)." (LOINC)'''@en ;
+ #:unit "cm3/min/mmHg" ;
+ #:unit " ml/min/kPa" ;
+  :unit "mmol/min/kPa" ;
+ #:unit "mmol/min/mmHg" ;
+.
+
+loinc:69578-3 a skos:Concept ;
+  skos:broader snomed:54715006 ;
+  skos:prefLabel "DLCO Korrigiert (DLCO/VA)"@de ;#KCO-Wert
+  skos:prefLabel "DLCO corrected (DLCO/VA)"@en ;
+  skos:altLabel "Transferkoeffizient korrigiert für das Alveolarvolumen (Krogh-Faktor)"@de ;
+  skos:altLabel "Diffusion capacity.carbon monoxide/Alveolar volume adjusted for hemoglobin"@en ;
+  skos:notation "L:69578-3" ;
+ #:unit "cm3/min/mmHg" ;
+ #:unit " L/min/kPa" ;
+  :unit "mmol/min/kPa" ;
+ #:unit "mmol/min/mmHg" ;
+  dc:description '''Krogh-Index (KCO = DLCO/VA) is an index of the efficiency of alveolar transfer of carbon monoxide.'''@en ;
+.
+
+loinc:19913-3 a skos:Concept ;
+  skos:broader snomed:54715006 ;
+  skos:prefLabel "DLCO korrigiert (Hb)"@de ;
+  skos:prefLabel "DLCO corrected (Hb)"@en ;
+  skos:altLabel "Transferkoeffizient korrigiert für Hämoglobin"@de ;
+  skos:altLabel "Diffusioncapacity.carbon monoxide adjusted for hemoglobin"@en ;
+  skos:notation "L:19913-3" ;
+ #:unit "cm3/min/mmHg" ;
+ #:unit " ml/min/kPa" ;
+  :unit "mmol/min/kPa" ;
+ #:unit "mmol/min/mmHg" ;
+  dc:description '''DLCO describe the uptake of carbon monoxide in the lung. The ATS/ERS currently recommends correcting carbon monoxide diffusing capacity (DLCO) for hemoglobin concentration [Hb] using the equations developed by Cotes et al. in 1972.'''@en ;
+.
+##################################
+snomed:252486000 a skos:Concept ;
+  skos:broader snomed:23426006 ;
+  skos:prefLabel "Atempumpmessung"@de ;
+  skos:prefLabel "Respiratory pump measurement"@en ;
+  skos:altLabel "Respiratory muscle function test"@en ;
+  dc:description '''Measurement of respiratory muscle strength is useful in order to detect respiratory muscle weakness and to quantify its severity.'''@en ;
+  skos:notation "S:252486000";
+.
+  
+loinc:60951-1 a skos:Concept ;
+  skos:broader snomed:252486000 ;
+  skos:prefLabel "Pi max"@de ;
+  skos:prefLabel "Pi max"@en ;
+  skos:altLabel "Maximaler inspiratorischer Mundverschlussdruck (PImax)"@de ;
+  skos:altLabel "Maximal Inspiratory Pressure (PImax)"@en ;
+  skos:notation "L:60951-1" ;#LOINC unit cmH2O
+  #dc:description '''Maximaler inspiratorischer Mundverschlussdruck bei forcierter Inspiration nach vorheriger kompletter Exspiration bis zum Residualvolumen.'''@de ;
+  dc:description '''"Pi max is the maximum negative pressure generated during temporary occlusion of the airway."(PMC)'''@en ;
+  :unit "kPa" ;
+ #:unit "cmH2O" ; # 1mmHg = 1,36 cmH2O (1 mmH2O = 9,80665 Pa) cmH2O --> zentimeter Wassersäule
+.
+  
+loinc:76240-1 a skos:Concept ;
+  skos:broader snomed:252486000 ;
+  skos:prefLabel "P0,1 max"@de ;
+  skos:prefLabel "P0,1 max"@en ;
+  skos:altLabel "Mundverschlussdruck 100 ms nach Beginn der Inspiration"@de ;
+  skos:altLabel "Pressure occlusion 100 ms Respiratory system airway"@en ;
+  skos:notation "L:76240-1" ;
+  dc:description '''"P0,1 max is the negative airway pressure generated during the first 100 ms of an occluded inspiration."(LOINC)'''@en ;
+  :unit "kPa" ;
+ #:unit "cmH2O" ;#LOINC unit cmH2O
+  
+.
+    
+:DV_0009 a skos:Concept ;
+  skos:broader snomed:252486000 ;
+  skos:prefLabel "P1 max"@de ;
+  skos:prefLabel "P1 max"@en ;
+  skos:altLabel "Mundverschlussdruck 1 s nach Beginn der Inspiration"@de ;
+  skos:notation "DV_0009" ;
+  :unit "kPa" ;
+ #:unit "cmH2O" ;#LOINC unit
+.
+
+loinc:20159-0 a skos:Concept ;
+  skos:broader snomed:252486000 ;
+  skos:prefLabel "MVV"@de ;
+  skos:prefLabel "MVV"@en ;
+  skos:altLabel "Maximal willkürliche Ventilation"@de ;
+  skos:altLabel "Maximal Voluntary Ventilation"@en ;
+  skos:notation "L:20159-0" ;
+  #dc:description '''MVV ist die maximale Luftmenge, die durch willkürliche Steigerung der Atmung pro Minute ein- und ausgeatmet werden kann.'''@de ;
+  dc:description '''"Maximum voluntary ventilation (MVV) is a measure of the maximum amount of air that can be inhaled and exhaled within one minute." (LOINC)'''@en ;
+  :unit "L/min" ;
+.
+ 
+################################## 
+snomed:26046004 a skos:Concept ;
+  skos:broader snomed:23426006 ;
+  skos:prefLabel "Spiroergometrie"@de ;
+  skos:prefLabel "Spiroergometry"@en ;
+  skos:notation "S:26046004";  #Cardiovascular stress test using bicycle ergometer (procedure)
+  #skos:altLabel "Cardiovascular stress test using bicycle ergometer (procedure)"@en ;
+  dc:description '''Spiroergometry is used for the diagnosis of cardiovascular and lung disease. This method can also be used for performance diagnostics, such as for athletes.'''@en ;
+  #skos:notation "S:447346005" ;#Cardiopulmonary exercise test (CPET)
+  #skos:altLabel "Cardiopulmonary exercise test (CPET)"@en ;
+.
+  
+snomed:251898000 a skos:Concept ;
+  skos:broader snomed:26046004 ;
+  skos:prefLabel "VO2 max"@de ;
+  skos:prefLabel "VO2 max"@en ;
+  skos:altLabel "Maximale Sauerstoffaufnahme"@de ; 
+  skos:altLabel "Maximum oxygen uptake"@en ;
+  dc:description '''"VO2 max is the maximum rate of oxygen consumption measured during incremental exercise.
+                     VO2 max is expressed either as an absolute rate in (for example) litres per minute (L/min) or as a relative rate in (for example) millilitres of oxygen per kilogram of body mass per minute." (wikipedia)'''@en ;
+  skos:notation "S:251898000" ;
+  :unit "L/min" ;
+.
+
+:AT a skos:Concept ;
+  skos:broader snomed:26046004 ;
+  skos:prefLabel "ANS"@de ;
+  skos:prefLabel "AT"@en ;
+  skos:notation "L:19239-3" ;
+  #skos:notation "L:51829-0" ;
+  skos:altLabel "Laktatumschlagpunkt"@de ;
+  skos:altLabel "Anaerobic threshold"@en ; 
+  #dc:description '''
+  #skos:altLabel "Lactate[Moles/Volume]([Mass/Volume]) in Capillary blood" ;
+  :unit "mmol/L" ;
+  #:unit "mg/dL" ;
+.
+
+#snomed:259087003 a skos:Concept ;
+#  skos:broader snomed:26046004 ;
+#  skos:prefLabel "Watt"@de ;
+#  skos:prefLabel "Watt"@en ;
+#  skos:notation "S:259087003" ;
+#  :unit "W" ;
+#.
+
+:DV_0010 a skos:Concept ;
+  skos:broader snomed:26046004 ;
+  skos:prefLabel "Erbrachte Leistung auf dem Spiroergometer"@de ;
+  skos:prefLabel "Worke rate during spiroergometry"@en ;
+ #skos:notation "L:28412-5" ;#Physical performance[QAM] 
+  skos:notation "DV_0010" ; 
+  :unit "W" ;
+.
+
+
+################################## 
+snomed:127783003 a skos:Concept ;
+  skos:broader snomed:23426006 ;
+  skos:prefLabel "Spirometrie"@de ;
+  skos:prefLabel "Spirometry"@en ;
+  dc:description '''"Spirometry is the most common of the pulmonary function tests. It measures lung function, specifically the amount (volume) and/or speed (flow) of air that can be inhaled and exhaled."(Wikipedia)'''@en ;
+  skos:notation "S:127783003" ;
+. 
+  
+loinc:20150-9 a skos:Concept ;   
+  skos:broader snomed:127783003 ;
+  skos:prefLabel "FEV1"@de ;
+  skos:prefLabel "FEV1"@en ;
+  skos:altLabel "Forciertes exspiratorisches Volumen in 1 Sekunde, Einsekundenkapazität"@de ;
+  skos:altLabel "Volume expired during 1.0 s of forced expiration"@en ;
+  skos:notation "L:20150-9" ;
+  #dc:description '''"FEV1 ist das Atemvolumen, welches nach maximaler Inspiration forciert in der ersten Sekunde ausgeatmet werden kann." (Leitlinien zur Spirometrie)'''@de ;
+  dc:description '''"FEV1 is the volume that has been exhaled at the end of the first second of forced expiration." (Wikipedia)'''@en ; 
+  dwh:restriction dwh:floatRestriction ;
+  :unit "L" ;  
+.
+
+loinc:19868-9 a skos:Concept ;   
+  skos:broader snomed:127783003 ;
+  skos:prefLabel "FVC"@de ;
+  skos:prefLabel "FVC"@en ;
+  skos:altLabel "Forcierte Vitalkapazität"@de ;
+  skos:altLabel "Forced vital capacity [Volume] Respiratory system by Spirometry"@en ;
+  skos:notation "L:19868-9" ;
+  #dc:description '''"Die forcierte Vitalkapazität (FVC) ist das Atemvolumen, welches nach kompletter Inspiration forciert maximal ausgeatmet werden kann." (Leitlinien zur Spiromemetrie)'''@de ;
+  dc:description '''"Forced vital capacity (FVC) is the volume of air that can forcibly be blown out after full inspiration." (LOINC)'''@en ;
+  #skos:notation "S:50834005" ;
+  :unit "L" ;  
+.
+
+loinc:19866-3 a skos:Concept ;         
+  skos:broader snomed:127783003 ;
+  skos:prefLabel "VCmax"@de ;
+  skos:prefLabel "VCmax"@en ;
+  skos:altLabel "Vitalkapazität (inspiratorische Vitalkapazität (IVC))"@de ;
+  skos:altLabel "Vital capacity [Volume] Respiratory system by Spirometry"@en ;
+  #dc:description '''"Die Vitalkapazität ist das Atemvolumen, welches nach kompletter Exspiration maximal eingeatmet werden kann."(Leitlinien zur Spirometrie)'''@de ;
+  dc:description '''"Vital capacity is the largest volume a patient can exhale after a full inhalation." (LOINC)'''@en ;
+  skos:notation "L:19866-3" ;
+  :unit "L" ; 
+.
+
+
+  
+################################## #
+snomed:278297009 a skos:Concept ;
+  skos:broader snomed:23426006 ;
+  skos:prefLabel "Blutgasanalyse"@de ;
+  skos:prefLabel "Blood gas analysis"@en ;
+  #dc:description '''"Die Blutgasanalyse (BGA) ist ein Verfahren zur Messung der Gasverteilung (Partialdruck) von O2 (Sauerstoff), CO2 (Kohlenstoffdioxid) sowie des pH-Wertes und des Säure-Basen-Haushaltes im Blut." (Wikipedia)'''@de ;
+  dc:description '''A blood gas test (blood gas analysis) measures the amount of oxygen and carbon dioxide in the blood. It may also be used to determine the pH of the blood, or how acidic it is.'''@en ;
+  skos:notation "S:278297009" ;
+.
+
+loinc:11556-8 a skos:Concept ;# Code auf arteriellen pO2 umstellen: L:2703-7
+  skos:broader snomed:278297009 ;
+  skos:prefLabel "pO2"@de ;
+  skos:prefLabel "pO2"@en ;
+  skos:altLabel "Sauerstoffpartialdruck im Blut"@de ;
+  skos:altLabel "Oxygen [Partial pressure] in Blood"@en ;
+  skos:notation "L:11556-8" ;
+  #dc:description '''Der Sauerstoffpartialdruck (pO2) spiegelt die Menge des im arteriellen Blut gelösten Sauerstoffs wider.'''@de ;
+  dc:description ''' pO2 reflects the amount of disolved oxygen in the blood.'''@en ;
+  :unit "mm Hg" ;
+.
+   
+loinc:11557-6 a skos:Concept ;# Code auf arteriellen pCO2 umstellen: L:2019-8
+  skos:broader snomed:278297009 ;
+  skos:prefLabel "pCO2"@de ;
+  skos:prefLabel "pCO2"@en ;
+  skos:altLabel "Kohlendioxidpartialdruck im Blut"@de ;
+  skos:altLabel "Carbon dioxide [Partial pressure] in Blood"@en ;
+  skos:notation "L:11557-6" ;
+  #dc:description '''Der Kohlendioxidpartialdruck (pCO2) spiegelt die Menge des im arteriellen Blut gelösten Kohlendioxids wider.'''@de ;
+  dc:description ''' pCO2 reflects the amount of disolved carbon dioxide in the blood.'''@en ;
+  :unit "mm Hg" ;
+.
+  
+loinc:20564-1 a skos:Concept ;
+  skos:broader snomed:278297009 ;
+  skos:prefLabel "sO2"@de ;
+  skos:prefLabel "sO2"@en ;
+  skos:altLabel "Sauerstoffsättigung im Blut"@de ;
+  skos:altLabel "Oxygen saturation in Blood"@en ; 
+  skos:notation "L:20564-1" ;
+  #dc:description '''Die Sauerstoffsättigung gibt an, in welchem Ausmaß (Prozent) das Hämoglobin im Blut mit Sauerstoff angereichert ist.'''@de ;
+  dc:description '''Oxygen saturation or dissolved oxygen is a relative measure of the amount of oxygen that is disolved or carried in a given medium. (LOINC)'''@en ;
+  :unit "%" ;
+.
+
+loinc:11558-4 a skos:Concept ;#Code auf arteriellen pH L:2744-1 oder kapillaren pH L:2745-8 umstellen
+  skos:broader snomed:278297009 ;
+  skos:prefLabel "pH-Wert im Blut"@de ;
+  skos:prefLabel "pH of Blood"@en ;
+  skos:notation "L:11558-4" ;
+  #dc:description '''Der pH-wert dient der Beurteilung des Säure-Basen-Haushalts im Körper.'''@de ;
+  dc:description '''pH is a measure of the acidity or basicity of a solution (LOINC)'''@en ;
+  :unit "pH" ;
+. 
+##################################
+snomed:252478000 a skos:Concept ;
+  skos:broader snomed:23426006 ;
+  skos:prefLabel "6 Minuten Gehtest"@de ;
+  skos:prefLabel "6-minute walk test"@en ;
+  #dc:description '''Der 6-Minuten-Gehtest ist ein diagnostisches Mittel in der Kardiologie und Pneumologie, um die Leistungsfähigkeit eines Patienten unterhalb der anaeroben Schwelle abschätzen und im Verlauf kontrollieren zu können." (Wikipedia)'''@de ;
+  dc:description '''"This test measures the distance that a patient can quickly walk on a flat, hard surface in a period of 6 minutes (the 6MWD)." (ATS Statement Guidelines for the Six-Minute Walk Test)'''@en ;  
+  skos:notation "S:252478000" ;
+  #skos:prefLabel "Respiratory - exercise capacity - 6M walk protocol"@en ;
+  #skos:notation "L:62619-2" ;
+	prov:wasDerivedFrom loinc:62619-2 ;
+.
+  
+loinc:64098-7 a skos:Concept ;
+  skos:broader snomed:252478000 ;
+  skos:prefLabel "In sechs Minuten zurückgelegte Gehstrecke"@de ;
+  skos:prefLabel "Distance walked in 6 minutes"@en ;
+  #dc:description '''"...wird die in 6 MInuten zurückgelegte Strecke erfasst, wobei der Patient die Schrittgeschwindigkeit und damit die Belastungsintensität selbst wählt." (Belastungsuntersuchungen in der Pneumologie, Empfehlungen der DGP)'''@de ;
+  dc:description ''' The distance covered over a time of 6 minutes is used for the objective evaluation of functional exercise capacity'''@en ;
+  skos:notation "L:64098-7" ;
+  dwh:restriction dwh:integerRestriction ;
+  :unit "m/(6 min)" ;
+ .
+ 
+ 
+##################################
+snomed:40701008 a skos:Concept ;
+  skos:broader snomed:23426006 ;
+  skos:prefLabel "Echokardiographie"@de;
+  skos:prefLabel "Echocardiography"@en;
+  dc:description '''"Echocardiography is a diagnostic test which uses ultrasound waves to make images of the heart chambers, valves and surrounding structures.."(MedicineNet)'''@en ;
+  skos:notation "S:40701008" ;
+.
+
+loinc:77903-3 a skos:Concept ;
+  skos:broader snomed:40701008 ;
+  skos:prefLabel "TAPSE"@de ;
+  skos:prefLabel "TAPSE"@en ;
+  skos:altLabel "Tricuspid valve annulus Excursion distance during systole by US.M-mode"@en ;
+  #dc:description '''"TAPSE ist ein einfach zu messender Parameter zur Beurteilung der rechtsventrikulären Funktion. Es wird im 4 Kammerblick die Vorwärtsbewegung (nach apikal) des Trikuspidalringes im M-Mode gemessen."(Wikibooks)'''@de ;
+  dc:description '''"TAPSE represents the distance of systolic excursion of the RV annular plane towards the apex."(Wikiecho) '''@en ;
+  skos:notation "L:77903-3" ;
+  :unit "mm" ;
+	prov:wasDerivedFrom snomed:250955009 ; 
+.
+
+loinc:10230-1 a skos:Concept ;
+  skos:broader snomed:40701008 ;
+  skos:prefLabel "LV-Ejektionsfraktion"@de ;
+  skos:prefLabel "LV-Ejection fraction"@en ;
+  skos:altLabel "Left ventricular Ejection fraction"@en ;
+  #dc:description'''Die linksventrikuläre Ejektionsfraktion beschreibt, wie viel Blut die linke Herzkammer bei einem Herzschlag verlässt.'''@de ;
+  dc:description '''Left ventricular ejection fraction is the measurement of how much blood is being pumped out of the left ventricle of the heart (the main pumping chamber) with each contraction.'''@en ;
+  skos:notation "L:10230-1" ;
+  #skos:notation "S:250908004" ;
+  :unit "%" ;
+.
+
+#########################################
+snomed:40403005 a skos:Concept ;
+  skos:broader snomed:23426006 ;
+  skos:prefLabel "Rechts Herz Katheter"@de ;
+  skos:prefLabel "Right heart catheterisation (RHC)"@en ;
+  dc:description '''Right heart catheterisation (RHC) plays a central role in identifying pulmonary hypertension (PH) disorders, and is recquired to definitively diagnose pulmonary arterial hypertension (PAH)."'''@en ;
+  skos:notation "S:40403005" ;
+.
+
+loinc:8414-5 a skos:Concept ;
+  skos:broader snomed:40403005 ;
+  skos:prefLabel "PAPmean"@de ;
+  skos:prefLabel "PAPmean"@en ;
+  skos:altLabel "Mittlerer pulmonalarterieller Druck"@de ;
+  skos:altLabel "Pulmonary artery Mean blood pressure"@en ;
+  #dc:description '''Der pulmonalarterielle Druck (PAP) ist der in der Arteria pulmonalis vorhandene Blutdruck.'''@de ;
+  dc:description ''' PAP is the blood pressure measured in the pulmonary artery'''@en ;
+  skos:notation "L:8414-5" ;
+  dwh:restriction dwh:floatRestriction ;
+  :unit "mm Hg" ;
+.
+
+ ################################# 
+	#Multiple-Breath Washout
+ snomed:252484002 a skos:Concept ;
+  dc:creator 		"Karsten Senghas" ;
+  :status			"draft" ;
+  skos:broader snomed:23426006 ;
+  skos:prefLabel "Multiple-Breath Washout (MBW)"@de ;
+  skos:prefLabel "Multiple-Breath Washout (MBW)"@en ;
+  skos:altLabel	 "Multiple breath nitrogen washout test"@en ;
+  skos:notation "S:252484002";
+.
+
+snomed:30367009 a skos:Concept ;
+  dc:creator 		"Karsten Senghas" ;
+  :status			"draft" ;
+  skos:broader snomed:252484002 ;
+  skos:prefLabel "Lung clearance index (LCI)"@de ;
+  skos:prefLabel "Lung clearance index (LCI)"@en ;
+  skos:notation "S:30367009";
+.
+#########################################
