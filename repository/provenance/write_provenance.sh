@@ -4,6 +4,7 @@ conffile="$(dirname $0)/../config/conf.cfg"
 from_date="2017-01-01 00:00:00"
 until_date=$(date +'%Y-%m-%d %H:%M:%S')
 only_recent_changes=1
+newrev=""
 
 while [ ! $# -eq 0 ]
 do
@@ -52,14 +53,17 @@ if [ $only_recent_changes -eq 1 ]; then
 	IFS=$'\n'
 	for i in $(find "$PROVENANCEFILESDIR/output" -type f -name '*.ttl'); do
 		filename=$(basename "$i" .ttl)
-		datestring=$(echo ${filename:22} | tr '_' ':')
-		if ! testdate=$(date -d "$datestring" +"%Y-%m-%d %H:%M:%S") ; then
-			continue
-		fi
-		datenumber=$(date -d "$datestring" +%s)
-		if [ $datenumber -gt $from_date_number ]; then
-			from_date=$datestring
-			from_date_number=$(date -d "$from_date" +%s)
+		filecheck=$(expr $filename : '^\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9] - [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9]\)')
+		if [ "$filecheck" != "" ]; then
+			datestring=$(echo ${filename:22} | tr '_' ':')
+			if ! testdate=$(date -d "$datestring" +"%Y-%m-%d %H:%M:%S") ; then
+				continue
+			fi
+			datenumber=$(date -d "$datestring" +%s)
+			if [ $datenumber -gt $from_date_number ]; then
+				from_date=$datestring
+				from_date_number=$(date -d "$from_date" +%s)
+			fi
 		fi
 	done
 	unset IFS
@@ -70,7 +74,15 @@ while read line || [ -n "$line" ]; do #second expression is needed cause the las
 	echo $line
 	checkout_id=$line
 	success=$("$PROVENANCESCRIPTDIR/create_delta_file.sh" -p "$conffile" -i $checkout_id)
-done < <(cd "$TEMPDIR/git"; unset GIT_DIR; git checkout -q master; git log --pretty=format:"%H" --since="$from_date" --before="$until_date")
+done < <(
+	cd "$TEMPDIR/git"; 
+	unset GIT_DIR; 
+	git checkout -q master; 
+	if [ "$newrev" != "" ]; then
+		echo $newrev
+	fi
+	git log --pretty=format:"%H" --since="$from_date" --before="$until_date"
+)
 
 output_file="$PROVENANCEFILESDIR/output/$(echo $from_date | tr ':' '_') - $(echo $until_date | tr ':' '_').ttl"
 echo "@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> ." > "$output_file";
