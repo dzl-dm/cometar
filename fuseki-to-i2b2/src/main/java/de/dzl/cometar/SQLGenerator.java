@@ -404,7 +404,7 @@ public abstract class SQLGenerator {
 					datatypexml += "Float";
 					break;
 				default:
-					datatypexml += "Text";
+					datatypexml += "String";
 			}
 			datatypexml += "</DataType><Oktousevalues>Y</Oktousevalues></ValueMetadata>'";
 		}
