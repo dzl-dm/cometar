@@ -1,6 +1,7 @@
 #!/bin/bash
 
 newrev=master
+exec_post_receive=1
 
 conffile=$(dirname $0)/../config/conf.cfg
 while [ ! $# -eq 0 ]
@@ -13,6 +14,9 @@ do
 		-r)
 			shift
 			newrev=$1
+			;;
+		-e)
+			exec_post_receive=0
 			;;
 	esac
 	shift
@@ -70,11 +74,17 @@ if [ $exitcode -gt 0 ]; then
 else 
 	echo "UPLOAD SUCCEED"	
 	echo "UPLOAD SUCCEED" >> "$LOGFILE" 
+	if [ $exec_post_receive -eq 1 ]; then
+		"$SCRIPTDIR/write_pid_to_queue.sh" "$TEMPDIR/gitpid"
+	fi
 fi
 echo "-------------"
 
-rm -rf "$TEMPDIR/*"
-chown -R www-data:www-data "$TEMPDIR"
+cd "$TEMPDIR"
+rm -rf "$TEMPDIR/git"
+rm -f "$TEMPDIR/errorsummary.txt"
+rm -f "$TEMPDIR/out.txt"
+rm -f "$TEMPDIR/error.txt"
 
 exit $exitcode
 
