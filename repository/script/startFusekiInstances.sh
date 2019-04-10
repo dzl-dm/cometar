@@ -30,4 +30,4 @@ for filename in ./*.ttl; do
 echo "Adding insertrules.ttl"
 curl -X POST -s -T "$CONFDIR/insertrules.ttl" -G "$FUSEKILIVEDATASET/update"
 
-rm -r "$TEMPDIR"
+rm -rf "$TEMPDIR/git"
