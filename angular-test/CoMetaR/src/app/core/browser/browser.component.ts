@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, query, animateChild, group, animate, state } from '@angular/animations';
 import { DataService } from '../../services/data.service';
@@ -94,7 +94,8 @@ export class BrowserComponent implements OnInit {
     private snackBar: MatSnackBar,
     private browserService: BrowserService,
     iconRegistry: MatIconRegistry, 
-    sanitizer: DomSanitizer
+    sanitizer: DomSanitizer,
+    private zone: NgZone
   ) { 
     iconRegistry.addSvgIcon('history', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-history-24px.svg'));
     iconRegistry.addSvgIcon('client-configuration', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-settings_ethernet-24px.svg'));
@@ -104,7 +105,6 @@ export class BrowserComponent implements OnInit {
 
   ngOnInit() {
     if (this.router.url.match(/\/[^\/]+\/[^\/]+/)) {
-      console.log("jooo");
       this.router.navigate(["/details"],{queryParams: {concept: this.router.url.split("/")[1]+":"+this.router.url.split("/")[2]} });
     }
     this.browserService.snackbarNotification.subscribe((notification)=> {
@@ -121,24 +121,28 @@ export class BrowserComponent implements OnInit {
   }
   
   private savedX;
-  private treeResizing=false;
+  private boundResizeFunction;
 
   public onTreeResizeStart(event: MouseEvent) {
     event.stopPropagation();
-    this.treeResizing = true;
     this.savedX = event.clientX;
+    this.boundResizeFunction = this.onTreeResizeDrag.bind(this);
+    this.zone.runOutsideAngular(() => {
+      window.document.addEventListener('mousemove', this.boundResizeFunction);
+    });
     return false;
   }
-  public onTreeResizeDrag(event: MouseEvent) {    
-    if (!this.treeResizing) return true;
-    event.stopPropagation();
-    let diff = event.clientX - this.savedX;
-    this.savedX += diff;
-    this.width += diff;
-    return false;
+  public onTreeResizeDrag(event: MouseEvent) {  
+    this.zone.run(() => {
+      event.stopPropagation();
+      let diff = event.clientX - this.savedX;
+      this.savedX += diff;
+      this.width += diff;
+      return false;
+    });  
   }
   public onTreeResizeEnd(event: MouseEvent) {
-    this.treeResizing = false;
+    window.document.removeEventListener('mousemove', this.boundResizeFunction);
   }
 
   public navigateModule(source:string){    
