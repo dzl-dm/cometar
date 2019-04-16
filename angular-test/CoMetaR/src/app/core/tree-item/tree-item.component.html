@@ -18,9 +18,9 @@
         [ngStyle]="{
           'text-decoration':style['text-decoration'] || none 
         }">{{attributes.label.value}}</div>
-    <div *ngFor="let chip of style.chips" class="chip" [ngStyle]="{ 'background-color': chip['background-color'] }">
+    <!--<div *ngFor="let chip of style.chips" class="chip" [ngStyle]="{ 'background-color': chip['background-color'] }">
       {{chip.text}}
-    </div>
+    </div>-->
     <ng-container *ngFor="let icon of getIcons()">
       <div 
         [ngClass]="{

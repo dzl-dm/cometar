@@ -62,7 +62,7 @@ export class TreeItemComponent implements OnInit {
     else this.load();
   }  
   private load(){
-    this.style$.subscribe(style => {
+    if (this.style$) this.style$.subscribe(style => {
       this.style = style;
     })
     this.treeDataService.isAnyPathPart$(this.attributes.element.value).pipe(

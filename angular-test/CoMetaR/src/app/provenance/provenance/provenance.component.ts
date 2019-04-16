@@ -54,11 +54,6 @@ export class ProvenanceComponent implements OnInit {
 			map(data => data.get('provenancefrom'))
 		).subscribe(date => {
 			this.fromDate = date && new Date(date) || new Date(Date.now());
-			/*if (!this.fromDate) {
-				this.fromDate = new Date(Date.now());
-				this.fromDate.setHours(this.fromDate.getHours()-(7*24));
-				this.provenanceService.setProvenanceDate(this.fromDate);
-			}*/
 			let datediff = Date.now().valueOf()-this.fromDate.valueOf();
 			this.historyFromDays = Math.floor(datediff/1000/60/60/24);
 			this.commitMetaDataByDay = this.provenanceService.getProvenance(this.fromDate);

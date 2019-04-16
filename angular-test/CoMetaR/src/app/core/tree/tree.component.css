@@ -29,4 +29,6 @@ div#scrollHeadings > div > div {
     padding-left:9px;
     padding-top:1px;
     border-bottom:1px solid var(--dzl-blue);
+    display:flex;
+    flex-direction: row;
 }

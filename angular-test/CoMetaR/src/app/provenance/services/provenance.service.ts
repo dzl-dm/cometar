@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ChangeDetectorRef } from '@angular/core';
 import { CommitMetaDataService, CommitMetaData } from './queries/commit-meta-data.service';
 import { Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { CommitDetails } from './queries/commit-details.service';
@@ -14,7 +14,7 @@ export class ProvenanceService {
     constructor(
         public configuration:ConfigurationService,
         private commitMetaDataService:CommitMetaDataService,
-        private provTreeItemsService: ProvTreeItemsService
+        private provTreeItemsService: ProvTreeItemsService,
     ) { }
 
     public getMetaData(from:Date, until?:Date):Observable<CommitMetaData[]>{
@@ -87,11 +87,11 @@ export class ProvenanceService {
                     ci.cells[ci.cells.length -1][2]=objectlabel;
                 }
                 else ci.cells.push([
-                    date.toLocaleDateString("de-DE", {day: '2-digit', month: '2-digit', year: 'numeric'}),
+                    date.toLocaleString(),//toLocaleDateString("de-DE", {day: '2-digit', month: '2-digit', year: 'numeric'}),
 					cd.predicate?cd.predicate.value+(lang?" ("+lang.toUpperCase()+")":""):"",
 					!cd.addition.value?objectlabel:"",
 					cd.addition.value?objectlabel:""
-				]);
+                ]);
 				if (cia.length == 0) result.push(ci);
             });
             //merge lines

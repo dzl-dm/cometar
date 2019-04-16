@@ -51,7 +51,7 @@ export class TreepathitemsService {
   
   public hasChildren(iri:string):Observable<boolean> {
     return combineLatest(this.pathsParentToChild$,this.ghostPathsParentToChild$).pipe(map(data => {
-      return (data[0][iri] || data[1][iri])
+      return (data[0][iri] && Object.keys(data[0][iri]).length > 0 || data[1][iri] && Object.keys(data[1][iri]).length > 0)
     }));
   }
   public getAllChildren(iris:string[], includeIrisInPath:boolean=false):Observable<string[]> {
