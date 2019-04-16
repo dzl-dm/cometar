@@ -1,4 +1,4 @@
-<div id="browser" (mousemove)='onTreeResizeDrag($event)' (mouseup)='onTreeResizeEnd($event)'>
+<div id="browser" (mouseup)='onTreeResizeEnd($event)'>
     <div id="treeResizeContainer" [style.width.px]="width" [@changeWidth]="{ value:resizeToogle?'random1':'random2', params: { startWidth: this.width, newWidth: this.newWidth }}">
         <div id="treeContainer">
             <app-menu></app-menu>
