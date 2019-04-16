@@ -8,13 +8,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { LogosComponent } from './logos/logos.component';
 import { MenuComponent } from './menu/menu.component';
 import { SnackbarComponent } from './snackbar/snackbar.component';
-import { MatSliderModule } from '@angular/material/slider'; 
 import { MatProgressBarModule } from '@angular/material/progress-bar'; 
 import { StartComponent } from './start/start.component';
 import { NoSanitizePipe } from './no-sanitize.pipe';
 import { ConceptInformationComponent } from './concept-information/concept-information.component';
 import { ChartsModule } from 'ng2-charts';
 import { ProgressbarComponent } from './progressbar/progressbar.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip'; 
 
 @NgModule({
   declarations: [
@@ -34,8 +35,9 @@ import { ProgressbarComponent } from './progressbar/progressbar.component';
     CommonModule,
     RouterModule,
     ChartsModule,
-    MatSliderModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatIconModule,
+    MatTooltipModule
   ],
   exports: [
     TreeComponent,

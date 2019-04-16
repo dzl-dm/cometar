@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { Observable, of, combineLatest } from 'rxjs';
+import { Observable, of, combineLatest, from } from 'rxjs';
 import { TreeItemsService, TreeItemAttributes } from '../services/queries/treeitems.service'
 import { TreeDataService } from '../services/tree-data.service';
-import { TreeStyleService } from "../services/tree-style.service";
+import { TreeStyleService, TreeItemStyle, TreeItemIcon } from "../services/tree-style.service";
 import { SearchResultAttributes } from '../services/queries/searchtreeitem.service';
 import { withLatestFrom, map, combineAll } from 'rxjs/operators';
 import { ConfigurationService } from 'src/app/services/configuration.service';
@@ -27,6 +27,8 @@ export class TreeItemComponent implements OnInit {
   @Input('expanded') initialExpanded?:boolean;
   @Input('cascade_expand') cascade_expand?:boolean;
   @Input('') parent?:string;
+  @Input('') style$?:Observable<TreeItemStyle>;
+  @Input('') hasChildren$?:Observable<boolean>;
 
   private treeItems$:Observable<TreeItemAttributes[]>;
   private searchResultAttributes$:Observable<SearchResultAttributes[]>;
@@ -36,9 +38,7 @@ export class TreeItemComponent implements OnInit {
   public expanded:boolean;
   private conceptInformation$:Observable<ConceptInformation[]>;
   public showInformationDiv$:Observable<boolean>;
-  public isParentOfRemovedTreeItem$:Observable<boolean> = this.treeitemsService.removedTreeItems$.pipe(
-    map(rtis => rtis.map(rti => rti.oldparent).includes(this.attributes.element.value))
-  );
+  public style:TreeItemStyle = this.treeStyleService.getEmptyStyle(this.attributes.element.value);
 
   constructor(
     private treeitemsService: TreeItemsService, 
@@ -62,13 +62,16 @@ export class TreeItemComponent implements OnInit {
     else this.load();
   }  
   private load(){
+    this.style$.subscribe(style => {
+      this.style = style;
+    })
     this.treeDataService.isAnyPathPart$(this.attributes.element.value).pipe(
       withLatestFrom(
         this.treeDataService.isSelected$(this.attributes.element.value),
         of(this.initialExpanded)
       )
     ).subscribe(next => { 
-      this.expanded = next.includes(true); 
+      this.expanded = next.includes(true);
       this.cd.markForCheck();
     });
     
@@ -100,6 +103,19 @@ export class TreeItemComponent implements OnInit {
 
   public navigate(iri){
     this.treeDataService.onConceptSelection(iri);
+  }
+
+  public getIcons():TreeItemIcon[]{
+    let icons = this.style.icons.filter(icon => icon.type);
+    if (!this.style.bubbleicons) return icons;
+    let bi = this.style.bubbleicons.filter((value, index, self) => {
+      return self.map(icon => icon.id).indexOf(value.id) === index;
+    });
+    return icons.concat(bi);
+  }
+  public getBubbleIconCounter(icon:TreeItemIcon):number{
+    if (!this.style.bubbleicons) return;
+    return this.style.bubbleicons.filter(i => i.id == icon.id).length;
   }
 
   private searchMatchArray(s:string):string[]{

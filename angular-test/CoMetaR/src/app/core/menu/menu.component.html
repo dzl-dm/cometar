@@ -1,30 +1,24 @@
 
 <div id="menu">
-  <div id="homebutton" class="menuItem" (click)="navigateModule('home')"></div>
-  <div id="toggleSearch" class="menuItem" (click)="searchDivOpened = !searchDivOpened; searchPatternInput.focus()"></div>
-  <div id="toggleHistory" class="menuItem" (click)="historyDivOpened = !historyDivOpened"></div>
-  <div id="helpbutton" class="menuItem helpbutton" (click)="toggleHelp(helpDiv)"></div>
+    <div id="homebutton" 
+        class="menuItem" 
+        (click)="navigateModule('home')" >
+        <mat-icon aria-hidden="false" aria-label="Home" svgIcon="home"></mat-icon>
+    </div>
+    <div id="toggleSearch" 
+        [ngClass]="{'menuItem':true,'active': (treeDataService.searchPattern$ | async)}" 
+        (click)="searchDivOpened = !searchDivOpened; searchPatternInput.focus()">
+        <mat-icon aria-hidden="false" aria-label="Search" svgIcon="search"></mat-icon>
+    </div>
+    <div id="helpbutton" [ngClass]="{'menuItem':true,'helpbutton':true,'active': helpDivOpened}" (click)="toggleHelp(helpDiv);">
+        <mat-icon aria-hidden="false" aria-label="Help" svgIcon="help"></mat-icon>
+    </div>
 </div>
 <div id="searchDiv" [ngClass]="{'open':searchDivOpened}">
     <form>
         <input type='text' [value]="treeDataService.getSearchPattern()" name="searchPatternInput" #searchPatternInput placeholder="search term"/> 
         <input type="submit" (click)='performSearch(searchPatternInput.value)' value="search"/>
         <input type="button" (click)='clearSearch()' [value]="'x '+(searchResultCount?searchResultCount:'')"/>
-    </form>
-</div>
-<div id="historyDiv" [ngClass]="{'open':historyDivOpened}">
-    <form>
-        <mat-slider 
-            min="0"
-            max="70"
-            step="1"
-            [value]="historyFromDays"
-            tickInterval="7"
-            (input)="changeHistoryFromLabel($event)"
-            (change)="performHistoryChange($event)"
-            invert>
-        </mat-slider>
-        <div id="historyFromDiv">{{historyFrom | date:'dd.MM.yyyy'}}</div>
     </form>
 </div>
 <div id="helpDiv" [ngClass]="{'open':helpDivOpened}" #helpDiv>

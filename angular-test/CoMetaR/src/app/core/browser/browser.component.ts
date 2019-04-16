@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, query, animateChild, group, animate, state } from '@angular/animations';
 import { DataService } from '../../services/data.service';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material';
+import { MatSnackBar, MatSnackBarConfig, MatIconRegistry } from '@angular/material';
 import { BrowserService } from '../services/browser.service';
 import { SnackbarComponent } from '../snackbar/snackbar.component';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-browser',
@@ -91,8 +92,12 @@ export class BrowserComponent implements OnInit {
     private router: Router,
     private dataService: DataService,
     private snackBar: MatSnackBar,
-    private browserService: BrowserService
-  ) { }
+    private browserService: BrowserService,
+    iconRegistry: MatIconRegistry, 
+    sanitizer: DomSanitizer
+  ) { 
+    iconRegistry.addSvgIcon('history', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-history-24px.svg'));
+  }
 
   ngOnInit() {
     if (this.router.url.match(/\/[^\/]+\/[^\/]+/)) {

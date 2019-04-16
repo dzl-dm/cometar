@@ -3,24 +3,39 @@
   <div 
     [ngClass]="{
       'treeItemExpand':true,
-      'expanded':(attributes.hasChildren.value || (isParentOfRemovedTreeItem$ | async)) && expanded,
-      'collapsed':(attributes.hasChildren.value || (isParentOfRemovedTreeItem$ | async)) && !expanded
+      'expanded':(hasChildren$ | async) && expanded,
+      'collapsed':(hasChildren$ | async) && !expanded
     }" >
   </div>
-  <div [ngClass]="{
-      'treeItemTitle':true,
-      'isModifier':attributes.isModifier.value,
-      'removed': (treeDataService.isProvRemoved$(attributes.element.value) | async).includes(parent) || (treeDataService.isProvMovedTo$(attributes.element.value,parent) | async).length > 0
-    }" (click)="onSelect();$event.stopPropagation();">
-    <div class="treeItemTitleLabel">{{attributes.label.value}}</div>
-    <div *ngIf="attributes.status" [class]="'status_div '+ attributes.status.value">{{attributes.status ? attributes.status.value : ""}}</div>
-    <div *ngIf="(treeDataService.isProvAdded$(attributes.element.value) | async).includes(parent)" [class]="'prov_status_div added'">added</div>
-    <div *ngFor="let moveto of (treeDataService.isProvMovedTo$(attributes.element.value,parent) | async)" [class]="'prov_status_div moved'">moved to&nbsp;<span (click)="navigate(moveto);$event.stopPropagation();">{{moveto}}</span></div>
-    <div *ngFor="let movefrom of (treeDataService.isProvMovedFrom$(attributes.element.value,parent) | async)" [class]="'prov_status_div moved'">moved from&nbsp;<span (click)="navigate(movefrom);$event.stopPropagation();">{{movefrom}}</span></div>
-    <div *ngIf="(treeDataService.isProvRemoved$(attributes.element.value) | async).includes(parent)" [class]="'prov_status_div removed'">removed</div>
-    <div *ngIf="treeDataService.isProvAddedPathPart$(attributes.element.value) | async" [class]="'prov_sub_status_div added'"></div>
-    <div *ngIf="treeDataService.isProvRemovedPathPart$(attributes.element.value) | async" [class]="'prov_sub_status_div removed'"></div>
-    <div *ngIf="treeDataService.isProvMovedPathPart$(attributes.element.value) | async" [class]="'prov_sub_status_div moved'"></div>
+  <div 
+      [ngClass]="{
+        'treeItemTitle':true,
+        'isModifier':attributes.isModifier.value
+      }" 
+      (click)="onSelect();$event.stopPropagation();">
+    <div 
+        class="treeItemTitleLabel"
+        [ngStyle]="{
+          'text-decoration':style['text-decoration'] || none 
+        }">{{attributes.label.value}}</div>
+    <div *ngFor="let chip of style.chips" class="chip" [ngStyle]="{ 'background-color': chip['background-color'] }">
+      {{chip.text}}
+    </div>
+    <ng-container *ngFor="let icon of getIcons()">
+      <div 
+        [ngClass]="{
+          'icon': true,
+          'iconDot': icon.type == 'dot',
+          'imgIcon': icon.type == 'imgIcon',
+          'smallImgIcon': icon.type == 'smallImgIcon',
+          'chip': icon.type == 'chip'
+        }"
+        [ngStyle]="{ 'background-color': icon['background-color'], 'color': icon['color'] }">
+          <div class="counter">{{getBubbleIconCounter(icon)?getBubbleIconCounter(icon):""}}</div>
+          <div class="text">{{icon.text}}</div>
+          <mat-icon *ngIf="icon.type == 'imgIcon' || icon.type =='smallImgIcon'" aria-hidden="false" aria-label="Help" [svgIcon]="icon.iconName"></mat-icon>
+      </div>
+    </ng-container>
   </div>
 </div>
 <div 

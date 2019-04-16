@@ -12,7 +12,9 @@
     <div id="modules">
         <div id="moduleMenu">
             <!-- <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'details'}" (click)="navigateModule('details')">Details</div> -->
-            <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'provenance'}" (click)="navigateModule('provenance')">Provenance</div>
+            <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'provenance'}" (click)="navigateModule('provenance')">
+                <mat-icon aria-hidden="false" aria-label="Provenance" svgIcon="history" color="accent"></mat-icon><div class="moduleMenuItemLabel">Provenance</div>
+            </div>
             <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'client-configuration'}" (click)="navigateModule('client-configuration')">Client Configuration</div>
             <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'sparql'}" (click)="navigateModule('sparql')">SPARQL</div>
             <!--<div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'statistics'}" (click)="navigateModule('statistics')">Statistics</div>-->

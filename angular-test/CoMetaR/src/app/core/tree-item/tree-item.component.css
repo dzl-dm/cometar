@@ -54,6 +54,9 @@ div.treeItemExpand.collapsed{
 
 div.treeItemTitle{
     padding-top:7px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
 }
 div.treeItemTitleLabel {
     display: inline-flex;
@@ -65,42 +68,64 @@ div.treeItemTitle.removed div.treeItemTitleLabel {
 div.treeItemTitle:focus {
     outline: 0;
 }
-.status_div, .prov_status_div {
-	background-color:#666666;
+.icon {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-left:5px;
+}
+.chip {
+	background-color:var(--dzl-blue);
 	font-size:10px;
 	font-family:"arial";
 	font-weight:bold;
 	padding:3px 5px 3px 5px;
 	border-radius: 3px;
-	margin-left:5px;
     margin-bottom:2px;
     margin-top:1px;
     position: relative;
     color:#333;
-    min-height:18px;
+    height:18px;
     display: inline-flex;
     vertical-align: middle;
 }
-.prov_sub_status_div {
+.imgIcon {
     display: inline-flex;
-    vertical-align: top;
-    position: relative;
-    height:10px;
-    width:10px;
-    border-radius:5px;
-    margin-left:5px;
+    vertical-align: middle;
+	margin-left:5px;
 }
-.draft, .prov_status_div.moved, .prov_sub_status_div.moved{
+.imgIcon mat-icon {
+    transform: scale(0.75);
+    position: relative;
+    top:-4px;
+}
+.smallImgIcon {
+    height:10px;
+}
+.smallImgIcon mat-icon {
+    transform: scale(0.4);
+    position: relative;
+    top:-7px;
+    left:-5px;
+    margin-right:-14px;
+}
+.icon .counter {
+    font-size: 10px;
+}
+.iconDot {
+    height:12px;
+    padding:0px 3px 0px 3px ;
+    border-radius:6px;
+    text-align: center;
+}
+.draft{
 	background-color:#FFEB0F;
 }
-.obsolete, .prov_status_div.removed, .prov_sub_status_div.removed{
+.obsolete{
     background-color:#FFBFBF;
 }
-.new, .prov_status_div.added, .prov_sub_status_div.added{
+.new{
 	background-color:#71E161;
-}
-.prov_status_div:hover span { 
-    text-decoration: underline;
 }
 .treeItemTitle.isModifier
 {

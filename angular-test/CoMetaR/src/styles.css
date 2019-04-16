@@ -86,23 +86,52 @@ mat-slider.mat-slider-horizontal .mat-slider-wrapper {
 .mat-accent .mat-slider-thumb-label {
     background-color:inherit;
 }
-.mat-slider-min-value:not(.mat-slider-thumb-label-showing) .mat-slider-thumb {
-    background-color: var(--dzl-blue);
+.mat-slider-min-value .mat-slider-thumb {
+    background-color: var(--dzl-blue) !important;
+}
+.mat-slider-vertical .mat-slider-thumb-label {
+    left:10px !important;
 }
 .mat-slider-thumb-label span.mat-slider-thumb-label-text {
-    color: var(--dzl-blue);
+    background-color:var(--dzl-blue);
+    color: white;
+    font-size:16px;
+    padding:10px;
+    border-radius: 0px 5px 5px 0px;
+    border:5px solid white;
 }
 .mat-slider-horizontal .mat-slider-ticks-container {
     height:6px !important;
     margin-top:-2px;
 }
+.mat-slider-vertical .mat-slider-ticks-container {
+    width:6px !important;
+    margin-left:-2px;  
+}
 .mat-slider-horizontal .mat-slider-ticks {
     height:6px !important;
     background-image: repeating-linear-gradient(to right,var(--dzl-blue),var(--dzl-blue) 4px,transparent 0,transparent)
+}
+.mat-slider-vertical .mat-slider-ticks {
+    width:6px !important;
+    background-image: repeating-linear-gradient(to bottom,var(--dzl-blue),var(--dzl-blue) 4px,transparent 0,transparent)
 }
 .mat-progress-bar-fill::after {
     background-color:var(--dzl-blue);
 }
 .mat-progress-bar-buffer {
     background-color:#fff;
+}
+.mat-icon svg {
+    fill:var(--dzl-blue);
+}
+.mat-icon.mat-accent svg {
+    fill:white
+}
+.mat-tooltip.ng-trigger.ng-trigger-state {
+    background-color: white;
+    border:1px solid var(--dzl-blue);
+    color: var(--dzl-blue);
+    font-size:14px;
+    white-space: pre-wrap;
 }

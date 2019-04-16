@@ -3,6 +3,8 @@ import { TreeItemAttributes } from '../services/queries/treeitems.service'
 import { TreeDataService } from '../services/tree-data.service';
 import { trigger, style, transition, animate } from '@angular/animations';
 import { Observable } from 'rxjs';
+import { TreeStyleService } from '../services/tree-style.service';
+import { TreepathitemsService } from '../services/queries/treepathitems.service';
 
 @Component({
   selector: 'app-tree-item-list',
@@ -28,15 +30,17 @@ export class TreeItemListComponent implements OnInit {
   private treeItems$:Observable<TreeItemAttributes[]>;
   constructor(
     private treeDataService:TreeDataService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    public treeStyleService:TreeStyleService,
+    public treepathitemService:TreepathitemsService
   ) { }
 
   ngOnInit() {
-
   }
 
+  public style = [];
   public getTreeItems(){
-    let result = [];
+    let result:TreeItemAttributes[] = [];
     if (this.conceptIri == "root") {
       this.treeDataService.getTopLevelItems$().subscribe(data => result = data);
       this.expanded = true;
@@ -45,6 +49,7 @@ export class TreeItemListComponent implements OnInit {
       result = data;
       this.cd.markForCheck();
     });
+    this.style = result.map(iri => this.treeStyleService.getTreeItemStyle$(iri.element.value))
     return result;
   }
 

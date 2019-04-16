@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ElementDetailsService, OntologyElementDetails } from "../element-details.service";
+import { ElementDetailsService } from "../element-details.service";
 import { ActivatedRoute } from '@angular/router';
 import { UrlService } from 'src/app/services/url.service';
 import { map, flatMap } from 'rxjs/operators';
@@ -10,6 +10,7 @@ import { CommitDetailsService } from 'src/app/provenance/services/queries/commit
 import { ProvenanceService } from 'src/app/provenance/services/provenance.service';
 import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
 import { ExternalCodeInformationService } from '../external-code-information.service';
+import { InformationQueryService, OntologyElementDetails } from '../services/queries/information-query.service';
 
 @Component({
   selector: 'app-detailed-information',
@@ -33,7 +34,8 @@ export class DetailedInformationComponent implements OnInit {
     private browserService:BrowserService,
     private provenanceService:ProvenanceService,
     private commitDetailsService:CommitDetailsService,
-    private externalCodeInformationService:ExternalCodeInformationService
+    private externalCodeInformationService:ExternalCodeInformationService,
+    private informationQueryService:InformationQueryService
   ) { }
 
   ngOnInit() {
@@ -41,7 +43,7 @@ export class DetailedInformationComponent implements OnInit {
       map(data => this.urlService.extendRdfPrefix(data.get('concept')))
     ).subscribe(this.selectedIri$);
     this.selectedIri$.pipe(
-      flatMap(iri => this.elementDetailsService.get(iri))
+      flatMap(iri => this.informationQueryService.get(iri))
     ).subscribe(data => {
       //merging details
       this.coreDetails={};
