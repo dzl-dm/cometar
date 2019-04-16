@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { OntologyElementDetails } from '../detailed-information/element-details.service';
 import { isObject } from 'util';
 import { CommitMetaData } from '../provenance/services/queries/commit-meta-data.service';
 import { CommitDetails } from '../provenance/services/queries/commit-details.service';
+import { OntologyElementDetails } from '../detailed-information/services/queries/information-query.service';
 
 @Injectable({
   providedIn: 'root'

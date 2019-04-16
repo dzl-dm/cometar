@@ -4,6 +4,7 @@ import { Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { CommitDetails } from './queries/commit-details.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
+import { ProvTreeItemsService } from './prov-tree-items.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,8 @@ export class ProvenanceService {
 
     constructor(
         public configuration:ConfigurationService,
-        private commitMetaDataService:CommitMetaDataService
+        private commitMetaDataService:CommitMetaDataService,
+        private provTreeItemsService: ProvTreeItemsService
     ) { }
 
     public getMetaData(from:Date, until?:Date):Observable<CommitMetaData[]>{
@@ -22,6 +24,26 @@ export class ProvenanceService {
     public getCommitMetaDataByDay$(day:Date):Observable<CommitMetaData[]>{
         let date = new Date(day);
         return this.commitMetaDataService.get(new Date(date.setHours(0,0,0,0)), new Date(date.setHours(24,0,0,0)));
+    }
+
+    public getProvenance(from:Date) {
+        let commitMetaDataByDay=[];
+
+		let index = 0;
+		for (let date = new Date(Date.now()); date >= from; date.setHours(date.getHours() - 24)){
+			let day = new Date(date);
+			commitMetaDataByDay[index] =[day,[]];
+			let myindex = index;
+			this.getCommitMetaDataByDay$(day).subscribe(cmd => {
+				commitMetaDataByDay[myindex] =[day,cmd];
+			});
+			index++;
+        }
+        return commitMetaDataByDay;
+    }
+
+    public setProvenanceDate(from:Date){      
+		this.provTreeItemsService.setProvTreeItemAttributes(from);
     }
 
 	public getConceptTableInformation(commitDetails:CommitDetails[], displayOptions$:BehaviorSubject<{}>):Observable<ConceptInformation[]>{

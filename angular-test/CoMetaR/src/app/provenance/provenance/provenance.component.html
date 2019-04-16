@@ -1,31 +1,51 @@
-<div class='container' id="provenancedata" #provenancedata>
-  <div *ngFor="let day of commitMetaDataByDay" 
-    [ngClass]="{
-      'day':true,
-      'filled':day[1].length > 0,
-      'selected':isSelectedDate(day[0]) | async
-    }">
-    <div class="date" (click)="onDaySelect(day[0])">{{day[0].toString() | date:'dd.MM.yyyy'}}</div>
-    <app-commit
-      *ngFor="let metadata of day[1] | keyvalue" 
-      [commitMetaData]="metadata.value" 
-      (onSelect)="onSelect($event)"
-      [ngClass]="{'selected':isSelectedCommit(metadata.value.commitid.value)}"
-      [displayOptions$]="displayOptions$"
-      [displaycontainer]="provenancedata"
-      class="commit">
-    </app-commit>
+<div class="diagram">
+  <div class="rangeselect">
+    <mat-slider 
+      min="0"
+      max="210"
+      step="1"
+      [value]="historyFromDays"
+      tickInterval="7"
+      (input)="changeHistoryFromLabel($event)"
+      (change)="performHistoryChange($event)"
+      [displayWith]="formatLabel"
+      thumbLabel
+      invert
+      vertical>
+    </mat-slider>
+    <div id="historyFromDiv">{{historyFrom | date:'dd.MM.yyyy'}}</div>
   </div>
+  <div class='container' id="provenancedata" #provenancedata>
+    <div *ngFor="let day of commitMetaDataByDay" 
+      [ngClass]="{
+        'day':true,
+        'filled':day[1].length > 0,
+        'selected':isSelectedDate(day[0]) | async
+      }">
+      <div class="date" (click)="onDaySelect(day[0])">{{day[0].toString() | date:'dd.MM.yyyy'}}</div>
+      <app-commit
+        *ngFor="let metadata of day[1] | keyvalue" 
+        [commitMetaData]="metadata.value" 
+        (onSelect)="onSelect($event)"
+        [ngClass]="{'selected':isSelectedCommit(metadata.value.commitid.value)}"
+        [displayOptions$]="displayOptions$"
+        [displaycontainer]="provenancedata"
+        class="commit">
+      </app-commit>
+    </div>
+  </div>  
 </div>
 <div class='options' id="provenanceoptions" #provenanceoptions>
-  <div *ngFor="let cat of categories | keyvalue" [ngClass]="['category', cat.key]">
-    <div class='category_heading'>
-        <input type="checkbox" [checked]="isOptionsHeadingChecked(cat.key)" [id]="'checkbox_'+cat.key" (click)="displayOptionsHeadingToggle(cat.key)"/>
-        <label [for]="'checkbox_'+cat.key">{{cat.key}}</label>
+  <ng-container *ngFor="let cat of categories | keyvalue">
+    <div *ngIf="cat.key != 'structure'" [ngClass]="['category', cat.key]">
+      <div class='category_heading'>
+          <input type="checkbox" [checked]="isOptionsHeadingChecked(cat.key)" [id]="'checkbox_'+cat.key" (click)="displayOptionsHeadingToggle(cat.key)"/>
+          <label [for]="'checkbox_'+cat.key">{{cat.key}}</label>
+      </div>
+      <div *ngFor="let item of cat.value">
+        <input type="checkbox" [checked]="displayOptions[item]" [id]="'checkbox_'+item" (click)="displayOptionToggle(item)" [hidden]="cat.key == 'structure'"/>
+        <label [for]="'checkbox_'+item">{{configuration.getHumanReadableRDFPredicate(item)}}</label>
+      </div>
     </div>
-    <div *ngFor="let item of cat.value">
-      <input type="checkbox" [checked]="displayOptions[item]" [id]="'checkbox_'+item" (click)="displayOptionToggle(item)" [hidden]="cat.key == 'structure'"/>
-      <label [for]="'checkbox_'+item" [hidden]="cat.key == 'structure'">{{configuration.getHumanReadableRDFPredicate(item)}}</label>
-    </div>
-  </div>
+  </ng-container>
 </div>

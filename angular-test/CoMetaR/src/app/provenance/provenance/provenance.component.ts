@@ -9,6 +9,8 @@ import { map, flatMap } from 'rxjs/operators';
 import { TreeDataService } from 'src/app/core/services/tree-data.service';
 import { CommitDetailsService, CommitDetails } from '../services/queries/commit-details.service';
 import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
+import { MatSliderChange } from '@angular/material';
+import { ProvTreeItemsService } from '../services/prov-tree-items.service';
 
 @Component({
 	selector: 'app-provenance',
@@ -17,7 +19,7 @@ import { ConceptInformation } from 'src/app/core/concept-information/concept-inf
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProvenanceComponent implements OnInit {
-	private fromDate:Date = new Date("2019-03-01");
+	private fromDate:Date;
 	public commitMetaDataByDay=[];
 	public categories = {};
 	public selectedCommits$ = new ReplaySubject<string[]>(1);
@@ -32,21 +34,35 @@ export class ProvenanceComponent implements OnInit {
 		private urlService:UrlService,
 		private treeDataService:TreeDataService,
 		private route:ActivatedRoute,
-		private cd: ChangeDetectorRef
-	) { }
+		private cd: ChangeDetectorRef,
+		private provTreeItemsService: ProvTreeItemsService
+	) { 
+	}
 
 	ngOnInit() {
-		let index = 0;
-		for (let date = new Date(Date.now()); date >= this.fromDate; date.setHours(date.getHours() - 24)){
-			let day = new Date(date);
-			this.commitMetaDataByDay[index] =[day,[]];
-			let myindex = index;
-			this.provenanceService.getCommitMetaDataByDay$(day).subscribe(cmd => {
-				this.commitMetaDataByDay[myindex] =[day,cmd];
-			});
-			index++;
-		}
-
+		this.route.queryParamMap.pipe(
+			map(data => data.get('provenancefrom'))
+		).subscribe(date => {
+			this.fromDate = date && new Date(date);
+			if (!this.fromDate) {
+				this.fromDate = new Date(Date.now());
+				this.fromDate.setHours(this.fromDate.getHours()-(7*24));
+				this.navigateToFromDate();
+			}
+		}).unsubscribe();
+		this.route.queryParamMap.pipe(
+			map(data => data.get('provenancefrom'))
+		).subscribe(date => {
+			this.fromDate = date && new Date(date) || new Date(Date.now());
+			/*if (!this.fromDate) {
+				this.fromDate = new Date(Date.now());
+				this.fromDate.setHours(this.fromDate.getHours()-(7*24));
+				this.provenanceService.setProvenanceDate(this.fromDate);
+			}*/
+			let datediff = Date.now().valueOf()-this.fromDate.valueOf();
+			this.historyFromDays = Math.floor(datediff/1000/60/60/24);
+			this.commitMetaDataByDay = this.provenanceService.getProvenance(this.fromDate);
+		});
 		this.route.queryParamMap.pipe(
 			map(data => [data.get('commit'),data.get('date')])
 		).subscribe(([commitids,date]) => {
@@ -59,6 +75,7 @@ export class ProvenanceComponent implements OnInit {
 				if (date != "") this.loadDateIntoTree(date);
 			},0);
 		});
+		
 
 		Object.keys(this.configuration.changeCategories).forEach(key => {
 			if (this.configuration.changeCategories[key] == undefined) return;
@@ -118,48 +135,6 @@ export class ProvenanceComponent implements OnInit {
 		});
 	}
 
-	/**
-	 * TODO (or not to do?): merge details
-	 * 
-	private reduceCommitDetails(cds:CommitDetails[]):CommitDetails[]{
-		for(let i = 0; i < cds.length; i++){
-			for (let j = i+1; j < cds.length; j++){
-				if (cds[i].subject == cds[j].subject
-					&& cds[i].predicate == cds[j].predicate
-					&& cds[i].object == cds[j].object
-					&& cds[i].addition != cds[j].addition) 
-				{
-					console.log(i);
-					cds.splice(j,1);
-					cds.splice(i,1);
-				}
-			}
-		}
-		return cds;
-	}
-	 
-	private mergeCommitDetails(cds:CommitDetails[]):CommitDetails[]{
-		let ups = this.configuration.uniquePredicates;    
-		let subjects = cds.map(cd => cd.subject);
-		subjects = subjects.filter((value, index) => subjects.indexOf(value) == index);
-		subjects.forEach(s => {
-			ups.forEach(up=>{
-				let sps = cds.filter(cd => cd.subject == s && cd.predicate.value == up);
-				let i = 0;
-				while (i < sps.length){
-					if (sps.filter((sp,index)=>
-						index > i 
-						&& sps[i].object["xml:lang"] == sp.object["xml:lang"]))
-					{
-						//sps[i] und sp (mit größerem Index) haben gleiches Subject, gleiches (unique) predicate, gleiche lang
-
-					}
-					i++;
-				}
-			});
-		});
-		return cds;
-	}*/
 
 	private clearTree(){
 		this.combinedCommitDetails$.next([]);
@@ -195,4 +170,24 @@ export class ProvenanceComponent implements OnInit {
 	private displayOptions = this.configuration.initialCheckedPredicates;
 	public displayOptions$:BehaviorSubject<{}>;
 
+
+	
+	public historyFromDays:number;
+	public performHistoryChange(event:MatSliderChange){
+		this.navigateToFromDate();
+	}
+	private navigateToFromDate(){
+		this.router.navigate([],{queryParams: {provenancefrom: this.fromDate.getFullYear() +"-"+ (this.fromDate.getMonth()+1)+"-"+this.fromDate.getDate()}, queryParamsHandling: "merge" });
+	}
+
+	public changeHistoryFromLabel(event:MatSliderChange){
+		let date = new Date(Date.now());
+		date.setHours(date.getHours() - 24*event.value);
+		this.fromDate = date;
+	}
+	public formatLabel(value:number){
+		let date = new Date(Date.now());
+		date.setHours(date.getHours() - 24*value);
+		return date.toLocaleDateString("de-DE", {day: '2-digit', month: '2-digit', year: 'numeric'});
+	}
 }

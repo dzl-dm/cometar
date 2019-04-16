@@ -1,10 +1,12 @@
 <div id="noResults" *ngIf="getTreeItems().length == 0 && conceptIri == 'root'">No Results.</div>
 <app-tree-item 
     @openClose
-    *ngFor="let treeitem of getTreeItems()" 
+    *ngFor="let treeitem of getTreeItems(); let i = index" 
     [treeItemAttributes]="treeitem" 
     [expanded]="expanded"
     [cascade_expand]="cascade_expand"
     [parent]="conceptIri"
+    [style$]="treeStyleService.getTreeItemStyle$(treeitem.element.value)"
+    [hasChildren$]="treepathitemService.hasChildren(treeitem.element.value)"
     [ngClass]="{'selected':isSelected$(treeitem) | async, 'topLevel':conceptIri == 'root'}">
 </app-tree-item>

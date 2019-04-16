@@ -6,13 +6,23 @@
     width:calc(100% - 20px);
     position: relative;
 }
+.diagram {
+    display:flex;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: stretch;
+    width:100%;
+}
 .container {
     flex-direction: column;
-    flex-grow:1;
-    align-content: stretch;
     overflow:auto;
-    height:300px;
-    width:100%;
+    width: calc(100% - 50px);
+    padding:5px;
+    height:100%;
+}
+.rangeselect {
+    display: flex;
+    width:50px;
 }
 .day{
     display: flex;

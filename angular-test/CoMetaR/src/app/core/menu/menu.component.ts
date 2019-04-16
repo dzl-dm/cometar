@@ -3,9 +3,10 @@ import { TreeDataService } from '../services/tree-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { of, Observable } from 'rxjs';
 import 'hammerjs';
-import { MatSliderChange } from '@angular/material';
+import { MatSliderChange, MatIconRegistry } from '@angular/material';
 import { DataService } from 'src/app/services/data.service';
 import { combineAll, combineLatest } from 'rxjs/operators';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-menu',
@@ -19,34 +20,30 @@ export class MenuComponent implements OnInit {
   public searchDivOpened=false;
   public historyDivOpened=false;
   public helpDivOpened=false;
-  public historyFrom=new Date(Date.now());
-  public historyFromDays:number;
 
   constructor(
     private router: Router,
     public treeDataService: TreeDataService,
     private route:ActivatedRoute,
-    private e: ElementRef
-  ) { }
+    private e: ElementRef,
+    iconRegistry: MatIconRegistry, 
+    sanitizer: DomSanitizer
+  ) { 
+    iconRegistry.addSvgIcon('home', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-home-24px.svg'));
+    iconRegistry.addSvgIcon('search', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-search-24px.svg'));
+    iconRegistry.addSvgIcon('help', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-help_outline-24px.svg'));
+  }
 
   ngOnInit() {
     this.treeDataService.getSearchResultCount$().subscribe(count => {
       this.searchResultCount = count;
       this.searchDivOpened = count > 0;
     });
-    this.treeDataService.historyFrom$.subscribe(next => {
-      this.historyFrom = next && next != "" && new Date(next) || new Date(Date.now());
-      let datediff = Date.now().valueOf()-this.historyFrom.valueOf();
-      this.historyFromDays = Math.floor(datediff/1000/60/60/24);
-    });
   }
 
   public performSearch(pattern:string){
     this.router.navigate([],{queryParams: {searchpattern: pattern}, queryParamsHandling: "merge" });
     return false;
-  }
-  public performHistoryChange(event:MatSliderChange){
-    this.router.navigate([],{queryParams: {historyfrom: this.historyFrom.getFullYear() +"-"+ (this.historyFrom.getMonth()+1)+"-"+this.historyFrom.getDate()}, queryParamsHandling: "merge" });
   }
   public clearSearch(){
     this.router.navigate([],{ queryParams: {searchpattern: null}, queryParamsHandling: "merge" });
@@ -63,6 +60,7 @@ export class MenuComponent implements OnInit {
     this.alignHelpItems();
     let el = <HTMLElement>(<HTMLElement>this.e.nativeElement).getElementsByClassName("helpbutton")[0];
     let offsetLeft = this.getOffset(el).left;
+    console.log(helpDiv);
     if (this.helpDivOpened){
       helpDiv.setAttribute("style","left:0px; height:100%; width:100%");
       this.helpDivOpened = !this.helpDivOpened; 
@@ -73,12 +71,6 @@ export class MenuComponent implements OnInit {
       this.helpDivOpened = !this.helpDivOpened;    
       setTimeout(()=>{helpDiv.setAttribute("style","left:0px; height:100%; width:100%");},0);
     }
-  }
-
-  public changeHistoryFromLabel(event:MatSliderChange){
-    let date = new Date(Date.now());
-    date.setHours(date.getHours() - 24*event.value);
-    this.historyFrom = date;
   }
 
   private getOffset(el:HTMLElement):{left, top}{
@@ -108,8 +100,8 @@ export class MenuComponent implements OnInit {
       if (hi.relativeTo){
         let el = <HTMLElement>window.document.getElementById(hi.relativeTo)
         let offset = this.getOffset(el);
-        hi.left = hi.relativeLeft && offset.left + hi.relativeLeft || offset.left;
-        hi.top = hi.relativeTop && offset.top + hi.relativeTop || offset.top;
+        hi.left = Math.max(0,hi.relativeLeft && offset.left + hi.relativeLeft || offset.left);
+        hi.top = Math.max(0,hi.relativeTop && offset.top + hi.relativeTop || offset.top);
       }
     })
   }
@@ -122,22 +114,30 @@ export class MenuComponent implements OnInit {
       description:["Click to return to start page."],
       width:150,
       relativeTo: "homebutton",
-      relativeLeft: -100,
+      relativeLeft:0,
       relativeTop: 30
     },
     {
       heading:"Search Button",
       description:["Click to open/close search panel.", "The second button indicates the amount of search matches. Clicking clears search results."],
-      relativeLeft:-70,
-      relativeTop:30,
+      relativeLeft:0,
+      relativeTop:35,
       width:150,
       relativeTo:"toggleSearch"
     },
     {
+      heading:"History Button",
+      description:["Click to open/close history panel.", "Use the slider to adjust time interval."],
+      relativeLeft:0,
+      relativeTop:40,
+      width:150,
+      relativeTo:"toggleHistory"
+    },
+    {
       heading:"Help Button",
       description:["Click to open/close help panel."],
-      relativeLeft:-40,
-      relativeTop:30,
+      relativeLeft:0,
+      relativeTop:45,
       width:150,
       relativeTo:"helpbutton"
     },

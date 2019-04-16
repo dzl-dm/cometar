@@ -76,3 +76,6 @@ app-loinc-details {
 table td {
     padding:5px;
 }
+.valueListing:not(:last-child) {
+    margin-bottom:15px;
+}

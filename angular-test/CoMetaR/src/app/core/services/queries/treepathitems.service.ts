@@ -1,63 +1,77 @@
 import { Injectable } from '@angular/core';
 import { DataService, prefixes } from '../../../services/data.service';
-import { Observable, combineLatest, of, ReplaySubject } from 'rxjs';
-import { map, concat, flatMap } from 'rxjs/operators';
-import { TreeItemsService } from './treeitems.service';
+import { Observable, combineLatest, of, ReplaySubject, Subject, BehaviorSubject } from 'rxjs';
+import { map, concat, flatMap, withLatestFrom } from 'rxjs/operators';
+import { TreeItemsService, TreeItemAttributes } from './treeitems.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TreepathitemsService {
   constructor(private dataService: DataService, private treeItemsService:TreeItemsService) {
-    combineLatest(
-      this.treeItemsService.removedTreeItems$,
-      this.treeItemsService.movedTreeItems$)
-    .pipe(map(removesandmoves => removesandmoves[0].concat(removesandmoves[1]))).subscribe(rms => {
-      rms.forEach(rm=> {
-        this.ghostiris[rm.element]=this.ghostiris[rm.element]||[];
-        let op:string[] = [rm.oldparent];
-        do {
-          this.ghostiris[rm.element]=this.ghostiris[rm.element].concat(op);
-          op = rms.filter(rm2 => op.includes(rm2.element)).map(rm2 => rm2.oldparent)
-        } while (op.length > 0)
-      });
-      this.ghostiris$.next(this.ghostiris);
+    this.treeItemsService.ghostTreeItems$.subscribe(items => {
+      let pathsChildToParent={};
+      let pathsParentToChild={};
+      items.forEach(item => this.addPath(pathsChildToParent,item.ghostItemParent,item.element.value));
+      items.forEach(item => this.addPath(pathsParentToChild,item.element.value,item.ghostItemParent));
+      this.ghostPathsChildToParent$.next(pathsChildToParent);
+      this.ghostPathsParentToChild$.next(pathsParentToChild);
+    });
+    let queryString = this.getAllParentRelationsQueryString();
+    this.dataService.getData(queryString).subscribe(data => {
+      let pathsChildToParent={};
+      let pathsParentToChild={};
+      data.forEach(pc => this.addPath(pathsChildToParent,pc["parent"].value,pc["child"].value));
+      data.forEach(pc => this.addPath(pathsParentToChild,pc["child"].value,pc["parent"].value));
+      this.pathsChildToParent$.next(pathsChildToParent);
+      this.pathsParentToChild$.next(pathsParentToChild);
     });
   }
 
-  private ghostiris = {};
-  private ghostiris$ = new ReplaySubject<{}>(1);
+  private addPath(paths,a,b){
+    let childpath = paths[b] || {};
+    let parentpath = paths[a] || {};
+    childpath[a]=parentpath;
+    paths[b] = childpath;
+    paths[a] = parentpath;
+  }
+
+  private pathsChildToParent$ = new BehaviorSubject<{}>({});
+  private pathsParentToChild$ = new BehaviorSubject<{}>({});
+
+  public ghostPathsChildToParent$ = new BehaviorSubject<{}>({});
+  public ghostPathsParentToChild$ = new BehaviorSubject<{}>({});
+
+  private getPaths(paths:{},iris:string[],newiris?:string[]):string[]{
+    if (newiris && newiris.length == 0) return iris;
+    return this.getPaths(paths, 
+      iris.concat(newiris || []),
+      (newiris || iris).map(iri => paths[iri] && <string[]>Object.keys(paths[iri]) || []).reduce((result,next)=>result=result.concat(next),[]));
+  }
   
-  public get(iris:string[], includeIriInPath:boolean=false):Observable<string[]> {
-    return this.ghostiris$.pipe(flatMap(ghostiris => {
-    
-      let obs:Observable<string[]>[]=[];
-      
-      let tempGhostiris = [];
-      iris.forEach(iri => tempGhostiris = tempGhostiris.concat(ghostiris[iri]||[]));
-      let iriswithghostiris = iris.concat(tempGhostiris);
-  
-      let pos = 0;
-      let packsize = 5;
-      while (iriswithghostiris.length >= pos){
-        let tempiris = iriswithghostiris.slice(pos,pos+packsize);
-        let queryString = this.getQueryString(tempiris,includeIriInPath);
-        obs.push(this.dataService.getData(queryString).pipe(map(
-          (data)=>data.map(e=> e.treePathItem.value)
-        )));
-        pos+=packsize;
-      }
-      let pathiris = obs.length > 0 && combineLatest(obs).pipe(map(observables => {
-        let result:string[] = [];
-        for (let o of observables) {
-          result = result.concat(o);
-        }
-        return result;
-      })) || of([""]);    
-      pathiris = pathiris.pipe(map(iris => iris.concat(tempGhostiris)));
-      return pathiris;
-      
-    }))
+  public hasChildren(iri:string):Observable<boolean> {
+    return combineLatest(this.pathsParentToChild$,this.ghostPathsParentToChild$).pipe(map(data => {
+      return (data[0][iri] || data[1][iri])
+    }));
+  }
+  public getAllChildren(iris:string[], includeIrisInPath:boolean=false):Observable<string[]> {
+    if (iris.length == 0) return of([]);
+    return combineLatest(this.pathsParentToChild$,this.ghostPathsParentToChild$).pipe(map(data => {
+      let ps = this.getPaths(data[0],iris).filter((value,index,self)=>self.indexOf(value) === index);
+      let gp = this.getPaths(data[1],iris.concat(ps)).filter((value,index,self)=>self.indexOf(value) === index);
+      if (!includeIrisInPath) gp = gp.filter(p => !iris.includes(p));
+      return gp;
+    }));
+  }
+  public getAllAncestors(iris:string[], includeIrisInPath:boolean=false):Observable<string[]> {
+    if (iris.length == 0) return of([]);
+    return combineLatest(this.pathsChildToParent$,this.ghostPathsChildToParent$).pipe(map(data => {
+      let gp = this.getPaths(data[1],iris);
+      gp = gp.filter(p => !iris.includes(p));
+      let ps = this.getPaths(data[0],iris.concat(gp));
+      if (!includeIrisInPath) ps = ps.filter(p => !iris.includes(p));
+      return ps;
+    }));
   };
 
   public getQueryString(iris:string[], includeIriInPath:boolean=false):string {
@@ -71,5 +85,15 @@ WHERE
     filter (${includeIriInPath?'':'?treePathItem != ?element && '}?element IN (${iris.map(e => `<${e}>`).join(',')}))
 }
       `;
+  }
+
+  public getAllParentRelationsQueryString():string {
+    return `${prefixes}
+SELECT ?parent ?child
+WHERE
+{
+  ?parent ?narrower ?child .
+  FILTER (?narrower IN (skos:narrower, skos:member, rdf:hasPart))
+}`
   }
 }

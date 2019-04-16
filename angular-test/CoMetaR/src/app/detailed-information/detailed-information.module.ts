@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DetailedInformationComponent } from './detailed-information/detailed-information.component';
 import { CoreModule } from "../core/core.module";
 import { ProvenanceModule } from '../provenance/provenance.module';
+import { ElementDetailsService } from './element-details.service';
 
 @NgModule({
   declarations: [
@@ -17,4 +18,10 @@ import { ProvenanceModule } from '../provenance/provenance.module';
     DetailedInformationComponent
   ]
 })
-export class DetailedInformationModule { }
+export class DetailedInformationModule { 
+  constructor(
+    private elementDetailsService:ElementDetailsService
+  ){    
+    this.elementDetailsService.loadStatusIcons();
+  }
+}

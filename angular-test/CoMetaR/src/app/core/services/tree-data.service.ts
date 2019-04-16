@@ -20,12 +20,12 @@ export class TreeDataService {
   private selectedPaths$:Observable<string[]>;
   private searchPaths$:Observable<string[]>;
   private searchPattern$:ReplaySubject<string>;
-  public historyFrom$:ReplaySubject<string>;
   private searchIris$:Observable<string[]>;
   private informationPaths$:Observable<string[]>;
-  private provAddedPaths$:Observable<string[]>;
+  public searchActivated$:Observable<boolean>;
+  /*private provAddedPaths$:Observable<string[]>;
   private provRemovedPaths$:Observable<string[]>;
-  private provMovedPaths$:Observable<string[]>;
+  private provMovedPaths$:Observable<string[]>;*/
   public conceptInformation$:BehaviorSubject<ConceptInformation[]> = new BehaviorSubject<ConceptInformation[]>([]);
 
   private claimWidth=(number)=>{};
@@ -39,13 +39,9 @@ export class TreeDataService {
   ) {
     this.selectedIri$ = new ReplaySubject(1);
     this.searchPattern$ = new ReplaySubject(1);
-    this.historyFrom$ = new ReplaySubject(1);
-    this.historyFrom$.subscribe(next => {
-      let date = next && next != "" && new Date(next) || new Date(Date.now());
-      this.treeitemsService.setProvTreeItemAttributes(date);
-    });
+    this.searchActivated$ = this.searchPattern$.pipe(map(searchPattern => searchPattern != ""));
     this.selectedPaths$ = this.selectedIri$.pipe(
-      flatMap(iri => this.treepathitemsService.get([iri]))
+      flatMap(iri => this.treepathitemsService.getAllAncestors([iri]))
     )
     this.searchIris$ = this.searchPattern$.pipe(
       distinctUntilChanged(),
@@ -54,14 +50,14 @@ export class TreeDataService {
       ))
     )
     this.searchPaths$ = this.searchIris$.pipe(
-      flatMap(iris => this.treepathitemsService.get(iris))
+      flatMap(iris => this.treepathitemsService.getAllAncestors(iris))
     ) 
     this.informationPaths$ = this.conceptInformation$.pipe(
-      flatMap(cis => this.treepathitemsService.get(cis.map(ci => ci.concept)))
+      flatMap(cis => this.treepathitemsService.getAllAncestors(cis.map(ci => ci.concept)))
     )   
-    this.provAddedPaths$ = this.treeitemsService.addedTreeItems$.pipe(flatMap(ppos => this.treepathitemsService.get(ppos.map(ppo => ppo.element))));
+    /*this.provAddedPaths$ = this.treeitemsService.addedTreeItems$.pipe(flatMap(ppos => this.treepathitemsService.get(ppos.map(ppo => ppo.element))));
     this.provRemovedPaths$ = this.treeitemsService.removedTreeItems$.pipe(flatMap(ppos => this.treepathitemsService.get(ppos.map(ppo => ppo.oldparent),true)));
-    this.provMovedPaths$ = this.treeitemsService.movedTreeItems$.pipe(flatMap(ppos => this.treepathitemsService.get(ppos.map(ppo => ppo.element))));
+    this.provMovedPaths$ = this.treeitemsService.movedTreeItems$.pipe(flatMap(ppos => this.treepathitemsService.get(ppos.map(ppo => ppo.element))));*/
   }
 
   //init (through tree component)
@@ -72,9 +68,6 @@ export class TreeDataService {
     route.queryParamMap.pipe(
       map(data => data.get('searchpattern') ? data.get('searchpattern') : "")
     ).subscribe(this.searchPattern$);
-    route.queryParamMap.pipe(
-      map(data => data.get('historyfrom') ? data.get('historyfrom') : "")
-    ).subscribe(this.historyFrom$);
     this.claimWidth=claimWidth;
   }
 
@@ -110,7 +103,7 @@ export class TreeDataService {
       map(data => data.includes(true))
     )
   }
-  public isProvAdded$(iri:string):Observable<string[]>{
+  /*public isProvAdded$(iri:string):Observable<string[]>{
     return this.treeitemsService.addedTreeItems$.pipe(
       map(a => a.filter(b => b.element == iri).map(b => b.newparent))
     )
@@ -144,9 +137,9 @@ export class TreeDataService {
     return this.provMovedPaths$.pipe(
       map(paths => paths.includes(iri))
     )
-  }
+  }*/
   private searchItemFilter(o:Observable<TreeItemAttributes[]>):Observable<TreeItemAttributes[]>{
-    return combineLatest(o, this.searchIris$, this.searchPaths$, this.searchActivated$()).pipe(
+    return combineLatest(o, this.searchIris$, this.searchPaths$, this.searchActivated$).pipe(
       map(data => {
         let tias = <TreeItemAttributes[]> data[0];
         let searchIris = <string[]> data[1];
@@ -159,11 +152,7 @@ export class TreeDataService {
   }
 
   //search
-  public searchActivated$():Observable<boolean>{
-    return this.searchPattern$.pipe(
-      map(searchPattern => searchPattern != "")
-    )
-  }
+
   public getSearchMatch$(iri:string):Observable<SearchResultAttributes[]>{
     return this.searchPattern$.pipe(
       flatMap(searchPattern => this.searchtreeitemService.get(searchPattern).pipe(
@@ -187,7 +176,10 @@ export class TreeDataService {
     )
   }
 
-  //information
+
+  //external
+
+
   public addConceptInformation(cis$:Observable<ConceptInformation[]>){
     cis$.subscribe(cis => {
       this.conceptInformation$.next(cis);
@@ -198,5 +190,10 @@ export class TreeDataService {
     return this.informationPaths$.pipe(
       map(informationPaths => informationPaths.includes(iri))
     )
+  }
+
+  public setGhostTreeItems(items: TreeItemAttributes | TreeItemAttributes[]) {
+    if (!(items instanceof Array)) items = [items];
+    this.treeitemsService.setGhostTreeItems(items);
   }
 }

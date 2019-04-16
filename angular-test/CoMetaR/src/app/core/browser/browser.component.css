@@ -59,10 +59,12 @@ div#moduleContent {
 }
 div.moduleMenuItem {
     cursor: pointer;
-    text-align: center;
     padding:5px 15px;
     border:0px solid #0492D0;
     color:white;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
 }
 div.moduleMenuItem:not(:first-child){
     margin-left:1px;

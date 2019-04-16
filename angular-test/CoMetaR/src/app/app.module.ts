@@ -53,7 +53,9 @@ import { StatisticsModule } from './statistics/statistics.module';
           ]      
         }
       ],
-      { enableTracing: false } // <-- debugging purposes only
+      { 
+        enableTracing: false, // <-- debugging purposes only
+      }
     )
   ],
   providers: [ Location, {provide: LocationStrategy, useClass: HashLocationStrategy} ],
