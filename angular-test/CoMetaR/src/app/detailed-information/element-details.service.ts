@@ -17,8 +17,8 @@ export class ElementDetailsService {
     iconRegistry: MatIconRegistry, 
     sanitizer: DomSanitizer
   ){
-    iconRegistry.addSvgIcon('draft', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-thumbs_up_down-24px.svg'));
-    iconRegistry.addSvgIcon('editNote', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-description-24px.svg'));
+    iconRegistry.addSvgIcon('draft', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-hourglass_full-24px.svg'));
+    iconRegistry.addSvgIcon('editNote', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-find_in_page-24px.svg'));
   }
 
   public loadStatusIcons(){    

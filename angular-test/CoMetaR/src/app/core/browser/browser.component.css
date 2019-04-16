@@ -66,6 +66,10 @@ div.moduleMenuItem {
     flex-direction: row;
     align-items: center;
 }
+div.moduleMenuItem mat-icon {
+    margin-top:-1px;
+    margin-right:1px;
+}
 div.moduleMenuItem:not(:first-child){
     margin-left:1px;
 }

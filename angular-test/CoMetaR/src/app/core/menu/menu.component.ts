@@ -126,14 +126,6 @@ export class MenuComponent implements OnInit {
       relativeTo:"toggleSearch"
     },
     {
-      heading:"History Button",
-      description:["Click to open/close history panel.", "Use the slider to adjust time interval."],
-      relativeLeft:0,
-      relativeTop:40,
-      width:150,
-      relativeTo:"toggleHistory"
-    },
-    {
       heading:"Help Button",
       description:["Click to open/close help panel."],
       relativeLeft:0,

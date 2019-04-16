@@ -97,6 +97,9 @@ export class BrowserComponent implements OnInit {
     sanitizer: DomSanitizer
   ) { 
     iconRegistry.addSvgIcon('history', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-history-24px.svg'));
+    iconRegistry.addSvgIcon('client-configuration', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-settings_ethernet-24px.svg'));
+    iconRegistry.addSvgIcon('sparql', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-question_answer-24px.svg'));
+    iconRegistry.addSvgIcon('statistics', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-timeline-24px.svg'));
   }
 
   ngOnInit() {
