@@ -21,9 +21,9 @@
             <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'sparql'}" (click)="navigateModule('sparql')">
                 <mat-icon aria-hidden="false" aria-label="Provenance" svgIcon="sparql" color="accent"></mat-icon><div class="moduleMenuItemLabel">SPARQL</div>
             </div>
-            <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'statistics'}" (click)="navigateModule('statistics')">
+            <!-- <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'statistics'}" (click)="navigateModule('statistics')">
                 <mat-icon aria-hidden="false" aria-label="Provenance" svgIcon="statistics" color="accent"></mat-icon><div class="moduleMenuItemLabel">Statistics</div>
-            </div>
+            </div> -->
         </div>
         <div id="moduleContent" [@routeAnimations]="prepareRoute(outlet)">
             <router-outlet #outlet="outlet" (activate)="onRouterOutletActivate(outlet)"></router-outlet>

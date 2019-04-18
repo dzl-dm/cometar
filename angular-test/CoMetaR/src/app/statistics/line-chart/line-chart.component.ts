@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 import Chart, { ChartData, ChartOptions } from 'chart.js';
 import { MatTable } from '@angular/material';
@@ -6,7 +6,8 @@ import { MatTable } from '@angular/material';
 @Component({
   selector: 'app-line-chart',
   templateUrl: './line-chart.component.html',
-  styleUrls: ['./line-chart.component.css']
+  styleUrls: ['./line-chart.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LineChartComponent implements OnInit {
   @Input('') chartData$: ReplaySubject<ChartData>;

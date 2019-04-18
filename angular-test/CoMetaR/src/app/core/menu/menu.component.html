@@ -6,7 +6,7 @@
         <mat-icon aria-hidden="false" aria-label="Home" svgIcon="home"></mat-icon>
     </div>
     <div id="toggleSearch" 
-        [ngClass]="{'menuItem':true,'active': (treeDataService.searchPattern$ | async)}" 
+        [ngClass]="{'menuItem':true,'active': treeDataService.getSearchPattern()}" 
         (click)="searchDivOpened = !searchDivOpened; searchPatternInput.focus()">
         <mat-icon aria-hidden="false" aria-label="Search" svgIcon="search"></mat-icon>
     </div>

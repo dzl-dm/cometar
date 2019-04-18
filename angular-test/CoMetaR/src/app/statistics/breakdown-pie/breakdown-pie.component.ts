@@ -1,10 +1,11 @@
-import { Component, OnInit, Input, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import Chart, { ChartData } from 'chart.js';
 
 @Component({
   selector: 'app-breakdown-pie',
   templateUrl: './breakdown-pie.component.html',
-  styleUrls: ['./breakdown-pie.component.css']
+  styleUrls: ['./breakdown-pie.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BreakdownPieComponent implements OnInit {
   @Input("") chartData: ChartData[]
