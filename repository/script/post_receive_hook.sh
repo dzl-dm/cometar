@@ -8,7 +8,7 @@ do
 	case "$1" in
 		-p)
 			shift
-			conffile=$1
+			conffile=$(realpath $1)
 			;;
 		-r)
 			shift
@@ -19,6 +19,29 @@ do
 done
 
 source "$conffile"
+
+# calc last hook call
+from_date="2017-01-01 00:00:00"
+shopt -s nullglob
+from_date_number=$(date -d "$from_date" +%s)
+IFS=$'\n'
+for i in $(find "$PROVENANCEFILESDIR/output" -type f -name '*.ttl'); do
+	filename=$(basename "$i" .ttl)
+	filecheck=$(expr $filename : '^\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9] - [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9]\)')
+	if [ "$filecheck" != "" ]; then
+		datestring=$(echo ${filename:22} | tr '_' ':')
+		if ! testdate=$(date -d "$datestring" +"%Y-%m-%d %H:%M:%S") ; then
+			continue
+		fi
+		datenumber=$(date -d "$datestring" +%s)
+		if [ $datenumber -gt $from_date_number ]; then
+			from_date=$datestring
+			from_date_number=$(date -d "$from_date" +%s)
+		fi
+	fi
+done
+unset IFS
+# calc last hook call end
 
 unset GIT_DIR;
 rm -rf "$TEMPDIR/git"
@@ -41,8 +64,9 @@ newrevargument=""
 if [ "$newrev" != "" ]; then
 	newrevargument="-n $newrev"
 fi
-"$PROVENANCESCRIPTDIR/write_provenance.sh" -p "$conffile" "$newrevargument"
+"$PROVENANCESCRIPTDIR/write_provenance.sh" -p "$conffile" -f "$from_date" "$newrevargument"
 "$SCRIPTDIR/add_files_to_dataset.sh" -s -h -p "$conffile" -e "$LOGFILE"
+
 echo "i2b2 import sql is being produced."
 echo "i2b2 import sql is being produced." >> "$LOGFILE" 
 "$TTLTOSQLDIR/write-sql.sh" -p "$conffile"
@@ -55,6 +79,9 @@ PGPASSWORD=$I2B2DEMOPW /usr/bin/psql -q --host=$I2B2HOST --username=$I2B2DEMOUSE
 echo "Refreshing patient count..."
 echo "Refreshing patient count..." >> "$LOGFILE" 
 PGPASSWORD=$I2B2DMPW /usr/bin/psql -q --host=$I2B2HOST --username=$I2B2DMUSER --dbname=$I2B2DBNAME -f "$SCRIPTDIR/patient_count.sql"
+echo "Sending notifications..."
+"$NOTIFICATIONDIR/notification.sh" -p "$conffile" -f "$from_date"
+
 echo -------------------------------------
 rm -rf "$TEMPDIR/git"
 chown -R cometar:cometar "$PROVENANCEFILESDIR"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 conffile="$(dirname $0)/../config/conf.cfg"
-from_date="2017-01-01 00:00:00"
+#from_date="2017-01-01 00:00:00"
 until_date=$(date +'%Y-%m-%d %H:%M:%S')
 only_recent_changes=1
 newrev=""
@@ -47,27 +47,27 @@ source "$conffile"
 output_directory="$PROVENANCEFILESDIR/output"
 mkdir -p "$output_directory"
 
-if [ $only_recent_changes -eq 1 ]; then
-	shopt -s nullglob
-	from_date_number=$(date -d "$from_date" +%s)
-	IFS=$'\n'
-	for i in $(find "$PROVENANCEFILESDIR/output" -type f -name '*.ttl'); do
-		filename=$(basename "$i" .ttl)
-		filecheck=$(expr $filename : '^\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9] - [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9]\)')
-		if [ "$filecheck" != "" ]; then
-			datestring=$(echo ${filename:22} | tr '_' ':')
-			if ! testdate=$(date -d "$datestring" +"%Y-%m-%d %H:%M:%S") ; then
-				continue
-			fi
-			datenumber=$(date -d "$datestring" +%s)
-			if [ $datenumber -gt $from_date_number ]; then
-				from_date=$datestring
-				from_date_number=$(date -d "$from_date" +%s)
-			fi
-		fi
-	done
-	unset IFS
-fi
+# if [ $only_recent_changes -eq 1 ]; then
+	# shopt -s nullglob
+	# from_date_number=$(date -d "$from_date" +%s)
+	# IFS=$'\n'
+	# for i in $(find "$PROVENANCEFILESDIR/output" -type f -name '*.ttl'); do
+		# filename=$(basename "$i" .ttl)
+		# filecheck=$(expr $filename : '^\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9] - [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9]\)')
+		# if [ "$filecheck" != "" ]; then
+			# datestring=$(echo ${filename:22} | tr '_' ':')
+			# if ! testdate=$(date -d "$datestring" +"%Y-%m-%d %H:%M:%S") ; then
+				# continue
+			# fi
+			# datenumber=$(date -d "$datestring" +%s)
+			# if [ $datenumber -gt $from_date_number ]; then
+				# from_date=$datestring
+				# from_date_number=$(date -d "$from_date" +%s)
+			# fi
+		# fi
+	# done
+	# unset IFS
+# fi
 echo "Writing deltas from $from_date to ${until_date}."
 while read line || [ -n "$line" ]; do #second expression is needed cause the last git log line does not end with a newline
 	echo ""
