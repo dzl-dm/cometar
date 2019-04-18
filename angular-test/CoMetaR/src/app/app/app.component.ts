@@ -7,7 +7,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppComponent implements OnInit {
 
-  constructor() { }
+  public browserCheckIE = false;
+  constructor() {
+    let ua = navigator.userAgent;
+    if (ua.indexOf('MSIE ') > -1 || ua.indexOf('Trident/') > -1) this.browserCheckIE=true;
+  }
 
   ngOnInit() {
   }

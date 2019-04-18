@@ -1,16 +1,15 @@
-import { Component, OnInit, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, ChangeDetectionStrategy } from '@angular/core';
 import Chart, { ChartData, ChartOptions } from 'chart.js';
 
 @Component({
   selector: 'app-bubble-chart',
   templateUrl: './bubble-chart.component.html',
-  styleUrls: ['./bubble-chart.component.css']
+  styleUrls: ['./bubble-chart.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BubbleChartComponent implements OnInit {
   @Input('') chartData:ChartData;
   @Input('') phenotypes:string[];
-  
-  private phenotypesreverse:string[];
 
   constructor(
     private e: ElementRef,
@@ -20,7 +19,6 @@ export class BubbleChartComponent implements OnInit {
 
   ngOnInit() {
     let n: HTMLElement = this.e.nativeElement;
-    this.phenotypesreverse = Object.assign([],this.phenotypes).reverse();
 
     let lineCanvas = this.getNewCanvas();
     this.bubbleChart = this.getNewChart(lineCanvas);

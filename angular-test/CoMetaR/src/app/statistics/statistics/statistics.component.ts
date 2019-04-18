@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../data.service';
 import { ChartData } from 'chart.js';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-statistics',
@@ -52,6 +52,7 @@ export class StatisticsComponent implements OnInit {
   }
 
   constructor(
+    private cd: ChangeDetectorRef,
     public dataService: DataService
   ) { }
 }
