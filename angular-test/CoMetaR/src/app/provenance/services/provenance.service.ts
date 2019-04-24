@@ -42,7 +42,7 @@ export class ProvenanceService {
         return commitMetaDataByDay;
     }
 
-    public setProvenanceDate(from:Date){      
+    public setProvenanceDate(from:Date){    
 		this.provTreeItemsService.setProvTreeItemAttributes(from);
     }
 

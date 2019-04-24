@@ -29,6 +29,7 @@ export class ConceptInformationComponent implements OnInit {
   }
 
   private matchArray(s:string):string[]{
+    if (!s) return [""];
     let index = 0;
     let result:string[] = [];
     let counter = 0;

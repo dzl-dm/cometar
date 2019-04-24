@@ -16,6 +16,23 @@ export class ConfigurationService {
       "http://loinc.org/owl#": "loinc"
     }
   }
+  
+  public shortenRdfPrefix(s:string):string{
+    Object.entries(this.getRdfPrefixMap()).forEach(
+      ([key, value]:[string,string]) => {
+        s = s.replace(new RegExp(key, "g"), value + ":")
+    });
+    return s;
+  }
+  public extendRdfPrefix(s:string):string{
+    if (!s) return "";
+    let c = s.substr(s.indexOf(":")+1);
+    Object.entries(this.getRdfPrefixMap()).forEach(
+      ([value, key]:[string,string]) => {
+        s = s.replace(new RegExp(key, "g"), value)
+    });
+    return s.substring(0,s.length-c.length-1) + c;
+  } 
   public getHumanReadableElementDetails(ed:OntologyElementDetails):OntologyElementDetails{
     return this.mergeDeep(ed, {
       element: { name: "RDF IRI" },

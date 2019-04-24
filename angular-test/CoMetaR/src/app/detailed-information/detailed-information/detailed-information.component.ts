@@ -20,6 +20,7 @@ import { InformationQueryService, OntologyElementDetails } from '../services/que
 export class DetailedInformationComponent implements OnInit {
   public coreDetails = {};
   public additionalDetails = {};
+  public label = "";
   private coreDetailsSelectArray = ["label", "altlabel", "notation", "unit", "status", "domain"];
   private copySelectArray = ["notation"];
   private localizedStringArray = ["label", "altlabel"];
@@ -40,14 +41,23 @@ export class DetailedInformationComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParamMap.pipe(
-      map(data => this.urlService.extendRdfPrefix(data.get('concept')))
+      map(data => {
+        return this.urlService.extendRdfPrefix(data.get('concept'))
+      })
     ).subscribe(this.selectedIri$);
     this.selectedIri$.pipe(
-      flatMap(iri => this.informationQueryService.get(iri))
+      flatMap(iri => {
+        this.label = iri;
+        this.coreDetails = {};
+        this.additionalDetails = {};
+        return this.informationQueryService.get(iri)
+      })
     ).subscribe(data => {
+      if (data.length == 1 && Object.keys(data[0]).length == 0) {
+        this.label += " The concept is not part of the ontology.";
+        return;
+      }
       //merging details
-      this.coreDetails={};
-      this.additionalDetails={};
       data.forEach((detail:OntologyElementDetails) => {
         detail = this.configuration.getHumanReadableElementDetails(detail);
         Object.keys(detail).forEach(key => {
@@ -79,6 +89,7 @@ export class DetailedInformationComponent implements OnInit {
             //string localization
             if (this.localizedStringArray.includes(key) && detail[key]["xml:lang"]) value += detail[key]["xml:lang"].toUpperCase() + ": ";
             value += detail[key].value;
+            if (key == "label" && detail[key]["xml:lang"] == "en") this.label = detail[key].value;
             if (details[key].values.indexOf(value)==-1) {
               details[key].values.push(value);
             }
