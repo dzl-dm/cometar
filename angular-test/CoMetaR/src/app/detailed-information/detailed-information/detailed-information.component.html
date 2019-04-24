@@ -1,4 +1,5 @@
 <div class="additionalDetails" id="detailed_information_additional">
+  <h3>{{label}}</h3>
   <div *ngFor="let detail of additionalDetails | keyvalue">
     <div class="detail" *ngIf="detail.value.values.length > 0">
       <div class='detailHeading'>

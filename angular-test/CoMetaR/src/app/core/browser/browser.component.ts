@@ -105,7 +105,7 @@ export class BrowserComponent implements OnInit {
 
   ngOnInit() {
     if (this.router.url.match(/\/[^\/]+\/[^\/]+/)) {
-      this.router.navigate(["/details"],{queryParams: {concept: this.router.url.split("/")[1]+":"+this.router.url.split("/")[2]} });
+      this.router.navigate(["/details"],{queryParams: {concept: this.router.url.split("/")[1]+":"+this.router.url.split("/")[2]}, replaceUrl: true });
     }
     this.browserService.snackbarNotification.subscribe((notification)=> {
       /*this.snackBar.open(notification[0], notification[1], {

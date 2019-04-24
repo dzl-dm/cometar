@@ -4,7 +4,7 @@ import { TreeDataService } from 'src/app/core/services/tree-data.service';
 import { ReplaySubject, combineLatest } from 'rxjs';
 import { ClientConfigurationService, IClientConfiguration, Mapping } from '../services/client-configuration.service';
 import { ConceptByNotationService } from '../services/queries/concept-by-notation.service';
-import { map } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
 import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
 
 @Component({
@@ -58,7 +58,6 @@ export class UploadClientConfigurationComponent implements OnInit {
 			mappings = this.clientConfigurationService.getMappings(result);
 		}));
 		else mappings = this.csc_content.split(",").map(code => {
-			console.log(this.csc_content);
 			return <Mapping>{
 				concept: code,
 			}
@@ -68,6 +67,7 @@ export class UploadClientConfigurationComponent implements OnInit {
 				map(result => {
 					if (!result.concept && m.concept != "") {
 						this.feedback.push(`"${m.concept}" is a unknown code.`);
+						return undefined;
 					}
 					if (result.newnotation) {
 						this.feedback.push(`"${m.concept}" is a deprecated code.  New code: "${result.newnotation.value}".`);
@@ -92,6 +92,7 @@ export class UploadClientConfigurationComponent implements OnInit {
 				})
 			)
 		})).subscribe(data => {
+			data = data.filter(d => d != undefined);
 			if (data.length == 0) return;
 			this.treeData$.next(data);
 			this.showUpdatedConfigurationFileDownloadButton = replacements.length > 0;
