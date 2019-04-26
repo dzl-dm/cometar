@@ -31,6 +31,8 @@ div.coreDetails{
     background-color:white;
     /*border-left:3px solid #0492D0;*/
     margin-top:10px;
+    display: flex;
+    flex-direction: column;
 }
 div.unfilled {
     color:#EEE;
@@ -78,4 +80,9 @@ table td {
 }
 .valueListing:not(:last-child) {
     margin-bottom:15px;
+}
+
+.exportButton {
+    align-self: flex-end;
+    height:30px;
 }

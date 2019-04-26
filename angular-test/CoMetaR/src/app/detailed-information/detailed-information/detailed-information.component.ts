@@ -11,6 +11,7 @@ import { ProvenanceService } from 'src/app/provenance/services/provenance.servic
 import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
 import { ExternalCodeInformationService } from '../external-code-information.service';
 import { InformationQueryService, OntologyElementDetails } from '../services/queries/information-query.service';
+import { ExportService } from '../services/export.service';
 
 @Component({
   selector: 'app-detailed-information',
@@ -36,7 +37,8 @@ export class DetailedInformationComponent implements OnInit {
     private provenanceService:ProvenanceService,
     private commitDetailsService:CommitDetailsService,
     private externalCodeInformationService:ExternalCodeInformationService,
-    private informationQueryService:InformationQueryService
+    private informationQueryService:InformationQueryService,
+    private exportService:ExportService
   ) { }
 
   ngOnInit() {
@@ -125,5 +127,18 @@ export class DetailedInformationComponent implements OnInit {
     else {
       this.changeDetails$ = of([]);
     }
+  }
+
+  public export(){
+    this.selectedIri$.subscribe(iri => this.exportService.get(iri, (exportString:string)=>{
+      //console.log(exportString);return;
+      let thefile = new Blob([exportString], { type: "application/octet-stream" });
+      let anchor = document.createElement('a');
+  
+      anchor.download = "export_"+iri+".csv";
+      anchor.href = window.URL.createObjectURL(thefile);
+      anchor.dataset.downloadurl = ['text/plain', anchor.download, anchor.href].join(':');
+      anchor.click();
+    })).unsubscribe();
   }
 }
