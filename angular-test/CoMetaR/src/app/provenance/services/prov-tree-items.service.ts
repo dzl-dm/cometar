@@ -26,9 +26,7 @@ export class ProvTreeItemsService {
         let tempMovedTreeItems:ProvParentOperation[] = [];
         ptias.forEach(ptia => {
             if (!tempElement || ptia.element.value != tempElement) {
-                this.removedTreeItems = this.removedTreeItems.concat(tempRemovedTreeItems);
-                this.addedTreeItems = this.addedTreeItems.concat(tempAddedTreeItems);
-                this.movedTreeItems = this.movedTreeItems.concat(tempMovedTreeItems);
+                this.concatProvTreeItems(tempAddedTreeItems,tempMovedTreeItems,tempRemovedTreeItems);
                 tempRemovedTreeItems = [];
                 tempAddedTreeItems = [];
                 tempMovedTreeItems = [];
@@ -89,6 +87,7 @@ export class ProvTreeItemsService {
                 })
             }
         });
+        this.concatProvTreeItems(tempAddedTreeItems,tempMovedTreeItems,tempRemovedTreeItems);
         this.treeItemStyles = [];
         this.treeDataService.setGhostTreeItems(this.removedTreeItems.concat(this.movedTreeItems).map(r=>{
             return {
@@ -158,6 +157,18 @@ export class ProvTreeItemsService {
 
         this.treeItemStyles$.next(this.treeItemStyles);
     });
+  }
+
+  private concatProvTreeItems(tempAddedTreeItems: ProvParentOperation[], tempMovedTreeItems: ProvParentOperation[], tempRemovedTreeItems:ProvParentOperation[]){
+    this.removedTreeItems = this.removedTreeItems.concat(tempRemovedTreeItems.filter((value, index, self) => {
+        return self.map(a => a.element).indexOf(value.element) === index;
+    }));
+    this.addedTreeItems = this.addedTreeItems.concat(tempAddedTreeItems.filter((value, index, self) => {
+        return self.map(a => a.element).indexOf(value.element) === index;
+    }));
+    this.movedTreeItems = this.movedTreeItems.concat(tempMovedTreeItems.filter((value, index, self) => {
+        return self.map(a => a.element).indexOf(value.element) === index;
+    }));
   }
 
   private removedTreeItems:ProvParentOperation[] = [];

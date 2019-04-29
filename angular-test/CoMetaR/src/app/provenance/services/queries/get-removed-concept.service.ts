@@ -30,6 +30,7 @@ WHERE {
     rdf:subject <${iri}>;
     rdf:predicate rdf:type
   ] .
+  FILTER NOT EXISTS { <${iri}> rdf:type ?type }
 }`;
   }
 }
