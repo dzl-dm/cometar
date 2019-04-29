@@ -6,8 +6,7 @@ import { MatTable } from '@angular/material';
 @Component({
   selector: 'app-line-chart',
   templateUrl: './line-chart.component.html',
-  styleUrls: ['./line-chart.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./line-chart.component.css']
 })
 export class LineChartComponent implements OnInit {
   @Input('') chartData$: ReplaySubject<ChartData>;

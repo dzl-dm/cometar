@@ -51,7 +51,7 @@ FILTER NOT EXISTS {
     ?anyelement prov:wasDerivedFrom ?lastelement
 }
     
-FILTER (?addorremove IN (cs:addition,cs:removal) && ?narrower IN (skos:narrower, rdf:hasPart, skos:member, :topLevelNode)) .
+FILTER (?addorremove IN (cs:addition,cs:removal) && ?narrower IN (skos:narrower, rdf:hasPart, skos:member, :topLevelNode, skos:hasTopConcept)) .
 }
 ORDER BY ?element ?date DESC(?addorremove)`;        
   }
