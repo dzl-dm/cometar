@@ -10,7 +10,9 @@ WHERE {
 	  IF(?restriction = dwh:integerRestriction, "integer",
 	    IF(?restriction = dwh:floatRestriction, "float",
 	      IF(?restriction = dwh:partialDateRestriction, "partialDate",
-	        IF(?restriction = dwh:dateRestriction, "date", "string")
+	      	IF(?restriction = dwh:largeStringRestriction, "largeString",
+	       	 IF(?restriction = dwh:dateRestriction, "date", "string")
+	       	)
 	      )
 	    )
 	  ) AS ?datatype

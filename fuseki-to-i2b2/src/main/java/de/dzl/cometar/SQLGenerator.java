@@ -40,7 +40,9 @@ public abstract class SQLGenerator {
 	String query_child_elements = "";
 	String query_notations = "";
 	String query_label = "";
-	String query_description = "";
+	String query_description = "";	
+	String query_display = "";
+	
 	protected void initializeQueries()
 	{
     	InputStream query_top_concepts_input = getClass().getResourceAsStream("/query_top_elements.txt");
@@ -49,6 +51,7 @@ public abstract class SQLGenerator {
     	InputStream query_label_input = getClass().getResourceAsStream("/query_label.txt");
     	InputStream query_datatype_input = getClass().getResourceAsStream("/query_datatype.txt");
     	InputStream query_description_input = getClass().getResourceAsStream("/query_description.txt");
+    	InputStream query_display_input = getClass().getResourceAsStream("/query_display.txt");
     	
 		try {
 			query_top_elements = readFile(query_top_concepts_input);
@@ -57,6 +60,7 @@ public abstract class SQLGenerator {
 			query_label = readFile(query_label_input);
 			query_datatype = readFile(query_datatype_input);
 			query_description = readFile(query_description_input);
+			query_display = readFile(query_display_input);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
@@ -127,21 +131,25 @@ public abstract class SQLGenerator {
 		String label = getLabel(element);	
 		String datatypexml = getDatatypeXml(element, current_timestamp);
 		String description = getDescription(element);
+		boolean i2b2Hidden = getDisplay(element).equals("i2b2Hidden");
+		
 		if (description.isEmpty()) description = label;
     	ArrayList<ArrayList<String>> childElements = getChildren(element);
     	List<String> childNames = childElements.get(0);
     	List<String> childTypes = childElements.get(1);
     	List<Literal> notations = getNotations(element);
-    	//TODO nur eine notation oder mehrere?
 		
 		boolean isRootElement = ancestors.size() == 0 && !isModifier;
 		String notationPrefix = (notations.size() == 1)?getNotationPrefix(notations.get(0)):"";
 		String notation = (notations.size() == 1)?notationPrefix + notations.get(0).getString():null;
 		String visualAttribute;
-		if (type.equals("collection")) visualAttribute = "CA";
-		else if (childNames.size() > 0) visualAttribute = isModifier?"DA":"FA";
-		else if (notations.size() <= 1) visualAttribute = isModifier?"RA":"LA";
-		else visualAttribute = "MA";
+		String visualAttributePartOne;
+		String visualAttributePartTwo = i2b2Hidden?"H":"A";
+		if (type.equals("collection")) visualAttributePartOne = "C";
+		else if (childNames.size() > 0) visualAttributePartOne = isModifier?"D":"F";
+		else if (notations.size() <= 1) visualAttributePartOne = isModifier?"R":"L";
+		else visualAttributePartOne = "M";
+		visualAttribute = visualAttributePartOne+visualAttributePartTwo;
 		/*
 		 * Building two i2b2 paths, one with and one without prefixes of form:
 		 * [\i2b2]\ancestor 0\ancestor 1\...\ancestor n\concept\
@@ -403,6 +411,9 @@ public abstract class SQLGenerator {
 				case "float":
 					datatypexml += "Float";
 					break;
+				case "largeString":
+					datatypexml += "largestring";
+					break;
 				default:
 					datatypexml += "String";
 			}
@@ -424,6 +435,21 @@ public abstract class SQLGenerator {
 		}
 		httpQuery.close();
 		return cleanLabel(description);
+	}
+	
+	private String getDisplay(String concept) throws NullPointerException
+	{
+    	String queryString = query_display.replace("<CONCEPT>", "<"+concept+">");
+		Query query = QueryFactory.create(queryString);
+		QueryEngineHTTP httpQuery = new QueryEngineHTTP(sparqlEndpoint, query);
+		ResultSet results = httpQuery.execSelect();
+		String display = "";
+		if( results.hasNext() ){
+			QuerySolution solution = results.next();			
+			display = solution.getLiteral("display").getString();
+		}
+		httpQuery.close();
+		return cleanLabel(display);
 	}
 	
 	private String cleanLabel(String label)

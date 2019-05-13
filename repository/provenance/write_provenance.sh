@@ -2,9 +2,9 @@
 
 conffile="$(dirname $0)/../config/conf.cfg"
 #from_date="2017-01-01 00:00:00"
+#problem at this point: server datetime is not always the same as commiting client datetime
 until_date=$(date +'%Y-%m-%d %H:%M:%S')
-only_recent_changes=1
-newrev=""
+until_date_is_now=1
 
 while [ ! $# -eq 0 ]
 do
@@ -13,18 +13,12 @@ do
 			shift
 			conffile=$1
 			;;
-		-n)
-			shift
-			only_recent_changes=1
-			newrev=$1
-			;;
 		-f)
 			shift
 			if ! from_date=$(date -d "$1" +"%Y-%m-%d %H:%M:%S") ; then
 				echo "Please enter valid date (yyyy-mm-dd hh:mm:ss)"
 				exit
 			fi
-			only_recent_changes=0
 			;;
 		-u)
 			shift
@@ -32,7 +26,7 @@ do
 				echo "Please enter valid date (yyyy-mm-dd hh:mm:ss)"
 				exit
 			fi
-			only_recent_changes=0
+			until_date_is_now=0
 			;;
 		-o)
 			shift
@@ -47,28 +41,8 @@ source "$conffile"
 output_directory="$PROVENANCEFILESDIR/output"
 mkdir -p "$output_directory"
 
-# if [ $only_recent_changes -eq 1 ]; then
-	# shopt -s nullglob
-	# from_date_number=$(date -d "$from_date" +%s)
-	# IFS=$'\n'
-	# for i in $(find "$PROVENANCEFILESDIR/output" -type f -name '*.ttl'); do
-		# filename=$(basename "$i" .ttl)
-		# filecheck=$(expr $filename : '^\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9] - [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]_[0-9][0-9]_[0-9][0-9]\)')
-		# if [ "$filecheck" != "" ]; then
-			# datestring=$(echo ${filename:22} | tr '_' ':')
-			# if ! testdate=$(date -d "$datestring" +"%Y-%m-%d %H:%M:%S") ; then
-				# continue
-			# fi
-			# datenumber=$(date -d "$datestring" +%s)
-			# if [ $datenumber -gt $from_date_number ]; then
-				# from_date=$datestring
-				# from_date_number=$(date -d "$from_date" +%s)
-			# fi
-		# fi
-	# done
-	# unset IFS
-# fi
 echo "Writing deltas from $from_date to ${until_date}."
+echo "$(date +'%d.%m.%y %H:%M:%S') Writing deltas from $from_date to ${until_date}." >> "$LOGFILE"
 while read line || [ -n "$line" ]; do #second expression is needed cause the last git log line does not end with a newline
 	echo ""
 	echo $line
@@ -78,10 +52,11 @@ done < <(
 	cd "$TEMPDIR/git"; 
 	unset GIT_DIR; 
 	git checkout -q master; 
-	if [ "$newrev" != "" ]; then
-		echo $newrev
+	if [ $until_date_is_now -eq 0 ]; then
+		git log --pretty=format:"%H" --since="$from_date" --before="$until_date"
+	else
+		git log --pretty=format:"%H" --since="$from_date"
 	fi
-	git log --pretty=format:"%H" --since="$from_date" --before="$until_date"
 )
 
 output_file="$PROVENANCEFILESDIR/output/$(echo $from_date | tr ':' '_') - $(echo $until_date | tr ':' '_').ttl"
