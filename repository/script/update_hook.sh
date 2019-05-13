@@ -27,7 +27,7 @@ source "$conffile"
 if [ ! -f "$LOGFILE" ]; then 
 	echo -n "" > "$LOGFILE" 
 fi
-echo "Update hook triggered for $newrev." >> "$LOGFILE" 
+echo "$(date +'%d.%m.%y %H:%M:%S') Update hook triggered for $newrev." >> "$LOGFILE" 
 unset GIT_DIR;
 rm -rf "$TEMPDIR/git"
 mkdir -p "$TEMPDIR/git"
@@ -40,6 +40,7 @@ errorsummary="$TEMPDIR/errorsummary.txt"
 echo "" > "$errorsummary"
 echo -------------------------------------
 echo "Loading files into fuseki test server..."
+echo "$(date +'%d.%m.%y %H:%M:%S') Loading files into fuseki test server..." >> "$LOGFILE" 
 "$SCRIPTDIR/add_files_to_dataset.sh" -s -t -c -d "$TEMPDIR/git" -p "$conffile" -e "$errorsummary"
 insertexitcode=$?
 if [ $insertexitcode -eq 0 ]
@@ -51,17 +52,21 @@ then
 	case $testexitcode in
 			0)
 					echo "All tests passed."
+					echo "$(date +'%d.%m.%y %H:%M:%S') All tests passed." >> "$LOGFILE" 
 					;;
 			1)
 					echo "Tests resulted in errors."
+					echo "$(date +'%d.%m.%y %H:%M:%S') Tests resulted in errors." >> "$LOGFILE" 
 					exitcode=1
 					;;
 			2)
 					echo "Tests resulted in warnings."
+					echo "$(date +'%d.%m.%y %H:%M:%S') Tests resulted in warnings." >> "$LOGFILE" 
 					;;
 	esac
 else
 	echo "At least one file failed to load."
+	echo "$(date +'%d.%m.%y %H:%M:%S') At least one file failed to load." >> "$LOGFILE" 
 	exitcode=1
 fi
 echo -------------------------------------
@@ -70,11 +75,12 @@ echo "-------------"
 if [ $exitcode -gt 0 ]; then 
 	echo "UPLOAD FAILED"
 	cat "$errorsummary"
-	cat "$errorsummary" >> "$LOGFILE" 
+	cat "$(date +'%d.%m.%y %H:%M:%S') $errorsummary" >> "$LOGFILE" 
 else 
 	echo "UPLOAD SUCCEED"	
-	echo "UPLOAD SUCCEED" >> "$LOGFILE" 
+	echo "$(date +'%d.%m.%y %H:%M:%S') UPLOAD SUCCEED" >> "$LOGFILE" 
 	if [ $exec_post_receive -eq 1 ]; then
+		echo "$(date +'%d.%m.%y %H:%M:%S') Generating pidfile for post receive hook" >> "$LOGFILE"
 		"$SCRIPTDIR/write_pid_to_queue.sh" "$TEMPDIR/gitpid"
 	fi
 fi
