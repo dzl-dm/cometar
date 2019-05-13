@@ -42,6 +42,7 @@ export class DataService {
       backgroundColor: this.backgroundColor,
       borderColor: this.siteColors[site]
     }});
+    
     datasets = datasets.map(ds => {
       (<number[]>ds.data).forEach((d, index, arr) => { 
         arr[index] = index>0 ? d+arr[index-1] : d 
@@ -242,15 +243,30 @@ export class DataService {
   private i2b2usageJson:I2b2UsageDataSet[];
 
   constructor() { 
-    this.qpfddJson = qpfdd["data"];
-    //filter additional dates for the same day
-    this.qpfddLabels = this.qpfddJson.map(d => d.date).filter((value, index, self) => self.map(d => d.substr(0,10)).indexOf(value.substr(0,10)) === index);
+    //this.qpfddLabels = this.qpfddJson.map(d => d.date).filter((value, index, self) => self.map(d => d.substr(0,10)).indexOf(value.substr(0,10)) === index);
+    this.qpfddLabels = qpfdd["data"].map(d => d.date).reverse().filter((value, index, self) => self.map(d => d.substr(0,7)).indexOf(value.substr(0,7)) === index).reverse();
+    this.qpfddJson = qpfdd["data"].map(data => {
+      if (mapping[data.source]["same as"] && mapping[mapping[data.source]["same as"]]) {
+        data.source = mapping[data.source]["same as"];
+      }
+      return data;
+    }).filter(data => this.qpfddLabels.includes(data.date));
     this.qpfddSources = this.qpfddJson.map(d => d.source).filter(this.distinctFilter);
     this.qpfddSites = this.qpfddJson.map(d => mapping[d.source] && mapping[d.source]["site"]).filter(this.distinctFilter);
     this.qpfddLocations = this.qpfddJson.filter(d => d.location!="").map(d => d.source+"::"+d.location).filter(this.distinctFilter);
 
-    this.phenoJson = phenobd["data"];
-    this.specimenJson = specimenbd["data"];
+    this.phenoJson = phenobd["data"].map(data => {
+      if (mapping[data.source]["same as"] && mapping[mapping[data.source]["same as"]]) {
+        data.source = mapping[data.source]["same as"];
+      }
+      return data;
+    });;
+    this.specimenJson = specimenbd["data"].map(data => {
+      if (mapping[data.source]["same as"] && mapping[mapping[data.source]["same as"]]) {
+        data.source = mapping[data.source]["same as"];
+      }
+      return data;
+    });;
     this.multiPhenotypeJson = multiphenotype["data"];
     this.phenotypes = this.multiPhenotypeJson.map(a => <string[]>a["phenotypes"]).reduce((result, subarray) => result.concat(subarray), []).filter(this.distinctFilter);
     this.i2b2usageJson = i2b2usage["data"];

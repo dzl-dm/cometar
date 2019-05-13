@@ -26,6 +26,7 @@ export class MenuComponent implements OnInit {
     public treeDataService: TreeDataService,
     private route:ActivatedRoute,
     private e: ElementRef,
+    private cd: ChangeDetectorRef,
     iconRegistry: MatIconRegistry, 
     sanitizer: DomSanitizer
   ) { 
@@ -37,8 +38,9 @@ export class MenuComponent implements OnInit {
   ngOnInit() {
     this.treeDataService.getSearchResultCount$().subscribe(count => {
       this.searchResultCount = count;
-      this.searchDivOpened = count > 0;
+      this.cd.detectChanges();
     });
+    this.searchDivOpened = this.treeDataService.getSearchPattern() && this.treeDataService.getSearchPattern() != "";
   }
 
   public performSearch(pattern:string){
@@ -60,7 +62,6 @@ export class MenuComponent implements OnInit {
     this.alignHelpItems();
     let el = <HTMLElement>(<HTMLElement>this.e.nativeElement).getElementsByClassName("helpbutton")[0];
     let offsetLeft = this.getOffset(el).left;
-    console.log(helpDiv);
     if (this.helpDivOpened){
       helpDiv.setAttribute("style","left:0px; height:100%; width:100%");
       this.helpDivOpened = !this.helpDivOpened; 

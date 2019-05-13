@@ -21,6 +21,7 @@ SELECT ?element ?property ?value
 WHERE { 
   ?element rdf:type ?t .
   FILTER (?t IN (skos:Concept, skos:Collection)) .
+  FILTER EXISTS { ?root :topLevelNode [ skos:member* [ skos:narrower* [ rdf:hasPart? [ skos:narrower* ?element ] ] ] ] }
   {
     SELECT ?element ?property ?value
     WHERE { 

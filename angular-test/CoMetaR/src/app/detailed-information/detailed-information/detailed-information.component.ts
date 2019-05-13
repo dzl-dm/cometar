@@ -137,7 +137,8 @@ export class DetailedInformationComponent implements OnInit {
   
       anchor.download = "export_"+iri+".csv";
       anchor.href = window.URL.createObjectURL(thefile);
-      anchor.dataset.downloadurl = ['text/plain', anchor.download, anchor.href].join(':');
+      anchor.dataset.downloadurl = ['text/plain;charset=UTF-8', anchor.download, anchor.href].join(':');
+      window.document.body.appendChild(anchor);
       anchor.click();
     })).unsubscribe();
   }

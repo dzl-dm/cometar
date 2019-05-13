@@ -57,6 +57,7 @@ div.treeItemTitle{
     display: flex;
     flex-direction: row;
     align-items: flex-start;
+    flex-wrap: wrap;
 }
 div.treeItemTitleLabel {
     display: inline-flex;

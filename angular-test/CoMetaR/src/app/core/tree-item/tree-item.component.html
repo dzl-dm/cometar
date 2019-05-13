@@ -18,9 +18,6 @@
         [ngStyle]="{
           'text-decoration':style['text-decoration'] || 'none' 
         }">{{attributes.label.value}}</div>
-    <!--<div *ngFor="let chip of style.chips" class="chip" [ngStyle]="{ 'background-color': chip['background-color'] }">
-      {{chip.text}}
-    </div>-->
     <ng-container *ngFor="let icon of getIcons()">
       <div 
         [ngClass]="{
@@ -30,10 +27,14 @@
           'smallImgIcon': icon.type == 'smallImgIcon',
           'chip': icon.type == 'chip'
         }"
+        [matTooltip]="icon.description?icon.description.replace('COUNTER',getBubbleIconCounter(icon)?getBubbleIconCounter(icon):''):undefined"
         [ngStyle]="{ 'background-color': icon['background-color'], 'color': icon['color'] }">
           <div class="counter">{{getBubbleIconCounter(icon)?getBubbleIconCounter(icon):""}}</div>
           <div class="text">{{icon.text}}</div>
-          <mat-icon *ngIf="icon.type == 'imgIcon' || icon.type =='smallImgIcon'" aria-hidden="false" aria-label="Help" [svgIcon]="icon.iconName"></mat-icon>
+          <mat-icon *ngIf="icon.type == 'imgIcon' || icon.type =='smallImgIcon'" 
+            aria-hidden="false" 
+            aria-label="Help" 
+            [svgIcon]="icon.iconName"></mat-icon>
       </div>
     </ng-container>
   </div>

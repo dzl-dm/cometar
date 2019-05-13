@@ -146,5 +146,6 @@ export interface TreeItemIcon {
   "background-color"?: string,
   "text"?: string,
   "type"?: "dot" | "chip" | "imgIcon" | "smallImgIcon",
-  "bubble-up"?: TreeItemIcon
+  "bubble-up"?: TreeItemIcon,
+  "description"?: string
 }
