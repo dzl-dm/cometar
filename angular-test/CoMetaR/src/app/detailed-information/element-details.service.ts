@@ -33,12 +33,14 @@ export class ElementDetailsService {
             "background-color": "white",
             "iconName": "draft",
             id: "draft",
+            description: "This element is on draft.",
             "bubble-up": {
               type: "smallImgIcon",
               "iconName": "draft",
               "background-color": "white",
               id: "draft_bubble",
-              color: "var(--dzl-blue)"
+              color: "var(--dzl-blue)",
+              description: "There are COUNTER sub-elements on draft."
             }
           });
         }
@@ -48,12 +50,14 @@ export class ElementDetailsService {
             "background-color": "white",
             "iconName": "editNote",
             id: "editNote",
+            description: "This element has an editorial note. Domain experts are asked to review.",
             "bubble-up": {
               type: "smallImgIcon",
               "iconName": "editNote",
               "background-color": "white",
               id: "editNote_bubble",
-              color: "var(--dzl-blue)"
+              color: "var(--dzl-blue)",
+              description: "There are COUNTER sub-elements with editorial notes. Domain experts are asked to review.",
             }
           });
         }

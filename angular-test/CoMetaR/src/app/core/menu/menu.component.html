@@ -18,7 +18,7 @@
     <form>
         <input type='text' [value]="treeDataService.getSearchPattern()" name="searchPatternInput" #searchPatternInput placeholder="search term"/> 
         <input type="submit" (click)='performSearch(searchPatternInput.value)' value="search"/>
-        <input type="button" (click)='clearSearch()' [value]="'x '+(searchResultCount?searchResultCount:'')"/>
+        <input type="button" (click)='clearSearch()' [value]="'x '+(searchResultCount!=undefined&&searchPatternInput.value!=''?searchResultCount:'')"/>
     </form>
 </div>
 <div id="helpDiv" [ngClass]="{'open':helpDivOpened}" #helpDiv>

@@ -39,7 +39,8 @@ export class ProvTreeItemsService {
                 else if (negationmove.length > 0) {
                     tempAddedTreeItems.push({
                         element: tempElement,
-                        newparent: negationmove[0].newparent
+                        newparent: negationmove[0].newparent,
+                        date: negationmove[0].date
                     });
                     tempMovedTreeItems.splice(tempMovedTreeItems.indexOf(negationmove[0]),1);
                 }
@@ -50,13 +51,15 @@ export class ProvTreeItemsService {
                     tempMovedTreeItems[0]={
                         element: tempElement,
                         newparent: ptia.parent.value,
-                        oldparent: lastremove.oldparent
+                        oldparent: lastremove.oldparent,
+                        date: ptia.date.value.toLocaleDateString()
                     };
                     tempRemovedTreeItems.splice(tempRemovedTreeItems.length-1,1);
                 }
                 else tempAddedTreeItems.push({
                     element: tempElement,
-                    newparent: ptia.parent.value
+                    newparent: ptia.parent.value,
+                    date: ptia.date.value.toLocaleDateString()
                 })
             }
             if (ptia.addorremove.value == "http://purl.org/vocab/changeset/schema#removal") {
@@ -66,7 +69,8 @@ export class ProvTreeItemsService {
                 else if (negationmove.length > 0) {
                     tempRemovedTreeItems.push({
                         element: tempElement,
-                        oldparent: negationmove[0].oldparent
+                        oldparent: negationmove[0].oldparent,
+                        date: negationmove[0].date
                     });
                     tempMovedTreeItems.splice(tempMovedTreeItems.indexOf(negationmove[0]),1);
                 }                   
@@ -77,13 +81,15 @@ export class ProvTreeItemsService {
                     tempMovedTreeItems[0]={
                         element: tempElement,
                         newparent: lastadd.newparent,
-                        oldparent: ptia.parent.value
+                        oldparent: ptia.parent.value,
+                        date: ptia.date.value.toLocaleDateString()
                     };
                     tempAddedTreeItems.splice(tempAddedTreeItems.length-1,1);
                 }
                 else tempRemovedTreeItems.push({
                     element: tempElement,
-                    oldparent: ptia.parent.value
+                    oldparent: ptia.parent.value,
+                    date: ptia.date.value.toLocaleDateString()
                 })
             }
         });
@@ -102,56 +108,59 @@ export class ProvTreeItemsService {
         let addBubbleIcon:TreeItemIcon = {
             type: "dot",
             id: "prov_addition_bubble",
-            "background-color": "#71E161"
-        };
-        let addIcon:TreeItemIcon = {
-            id: "prov_addition",
-            type: "chip",
             "background-color": "#71E161",
-            text: "added",
-            "bubble-up": addBubbleIcon
-        }
+            description: "There were COUNTER sub-elements added."
+        };
         let moveBubbleIcon:TreeItemIcon = {
             type: "dot",
             id: "prov_move_bubble",
-            "background-color": "#FFEB0F"
-        }
-        let moveIcon:TreeItemIcon = {
-            id: "prov_move",
-            type: "chip",
             "background-color": "#FFEB0F",
-            text: "moved",
-            "bubble-up": moveBubbleIcon
+            description: "There were COUNTER sub-elements moved."
         }
         let removeBubbleIcon:TreeItemIcon = {
             type: "dot",
             id: "prov_removal_bubble",
-            "background-color": "#FFBFBF"
-        }
-        let removeIcon:TreeItemIcon = {
-            type: "chip",
-            text: "removed",
             "background-color": "#FFBFBF",
-            id: "prov_removal",
-            "bubble-up": removeBubbleIcon
+            description: "There were COUNTER sub-elements removed."
         }
 
         this.treeItemStyles = this.treeItemStyles.concat(this.addedTreeItems.map(a => {
             let style = this.treeStyleService.getEmptyStyle(a.element);
-            style.icons = [addIcon]
+            style.icons = [{
+                id: "prov_addition",
+                type: "chip",
+                "background-color": "#71E161",
+                text: "added",
+                "bubble-up": addBubbleIcon,
+                description: "This item has been added on "+a.date+"."
+            }]
             return style;
         }));
 
         this.treeItemStyles = this.treeItemStyles.concat(this.movedTreeItems.map(m => {
             let style = this.treeStyleService.getEmptyStyle(m.element);
-            style.icons = [moveIcon]
+            style.icons = [{
+                id: "prov_move",
+                type: "chip",
+                "background-color": "#FFEB0F",
+                text: "moved",
+                "bubble-up": moveBubbleIcon,
+                description: "This item has been moved on "+m.date+"."
+            }]
             return style;
         }));
 
         this.treeItemStyles = this.treeItemStyles.concat(this.removedTreeItems.map(r => {
             let style = this.treeStyleService.getEmptyStyle(r.element);
             style["text-decoration"] = "line-through";
-            style.icons = [removeIcon]
+            style.icons = [{
+                type: "chip",
+                text: "removed",
+                "background-color": "#FFBFBF",
+                id: "prov_removal",
+                "bubble-up": removeBubbleIcon,
+                description: "This item has been removed on "+r.date+"."
+            }]
             return style;
         }));
 
@@ -189,5 +198,6 @@ export class ProvTreeItemsService {
 export interface ProvParentOperation {
     element:string,
     oldparent?:string,
-    newparent?:string
+    newparent?:string,
+    date:string
 }

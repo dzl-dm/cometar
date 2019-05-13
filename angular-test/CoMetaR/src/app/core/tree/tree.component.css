@@ -31,4 +31,5 @@ div#scrollHeadings > div > div {
     border-bottom:1px solid var(--dzl-blue);
     display:flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }

@@ -119,4 +119,32 @@ export class BreakdownPieComponent implements OnInit {
     canvas.setAttribute("style","border-radius:50%; position:absolute; top:0px");
     return canvas;
   }
+
+  private rememberBreakdownSiteIndex:number;
+  private rememberBreakdownSiteColor:string;
+  public tableBreakdownSiteElementHovered(a:number){
+    this.rememberBreakdownSiteIndex=a;
+    this.rememberBreakdownSiteColor=this.chartData[1].datasets[0].backgroundColor[a];
+    this.chartData[1].datasets[0].backgroundColor[a]="rgba(50,50,50,1)";
+    this.breakdownSiteChart.data = this.chartData[1];
+    this.breakdownSiteChart.update();
+  }
+  private rememberBreakdownIndex:number;
+  private rememberBreakdownColor:string;
+  public tableBreakdownElementHovered(a:number){
+    this.rememberBreakdownIndex=a;
+    this.rememberBreakdownColor=this.chartData[0].datasets[0].backgroundColor[a];
+    this.chartData[0].datasets[0].backgroundColor[a]="rgba(50,50,50,1)";
+    this.breakdownChart.data = this.chartData[0];
+    this.breakdownChart.update();
+  }
+  public dehover(){
+    this.chartData[0].datasets[0].backgroundColor[this.rememberBreakdownIndex]=this.rememberBreakdownColor;
+    this.breakdownChart.data = this.chartData[0];
+    this.breakdownChart.update();
+
+    this.chartData[1].datasets[0].backgroundColor[this.rememberBreakdownSiteIndex]=this.rememberBreakdownSiteColor;
+    this.breakdownSiteChart.data = this.chartData[1];
+    this.breakdownSiteChart.update();
+  }
 }
