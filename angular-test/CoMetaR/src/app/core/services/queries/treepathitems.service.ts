@@ -69,8 +69,10 @@ export class TreepathitemsService {
       let gp = this.getPaths(data[1],iris);
       gp = gp.filter(p => !iris.includes(p));
       let ps = this.getPaths(data[0],iris.concat(gp));
-      if (!includeIrisInPath) ps = ps.filter(p => !iris.includes(p));
-      return ps;
+      if (!includeIrisInPath) ps = ps.splice(iris.length);
+      return ps.filter((value, index, self) => {
+        return self.indexOf(value) === index;
+      });
     }));
   };
 

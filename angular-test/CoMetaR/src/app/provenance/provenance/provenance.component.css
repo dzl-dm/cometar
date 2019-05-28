@@ -23,6 +23,11 @@
 .rangeselect {
     display: flex;
     width:50px;
+    position: relative;
+    flex-direction: column;
+}
+.rangeselect mat-slider { 
+    height:calc(100% - 30px);
 }
 .day{
     display: flex;
@@ -37,12 +42,16 @@
 .day.filled {
     min-height:35px;
 }
-.day.selected .date {
+.day.selected .selectButton {
     border:3px solid rgb(3, 102, 145);
     margin: -3px -3px -3px 0px;
 }
-.date {
-    display: none;
+.rangeselect .selectButton.selected {
+    border:3px solid rgb(3, 102, 145);
+    margin: 0px 0px 0px 3px;
+    padding-top:2px;
+}
+.selectButton {
     background-color: var(--dzl-blue);
     color:white;
     padding:5px;
@@ -51,8 +60,17 @@
     margin-left:3px;
     box-shadow: 4px 4px 2px -2px #777;
 }
-.day.filled .date {
+.day .selectButton {
+    display:none;
+}
+.day.filled .selectButton {
     display: inline-block;
+}
+.rangeselect .selectButton {
+    height:30px;
+    width:270px;
+    position: relative;
+    text-align: center;
 }
 app-commit {
     flex-shrink: 0;

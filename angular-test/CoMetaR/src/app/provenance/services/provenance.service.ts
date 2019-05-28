@@ -26,6 +26,10 @@ export class ProvenanceService {
         return this.commitMetaDataService.get(new Date(date.setHours(0,0,0,0)), new Date(date.setHours(24,0,0,0)));
     }
 
+    public getAllMetaDataSince$(date:Date):Observable<CommitMetaData[]>{
+        return this.commitMetaDataService.get(new Date(date), new Date(Date.now()));
+    }
+
     public getProvenance(from:Date) {
         let commitMetaDataByDay=[];
 
