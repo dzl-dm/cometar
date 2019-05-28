@@ -15,8 +15,7 @@ import { ProvTreeItemsService } from '../services/prov-tree-items.service';
 @Component({
 	selector: 'app-provenance',
 	templateUrl: './provenance.component.html',
-	styleUrls: ['./provenance.component.css'],
-	changeDetection: ChangeDetectionStrategy.OnPush
+	styleUrls: ['./provenance.component.css']
 })
 export class ProvenanceComponent implements OnInit {
 	private fromDate:Date;
@@ -24,6 +23,7 @@ export class ProvenanceComponent implements OnInit {
 	public categories = {};
 	public selectedCommits$ = new ReplaySubject<string[]>(1);
 	public selectedDateValue$ = new ReplaySubject<number>(1);
+	public selectedWholeTimespan$ = new ReplaySubject<boolean>(1);
 	private combinedCommitDetails$:ReplaySubject<CommitDetails[]>=new ReplaySubject<CommitDetails[]>(1);
 	private treeData$:ReplaySubject<ConceptInformation[]>=new ReplaySubject<ConceptInformation[]>(1);
 	constructor(
@@ -59,14 +59,16 @@ export class ProvenanceComponent implements OnInit {
 			this.commitMetaDataByDay = this.provenanceService.getProvenance(this.fromDate);
 		});
 		this.route.queryParamMap.pipe(
-			map(data => [data.get('commit'),data.get('date')])
-		).subscribe(([commitids,date]) => {
+			map(data => [data.get('commit'),data.get('date'),data.get('wholetimespan'),data.get('provenancefrom')])
+		).subscribe(([commitids,date,wholetimespan,provenancefrom]) => {
 			setTimeout(()=>{
 				this.clearTree();
 				let commitidsarr = commitids && commitids.split(",").map(c => this.urlService.extendRdfPrefix(c)) || [];
 				this.selectedCommits$.next(commitidsarr);
 				if (commitidsarr.length > 0) commitidsarr.forEach(cia => this.loadCommitIntoTree(cia));
 				this.selectedDateValue$.next(new Date(date).valueOf());
+				this.selectedWholeTimespan$.next(wholetimespan == "true");
+				if (wholetimespan == "true") this.loadAllIntoTree(provenancefrom);
 				if (date != "") this.loadDateIntoTree(date);
 			},0);
 		});
@@ -99,7 +101,7 @@ export class ProvenanceComponent implements OnInit {
 			if (!commitidsarr.includes(commitid)) commitidsarr = commitidsarr.concat(commitid);
 			else commitidsarr.splice(commitidsarr.indexOf(commitid),1);
 			commitidsarr = commitidsarr.map(c => this.urlService.shortenRdfPrefix(c));
-			this.router.navigate(["provenance"],{ queryParams: {date: null, commit: commitidsarr.join(",")}, queryParamsHandling: "merge" });
+			this.router.navigate(["provenance"],{ queryParams: {date: null, commit: commitidsarr.join(","), wholetimespan: null}, queryParamsHandling: "merge" });
 		}).unsubscribe();
 	}
 
@@ -110,7 +112,11 @@ export class ProvenanceComponent implements OnInit {
 	}
 
 	public onDaySelect(date:Date){
-		this.router.navigate(["provenance"],{ queryParams: {commit: null, date: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()}, queryParamsHandling: "merge" });
+		this.router.navigate(["provenance"],{ queryParams: {commit: null, date: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(), wholetimespan: null}, queryParamsHandling: "merge" });
+	}
+
+	public onAllSelect(){
+		this.router.navigate(["provenance"],{ queryParams: {commit: null, date: null, wholetimespan: "true"}, queryParamsHandling: "merge" });
 	}
 
 	public isSelectedDate(date:Date):Observable<boolean>{
@@ -120,6 +126,10 @@ export class ProvenanceComponent implements OnInit {
 				return compareDateValue == selectedDate.valueOf()
 			})
 		);
+	}
+
+	public isAllSelected():Observable<boolean>{
+		return this.selectedWholeTimespan$;
 	}
 
 	private loadCommitIntoTree(commitid){  
@@ -137,6 +147,12 @@ export class ProvenanceComponent implements OnInit {
 
 	private loadDateIntoTree(date:string){
 		this.provenanceService.getCommitMetaDataByDay$(new Date(date)).subscribe(data => data.forEach((cmd)=>{
+			this.loadCommitIntoTree(cmd.commitid.value);
+		}));
+	}
+
+	private loadAllIntoTree(date:string){
+		this.provenanceService.getAllMetaDataSince$(new Date(date)).subscribe(data => data.forEach((cmd)=>{
 			this.loadCommitIntoTree(cmd.commitid.value);
 		}));
 	}

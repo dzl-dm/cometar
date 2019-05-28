@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommitMetaData } from '../services/queries/commit-meta-data.service';
 import { Observable, combineLatest } from 'rxjs';
 import { CommitDetails, CommitDetailsService } from '../services/queries/commit-details.service';
@@ -9,7 +9,8 @@ import { filter, map, withLatestFrom, combineAll } from 'rxjs/operators';
 @Component({
   selector: 'app-commit',
   templateUrl: './commit.component.html',
-  styleUrls: ['./commit.component.css']
+  styleUrls: ['./commit.component.css'],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CommitComponent implements OnInit {
   @Input() commitMetaData:CommitMetaData;

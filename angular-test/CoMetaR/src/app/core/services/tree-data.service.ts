@@ -23,9 +23,6 @@ export class TreeDataService {
   private searchIris$:Observable<string[]>;
   private informationPaths$:Observable<string[]>;
   public searchActivated$:Observable<boolean>;
-  /*private provAddedPaths$:Observable<string[]>;
-  private provRemovedPaths$:Observable<string[]>;
-  private provMovedPaths$:Observable<string[]>;*/
   public conceptInformation$:BehaviorSubject<ConceptInformation[]> = new BehaviorSubject<ConceptInformation[]>([]);
 
   private claimWidth=(number)=>{};
@@ -55,9 +52,6 @@ export class TreeDataService {
     this.informationPaths$ = this.conceptInformation$.pipe(
       flatMap(cis => this.treepathitemsService.getAllAncestors(cis.map(ci => ci.concept)))
     )   
-    /*this.provAddedPaths$ = this.treeitemsService.addedTreeItems$.pipe(flatMap(ppos => this.treepathitemsService.get(ppos.map(ppo => ppo.element))));
-    this.provRemovedPaths$ = this.treeitemsService.removedTreeItems$.pipe(flatMap(ppos => this.treepathitemsService.get(ppos.map(ppo => ppo.oldparent),true)));
-    this.provMovedPaths$ = this.treeitemsService.movedTreeItems$.pipe(flatMap(ppos => this.treepathitemsService.get(ppos.map(ppo => ppo.element))));*/
   }
 
   //init (through tree component)
@@ -103,41 +97,6 @@ export class TreeDataService {
       map(data => data.includes(true))
     )
   }
-  /*public isProvAdded$(iri:string):Observable<string[]>{
-    return this.treeitemsService.addedTreeItems$.pipe(
-      map(a => a.filter(b => b.element == iri).map(b => b.newparent))
-    )
-  }
-  public isProvRemoved$(iri:string):Observable<string[]>{
-    return this.treeitemsService.removedTreeItems$.pipe(
-      map(a => a.filter(b => b.element == iri).map(b => b.oldparent))
-    )
-  }
-  public isProvMovedTo$(iri:string, parent:string):Observable<string[]>{
-    return this.treeitemsService.movedTreeItems$.pipe(
-      map(a => a.filter(b => b.element == iri && b.oldparent == parent).map(b => b.newparent))
-    )
-  }
-  public isProvMovedFrom$(iri:string, parent:string):Observable<string[]>{
-    return this.treeitemsService.movedTreeItems$.pipe(
-      map(a => a.filter(b => b.element == iri && b.newparent == parent).map(b => b.oldparent))
-    )
-  }
-  public isProvAddedPathPart$(iri:string):Observable<boolean>{
-    return this.provAddedPaths$.pipe(
-      map(paths => paths.includes(iri))
-    )
-  }
-  public isProvRemovedPathPart$(iri:string):Observable<boolean>{
-    return this.provRemovedPaths$.pipe(
-      map(paths => paths.includes(iri))
-    )
-  }
-  public isProvMovedPathPart$(iri:string):Observable<boolean>{
-    return this.provMovedPaths$.pipe(
-      map(paths => paths.includes(iri))
-    )
-  }*/
   private searchItemFilter(o:Observable<TreeItemAttributes[]>):Observable<TreeItemAttributes[]>{
     return combineLatest(o, this.searchIris$, this.searchPaths$, this.searchActivated$).pipe(
       map(data => {

@@ -13,6 +13,7 @@
       invert
       vertical>
     </mat-slider>
+    <div class="selectButton" (click)="onAllSelect()" [ngClass]="{'selected':isAllSelected() | async}">load all changes in given timespan</div>
   </div>
   <div class='container' id="provenancedata" #provenancedata>
     <div *ngFor="let day of commitMetaDataByDay" 
@@ -21,7 +22,7 @@
         'filled':day[1].length > 0,
         'selected':isSelectedDate(day[0]) | async
       }">
-      <div class="date" (click)="onDaySelect(day[0])">{{day[0].toString() | date:'dd.MM.yyyy'}}</div>
+      <div class="selectButton" (click)="onDaySelect(day[0])">{{day[0].toString() | date:'dd.MM.yyyy'}}</div>
       <app-commit
         *ngFor="let metadata of day[1] | keyvalue" 
         [commitMetaData]="metadata.value" 
