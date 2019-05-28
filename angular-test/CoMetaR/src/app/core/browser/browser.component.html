@@ -7,7 +7,7 @@
         </div>
         <div id="treeResizeComponent"  
             (mousedown)='onTreeResizeStart($event)'
-        ></div>
+        ><div class="treeResizeExpandCollapseDiv" (mousedown)="expandOrCollapseTreeContainer($event)">&gt;</div></div>
     </div>
     <div id="modules">
         <div id="moduleMenu">

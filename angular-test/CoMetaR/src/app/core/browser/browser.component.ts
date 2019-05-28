@@ -130,6 +130,7 @@ export class BrowserComponent implements OnInit {
     this.zone.runOutsideAngular(() => {
       window.document.addEventListener('mousemove', this.boundResizeFunction);
     });
+    (<HTMLElement>event.currentTarget).getElementsByClassName("treeResizeExpandCollapseDiv")[0].innerHTML="&gt;";
     return false;
   }
   public onTreeResizeDrag(event: MouseEvent) {  
@@ -161,5 +162,20 @@ export class BrowserComponent implements OnInit {
     this.newWidth = width;
     this.resizeToogle=!this.resizeToogle;
     this.width = width;
+  }
+
+  public expandOrCollapseTreeContainer(event: MouseEvent){
+    event.stopPropagation();
+    let el = <HTMLElement>event.currentTarget;
+    if (el.innerHTML == "&gt;") {
+      this.savedX = this.width;
+      this.width=Math.round(window.innerWidth*0.8);
+      el.innerHTML = "&lt;";
+    }
+    else {
+      el.innerHTML = "&gt;";
+      this.width=this.savedX;
+    }
+    return false;
   }
 }

@@ -83,4 +83,16 @@ div.moduleMenuItem:hover{
     width:20px;
     height:100%;
     cursor: e-resize;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    display:flex;
+}
+
+.treeResizeExpandCollapseDiv{
+    text-align: center;
+    color: white;
+    cursor:pointer;
+    height:20px;
+    width:20px;
 }
