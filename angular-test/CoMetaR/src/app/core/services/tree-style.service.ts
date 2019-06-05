@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ChangeDetectorRef } from '@angular/core';
 import { Subject, Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { map, filter, flatMap } from 'rxjs/operators';
+import { map, filter, flatMap, first } from 'rxjs/operators';
 import { TreepathitemsService } from './queries/treepathitems.service';
 
 @Injectable({
@@ -20,6 +20,10 @@ export class TreeStyleService {
         this.treeDomElement = child;
       }
     });
+    this.observer = new MutationObserver(mutations => {
+      this.onTreeDomChange(); 
+    });  
+    this.observer.observe(el.getElementsByTagName("app-tree-item-list")[0], { childList: true, subtree: true, attributes: true, attributeFilter: ["style"] });
   }
   /**
    * right now only return a number for the information div intent as Observable
@@ -39,6 +43,64 @@ export class TreeStyleService {
       x: xPos,
       y: yPos
     };
+  }
+  private getTreeItemByIri(iri:string):HTMLElement[]{
+    let treeItems = Array.from(this.treeDomElement.getElementsByTagName("APP-TREE-ITEM"));
+    let iriTreeItems = <HTMLElement[]>treeItems.filter(ti => ti.getAttribute("iri")==iri);
+    return iriTreeItems;
+  }
+
+
+  public outlineElements$ = new Subject<{}[]>();
+  private observer:MutationObserver;
+  private domChangeTimeout;
+  public onTreeDomChange(){
+    if (this.domChangeTimeout){
+      clearTimeout(this.domChangeTimeout);
+    }
+    this.domChangeTimeout=setTimeout(()=>this.setOutlineElements(),500);
+  }
+  private setOutlineElements(){
+    let outlineElements = [];
+    let treeItems = Array.from(this.treeDomElement.getElementsByTagName("APP-TREE-ITEM"));
+    treeItems.forEach((ti:HTMLElement) => {
+      let iri = ti.getAttribute("iri");
+      let relativetop = this.getPosition(ti).y/(<HTMLElement>this.treeDomElement.getElementsByTagName("app-tree-item-list")[0]).offsetHeight;
+      let relativeheight = ti.offsetHeight/(<HTMLElement>this.treeDomElement.getElementsByTagName("app-tree-item-list")[0]).offsetHeight;
+      let tiInformation = ti.getElementsByClassName("treeItemInformation");
+      if (tiInformation.length>0){
+        let relativeinfotop = this.getPosition(<HTMLElement>tiInformation[0]).y/(<HTMLElement>this.treeDomElement.getElementsByTagName("app-tree-item-list")[0]).offsetHeight;
+        let relativeinfoheight = (<HTMLElement>tiInformation[0]).offsetHeight/(<HTMLElement>this.treeDomElement.getElementsByTagName("app-tree-item-list")[0]).offsetHeight;
+        outlineElements.push({
+          top:relativeinfotop,
+          color:"#FFFBD5",
+          siblings:1,
+          position:0,
+          height:relativeinfoheight
+        })
+      }
+      if (ti.className.indexOf("selected")>-1) {
+        outlineElements.push({
+          top:relativetop,
+          bordercolor:"#BFE3F2",
+          siblings:1,
+          position:0,
+          height:relativeheight,
+          zindex:10
+        })
+      }
+      this.getTreeItemStyle$(iri).subscribe(style => {
+        this.getIcons(style).filter(i => i["background-color"] && i["background-color"] != "white").forEach((value, index, array) => {          
+          outlineElements.push({
+            top: relativetop,
+            color: value["background-color"],
+            siblings: array.length,
+            position: index
+          })
+        })
+      })
+    });
+    this.outlineElements$.next(outlineElements);
   }
 
   public scrollHeadingsSubject$ = new Subject<string[]>();
@@ -127,6 +189,15 @@ export class TreeStyleService {
         return style;
       })
     );
+  }
+
+  public getIcons(style:TreeItemStyle):TreeItemIcon[]{
+    let icons = style.icons.filter(icon => icon.type);
+    if (!style.bubbleicons) return icons;
+    let bi = style.bubbleicons.filter((value, index, self) => {
+      return self.map(icon => icon.id).indexOf(value.id) === index;
+    });
+    return icons.concat(bi);
   }
 }
 

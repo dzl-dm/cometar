@@ -33,3 +33,12 @@ div#scrollHeadings > div > div {
     flex-direction: row;
     flex-wrap: wrap;
 }
+
+div.treeOutlineElement {
+    width:10px;
+    height:5px;
+    position: fixed;
+    opacity: 0.85;
+    cursor: pointer;
+    border-style:solid;
+}

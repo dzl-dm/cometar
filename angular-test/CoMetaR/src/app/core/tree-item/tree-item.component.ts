@@ -55,6 +55,7 @@ export class TreeItemComponent implements OnInit {
       this.intent$ = this.treeStyleService.getIntent(this.el.nativeElement);
       this.intent$.subscribe(data => this.cd.markForCheck());
     });
+    if (this.attributes) (<HTMLElement>this.el.nativeElement).setAttribute("iri",this.attributes.element.value);;
     if (this.conceptIri) this.treeitemsService.get({range:"single",iri:this.conceptIri}).subscribe(a => {
       this.attributes = a[0];
       this.load();
@@ -106,12 +107,7 @@ export class TreeItemComponent implements OnInit {
   }
 
   public getIcons():TreeItemIcon[]{
-    let icons = this.style.icons.filter(icon => icon.type);
-    if (!this.style.bubbleicons) return icons;
-    let bi = this.style.bubbleicons.filter((value, index, self) => {
-      return self.map(icon => icon.id).indexOf(value.id) === index;
-    });
-    return icons.concat(bi);
+    return this.treeStyleService.getIcons(this.style);
   }
   public getBubbleIconCounter(icon:TreeItemIcon):number{
     if (!this.style.bubbleicons) return;

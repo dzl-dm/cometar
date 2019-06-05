@@ -1,8 +1,23 @@
-<div id="tree" (scroll)="onscroll($event)">
+<div id="tree" (scroll)="onscroll($event)" #tree [style.width.px]="width-40">
     <app-tree-item-list [conceptIri]="'root'" class="topLevel" [style.width.px]="width-60"></app-tree-item-list>
     <div id="scrollHeadings" [style.width.px]="width-60">
         <div *ngFor="let scrollHeading of (treeStyleService.scrollHeadingsSubject$ | async); let i = index">
             <div [style.marginLeft.px]="21+i*21" [innerHTML]="scrollHeading | noSanitize"></div>
         </div>
+    </div>
+    <div 
+        *ngFor="let outlineElement of (treeStyleService.outlineElements$ | async);" 
+        class="treeOutlineElement"
+        [style.top.px]="outlineElement.top*tree.offsetHeight+tree.offsetTop+2"
+        [style.backgroundColor]="outlineElement.color"
+        [style.borderColor]="outlineElement.bordercolor"
+        [style.borderWidth.px]="outlineElement.bordercolor?1:0"
+        [style.zIndex]="outlineElement.zindex"
+        [style.width.px]="11/outlineElement.siblings"
+        [style.height.px]="outlineElement.height?outlineElement.height*tree.offsetHeight:31*tree.offsetHeight/tree.scrollHeight"
+        [style.marginLeft.px]="outlineElement.position*11/outlineElement.siblings+width-53"
+        [matTooltip]="outlineElement.description"
+        (click)="scrollTo(outlineElement)"
+        >
     </div>
 </div>
