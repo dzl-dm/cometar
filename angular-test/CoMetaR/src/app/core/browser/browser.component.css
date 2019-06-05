@@ -42,7 +42,8 @@ div#moduleMenu {
     flex-direction: row;
     flex-shrink: 0;
     border-bottom-left-radius: 5px;
-    height:35px;
+    min-height:35px;
+    flex-wrap:wrap;
     padding:5px;
     justify-content: flex-end;
 }

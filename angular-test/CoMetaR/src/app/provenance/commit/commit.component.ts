@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ElementRef, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommitMetaData } from '../services/queries/commit-meta-data.service';
-import { Observable, combineLatest } from 'rxjs';
+import { Observable, combineLatest, of } from 'rxjs';
 import { CommitDetails, CommitDetailsService } from '../services/queries/commit-details.service';
 import { TreeDataService } from 'src/app/core/services/tree-data.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
@@ -16,6 +16,8 @@ export class CommitComponent implements OnInit {
   @Input() commitMetaData:CommitMetaData;
   @Input() displayOptions$:Observable<{}>;
   @Input() displaycontainer;
+  @Input() democommit?;
+  @Input() label?;
   @Output() onSelect: EventEmitter<string> = new EventEmitter();
   private commitDetails:CommitDetails[]=[];
   public categories={};
@@ -29,7 +31,7 @@ export class CommitComponent implements OnInit {
   ) { }
 
   ngOnInit() {    
-    combineLatest(this.commitDetailsService.getByCommitId(this.commitMetaData.commitid.value),this.displayOptions$).pipe(
+    combineLatest(this.democommit && of(this.democommit) || this.commitDetailsService.getByCommitId(this.commitMetaData.commitid.value),this.displayOptions$).pipe(
       map(data => {
         let cds = data[0];
         let displayOptions = data[1];
@@ -56,7 +58,8 @@ export class CommitComponent implements OnInit {
   }
 
   public getCommitDetailsVerticalDirection(){
-    if (this.ele.nativeElement.offsetTop + 200 > this.displaycontainer.offsetHeight + this.displaycontainer.scrollTop) return "up";
+    let nat = <HTMLElement>this.ele.nativeElement
+    if (nat.offsetTop - this.displaycontainer.offsetTop + 200 > this.displaycontainer.offsetHeight + this.displaycontainer.scrollTop) return "up";
     else return "down"
   }
 

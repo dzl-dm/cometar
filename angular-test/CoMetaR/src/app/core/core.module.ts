@@ -15,7 +15,8 @@ import { ConceptInformationComponent } from './concept-information/concept-infor
 import { ChartsModule } from 'ng2-charts';
 import { ProgressbarComponent } from './progressbar/progressbar.component';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip'; 
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { SectionComponent } from './section/section.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     StartComponent,
     NoSanitizePipe,
     ConceptInformationComponent,
-    ProgressbarComponent
+    ProgressbarComponent,
+    SectionComponent
   ],
   imports: [
     CommonModule,
@@ -45,7 +47,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     TreeItemListComponent,
     BrowserComponent,
     CommonModule,
-    ConceptInformationComponent
+    ConceptInformationComponent,
+    SectionComponent
   ],
   entryComponents: [
     SnackbarComponent

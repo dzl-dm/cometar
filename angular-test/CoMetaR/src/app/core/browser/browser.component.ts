@@ -169,7 +169,7 @@ export class BrowserComponent implements OnInit {
     let el = <HTMLElement>event.currentTarget;
     if (el.innerHTML == "&gt;") {
       this.savedX = this.width;
-      this.width=Math.round(window.innerWidth*0.8);
+      this.width=Math.round(Math.min(window.innerWidth-300,window.innerWidth*0.8));
       el.innerHTML = "&lt;";
     }
     else {

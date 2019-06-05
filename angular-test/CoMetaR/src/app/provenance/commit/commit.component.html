@@ -3,6 +3,7 @@
     <div 
         [ngClass]="{
         'commitDetails':true,
+        'demo':democommit!=undefined,
         'openUp':mouseOvered && getCommitDetailsVerticalDirection()=='up',
         'openLeft':mouseOvered && getCommitDetailsHorizontalDirection()=='left'
         }">
@@ -21,4 +22,5 @@
             </div>
         </div>
     </div>
+    <div class="label">{{label}}</div>
 </div>

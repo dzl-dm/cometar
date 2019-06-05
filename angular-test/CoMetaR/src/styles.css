@@ -90,7 +90,7 @@ mat-slider.mat-slider-horizontal .mat-slider-wrapper {
     background-color: var(--dzl-blue) !important;
 }
 .mat-slider-vertical .mat-slider-thumb-label {
-    left:10px !important;
+    left:0px !important;
 }
 .mat-slider-thumb-label span.mat-slider-thumb-label-text {
     background-color:var(--dzl-blue);

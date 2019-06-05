@@ -21,7 +21,7 @@ p {
     margin:15px;
     display:none;
 }
-:host:hover p{
+:host:hover .commitDetails:not(.demo) p{
     display: block;
 }
 :host:hover{    
@@ -29,9 +29,11 @@ p {
 }
 
 .commitDetails{
-    background-color:#EEE;
-    /*display:none;*/
     position: absolute;
+}
+.commitDetails:not(.demo){
+    background-color:#DDD;
+    /*display:none;*/
     box-shadow: 10px 10px 6px -6px #777;
     transition: min-width 0.2s, height 0.2s, top 0.2s, left 0.2s;
     width:10px;
@@ -48,7 +50,7 @@ p {
     overflow:hidden;
     margin:5px;
 }
-:host:hover .commitDetails{
+:host:hover .commitDetails:not(.demo){
     display: block;
     overflow:auto;
     min-width: 400px;
@@ -106,4 +108,12 @@ p {
     height:2px;
     background-color: black;
     opacity: 0.3;
+}
+
+.label {
+    position: absolute;
+    width:100%;
+    text-align: center;
+    padding:2px;
+    top:0px;
 }

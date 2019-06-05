@@ -1,0 +1,12 @@
+<div class="modal-content">
+  <div class="modal-header" (click)="expandOrCollapse($event)" [ngClass]="{'foldable':foldable}">
+    {{title}}
+    <ng-container *ngIf="foldable">
+      <ng-container *ngIf="expanded"><mat-icon aria-hidden="false" aria-label="Collapse" svgIcon="expand_less"></mat-icon></ng-container>
+      <ng-container *ngIf="!expanded"><mat-icon aria-hidden="false" aria-label="Expand" svgIcon="expand_more"></mat-icon></ng-container>
+    </ng-container>
+  </div>
+  <div class="modal-body" [ngClass]="{'expanded':expanded}" [@openClose]="expanded ? 'open' : 'closed'">
+     <ng-content></ng-content>
+  </div>
+</div>

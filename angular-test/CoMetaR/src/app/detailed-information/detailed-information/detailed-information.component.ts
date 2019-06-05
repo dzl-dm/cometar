@@ -142,4 +142,17 @@ export class DetailedInformationComponent implements OnInit {
       anchor.click();
     })).unsubscribe();
   }
+
+  public onSectionExpand(sectionKey:string){
+    if (sectionKey == "lastchangesdate") {
+      let displayOptions = this.configuration.changeCategories;
+      Object.keys(displayOptions).forEach(key => {
+        displayOptions[key]=displayOptions[key] != undefined;
+      });
+      this.changeDetails$ = this.selectedIri$.pipe(
+        flatMap(subject => this.commitDetailsService.getBySubject(subject)),
+        flatMap(cds => this.provenanceService.getConceptTableInformation(cds, new BehaviorSubject(displayOptions)))
+      );      
+    }
+  }
 }
