@@ -24,6 +24,9 @@ div.additionalDetails .detail {
 div.additionalDetails{
     width:65%;
     padding:10px;
+    display:flex;
+    flex-direction: column;
+    align-items: stretch;
 }
 div.coreDetails{
     padding:10px;

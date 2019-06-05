@@ -1,38 +1,42 @@
 <div class="additionalDetails" id="detailed_information_additional">
   <h3>{{label}}</h3>
-  <div *ngFor="let detail of additionalDetails | keyvalue">
-    <div class="detail" *ngIf="detail.value.values.length > 0">
-      <div class='detailHeading'>
-        {{detail.value.name}}
-      </div>
+  <ng-container *ngFor="let detail of additionalDetails | keyvalue">
+    <app-section 
+      [title]="detail.value.name + (detail.key=='lastchangesdate'?' ('+(detail.value.values | date:'dd.MM.yyyy')+')':'')" 
+      *ngIf="detail.value.values.length > 0"
+      [foldable]="detail.key == 'lastchangesdate'"
+      [expanded]="detail.key != 'lastchangesdate'"
+      (open)="onSectionExpand(detail.key)">
       <div class='detailContent' [ngSwitch]="detail.key">
-            <div *ngSwitchCase="'modifier'">
-                <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true" [cascade_expand]="true"></app-tree-item>
-            </div>
-            <div *ngSwitchCase="'lastchangesdate'">
-                <div>{{detail.value.values | date:'dd.MM.yyyy'}} <div id="showMoreChanges" (click)="showMoreChangesToggle()">{{showChangeDetails?"show less":"show more"}}</div></div>
-                <ng-container *ngFor="let conceptInformation of changeDetails$ | async">
-                    <app-concept-information 
-                      [conceptInformation]="conceptInformation" 
-                      [hiddenHeading]="false"></app-concept-information>
-                </ng-container>
-            </div>
-            <div *ngSwitchCase="'related'">
-                <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true"></app-tree-item>
-            </div>
-            <div *ngSwitchCase="'loincTable'">
-              <table>
-                  <tr *ngFor="let row of detail.value.values">
-                    <td *ngFor="let cell of row">{{cell}}</td>
-                  </tr>                
-              </table>
-            </div>
-            <div *ngSwitchDefault>
-                <div *ngFor="let value of detail.value.values" [innerHTML]="value" class="valueListing"></div>
-            </div>
+        <div *ngSwitchCase="'modifier'">
+            <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true" [cascade_expand]="true"></app-tree-item>
+        </div>
+        <div *ngSwitchCase="'lastchangesdate'">
+            <ng-container *ngFor="let conceptInformation of changeDetails$ | async">
+                <app-concept-information 
+                  [conceptInformation]="conceptInformation" 
+                  [hiddenHeading]="false"></app-concept-information>
+            </ng-container>
+        </div>
+        <div *ngSwitchCase="'related'">
+            <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true"></app-tree-item>
+        </div>
+        <div *ngSwitchCase="'loincTable'">
+          <table>
+              <tr *ngFor="let row of detail.value.values">
+                <td *ngFor="let cell of row">{{cell}}</td>
+              </tr>                
+          </table>
+        </div>
+        <div *ngSwitchDefault>
+            <div *ngFor="let value of detail.value.values" [innerHTML]="value" class="valueListing"></div>
+        </div>
       </div>
-    </div>
-  </div>
+    </app-section>
+  </ng-container>
+  <app-section title="Actions">
+      <input type="button" class="exportButton" (click)="export()" value="Export Subtree"/>
+  </app-section>
 </div>
 <div class="coreDetails" id="detailed_information_core">
   <div *ngFor="let detail of coreDetails | keyvalue">
@@ -48,5 +52,4 @@
       </div>
     </div>
   </div>  
-  <input type="button" class="exportButton" (click)="export()" value="Export Subtree"/>
 </div>

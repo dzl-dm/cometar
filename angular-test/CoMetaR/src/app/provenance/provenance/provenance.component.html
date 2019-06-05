@@ -1,51 +1,102 @@
-<div class="diagram">
-  <div class="rangeselect">
-    <mat-slider 
-      min="0"
-      max="210"
-      step="1"
-      [value]="historyFromDays"
-      tickInterval="7"
-      (input)="changeHistoryFromLabel($event)"
-      (change)="performHistoryChange($event)"
-      [displayWith]="formatLabel"
-      thumbLabel
-      invert
-      vertical>
-    </mat-slider>
-    <div class="selectButton" (click)="onAllSelect()" [ngClass]="{'selected':isAllSelected() | async}">load all changes in given timespan</div>
+<app-section title="Ontology Uploads Description" [foldable]="true" [expanded]="true">
+  <div class="diagramDescription">      
+    <div class="rangeselect description">Show since ...</div>
+    <div class="container">
+      <div class="day filled">
+        <div class="selectButton">Date 1</div>
+        <app-commit
+          [commitMetaData]="demometadata"
+          [democommit]="getDemocommitdata(7,11,14)"
+          [displayOptions$]="displayOptions$"
+          [displaycontainer]="provenancedata"
+          [label]="'One Upload Package'"></app-commit>
+        <app-commit
+          [commitMetaData]="demometadata"
+          [democommit]="getDemocommitdata(10,29,14)"
+          [displayOptions$]="displayOptions$"
+          [displaycontainer]="provenancedata"
+          [label]="'Width indicates amount of changes'"></app-commit>
+        <app-commit
+          [commitMetaData]="demometadata"
+          [democommit]="getDemocommitdata(12,13,26)"
+          [displayOptions$]="displayOptions$"
+          [displaycontainer]="provenancedata"
+          [label]="'Colors indicate change category'"></app-commit>
+      </div>
+      <div class="day filled selected">
+        <div class="selectButton">Date 2</div>
+        <app-commit
+          [commitMetaData]="demometadata"
+          [democommit]="getDemocommitdata(14,22,28)"
+          [displayOptions$]="displayOptions$"
+          [displaycontainer]="provenancedata"
+          [label]="'Click Date or Upload Package for details'"></app-commit>
+      </div>
+    </div>
   </div>
-  <div class='container' id="provenancedata" #provenancedata>
-    <div *ngFor="let day of commitMetaDataByDay" 
-      [ngClass]="{
-        'day':true,
-        'filled':day[1].length > 0,
-        'selected':isSelectedDate(day[0]) | async
-      }">
-      <div class="selectButton" (click)="onDaySelect(day[0])">{{day[0].toString() | date:'dd.MM.yyyy'}}</div>
-      <app-commit
-        *ngFor="let metadata of day[1] | keyvalue" 
-        [commitMetaData]="metadata.value" 
-        (onSelect)="onSelect($event)"
-        [ngClass]="{'selected':isSelectedCommit(metadata.value.commitid.value)}"
-        [displayOptions$]="displayOptions$"
-        [displaycontainer]="provenancedata"
-        class="commit">
-      </app-commit>
+</app-section>
+
+<app-section title="Ontology Uploads" class="diagram">
+  <div class="diagram">
+    <div class="rangeselect">
+      <mat-slider 
+        min="0"
+        max="210"
+        step="1"
+        [value]="historyFromDays"
+        tickInterval="7"
+        (input)="changeHistoryFromLabel($event)"
+        (change)="performHistoryChange($event)"
+        [displayWith]="formatLabel"
+        thumbLabel
+        invert
+        vertical>
+      </mat-slider>
     </div>
-  </div>  
-</div>
-<div class='options' id="provenanceoptions" #provenanceoptions>
-  <ng-container *ngFor="let cat of categories | keyvalue">
-    <div *ngIf="cat.key != 'structure'" [ngClass]="['category', cat.key]">
-      <div class='category_heading'>
-          <input type="checkbox" [checked]="isOptionsHeadingChecked(cat.key)" [id]="'checkbox_'+cat.key" (click)="displayOptionsHeadingToggle(cat.key)"/>
-          <label [for]="'checkbox_'+cat.key">{{cat.key}}</label>
+    <div class='container' id="provenancedata" #provenancedata>
+      <div *ngFor="let day of commitMetaDataByDay" 
+        [ngClass]="{
+          'day':true,
+          'filled':day[1].length > 0,
+          'selected':isSelectedDate(day[0]) | async
+        }">
+        <div class="selectButton" (click)="onDaySelect(day[0])">{{day[0].toString() | date:'dd.MM.yyyy'}}</div>
+        <app-commit
+          *ngFor="let metadata of day[1] | keyvalue" 
+          [commitMetaData]="metadata.value" 
+          (onSelect)="onSelect($event)"
+          [ngClass]="{'selected':isSelectedCommit(metadata.value.commitid.value)}"
+          [displayOptions$]="displayOptions$"
+          [displaycontainer]="provenancedata"
+          class="commit">
+        </app-commit>
       </div>
-      <div *ngFor="let item of cat.value">
-        <input type="checkbox" [checked]="displayOptions[item]" [id]="'checkbox_'+item" (click)="displayOptionToggle(item)" [hidden]="cat.key == 'structure'"/>
-        <label [for]="'checkbox_'+item">{{configuration.getHumanReadableRDFPredicate(item)}}</label>
+    </div>  
+  </div>
+</app-section>
+
+<app-section title="Other Actions">
+  <div class='actions'>
+      <div 
+        class="selectButton" 
+        (click)="onAllSelect()" 
+        [ngClass]="{'selected':isAllSelected() | async}">Load all changes in given timespan</div>
+  </div>
+</app-section>
+
+<app-section title="Filter Options" [foldable]="true" [expanded]="false">
+  <div class='options' id="provenanceoptions" #provenanceoptions>
+    <ng-container *ngFor="let cat of categories | keyvalue">
+      <div *ngIf="cat.key != 'structure'" [ngClass]="['category', cat.key]">
+        <div class='category_heading'>
+            <input type="checkbox" [checked]="isOptionsHeadingChecked(cat.key)" [id]="'checkbox_'+cat.key" (click)="displayOptionsHeadingToggle(cat.key)"/>
+            <label [for]="'checkbox_'+cat.key">{{cat.key}}</label>
+        </div>
+        <div *ngFor="let item of cat.value">
+          <input type="checkbox" [checked]="displayOptions[item]" [id]="'checkbox_'+item" (click)="displayOptionToggle(item)" [hidden]="cat.key == 'structure'"/>
+          <label [for]="'checkbox_'+item">{{configuration.getHumanReadableRDFPredicate(item)}}</label>
+        </div>
       </div>
-    </div>
-  </ng-container>
-</div>
+    </ng-container>
+  </div>
+</app-section>

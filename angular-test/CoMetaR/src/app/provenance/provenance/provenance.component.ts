@@ -20,6 +20,11 @@ import { ProvTreeItemsService } from '../services/prov-tree-items.service';
 export class ProvenanceComponent implements OnInit {
 	private fromDate:Date;
 	public commitMetaDataByDay=[];
+	public demometadata = {
+		author:{value:'Author'},
+		commitid:{value:'Commit-ID'},
+		message:{value:'Commit Message'}
+	}
 	public categories = {};
 	public selectedCommits$ = new ReplaySubject<string[]>(1);
 	public selectedDateValue$ = new ReplaySubject<number>(1);
@@ -34,8 +39,7 @@ export class ProvenanceComponent implements OnInit {
 		private urlService:UrlService,
 		private treeDataService:TreeDataService,
 		private route:ActivatedRoute,
-		private cd: ChangeDetectorRef,
-		private provTreeItemsService: ProvTreeItemsService
+		private cd: ChangeDetectorRef
 	) { 
 	}
 
@@ -87,6 +91,20 @@ export class ProvenanceComponent implements OnInit {
 		this.combinedCommitDetails$.pipe(
 			flatMap(cds => this.provenanceService.getConceptTableInformation(cds, this.displayOptions$))
 		).subscribe(this.treeData$);
+	}
+
+	public getDemocommitdata(n1:number,n2:number,n3:number){
+		let democommitdata = [];
+		for (let i = 0; i < n1; i++){
+			democommitdata.push({predicate: { value: "http://www.w3.org/2004/02/skos/core#prefLabel"},deprecatedsubject: { value: false }});
+		}
+		for (let i = 0; i < n3; i++){
+			democommitdata.push({predicate: { value: "http://data.dzl.de/ont/dwh#unit"},deprecatedsubject: { value: false }});
+		}
+		for (let i = 0; i < n2; i++){
+			democommitdata.push({predicate: { value: "http://data.dzl.de/ont/dwh#status"},deprecatedsubject: { value: false }});
+		}
+		return democommitdata;
 	}
 
 	private getCommitMetaDataByDay$(day:Date):Observable<CommitMetaData[]>{

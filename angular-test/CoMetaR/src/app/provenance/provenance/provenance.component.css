@@ -6,12 +6,36 @@
     width:calc(100% - 20px);
     position: relative;
 }
-.diagram {
-    display:flex;
-    flex-direction: row;
+div.heading{
+    padding:5px;
+    display: block;
+    font-size:20px;
+    width:100%;
+    background-color:#EEE;
+    padding-top:10px;
+    padding-left:10px;
+}
+app-section.diagram {
     flex-grow: 1;
+}
+div.diagram {
+    display:flex;
+    height:100%;
+    flex-direction: row;
     align-items: stretch;
     width:100%;
+    background-color:#EEE;
+    padding:10px;
+    margin-bottom:10px;
+    min-height: 150px; 
+}
+.diagramDescription {
+    display:flex;
+    flex-shrink: 0;
+    flex-direction: row;
+    align-items:center;
+    width:100%;
+    background-color:#EEE;
 }
 .container {
     flex-direction: column;
@@ -19,15 +43,21 @@
     width: calc(100% - 50px);
     padding:5px;
     height:100%;
+    margin-left:10px;
 }
 .rangeselect {
     display: flex;
     width:50px;
     position: relative;
     flex-direction: column;
+    text-align: center;
+    background-color:#DDD;
+    border-radius: 5px;
+    padding:5px;
 }
 .rangeselect mat-slider { 
-    height:calc(100% - 30px);
+    height:100%;
+    margin-left:-5px;
 }
 .day{
     display: flex;
@@ -45,20 +75,22 @@
 .day.selected .selectButton {
     border:3px solid rgb(3, 102, 145);
     margin: -3px -3px -3px 0px;
+    width: 96px;
 }
-.rangeselect .selectButton.selected {
+.selectButton.selected {
     border:3px solid rgb(3, 102, 145);
     margin: 0px 0px 0px 3px;
     padding-top:2px;
 }
 .selectButton {
-    background-color: var(--dzl-blue);
-    color:white;
+    background-color: #DDD;
+    width:90px;
     padding:5px;
     border-radius: 3px;
     cursor:pointer;
     margin-left:3px;
     box-shadow: 4px 4px 2px -2px #777;
+    flex-shrink:0;
 }
 .day .selectButton {
     display:none;
@@ -66,11 +98,18 @@
 .day.filled .selectButton {
     display: inline-block;
 }
-.rangeselect .selectButton {
+.actions {
+    background-color:#EEE;
+    padding:10px;
+    margin-bottom:10px;
+}
+.actions .selectButton {
     height:30px;
     width:270px;
     position: relative;
     text-align: center;
+    background-color:var(--dzl-blue);
+    color:white;
 }
 app-commit {
     flex-shrink: 0;
@@ -81,8 +120,9 @@ app-commit {
     flex-direction: row;
     flex-shrink: 0;
     align-items: stretch;
-    max-height:calc(100% - 300px);
     overflow-x:auto;
+    background-color:#EEE;
+    padding:10px;
 }
 .category {
     display:flex;
