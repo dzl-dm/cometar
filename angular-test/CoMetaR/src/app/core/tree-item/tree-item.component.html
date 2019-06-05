@@ -1,5 +1,8 @@
 <div class="treeItemHeading"
-    (click)="expanded=!expanded">
+    (click)="expanded=!expanded"
+    [ngStyle]="{
+      'opacity':attributes.ghostItemParent?0.5:1.0
+    }">
   <div 
     [ngClass]="{
       'treeItemExpand':true,
@@ -16,7 +19,7 @@
     <div 
         class="treeItemTitleLabel"
         [ngStyle]="{
-          'text-decoration':style['text-decoration'] || 'none' 
+          'text-decoration':style['text-decoration'] || 'none'
         }">{{attributes.label.value}}</div>
     <ng-container *ngFor="let icon of getIcons()">
       <div 
