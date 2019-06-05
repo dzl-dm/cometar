@@ -179,6 +179,7 @@ export class TreeStyleService {
           result.color = next.color || result.color;
           result.icons = result.icons.concat(next.icons);
           result["text-decoration"] = next["text-decoration"] || result["text-decoration"];
+          result["opacity"] = next["opacity"] || result["opacity"];
           return result;
         },this.getEmptyStyle(iri));
         let bubbleIcons:TreeItemIcon[] = children.map(childiri => sa.filter(tis => tis.concept == childiri)) //array of child style arrays
@@ -206,6 +207,7 @@ export interface TreeItemStyle {
   "text-decoration"?:string,
   "color"?: string,
   "background-color"?: string,
+  "opacity"?:number,
   "icons": TreeItemIcon[],
   "bubbleicons"?: TreeItemIcon[]
 }
