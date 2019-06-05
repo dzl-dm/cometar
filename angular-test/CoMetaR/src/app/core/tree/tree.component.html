@@ -11,11 +11,11 @@
         [style.top.px]="outlineElement.top*tree.offsetHeight+tree.offsetTop+2"
         [style.backgroundColor]="outlineElement.color"
         [style.borderColor]="outlineElement.bordercolor"
-        [style.borderWidth.px]="outlineElement.bordercolor?1:0"
+        [style.borderWidth.px]="outlineElement.bordercolor?2:0"
         [style.zIndex]="outlineElement.zindex"
         [style.width.px]="11/outlineElement.siblings"
         [style.height.px]="outlineElement.height?outlineElement.height*tree.offsetHeight:31*tree.offsetHeight/tree.scrollHeight"
-        [style.marginLeft.px]="outlineElement.position*11/outlineElement.siblings+width-53"
+        [style.marginLeft.px]="outlineElement.position*11/outlineElement.siblings+width-53-(outlineElement.bordercolor?2:0)"
         [matTooltip]="outlineElement.description"
         (click)="scrollTo(outlineElement)"
         >

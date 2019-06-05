@@ -18,7 +18,7 @@ import { ProvTreeItemsService } from '../services/prov-tree-items.service';
 	styleUrls: ['./provenance.component.css']
 })
 export class ProvenanceComponent implements OnInit {
-	private fromDate:Date;
+	public fromDate:Date;
 	public commitMetaDataByDay=[];
 	public demometadata = {
 		author:{value:'Author'},

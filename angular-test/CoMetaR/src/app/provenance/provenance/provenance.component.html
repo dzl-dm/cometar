@@ -36,7 +36,7 @@
   </div>
 </app-section>
 
-<app-section title="Ontology Uploads" class="diagram">
+<app-section [title]="'Ontology Uploads since '+(fromDate | date:'dd.MM.yyyy')" class="diagram" style="height:150px">
   <div class="diagram">
     <div class="rangeselect">
       <mat-slider 
