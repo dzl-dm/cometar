@@ -25,6 +25,7 @@ export class ProvTreeItemsService {
         let tempAddedTreeItems:ProvParentOperation[] = [];
         let tempMovedTreeItems:ProvParentOperation[] = [];
         ptias.forEach(ptia => {
+            let label = ptia.label&&ptia.label.value||ptia.lastlabel&&ptia.lastlabel.value;
             if (!tempElement || ptia.element.value != tempElement) {
                 this.concatProvTreeItems(tempAddedTreeItems,tempMovedTreeItems,tempRemovedTreeItems);
                 tempRemovedTreeItems = [];
@@ -40,7 +41,9 @@ export class ProvTreeItemsService {
                     tempAddedTreeItems.push({
                         element: tempElement,
                         newparent: negationmove[0].newparent,
-                        date: negationmove[0].date
+                        date: negationmove[0].date,
+                        label,
+                        newparentlabel: negationmove[0].newparentlabel
                     });
                     tempMovedTreeItems.splice(tempMovedTreeItems.indexOf(negationmove[0]),1);
                 }
@@ -52,14 +55,19 @@ export class ProvTreeItemsService {
                         element: tempElement,
                         newparent: ptia.parent.value,
                         oldparent: lastremove.oldparent,
-                        date: ptia.date.value.toLocaleDateString()
+                        date: ptia.date.value.toLocaleDateString(),
+                        label,
+                        newparentlabel: ptia.parentlabel&&ptia.parentlabel.value,
+                        oldparentlabel: lastremove.oldparentlabel
                     };
                     tempRemovedTreeItems.splice(tempRemovedTreeItems.length-1,1);
                 }
                 else tempAddedTreeItems.push({
                     element: tempElement,
                     newparent: ptia.parent.value,
-                    date: ptia.date.value.toLocaleDateString()
+                    date: ptia.date.value.toLocaleDateString(),
+                    label,
+                    newparentlabel: ptia.parentlabel&&ptia.parentlabel.value
                 })
             }
             if (ptia.addorremove.value == "http://purl.org/vocab/changeset/schema#removal") {
@@ -70,7 +78,9 @@ export class ProvTreeItemsService {
                     tempRemovedTreeItems.push({
                         element: tempElement,
                         oldparent: negationmove[0].oldparent,
-                        date: negationmove[0].date
+                        date: negationmove[0].date,
+                        label,
+                        oldparentlabel: negationmove[0].oldparentlabel
                     });
                     tempMovedTreeItems.splice(tempMovedTreeItems.indexOf(negationmove[0]),1);
                 }                   
@@ -82,14 +92,19 @@ export class ProvTreeItemsService {
                         element: tempElement,
                         newparent: lastadd.newparent,
                         oldparent: ptia.parent.value,
-                        date: ptia.date.value.toLocaleDateString()
+                        date: ptia.date.value.toLocaleDateString(),
+                        label,
+                        newparentlabel: lastadd.newparentlabel,
+                        oldparentlabel: ptia.parentlabel&&ptia.parentlabel.value
                     };
                     tempAddedTreeItems.splice(tempAddedTreeItems.length-1,1);
                 }
                 else tempRemovedTreeItems.push({
                     element: tempElement,
                     oldparent: ptia.parent.value,
-                    date: ptia.date.value.toLocaleDateString()
+                    date: ptia.date.value.toLocaleDateString(),
+                    label,
+                    oldparentlabel: ptia.parentlabel&&ptia.parentlabel.value
                 })
             }
         });
@@ -100,7 +115,7 @@ export class ProvTreeItemsService {
                 element: {value: r.element},
                 hasChildren: {value:false},
                 isModifier: {value:false},
-                label: {value:r.element,"xml:lang":'en'},
+                label: {value:r.label||r.element,"xml:lang":'en'},
                 type: {value:"http://www.w3.org/2004/02/skos/core#Concept"},
                 ghostItemParent: r.oldparent
             }})
@@ -145,7 +160,7 @@ export class ProvTreeItemsService {
                 "background-color": "#FFEB0F",
                 text: "moved",
                 "bubble-up": moveBubbleIcon,
-                description: "This item has been moved on "+m.date+"."
+                description: "This item has been moved"+(m.oldparentlabel?" from \""+m.oldparentlabel+"\"":"")+(m.newparentlabel?" to \""+m.newparentlabel+"\"":"")+" on "+m.date+"."
             }]
             return style;
         }));
@@ -197,7 +212,10 @@ export class ProvTreeItemsService {
 
 export interface ProvParentOperation {
     element:string,
+    label?:string,
     oldparent?:string,
+    oldparentlabel?:string,
     newparent?:string,
+    newparentlabel?:string,
     date:string
 }

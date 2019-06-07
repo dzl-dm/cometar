@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { prefixes, DataService, JSONResponsePartUriString, JSONResponsePartDate } from 'src/app/services/data.service';
+import { prefixes, DataService, JSONResponsePartUriString, JSONResponsePartDate, JSONResponsePartString } from 'src/app/services/data.service';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 
@@ -29,7 +29,7 @@ export class ProvTreeItemsQueryService {
   
   private getProvTreeItemsQueryString(from:string,until:string):string{
     return `${prefixes}
-SELECT (?lastelement as ?element) ?date (?lastparent as ?parent) ?otherparent ?addorremove
+SELECT (?lastelement as ?element) ?date (?lastparent as ?parent) ?otherparent ?addorremove ?label ?parentlabel (GROUP_CONCAT(?lastpreflabel;separator=",") as ?lastlabel)
 WHERE {	          
 ?commit prov:qualifiedUsage ?cs ;
     prov:endedAtTime ?date .
@@ -50,9 +50,25 @@ FILTER NOT EXISTS {
 FILTER NOT EXISTS {
     ?anyelement prov:wasDerivedFrom ?lastelement
 }
+OPTIONAL {
+  ?lastelement skos:prefLabel ?label FILTER (lang(?label)='en')
+}
+OPTIONAL {
+  ?someparent skos:prefLabel ?parentlabel FILTER (lang(?label)='en')
+}
+OPTIONAL {
+  ?cs cs:removal [
+    a rdf:Statement;
+    rdf:subject ?someelement;
+    rdf:predicate skos:prefLabel;
+    rdf:object ?lastpreflabel
+  ]
+}
     
 FILTER (?addorremove IN (cs:addition,cs:removal) && ?narrower IN (skos:narrower, rdf:hasPart, skos:member, :topLevelNode, skos:hasTopConcept)) .
 }
+GROUP BY ?lastelement ?date ?lastparent ?otherparent ?addorremove ?label ?parentlabel
+HAVING (bound(?element) || ?label != "")
 ORDER BY ?element ?date DESC(?addorremove)`;        
   }
 }
@@ -62,5 +78,8 @@ export interface ProvTreeItemAttributes {
   element:JSONResponsePartUriString,
   date:JSONResponsePartDate,
   addorremove:JSONResponsePartUriString,
-  parent:JSONResponsePartUriString
+  parent:JSONResponsePartUriString,
+  parentlabel?:JSONResponsePartString,
+  label?:JSONResponsePartString,
+  lastlabel?:JSONResponsePartString
 }
