@@ -116,4 +116,6 @@ p {
     text-align: center;
     padding:2px;
     top:0px;
+    white-space: nowrap;
+    overflow:hidden;
 }

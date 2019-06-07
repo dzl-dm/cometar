@@ -28,15 +28,16 @@ export class TreeComponent implements OnInit {
   ngOnInit() {    
     this.treeDataService.init(this.route,(width)=>this.claimWidth.emit(width));
     this.treeStyleService.registerTreeDomElement(this.el.nativeElement);
-    this.treeStyleService.scrollHeadingsSubject$.subscribe(()=>this.cd.markForCheck())
+    this.treeStyleService.scrollHeadingsSubject$.subscribe(()=>this.cd.markForCheck());
   }
 
   public onscroll(event){
     this.treeStyleService.onTreeScroll(event.target.scrollTop);
   }
 
-  public scrollTo(outlineElement){
+  public scrollTo(outlineElement, scrollHeadings:HTMLElement){
     let tree = Array.from((<HTMLElement>this.el.nativeElement).children).filter(c => c.id == "tree")[0];
-    tree.scrollTop=outlineElement.top*tree.scrollHeight-tree.clientHeight/2+31*tree.clientHeight/tree.scrollHeight/2;
+    tree.scrollTop=Math.min(outlineElement.top*tree.scrollHeight,outlineElement.top*tree.scrollHeight-tree.clientHeight/2+(outlineElement.height?outlineElement.height:31)*tree.scrollHeight/2);
+    setTimeout(()=>tree.scrollTop=Math.min(outlineElement.top*tree.scrollHeight-scrollHeadings.offsetHeight,outlineElement.top*tree.scrollHeight-tree.clientHeight/2+(outlineElement.height?outlineElement.height:31)*tree.scrollHeight/2),0);
   }
 }

@@ -1,5 +1,5 @@
 <div class="treeItemHeading"
-    (click)="expanded=!expanded"
+    (click)="expandOrCollapse()"
     [ngStyle]="{
       'opacity':attributes.ghostItemParent?0.5:1.0
     }">
@@ -46,19 +46,25 @@
   class="treeItemInformation" 
   [ngStyle]="{
     'margin-left':((intent$ | async) * 21 + 21) +'px',
-    'width':'calc(100% - ' + ((intent$ | async) * 22 + 26) +'px)'
+    'width':'calc(100% - ' + ((intent$ | async) * 22 + 26) +'px)',
+    'opacity':attributes.ghostItemParent?0.5:1.0
   }"
-  *ngIf="showInformationDiv$ | async "> 
+  *ngIf="showInformationDiv$ | async "
+  #treeItemInformation> 
   <app-concept-information 
     *ngIf="showSearchResult$ | async"
     [data]="searchResults$ | async" 
     [headingDirection]="'column'"
+    [truncateText]="true"
+    [maxWidth]="treeItemInformation.offsetWidth"
     [highlightTerm]="treeDataService.getSearchPattern()"
     [cellWidthPercentages]="[35,65]"></app-concept-information>
   <ng-container *ngFor="let conceptInformation of conceptInformation$ | async">
       <app-concept-information 
         [conceptInformation]="conceptInformation" 
         [hiddenHeading]="false"
+        [maxWidth]="treeItemInformation.clientWidth"
+        [truncateText]="true"
         [collapsed]="false"></app-concept-information>
   </ng-container>
 </div>

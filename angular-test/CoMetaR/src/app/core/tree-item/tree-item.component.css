@@ -61,6 +61,7 @@ div.treeItemTitle{
 }
 div.treeItemTitleLabel {
     display: inline-flex;
+    word-break: break-word;
 }
 div.treeItemTitle.removed div.treeItemTitleLabel {
     text-decoration: line-through;

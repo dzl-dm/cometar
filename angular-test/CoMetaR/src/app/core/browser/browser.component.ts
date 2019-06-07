@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, query, animateChild, group, animate, state } from '@angular/animations';
 import { DataService } from '../../services/data.service';
@@ -8,6 +8,7 @@ import { SnackbarComponent } from '../snackbar/snackbar.component';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
+import { TreeStyleService } from '../services/tree-style.service';
 
 @Component({
   selector: 'app-browser',
@@ -93,6 +94,7 @@ export class BrowserComponent implements OnInit {
     private dataService: DataService,
     private snackBar: MatSnackBar,
     private browserService: BrowserService,
+    private treeStyleService: TreeStyleService,
     iconRegistry: MatIconRegistry, 
     sanitizer: DomSanitizer,
     private zone: NgZone
@@ -118,16 +120,25 @@ export class BrowserComponent implements OnInit {
         verticalPosition: "bottom"
       });
     });
+    window.onresize = ()=>{
+      this.browserService.onResize();
+      this.width=Math.min(this.width, window.innerWidth*0.8,window.innerWidth-300);
+    }
   }
   
   private savedX;
+  private savedRelativeTreeScrolltop;
   private boundResizeFunction;
+  private dragging = false;
 
   public onTreeResizeStart(event: MouseEvent) {
     event.stopPropagation();
     this.savedX = event.clientX;
+    let tree = document.getElementById("tree");
+    this.savedRelativeTreeScrolltop = tree.scrollTop/tree.scrollHeight;
     this.boundResizeFunction = this.onTreeResizeDrag.bind(this);
     this.zone.runOutsideAngular(() => {
+      this.dragging=true;
       window.document.addEventListener('mousemove', this.boundResizeFunction);
     });
     (<HTMLElement>event.currentTarget).getElementsByClassName("treeResizeExpandCollapseDiv")[0].innerHTML="&gt;";
@@ -139,11 +150,17 @@ export class BrowserComponent implements OnInit {
       let diff = event.clientX - this.savedX;
       this.savedX += diff;
       this.width += diff;
+      let tree = document.getElementById("tree");
+      tree.scrollTop = tree.scrollHeight*this.savedRelativeTreeScrolltop;
       return false;
     });  
   }
   public onTreeResizeEnd(event: MouseEvent) {
-    window.document.removeEventListener('mousemove', this.boundResizeFunction);
+    if (this.dragging) {
+      window.document.removeEventListener('mousemove', this.boundResizeFunction);
+      this.dragging = false;
+      this.browserService.onResize();
+    }
   }
 
   public navigateModule(source:string){    
@@ -166,6 +183,8 @@ export class BrowserComponent implements OnInit {
 
   public expandOrCollapseTreeContainer(event: MouseEvent){
     event.stopPropagation();
+    let tree = document.getElementById("tree");
+    this.savedRelativeTreeScrolltop = tree.scrollTop/tree.scrollHeight;
     let el = <HTMLElement>event.currentTarget;
     if (el.innerHTML == "&gt;") {
       this.savedX = this.width;
@@ -176,6 +195,10 @@ export class BrowserComponent implements OnInit {
       el.innerHTML = "&gt;";
       this.width=this.savedX;
     }
+    setTimeout(()=>{
+      tree.scrollTop = tree.scrollHeight*this.savedRelativeTreeScrolltop;
+      this.browserService.onResize();
+    },0);
     return false;
   }
 }

@@ -8,6 +8,7 @@ import { TreepathitemsService } from './queries/treepathitems.service';
 import { UrlService } from '../../services/url.service'
 import { Component } from '@angular/compiler/src/core';
 import { ConceptInformation } from '../concept-information/concept-information.component';
+import { TreeStyleService } from './tree-style.service';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,8 @@ export class TreeDataService {
     private treepathitemsService: TreepathitemsService, 
     private router: Router,
     private searchtreeitemService: SearchtreeitemService,
-    private urlService: UrlService
+    private urlService: UrlService,
+    private treeStyleService: TreeStyleService
   ) {
     this.selectedIri$ = new ReplaySubject(1);
     this.searchPattern$ = new ReplaySubject(1);
@@ -63,6 +65,9 @@ export class TreeDataService {
       map(data => data.get('searchpattern') ? data.get('searchpattern') : "")
     ).subscribe(this.searchPattern$);
     this.claimWidth=claimWidth;
+    route.queryParamMap.subscribe(()=>{
+      setTimeout(()=>this.treeStyleService.onTreeDomChange(),0);
+    })
   }
 
   //selection

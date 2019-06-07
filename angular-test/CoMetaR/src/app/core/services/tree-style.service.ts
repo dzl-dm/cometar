@@ -2,6 +2,9 @@ import { Injectable, ChangeDetectorRef } from '@angular/core';
 import { Subject, Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map, filter, flatMap, first } from 'rxjs/operators';
 import { TreepathitemsService } from './queries/treepathitems.service';
+//import html2canvas from 'html2canvas';
+//import { WebWorkerService } from 'ngx-web-worker';
+import { BrowserService } from './browser.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +12,8 @@ import { TreepathitemsService } from './queries/treepathitems.service';
 export class TreeStyleService {
 
   constructor(
-    private treePathItemService: TreepathitemsService
+    private treePathItemService: TreepathitemsService,
+    private browserService: BrowserService
   ) { 
   }
 
@@ -20,10 +24,7 @@ export class TreeStyleService {
         this.treeDomElement = child;
       }
     });
-    this.observer = new MutationObserver(mutations => {
-      this.onTreeDomChange(); 
-    });  
-    this.observer.observe(el.getElementsByTagName("app-tree-item-list")[0], { childList: true, subtree: true, attributes: true, attributeFilter: ["style"] });
+    this.browserService.resizeSubject.subscribe(()=>this.onTreeDomChange());
   }
   /**
    * right now only return a number for the information div intent as Observable
@@ -55,47 +56,65 @@ export class TreeStyleService {
   private observer:MutationObserver;
   private domChangeTimeout;
   public onTreeDomChange(){
-    if (this.domChangeTimeout){
+    if (this.domChangeTimeout != undefined){
       clearTimeout(this.domChangeTimeout);
     }
-    this.domChangeTimeout=setTimeout(()=>this.setOutlineElements(),500);
+    this.domChangeTimeout = setTimeout(()=>this.setOutlineElements(),0);
   }
   private setOutlineElements(){
+    /*html2canvas(<HTMLElement>(<HTMLElement>this.treeDomElement).getElementsByTagName("app-tree-item-list")[0],{
+    }).then(function(canvas) {
+      canvas.setAttribute("style","width:100;height:100%");
+      (<HTMLElement>document.getElementById("test")).innerHTML = "";
+      (<HTMLElement>document.getElementById("test")).append(canvas);
+    });*/
+
     let outlineElements = [];
     let treeItems = Array.from(this.treeDomElement.getElementsByTagName("APP-TREE-ITEM"));
     treeItems.forEach((ti:HTMLElement) => {
       let iri = ti.getAttribute("iri");
-      let relativetop = this.getPosition(ti).y/(<HTMLElement>this.treeDomElement.getElementsByTagName("app-tree-item-list")[0]).offsetHeight;
-      let relativeheight = ti.offsetHeight/(<HTMLElement>this.treeDomElement.getElementsByTagName("app-tree-item-list")[0]).offsetHeight;
+      let listheight = (<HTMLElement>this.treeDomElement.getElementsByTagName("app-tree-item-list")[0]).offsetHeight;
+      let relativetop = this.getPosition(ti).y/listheight;
+      let relativeheight = ti.offsetHeight/listheight;
       let tiInformation = ti.getElementsByClassName("treeItemInformation");
-      if (tiInformation.length>0){
-        let relativeinfotop = this.getPosition(<HTMLElement>tiInformation[0]).y/(<HTMLElement>this.treeDomElement.getElementsByTagName("app-tree-item-list")[0]).offsetHeight;
-        let relativeinfoheight = (<HTMLElement>tiInformation[0]).offsetHeight/(<HTMLElement>this.treeDomElement.getElementsByTagName("app-tree-item-list")[0]).offsetHeight;
-        outlineElements.push({
-          top:relativeinfotop,
-          color:"#FFFBD5",
-          siblings:1,
-          position:0,
-          height:relativeinfoheight
-        })
-      }
       if (ti.className.indexOf("selected")>-1) {
         outlineElements.push({
           top:relativetop,
           bordercolor:"#BFE3F2",
           siblings:1,
           position:0,
-          height:relativeheight,
-          zindex:10
+          height:relativeheight
+        })
+      }
+      if (tiInformation.length>0){
+        let relativeinfotop = this.getPosition(<HTMLElement>tiInformation[0]).y/listheight;
+        let relativeinfoheight = (<HTMLElement>tiInformation[0]).offsetHeight/listheight;
+        outlineElements.push({
+          top:relativeinfotop,
+          color:"#FFFBD5",
+          bordercolor:"#777",
+          siblings:1,
+          position:0,
+          height:relativeinfoheight
         })
       }
       this.getTreeItemStyle$(iri).subscribe(style => {
-        this.getIcons(style).filter(i => i["background-color"] && i["background-color"] != "white").forEach((value, index, array) => {          
+        this.getIcons(style).filter(i => {
+          if (i["background-color"] && i["background-color"] == "white") return false;
+          let realicon = style.icons.includes(i);  
+          if (realicon) return true;   
+          let tiexpanded = (<HTMLElement>ti.getElementsByClassName("treeItemExpand")[0]).getAttribute("class").indexOf("expanded")>-1;
+          if (tiexpanded) return false;
+          return true;
+        }).forEach((value, index, array) => {   
+          let title = (<HTMLElement>ti.getElementsByClassName("treeItemTitle")[0]);
+          let relativetitleheight = title.offsetHeight/listheight;
           outlineElements.push({
             top: relativetop,
             color: value["background-color"],
             siblings: array.length,
-            position: index
+            position: index,
+            height:relativetitleheight
           })
         })
       })
@@ -124,9 +143,23 @@ export class TreeStyleService {
     }
     this.scrollHeadingsSubject$.next(scrollHeadings);
   }
-  private getTopChild(listitem:HTMLElement,scrollTop):HTMLElement{
-    let topchild:HTMLElement;
-    return topchild;
+  public getTopVisibleChild():HTMLElement{
+    let visibleListItem:HTMLElement = this.treeDomElement;
+    let foundChild = true;
+    let adjustedScrollTop = this.treeDomElement.scrollTop-5;
+    while (foundChild){
+      foundChild=false;
+      let childlist = this.getList(visibleListItem);
+      if (childlist) Array.from(this.getListItems(childlist)).forEach((childlistitem:HTMLElement) => {
+        if (foundChild)return;
+        if (this.getPosition(childlistitem).y < adjustedScrollTop && childlistitem.offsetHeight+this.getPosition(childlistitem).y-this.getTitle(childlistitem).offsetHeight > adjustedScrollTop){
+          visibleListItem = childlistitem;
+          adjustedScrollTop+=this.getTitle(childlistitem).offsetHeight-10;
+          foundChild=true;
+        }
+      });
+    }
+    return visibleListItem;
   }
   private getList(listitem:HTMLElement):HTMLElement{
     let list:HTMLElement;

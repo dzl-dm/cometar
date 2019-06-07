@@ -55,12 +55,13 @@ export class TreeItemComponent implements OnInit {
       this.intent$ = this.treeStyleService.getIntent(this.el.nativeElement);
       this.intent$.subscribe(data => this.cd.markForCheck());
     });
-    if (this.attributes) (<HTMLElement>this.el.nativeElement).setAttribute("iri",this.attributes.element.value);;
+    if (this.attributes) (<HTMLElement>this.el.nativeElement).setAttribute("iri",this.attributes.element.value);
     if (this.conceptIri) this.treeitemsService.get({range:"single",iri:this.conceptIri}).subscribe(a => {
       this.attributes = a[0];
       this.load();
     });
     else this.load();
+    if (this.style$)this.style$.subscribe(()=>this.treeStyleService.onTreeDomChange())
   }  
   private load(){
     if (this.style$) this.style$.subscribe(style => {
@@ -96,6 +97,7 @@ export class TreeItemComponent implements OnInit {
       this.conceptInformation$,
       this.showSearchResult$
     ).pipe(map(data => data[0].length > 0 || data[1] ));
+    this.showInformationDiv$.subscribe(()=>this.treeStyleService.onTreeDomChange());
   }
 
   public onSelect(){
@@ -133,5 +135,10 @@ export class TreeItemComponent implements OnInit {
       counter++;
     }
     return result;
+  }
+
+  public expandOrCollapse(){
+    this.expanded=!this.expanded;
+    this.treeStyleService.onTreeDomChange();
   }
 }

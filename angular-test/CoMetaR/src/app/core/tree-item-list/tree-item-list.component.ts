@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { TreeItemAttributes } from '../services/queries/treeitems.service'
 import { TreeDataService } from '../services/tree-data.service';
-import { trigger, style, transition, animate } from '@angular/animations';
+import { trigger, style, transition, animate, AnimationEvent } from '@angular/animations';
 import { Observable } from 'rxjs';
 import { TreeStyleService } from '../services/tree-style.service';
 import { TreepathitemsService } from '../services/queries/treepathitems.service';
@@ -42,7 +42,10 @@ export class TreeItemListComponent implements OnInit {
   public getTreeItems(){
     let result:TreeItemAttributes[] = [];
     if (this.conceptIri == "root") {
-      this.treeDataService.getTopLevelItems$().subscribe(data => result = data);
+      this.treeDataService.getTopLevelItems$().subscribe(data => {
+        result = data;
+        this.cd.markForCheck();
+      });
       this.expanded = true;
     }
     else this.treeDataService.getSubItems$(this.conceptIri).subscribe(data => { 
@@ -55,5 +58,13 @@ export class TreeItemListComponent implements OnInit {
 
   isSelected$(treeItem:TreeItemAttributes):Observable<boolean>{
     return this.treeDataService.isSelected$(treeItem.element.value)
+  }
+
+  openCloseDone(event: AnimationEvent) {
+    (<HTMLElement>event.element).removeAttribute("animating");
+    let animatingElements:number = Array.from(document.getElementById("tree").getElementsByTagName("APP-TREE-ITEM")).filter((a:HTMLElement)=>a.hasAttribute("animating")).length;
+    if (animatingElements == 0) {
+      this.treeStyleService.onTreeDomChange();
+    }
   }
 }
