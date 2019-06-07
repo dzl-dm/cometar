@@ -80,7 +80,7 @@
       <div 
         class="selectButton" 
         (click)="onAllSelect()" 
-        [ngClass]="{'selected':isAllSelected() | async}">Load all changes in given timespan</div>
+        [ngClass]="{'selected':isAllSelected() | async}">{{'Load all changes since '+(fromDate | date:'dd.MM.yyyy')}}</div>
   </div>
 </app-section>
 

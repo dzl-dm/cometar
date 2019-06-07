@@ -17,6 +17,7 @@ import { ProgressbarComponent } from './progressbar/progressbar.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SectionComponent } from './section/section.component';
+//import { WebWorkerService } from 'ngx-web-worker';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,9 @@ import { SectionComponent } from './section/section.component';
     MatIconModule,
     MatTooltipModule
   ],
+  /*providers: [
+    WebWorkerService
+  ],*/
   exports: [
     TreeComponent,
     TreeItemComponent,

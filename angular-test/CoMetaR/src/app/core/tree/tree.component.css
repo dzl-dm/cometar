@@ -43,3 +43,6 @@ div.treeOutlineElement {
     border-style:solid;
     box-sizing: content-box
 }
+div#tree::-webkit-scrollbar {
+    width: 35px;
+} 

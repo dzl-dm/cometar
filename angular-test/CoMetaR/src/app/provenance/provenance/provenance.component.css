@@ -25,7 +25,6 @@ div.diagram {
     align-items: stretch;
     width:100%;
     background-color:#EEE;
-    padding:10px;
     margin-bottom:10px;
     min-height: 150px; 
 }
@@ -33,7 +32,6 @@ div.diagram {
     display:flex;
     flex-shrink: 0;
     flex-direction: row;
-    align-items:center;
     width:100%;
     background-color:#EEE;
 }
@@ -100,7 +98,6 @@ div.diagram {
 }
 .actions {
     background-color:#EEE;
-    padding:10px;
     margin-bottom:10px;
 }
 .actions .selectButton {
@@ -122,7 +119,6 @@ app-commit {
     align-items: stretch;
     overflow-x:auto;
     background-color:#EEE;
-    padding:10px;
 }
 .category {
     display:flex;

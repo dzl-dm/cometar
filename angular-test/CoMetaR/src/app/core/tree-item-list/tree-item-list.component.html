@@ -1,6 +1,8 @@
 <div id="noResults" *ngIf="getTreeItems().length == 0 && conceptIri == 'root'">No Results.</div>
 <app-tree-item 
     @openClose
+    (@openClose.done)="openCloseDone($event)"
+    animating
     *ngFor="let treeitem of getTreeItems(); let i = index" 
     [treeItemAttributes]="treeitem" 
     [expanded]="expanded"

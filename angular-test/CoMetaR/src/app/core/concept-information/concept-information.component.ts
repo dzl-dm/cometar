@@ -14,6 +14,8 @@ export class ConceptInformationComponent implements OnInit {
   @Input() cellWidthPercentages;
   @Input() highlightTerm:string;
   @Input() collapsed:boolean;
+  @Input() maxWidth?:number;
+  @Input() truncateText?:boolean;
   @Input() conceptInformation:ConceptInformation;
   constructor(
     private configurationService: ConfigurationService,
@@ -69,6 +71,12 @@ export class ConceptInformationComponent implements OnInit {
 
   public navigateToConcept(iri:string){
     this.treeDataService.onConceptSelection(iri);
+  }
+
+  public getWidth(i:number):string{
+    if (this.maxWidth) return (this.cellWidthPercentages[i]*(this.maxWidth-8*this.cellWidthPercentages.length)/100)+"px";
+    console.log(this.cellWidthPercentages);
+    return (this.cellWidthPercentages[i])+"%";
   }
 }
 

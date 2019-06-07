@@ -13,7 +13,11 @@ body {
 }
 div {
     box-sizing: border-box;
-}
+    scrollbar-color: var(--dzl-blue) white;
+}slider {
+    min-width: 30px;
+    } 
+
 ::-webkit-scrollbar {
     width: 15px;
     background-color: white;
