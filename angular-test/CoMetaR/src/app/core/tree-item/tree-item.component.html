@@ -58,6 +58,7 @@
     [truncateText]="true"
     [maxWidth]="treeItemInformation.offsetWidth"
     [highlightTerm]="treeDataService.getSearchPattern()"
+    [collapsed]="attributes.ghostItemParent"
     [cellWidthPercentages]="[35,65]"></app-concept-information>
   <ng-container *ngFor="let conceptInformation of conceptInformation$ | async">
       <app-concept-information 
@@ -65,7 +66,7 @@
         [hiddenHeading]="false"
         [maxWidth]="treeItemInformation.clientWidth"
         [truncateText]="true"
-        [collapsed]="false"></app-concept-information>
+        [collapsed]="attributes.ghostItemParent"></app-concept-information>
   </ng-container>
 </div>
 <app-tree-item-list *ngIf="expanded" [expanded]="expanded && cascade_expand" [cascade_expand]="cascade_expand" [conceptIri]="attributes.element.value"></app-tree-item-list>
