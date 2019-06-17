@@ -1,5 +1,5 @@
 import { Injectable, ChangeDetectorRef } from '@angular/core';
-import { Subject, Observable, BehaviorSubject, combineLatest } from 'rxjs';
+import { Subject, Observable, BehaviorSubject, combineLatest, of, ReplaySubject } from 'rxjs';
 import { map, filter, flatMap, first } from 'rxjs/operators';
 import { TreepathitemsService } from './queries/treepathitems.service';
 //import html2canvas from 'html2canvas';
@@ -76,14 +76,15 @@ export class TreeStyleService {
       let listheight = (<HTMLElement>this.treeDomElement.getElementsByTagName("app-tree-item-list")[0]).offsetHeight;
       let relativetop = this.getPosition(ti).y/listheight;
       let relativeheight = ti.offsetHeight/listheight;
-      let tiInformation = ti.getElementsByClassName("treeItemInformation");
+      let tiInformation = Array.from(ti.childNodes).filter((cn:HTMLElement)=>cn.classList && cn.classList.contains("treeItemInformation"));
       if (ti.className.indexOf("selected")>-1) {
         outlineElements.push({
           top:relativetop,
           bordercolor:"#BFE3F2",
           siblings:1,
           position:0,
-          height:relativeheight
+          height:relativeheight,
+          concept: iri
         })
       }
       if (tiInformation.length>0){
@@ -95,7 +96,8 @@ export class TreeStyleService {
           bordercolor:"#777",
           siblings:1,
           position:0,
-          height:relativeinfoheight
+          height:relativeinfoheight,
+          concept: iri
         })
       }
       this.getTreeItemStyle$(iri).subscribe(style => {
@@ -114,7 +116,8 @@ export class TreeStyleService {
             color: value["background-color"],
             siblings: array.length,
             position: index,
-            height:relativetitleheight
+            height:relativetitleheight,
+            concept: iri
           })
         })
       })
@@ -209,6 +212,7 @@ export class TreeStyleService {
       map(([sa, children]) => {
         let style = sa.filter(tis => tis.concept == iri).reduce((result,next)=>{
           result["background-color"] = next["background-color"] || result["background-color"];
+          result["border-color"] = next["border-color"] || result["border-color"];
           result.color = next.color || result.color;
           result.icons = result.icons.concat(next.icons);
           result["text-decoration"] = next["text-decoration"] || result["text-decoration"];
@@ -240,6 +244,7 @@ export interface TreeItemStyle {
   "text-decoration"?:string,
   "color"?: string,
   "background-color"?: string,
+  "border-color"?: string,
   "opacity"?:number,
   "icons": TreeItemIcon[],
   "bubbleicons"?: TreeItemIcon[]
@@ -247,9 +252,11 @@ export interface TreeItemStyle {
 
 export interface TreeItemIcon {
   "id": string,
+  "style":TreeItemStyle,
   "iconName"?:string,
   "color"?: string,
   "background-color"?: string,
+  "border-color"?: string,
   "text"?: string,
   "type"?: "dot" | "chip" | "imgIcon" | "smallImgIcon",
   "bubble-up"?: TreeItemIcon,

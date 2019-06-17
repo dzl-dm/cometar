@@ -120,33 +120,22 @@ export class ProvTreeItemsService {
                 ghostItemParent: r.oldparent
             }})
         );
-        let addBubbleIcon:TreeItemIcon = {
-            type: "dot",
-            id: "prov_addition_bubble",
-            "background-color": "#71E161",
-            description: "There were COUNTER sub-elements added."
-        };
-        let moveBubbleIcon:TreeItemIcon = {
-            type: "dot",
-            id: "prov_move_bubble",
-            "background-color": "#FFEB0F",
-            description: "There were COUNTER sub-elements moved."
-        }
-        let removeBubbleIcon:TreeItemIcon = {
-            type: "dot",
-            id: "prov_removal_bubble",
-            "background-color": "#FFBFBF",
-            description: "There were COUNTER sub-elements removed."
-        }
 
         this.treeItemStyles = this.treeItemStyles.concat(this.addedTreeItems.map(a => {
             let style = this.treeStyleService.getEmptyStyle(a.element);
             style.icons = [{
+                style,
                 id: "prov_addition",
                 type: "chip",
                 "background-color": "#71E161",
                 text: "added",
-                "bubble-up": addBubbleIcon,
+                "bubble-up": {
+                    style,
+                    type: "dot",
+                    id: "prov_addition_bubble",
+                    "background-color": "#71E161",
+                    description: "There were COUNTER sub-elements added."
+                },
                 description: "This item has been added on "+a.date+"."
             }]
             return style;
@@ -155,11 +144,18 @@ export class ProvTreeItemsService {
         this.treeItemStyles = this.treeItemStyles.concat(this.movedTreeItems.map(m => {
             let style = this.treeStyleService.getEmptyStyle(m.element);
             style.icons = [{
+                style,
                 id: "prov_move",
                 type: "chip",
                 "background-color": "#FFEB0F",
                 text: "moved",
-                "bubble-up": moveBubbleIcon,
+                "bubble-up": {
+                    style,
+                    type: "dot",
+                    id: "prov_move_bubble",
+                    "background-color": "#FFEB0F",
+                    description: "There were COUNTER sub-elements moved."
+                },
                 description: "This item has been moved"+(m.oldparentlabel?" from \""+m.oldparentlabel+"\"":"")+(m.newparentlabel?" to \""+m.newparentlabel+"\"":"")+" on "+m.date+"."
             }]
             return style;
@@ -169,11 +165,18 @@ export class ProvTreeItemsService {
             let style = this.treeStyleService.getEmptyStyle(r.element);
             style["text-decoration"] = "line-through";
             style.icons = [{
+                style,
                 type: "chip",
                 text: "removed",
                 "background-color": "#FFBFBF",
                 id: "prov_removal",
-                "bubble-up": removeBubbleIcon,
+                "bubble-up": {
+                    style,
+                    type: "dot",
+                    id: "prov_removal_bubble",
+                    "background-color": "#FFBFBF",
+                    description: "There were COUNTER sub-elements removed."
+                },
                 description: "This item has been removed on "+r.date+"."
             }]
             return style;

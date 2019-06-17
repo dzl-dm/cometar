@@ -12,6 +12,7 @@ import { ConfigurationService } from '../services/configuration.service';
 import { GetDerivedConceptService } from './services/queries/get-derived-concept.service';
 import { BrowserService } from '../core/services/browser.service';
 import { GetRemovedConceptService } from './services/queries/get-removed-concept.service';
+import { UrlService } from '../services/url.service';
 
 @NgModule({
   declarations: [ProvenanceComponent, CommitComponent ],
@@ -32,6 +33,7 @@ export class ProvenanceModule {   constructor(
   private getRemovedConceptService:GetRemovedConceptService,
   private browserService:BrowserService,
   private router: Router,
+  private urlService:UrlService,
   private route:ActivatedRoute
   ) {
     this.route.queryParamMap.pipe(
@@ -57,5 +59,23 @@ export class ProvenanceModule {   constructor(
     });
 		this.route.queryParamMap.pipe(
 			map(data => data.get('provenancefrom'))
-		).subscribe(date => this.provenanceService.setProvenanceDate(date && new Date(date)));
+    ).subscribe(date => this.provenanceService.setProvenanceDate(date && new Date(date)));
+    
+
+
+
+		this.route.queryParamMap.pipe(
+			map(data => [data.get('commit'),data.get('date'),data.get('wholetimespan'),data.get('provenancefrom')])
+		).subscribe(([commitids,date,wholetimespan,provenancefrom]) => {
+			setTimeout(()=>{
+				this.provenanceService.clearTree();
+				let commitidsarr = commitids && commitids.split(",").map(c => this.urlService.extendRdfPrefix(c)) || [];
+				this.provenanceService.selectedCommits$.next(commitidsarr);
+				if (commitidsarr.length > 0) commitidsarr.forEach(cia => this.provenanceService.loadCommitIntoTree(cia));
+				this.provenanceService.selectedDateValue$.next(new Date(date).valueOf());
+				this.provenanceService.selectedWholeTimespan$.next(wholetimespan == "true");
+				if (wholetimespan == "true") this.provenanceService.loadAllIntoTree(provenancefrom);
+				if (date != "") this.provenanceService.loadDateIntoTree(date);
+			},0);
+		});
 }}

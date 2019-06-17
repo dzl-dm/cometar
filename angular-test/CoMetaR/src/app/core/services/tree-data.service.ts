@@ -23,6 +23,7 @@ export class TreeDataService {
   private searchPattern$:ReplaySubject<string>;
   private searchIris$:Observable<string[]>;
   private informationPaths$:Observable<string[]>;
+  public openedElements$:BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   public searchActivated$:Observable<boolean>;
   public conceptInformation$:BehaviorSubject<ConceptInformation[]> = new BehaviorSubject<ConceptInformation[]>([]);
 
@@ -39,8 +40,9 @@ export class TreeDataService {
     this.selectedIri$ = new ReplaySubject(1);
     this.searchPattern$ = new ReplaySubject(1);
     this.searchActivated$ = this.searchPattern$.pipe(map(searchPattern => searchPattern != ""));
-    this.selectedPaths$ = this.selectedIri$.pipe(
-      flatMap(iri => this.treepathitemsService.getAllAncestors([iri]))
+    this.selectedIri$.subscribe(()=>this.openedElements$.next([]));
+    this.selectedPaths$ = combineLatest(this.selectedIri$, this.openedElements$).pipe(
+      flatMap(([iri,iris]) => this.treepathitemsService.getAllAncestors(iris.concat(iri)))
     )
     this.searchIris$ = this.searchPattern$.pipe(
       distinctUntilChanged(),
@@ -54,6 +56,11 @@ export class TreeDataService {
     this.informationPaths$ = this.conceptInformation$.pipe(
       flatMap(cis => this.treepathitemsService.getAllAncestors(cis.map(ci => ci.concept)))
     )   
+  }
+
+  public reset(){
+    this.conceptInformation$.next([]);
+    this.openedElements$.next([]);
   }
 
   //init (through tree component)
@@ -98,7 +105,7 @@ export class TreeDataService {
     )
   }
   public isAnyPathPart$(iri:string):Observable<boolean>{
-    return combineLatest(this.isSelectedPathPart$(iri), this.isSearchPathPart$(iri), this.isInformationPathPart$(iri)).pipe(
+    return combineLatest(this.isSelectedPathPart$(iri), this.isSearchPathPart$(iri)/*, this.isInformationPathPart$(iri)*/).pipe(
       map(data => data.includes(true))
     )
   }

@@ -11,6 +11,7 @@ import { CommitDetailsService, CommitDetails } from '../services/queries/commit-
 import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
 import { MatSliderChange } from '@angular/material';
 import { ProvTreeItemsService } from '../services/prov-tree-items.service';
+import { TreeStyleService, TreeItemStyle } from 'src/app/core/services/tree-style.service';
 
 @Component({
 	selector: 'app-provenance',
@@ -26,24 +27,17 @@ export class ProvenanceComponent implements OnInit {
 		message:{value:'Commit Message'}
 	}
 	public categories = {};
-	public selectedCommits$ = new ReplaySubject<string[]>(1);
-	public selectedDateValue$ = new ReplaySubject<number>(1);
-	public selectedWholeTimespan$ = new ReplaySubject<boolean>(1);
-	private combinedCommitDetails$:ReplaySubject<CommitDetails[]>=new ReplaySubject<CommitDetails[]>(1);
-	private treeData$:ReplaySubject<ConceptInformation[]>=new ReplaySubject<ConceptInformation[]>(1);
 	constructor(
 		private provenanceService:ProvenanceService,
 		public configuration:ConfigurationService,
-		private commitDetailsService:CommitDetailsService,
 		private router:Router,
 		private urlService:UrlService,
-		private treeDataService:TreeDataService,
 		private route:ActivatedRoute,
 		private cd: ChangeDetectorRef
 	) { 
-	}
-
-	ngOnInit() {
+		this.displayOptions$=new BehaviorSubject<{}>(this.displayOptions);
+		this.provenanceService.setDisplayOptions(this.displayOptions$);
+    
 		this.route.queryParamMap.pipe(
 			map(data => data.get('provenancefrom'))
 		).subscribe(date => {
@@ -54,6 +48,7 @@ export class ProvenanceComponent implements OnInit {
 				this.navigateToFromDate();
 			}
 		}).unsubscribe();
+
 		this.route.queryParamMap.pipe(
 			map(data => data.get('provenancefrom'))
 		).subscribe(date => {
@@ -62,21 +57,6 @@ export class ProvenanceComponent implements OnInit {
 			this.historyFromDays = Math.floor(datediff/1000/60/60/24);
 			this.commitMetaDataByDay = this.provenanceService.getProvenance(this.fromDate);
 		});
-		this.route.queryParamMap.pipe(
-			map(data => [data.get('commit'),data.get('date'),data.get('wholetimespan'),data.get('provenancefrom')])
-		).subscribe(([commitids,date,wholetimespan,provenancefrom]) => {
-			setTimeout(()=>{
-				this.clearTree();
-				let commitidsarr = commitids && commitids.split(",").map(c => this.urlService.extendRdfPrefix(c)) || [];
-				this.selectedCommits$.next(commitidsarr);
-				if (commitidsarr.length > 0) commitidsarr.forEach(cia => this.loadCommitIntoTree(cia));
-				this.selectedDateValue$.next(new Date(date).valueOf());
-				this.selectedWholeTimespan$.next(wholetimespan == "true");
-				if (wholetimespan == "true") this.loadAllIntoTree(provenancefrom);
-				if (date != "") this.loadDateIntoTree(date);
-			},0);
-		});
-		
 
 		Object.keys(this.configuration.changeCategories).forEach(key => {
 			if (this.configuration.changeCategories[key] == undefined) return;
@@ -84,13 +64,10 @@ export class ProvenanceComponent implements OnInit {
 			this.categories[value]=this.categories[value] || [];
 			this.categories[value].push(key)
 		});
-		this.displayOptions$=new BehaviorSubject<{}>(this.displayOptions);
+	}
 
-		this.treeDataService.addConceptInformation(this.treeData$);
-
-		this.combinedCommitDetails$.pipe(
-			flatMap(cds => this.provenanceService.getConceptTableInformation(cds, this.displayOptions$))
-		).subscribe(this.treeData$);
+	ngOnInit() {
+		
 	}
 
 	public getDemocommitdata(n1:number,n2:number,n3:number){
@@ -107,10 +84,6 @@ export class ProvenanceComponent implements OnInit {
 		return democommitdata;
 	}
 
-	private getCommitMetaDataByDay$(day:Date):Observable<CommitMetaData[]>{
-		return this.provenanceService.getCommitMetaDataByDay$(day);
-	}
-
 	public onSelect(commitid:string){
 		this.route.queryParamMap.pipe(
 			map(data => data.get('commit'))
@@ -125,7 +98,7 @@ export class ProvenanceComponent implements OnInit {
 
 	public isSelectedCommit(commitid:string){
 		let result = false;
-		this.selectedCommits$.subscribe(data => result = data.includes(commitid));
+		this.provenanceService.selectedCommits$.subscribe(data => result = data.includes(commitid));
 		return result;
 	}
 
@@ -138,7 +111,7 @@ export class ProvenanceComponent implements OnInit {
 	}
 
 	public isSelectedDate(date:Date):Observable<boolean>{
-		return this.selectedDateValue$.pipe(
+		return this.provenanceService.selectedDateValue$.pipe(
 			map(selectedDate => {
 				let compareDateValue = new Date(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()).valueOf();
 				return compareDateValue == selectedDate.valueOf()
@@ -147,33 +120,9 @@ export class ProvenanceComponent implements OnInit {
 	}
 
 	public isAllSelected():Observable<boolean>{
-		return this.selectedWholeTimespan$;
+		return this.provenanceService.selectedWholeTimespan$;
 	}
 
-	private loadCommitIntoTree(commitid){  
-		this.commitDetailsService.getByCommitId(commitid).subscribe(newcds => {
-			let currentcds:CommitDetails[] = [];
-			this.combinedCommitDetails$.subscribe(cds => currentcds = cds).unsubscribe();
-			this.combinedCommitDetails$.next(currentcds.concat(newcds));
-		});
-	}
-
-
-	private clearTree(){
-		this.combinedCommitDetails$.next([]);
-	}
-
-	private loadDateIntoTree(date:string){
-		this.provenanceService.getCommitMetaDataByDay$(new Date(date)).subscribe(data => data.forEach((cmd)=>{
-			this.loadCommitIntoTree(cmd.commitid.value);
-		}));
-	}
-
-	private loadAllIntoTree(date:string){
-		this.provenanceService.getAllMetaDataSince$(new Date(date)).subscribe(data => data.forEach((cmd)=>{
-			this.loadCommitIntoTree(cmd.commitid.value);
-		}));
-	}
 
 	public displayOptionToggle(option:string){
 		this.displayOptions[option] = !this.displayOptions[option];

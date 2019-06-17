@@ -87,9 +87,10 @@ div.treeItemTitle:focus {
     margin-top:1px;
     position: relative;
     color:#333;
-    height:18px;
+    height:20px;
     display: inline-flex;
     vertical-align: middle;
+    border:1px solid white;
 }
 .imgIcon {
     display: inline-flex;
@@ -119,6 +120,8 @@ div.treeItemTitle:focus {
     padding:0px 3px 0px 3px ;
     border-radius:6px;
     text-align: center;
+    border:1px solid white;
+    box-sizing: content-box;
 }
 .draft{
 	background-color:#FFEB0F;
@@ -150,4 +153,10 @@ div.treeItemTitle:focus {
 }
 app-concept-information {
     border-color:#FFFBD5;
+}
+
+.hoveredInformationDiv{
+    position:absolute;
+    z-index:2;
+    overflow-y:auto;
 }

@@ -32,7 +32,6 @@ export class SparqlComponent implements OnInit {
     this.route.queryParamMap.pipe(
       map(data => data.get('concept'))
     ).subscribe(data => this.concept = data && this.urlService.extendRdfPrefix(data) || "ELEMENT_ID");
-    console.log(this.concept);
     this.queries.push(["Tree Path Items", this.treePathItemsService.getQueryString([this.concept])]);
     this.queries.push(["Top Tree Items", this.treeItemsService.getCurrentTreeItemsQueryString("top",this.concept)]);
     this.queries.push(["Sub Tree Items", this.treeItemsService.getCurrentTreeItemsQueryString("sub",this.concept)]);

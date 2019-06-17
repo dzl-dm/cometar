@@ -246,6 +246,7 @@ export class DataService {
     //this.qpfddLabels = this.qpfddJson.map(d => d.date).filter((value, index, self) => self.map(d => d.substr(0,10)).indexOf(value.substr(0,10)) === index);
     this.qpfddLabels = qpfdd["data"].map(d => d.date).reverse().filter((value, index, self) => self.map(d => d.substr(0,7)).indexOf(value.substr(0,7)) === index).reverse();
     this.qpfddJson = qpfdd["data"].map(data => {
+      if (!mapping[data.source]) console.log("No mapping for "+data.source);
       if (mapping[data.source]["same as"] && mapping[mapping[data.source]["same as"]]) {
         data.source = mapping[data.source]["same as"];
       }
@@ -256,12 +257,14 @@ export class DataService {
     this.qpfddLocations = this.qpfddJson.filter(d => d.location!="").map(d => d.source+"::"+d.location).filter(this.distinctFilter);
 
     this.phenoJson = phenobd["data"].map(data => {
+      if (!mapping[data.source]) console.log("No mapping for "+data.source);
       if (mapping[data.source]["same as"] && mapping[mapping[data.source]["same as"]]) {
         data.source = mapping[data.source]["same as"];
       }
       return data;
     });;
     this.specimenJson = specimenbd["data"].map(data => {
+      if (!mapping[data.source]) console.log("No mapping for "+data.source);
       if (mapping[data.source]["same as"] && mapping[mapping[data.source]["same as"]]) {
         data.source = mapping[data.source]["same as"];
       }
