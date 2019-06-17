@@ -7,6 +7,7 @@ import { MatSliderChange, MatIconRegistry } from '@angular/material';
 import { DataService } from 'src/app/services/data.service';
 import { combineAll, combineLatest } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
+import { TreeStyleService } from '../services/tree-style.service';
 
 @Component({
   selector: 'app-menu',
@@ -24,6 +25,7 @@ export class MenuComponent implements OnInit {
   constructor(
     private router: Router,
     public treeDataService: TreeDataService,
+    public treeStyleService: TreeStyleService,
     private route:ActivatedRoute,
     private e: ElementRef,
     private cd: ChangeDetectorRef,
@@ -53,7 +55,8 @@ export class MenuComponent implements OnInit {
   }
   public navigateModule(s:string){    
     if (s=="home") {
-      this.treeDataService.addConceptInformation(of([]));
+      this.treeDataService.reset();
+      //this.treeStyleService.reset();
       this.router.navigate(["/"]);
     }
   }

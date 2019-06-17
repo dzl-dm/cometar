@@ -1,10 +1,13 @@
 import { Injectable, ChangeDetectorRef } from '@angular/core';
 import { CommitMetaDataService, CommitMetaData } from './queries/commit-meta-data.service';
 import { Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
-import { CommitDetails } from './queries/commit-details.service';
+import { CommitDetails, CommitDetailsService } from './queries/commit-details.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
 import { ProvTreeItemsService } from './prov-tree-items.service';
+import { TreeDataService } from 'src/app/core/services/tree-data.service';
+import { TreeStyleService, TreeItemStyle } from 'src/app/core/services/tree-style.service';
+import { map, flatMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +18,51 @@ export class ProvenanceService {
         public configuration:ConfigurationService,
         private commitMetaDataService:CommitMetaDataService,
         private provTreeItemsService: ProvTreeItemsService,
-    ) { }
+		private commitDetailsService:CommitDetailsService,
+		private treeDataService:TreeDataService,
+		private treeStyleService:TreeStyleService,
+    ) {         
+
+		this.treeDataService.addConceptInformation(this.treeData$);
+		this.treeStyleService.addTreeItemStyles(this.treeData$.pipe(
+			map(td => {
+				let treeItemStyles:TreeItemStyle[] = td.map(ci => {
+					let style = this.treeStyleService.getEmptyStyle(ci.concept);
+					style.icons.push({
+						style,
+						type: "chip",
+						"background-color": "#FFFBD5",
+						"border-color": "#DDD",
+						color: "#333",
+						id: "propertychange",
+						description: "This element has changed properties.",
+						text: "modified",
+						"bubble-up": {
+							style,
+						  	type: "dot",
+						  	"background-color": "#FFFBD5",
+							"border-color": "#DDD",
+						  	id: "propertychange_bubble",
+							color: "#333",
+						  	description: "There are COUNTER sub-elements with changed properties."
+						}
+					});
+					return style;
+				})
+				return treeItemStyles;
+			})
+		));
+		
+		this.combinedCommitDetails$.pipe(
+			flatMap(cds => this.getConceptTableInformation(cds, this.displayOptions$))
+		).subscribe(this.treeData$);
+    }
+	public displayOptions$:BehaviorSubject<{}> = new BehaviorSubject<{}>(this.configuration.initialCheckedPredicates);
+	private combinedCommitDetails$:ReplaySubject<CommitDetails[]>=new ReplaySubject<CommitDetails[]>(1);
+	private treeData$:ReplaySubject<ConceptInformation[]>=new ReplaySubject<ConceptInformation[]>(1);
+	public selectedCommits$ = new ReplaySubject<string[]>(1);
+	public selectedDateValue$ = new ReplaySubject<number>(1);
+	public selectedWholeTimespan$ = new ReplaySubject<boolean>(1);
 
     public getMetaData(from:Date, until?:Date):Observable<CommitMetaData[]>{
         return this.commitMetaDataService.get(from, until);
@@ -83,6 +130,7 @@ export class ProvenanceService {
 					concept: cd.subject.value,
 					headings: ["Date","Attribute","Old Value","New Value"],
 					cellWidthPercentages: [20,20,30,30],
+					cellMaxWidth: [130,130,0,0],
 					sourceId: "Provenance",
 					cells:[]
 				};
@@ -112,5 +160,38 @@ export class ProvenanceService {
 			cis.next(result);
 		});
 		return cis;
+    }
+    
+
+
+
+
+    
+    public setDisplayOptions(displayOptions$){
+        this.displayOptions$ = displayOptions$
+    }
+
+	public clearTree(){
+		this.combinedCommitDetails$.next([]);
+    }
+    
+	public loadCommitIntoTree(commitid){  
+		this.commitDetailsService.getByCommitId(commitid).subscribe(newcds => {
+			let currentcds:CommitDetails[] = [];
+			this.combinedCommitDetails$.subscribe(cds => currentcds = cds).unsubscribe();
+			this.combinedCommitDetails$.next(currentcds.concat(newcds));
+		});
+	}
+
+	public loadDateIntoTree(date:string){
+		this.getCommitMetaDataByDay$(new Date(date)).subscribe(data => data.forEach((cmd)=>{
+			this.loadCommitIntoTree(cmd.commitid.value);
+		}));
+	}
+
+	public loadAllIntoTree(date:string){
+		this.getAllMetaDataSince$(new Date(date)).subscribe(data => data.forEach((cmd)=>{
+			this.loadCommitIntoTree(cmd.commitid.value);
+		}));
 	}
 }

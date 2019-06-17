@@ -3,6 +3,7 @@
 </ng-container>
 <ng-container *ngIf="!collapsed">
     <table 
+        #table
         [ngClass]="{
             'rowHeadingTable':headingDirection == 'row', 
             'columnHeadingTable':headingDirection == 'column',

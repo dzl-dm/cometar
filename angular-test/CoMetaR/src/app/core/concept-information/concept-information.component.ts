@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, ElementRef } from '@angular/core';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { TreeDataService } from '../services/tree-data.service';
 
@@ -11,7 +11,8 @@ export class ConceptInformationComponent implements OnInit {
   @Input() headingDirection:string;
   @Input() data:string[][];
   @Input() hiddenHeading:boolean;
-  @Input() cellWidthPercentages;
+  @Input() cellWidthPercentages:number[];
+  @Input() cellMaxWidth?:number[];
   @Input() highlightTerm:string;
   @Input() collapsed:boolean;
   @Input() maxWidth?:number;
@@ -19,7 +20,8 @@ export class ConceptInformationComponent implements OnInit {
   @Input() conceptInformation:ConceptInformation;
   constructor(
     private configurationService: ConfigurationService,
-    private treeDataService: TreeDataService
+    private treeDataService: TreeDataService,
+    private el: ElementRef
   ) { }
 
   ngOnInit() {
@@ -27,6 +29,7 @@ export class ConceptInformationComponent implements OnInit {
       this.data = this.conceptInformation.cells;
       this.headingDirection="row";
       this.cellWidthPercentages = this.conceptInformation.cellWidthPercentages;
+      this.cellMaxWidth = this.conceptInformation.cellMaxWidth;
     }
   }
 
@@ -74,9 +77,20 @@ export class ConceptInformationComponent implements OnInit {
   }
 
   public getWidth(i:number):string{
-    if (this.maxWidth) return (this.cellWidthPercentages[i]*(this.maxWidth-8*this.cellWidthPercentages.length)/100)+"px";
-    console.log(this.cellWidthPercentages);
-    return (this.cellWidthPercentages[i])+"%";
+    let percentValue = this.cellWidthPercentages[i];
+    let maxValue = this.cellMaxWidth && this.cellMaxWidth[i];
+    let divWidth = (<HTMLElement>this.el.nativeElement).offsetWidth;
+    if (maxValue > 0 && percentValue*divWidth/100 > maxValue) return maxValue+"px";
+    else return percentValue + "%";
+    if (this.cellMaxWidth && this.cellMaxWidth[i] && this.cellMaxWidth[i]!=0){
+      return this.cellMaxWidth[i]+"px";
+    }
+    else {
+      if (this.maxWidth) {
+        return ""+this.maxWidth*this.cellWidthPercentages[i]/100
+      }
+      return (this.cellWidthPercentages[i])+"%";
+    }
   }
 }
 
@@ -85,6 +99,6 @@ export interface ConceptInformation{
   headings?:string[],
   cells:string[][],
   cellWidthPercentages:number[],
-  cellWidthPixels?:number[],
+  cellMaxWidth?:number[],
   sourceId:string
 }

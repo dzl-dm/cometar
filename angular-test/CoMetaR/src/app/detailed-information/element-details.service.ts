@@ -29,12 +29,14 @@ export class ElementDetailsService {
         let style = this.treeStyleService.getEmptyStyle(ti.element.value);
         if (ti.draft && ti.draft.value) {
           style.icons.push({
+            style,
             type: "imgIcon",
             "background-color": "white",
             "iconName": "draft",
             id: "draft",
             description: "This element is on draft.",
             "bubble-up": {
+              style,
               type: "smallImgIcon",
               "iconName": "draft",
               "background-color": "white",
@@ -46,12 +48,14 @@ export class ElementDetailsService {
         }
         if (ti.editnotes && ti.editnotes.value > 0) {
           style.icons.push({
+            style,
             type: "imgIcon",
             "background-color": "white",
             "iconName": "editNote",
             id: "editNote",
             description: "This element has an editorial note. Domain experts are asked to review.",
             "bubble-up": {
+              style,
               type: "smallImgIcon",
               "iconName": "editNote",
               "background-color": "white",

@@ -11,7 +11,7 @@ div#tree {
     flex-grow:1;
     overflow-y:auto;
     overflow-x:hidden;
-    position: relative !important; /*for inner element positioning*/
+    /*position: relative !important; for inner element positioning*/
     background-color:white;
     border-radius:5px;
     margin-left:20px;
@@ -46,3 +46,10 @@ div.treeOutlineElement {
 div#tree::-webkit-scrollbar {
     width: 35px;
 } 
+div.hoveredInformationDiv {
+    position: absolute;
+    background-color: red;
+    z-index: 2;
+    width:700px;
+    height:300px;
+}

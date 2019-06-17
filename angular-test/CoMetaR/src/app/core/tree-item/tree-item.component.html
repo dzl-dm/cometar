@@ -31,7 +31,12 @@
           'chip': icon.type == 'chip'
         }"
         [matTooltip]="icon.description?icon.description.replace('COUNTER',getBubbleIconCounter(icon)?getBubbleIconCounter(icon):''):undefined"
-        [ngStyle]="{ 'background-color': icon['background-color'], 'color': icon['color'] }">
+        [ngStyle]="{ 
+          'background-color': icon['background-color'],
+          'border-color': icon['border-color'], 
+          'color': icon['color'], 
+          'cursor': getBubbleIconCounter(icon)?'zoom-in':'pointer' }"
+        (click)="onIconClick($event,icon)">
           <div class="counter">{{getBubbleIconCounter(icon)?getBubbleIconCounter(icon):""}}</div>
           <div class="text">{{icon.text}}</div>
           <mat-icon *ngIf="icon.type == 'imgIcon' || icon.type =='smallImgIcon'" 
@@ -50,7 +55,8 @@
     'opacity':attributes.ghostItemParent?0.5:1.0
   }"
   *ngIf="showInformationDiv$ | async "
-  #treeItemInformation> 
+  #treeItemInformation
+  (mouseenter)="onInformationMouseEnter($event)"> 
   <app-concept-information 
     *ngIf="showSearchResult$ | async"
     [data]="searchResults$ | async" 

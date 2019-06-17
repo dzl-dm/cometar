@@ -21,7 +21,6 @@ export class LogosComponent implements OnInit {
   }
 
   public navigateModule(url?:string){    
-    console.log(url);
     if (url) window.open(url);
     else this.router.navigate(["/"]);
   }
