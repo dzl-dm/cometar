@@ -10,10 +10,12 @@ import { animate, transition, state, trigger, style } from '@angular/animations'
   animations: [
     trigger('openClose', [
       state('open', style({
-        height: '*'
+        height: '*',
+        'paddingTop': '10px'
       })),
       state('closed', style({
-        height: '0px'
+        height: '0px',
+        'paddingTop': '0px'
       })),
       transition('open => closed, closed => open', [
         animate('0.2s')
@@ -25,6 +27,9 @@ export class SectionComponent implements OnInit {
   @Input() title:string;
   @Input() foldable:boolean=false;
   @Input() expanded:boolean=true;
+  @Input() category?:string;
+  @Input() shrinking?:boolean=false;
+  @Input() min_height?:number;
   @Output() open = new EventEmitter<Event>();
   constructor(
     iconRegistry: MatIconRegistry, 
@@ -33,6 +38,7 @@ export class SectionComponent implements OnInit {
   ) {
     iconRegistry.addSvgIcon('expand_more', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-expand_more-24px.svg'));
     iconRegistry.addSvgIcon('expand_less', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-expand_less-24px.svg'));
+    iconRegistry.addSvgIcon('lightbulb', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/lightbulb.svg'));
   }
 
   ngOnInit() {

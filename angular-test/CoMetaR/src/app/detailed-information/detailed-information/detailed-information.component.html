@@ -6,6 +6,7 @@
       *ngIf="detail.value.values.length > 0"
       [foldable]="detail.key == 'lastchangesdate'"
       [expanded]="detail.key != 'lastchangesdate'"
+      [shrinking]="detail.key == 'lastchangesdate'"
       (open)="onSectionExpand(detail.key)">
       <div class='detailContent' [ngSwitch]="detail.key">
         <div *ngSwitchCase="'modifier'">

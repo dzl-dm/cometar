@@ -1,17 +1,11 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ProvenanceService } from '../services/provenance.service';
 import { Observable, Subject, ReplaySubject, BehaviorSubject, combineLatest } from 'rxjs';
-import { CommitMetaData } from '../services/queries/commit-meta-data.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UrlService } from 'src/app/services/url.service';
-import { map, flatMap } from 'rxjs/operators';
-import { TreeDataService } from 'src/app/core/services/tree-data.service';
-import { CommitDetailsService, CommitDetails } from '../services/queries/commit-details.service';
-import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
+import { map } from 'rxjs/operators';
 import { MatSliderChange } from '@angular/material';
-import { ProvTreeItemsService } from '../services/prov-tree-items.service';
-import { TreeStyleService, TreeItemStyle } from 'src/app/core/services/tree-style.service';
 
 @Component({
 	selector: 'app-provenance',

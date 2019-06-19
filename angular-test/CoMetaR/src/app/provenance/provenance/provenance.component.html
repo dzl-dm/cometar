@@ -1,4 +1,4 @@
-<app-section title="Ontology Uploads Description" [foldable]="true" [expanded]="true">
+<app-section title="Ontology uploads description" [foldable]="true" [expanded]="false" category="bulb">
   <div class="diagramDescription">      
     <div class="rangeselect description">Show since ...</div>
     <div class="container">
@@ -36,7 +36,7 @@
   </div>
 </app-section>
 
-<app-section [title]="'Ontology Uploads since '+(fromDate | date:'dd.MM.yyyy')" class="diagram" style="height:150px">
+<app-section [title]="'Ontology uploads since '+(fromDate | date:'dd.MM.yyyy')" class="diagram" style="height:150px" [shrinking]="true">
   <div class="diagram">
     <div class="rangeselect">
       <mat-slider 

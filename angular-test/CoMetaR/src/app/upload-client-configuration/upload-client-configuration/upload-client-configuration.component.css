@@ -4,8 +4,12 @@
     flex-grow: 1;
     padding:10px;
 }
+.selection {
+    flex-shrink: 0;
+}
 table {
     flex: 0 0;
+    width: 100%;
 }
 textarea, input[type='text'], input[type='file'], input[type='button'] {
     width:100%;

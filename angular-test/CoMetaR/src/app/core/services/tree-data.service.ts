@@ -1,6 +1,6 @@
 import { Injectable, ElementRef } from '@angular/core';
 import { map, flatMap, filter, distinct, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { Observable, combineLatest, ReplaySubject, BehaviorSubject } from 'rxjs';
+import { Observable, combineLatest, ReplaySubject, BehaviorSubject, Subject } from 'rxjs';
 import { SearchResultAttributes, SearchtreeitemService } from './queries/searchtreeitem.service';
 import { TreeItemAttributes, TreeItemsService } from './queries/treeitems.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -26,6 +26,7 @@ export class TreeDataService {
   public openedElements$:BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   public searchActivated$:Observable<boolean>;
   public conceptInformation$:BehaviorSubject<ConceptInformation[]> = new BehaviorSubject<ConceptInformation[]>([]);
+  public reset$ = new Subject();
 
   private claimWidth=(number)=>{};
 
@@ -61,6 +62,7 @@ export class TreeDataService {
   public reset(){
     this.conceptInformation$.next([]);
     this.openedElements$.next([]);
+    this.reset$.next();
   }
 
   //init (through tree component)
