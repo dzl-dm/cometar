@@ -145,9 +145,10 @@ export class TreeItemComponent implements OnInit {
   public onIconClick(event:Event, icon:TreeItemIcon){
     event.stopPropagation();
     let bubbleConcepts = this.style.bubbleicons.filter(bi => bi.id == icon.id).map(bi => bi.style.concept);
-    this.treeDataService.openedElements$.next(bubbleConcepts);
+    if (bubbleConcepts.length>0) this.treeDataService.openedElements$.next(bubbleConcepts);
   }
 
+  private cloneRemoveFunction;
   public onInformationMouseEnter(event:MouseEvent){
     let informationDiv = <HTMLElement>event.target
     let clone = <HTMLElement>informationDiv.cloneNode(true);
@@ -160,7 +161,13 @@ export class TreeItemComponent implements OnInit {
     let maxHeight = Math.min(500,window.innerHeight-top-20);
     clone.classList.add("hoveredInformationDiv");
     clone.setAttribute("style","left:"+left+"px;top:"+top+"px;max-height:"+maxHeight+"px;width:"+maxWidth+"px;");
-    clone.onmouseleave = (event)=>clone.remove();
+    this.cloneRemoveFunction = (event)=>{
+      if (event.x < left || event.x > left + informationDiv.offsetWidth || event.y < top || event.y > top + informationDiv.offsetHeight){
+        clone.remove();
+        document.body.removeEventListener("mosuemove",this.cloneRemoveFunction);
+      }
+    }
+    document.body.addEventListener("mousemove",this.cloneRemoveFunction);
     document.body.append(clone);
   }
 }

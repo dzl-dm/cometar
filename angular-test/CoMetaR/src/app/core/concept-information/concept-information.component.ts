@@ -13,6 +13,7 @@ export class ConceptInformationComponent implements OnInit {
   @Input() hiddenHeading:boolean;
   @Input() cellWidthPercentages:number[];
   @Input() cellMaxWidth?:number[];
+  @Input() cellMinWidth?:number[];
   @Input() highlightTerm:string;
   @Input() collapsed:boolean;
   @Input() maxWidth?:number;
@@ -30,6 +31,7 @@ export class ConceptInformationComponent implements OnInit {
       this.headingDirection="row";
       this.cellWidthPercentages = this.conceptInformation.cellWidthPercentages;
       this.cellMaxWidth = this.conceptInformation.cellMaxWidth;
+      this.cellMinWidth = this.conceptInformation.cellMinWidth;
     }
   }
 
@@ -79,18 +81,12 @@ export class ConceptInformationComponent implements OnInit {
   public getWidth(i:number):string{
     let percentValue = this.cellWidthPercentages[i];
     let maxValue = this.cellMaxWidth && this.cellMaxWidth[i];
+    let minValue = this.cellMinWidth && this.cellMinWidth[i];
+    let minvaluesum = this.cellMinWidth && this.cellMinWidth.reduce((previous,current,index)=>previous+current) || 0;
     let divWidth = (<HTMLElement>this.el.nativeElement).offsetWidth;
+    if (divWidth > minvaluesum && minValue > 0 && percentValue*divWidth/100 < minValue) return minValue+"px";
     if (maxValue > 0 && percentValue*divWidth/100 > maxValue) return maxValue+"px";
     else return percentValue + "%";
-    if (this.cellMaxWidth && this.cellMaxWidth[i] && this.cellMaxWidth[i]!=0){
-      return this.cellMaxWidth[i]+"px";
-    }
-    else {
-      if (this.maxWidth) {
-        return ""+this.maxWidth*this.cellWidthPercentages[i]/100
-      }
-      return (this.cellWidthPercentages[i])+"%";
-    }
   }
 }
 
@@ -100,5 +96,6 @@ export interface ConceptInformation{
   cells:string[][],
   cellWidthPercentages:number[],
   cellMaxWidth?:number[],
+  cellMinWidth?:number[],
   sourceId:string
 }

@@ -156,6 +156,7 @@ export class BrowserComponent implements OnInit {
     });  
   }
   public onTreeResizeEnd(event: MouseEvent) {
+    console.log("jo");
     if (this.dragging) {
       window.document.removeEventListener('mousemove', this.boundResizeFunction);
       this.dragging = false;

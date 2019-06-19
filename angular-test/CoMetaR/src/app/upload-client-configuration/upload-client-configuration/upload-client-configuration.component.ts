@@ -6,6 +6,8 @@ import { ClientConfigurationService, IClientConfiguration, Mapping } from '../se
 import { ConceptByNotationService } from '../services/queries/concept-by-notation.service';
 import { map, filter } from 'rxjs/operators';
 import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
+import { HttpClient,HttpHeaders, HttpRequest } from '@angular/common/http';
+import { TreeStyleService, TreeItemStyle } from 'src/app/core/services/tree-style.service';
 
 @Component({
   selector: 'app-upload-client-configuration',
@@ -13,7 +15,6 @@ import { ConceptInformation } from 'src/app/core/concept-information/concept-inf
   styleUrls: ['./upload-client-configuration.component.css']
 })
 export class UploadClientConfigurationComponent implements OnInit {
-	private treeData$:ReplaySubject<ConceptInformation[]>=new ReplaySubject<ConceptInformation[]>(1);
 	public inputtype="xml";
 	public csc_content="";
   public xmlFileContent="";
@@ -22,13 +23,12 @@ export class UploadClientConfigurationComponent implements OnInit {
 	public csc_new_content="";
   public showUpdatedConfigurationFileDownloadButton=false;
   	constructor(
-		private treeDataService:TreeDataService,
 		private clientConfigurationService:ClientConfigurationService,
-		private conceptByNotationService:ConceptByNotationService
+		private conceptByNotationService:ConceptByNotationService,
+		private http:HttpClient
 	) { }
 
   ngOnInit() {
-	this.treeDataService.addConceptInformation(this.treeData$);
   }
 
   public inputFileSelected(fileInput: any){
@@ -45,6 +45,13 @@ export class UploadClientConfigurationComponent implements OnInit {
       })(f);
       reader.readAsText(f, "UTF-8");
     }
+  }
+
+  public loadExample(){
+	const _headers = new HttpHeaders();
+    const headers = _headers.set('Content-Type', 'text/xml')
+	let exampleConfiguration = this.http.get('../assets/data/datasource.xml',{headers: _headers,responseType: 'text'});
+	exampleConfiguration.subscribe(data => this.xmlFileContent = data);
   }
 
   public analyze(){
@@ -78,6 +85,8 @@ export class UploadClientConfigurationComponent implements OnInit {
 						concept: result.concept && result.concept.value,
 						headings:["Source", "Value", "Mapped Value", "Unit"],
 						cellWidthPercentages:[55,15,15,15],
+						cellMinWidth:[150,150,150,50],
+						cellMaxWidth:[250,150,150,50],
 						cells:this.clientConfigurationService.getTreeLines(m),
 						sourceId:"clientconfig"
 					}
@@ -94,7 +103,7 @@ export class UploadClientConfigurationComponent implements OnInit {
 		})).subscribe(data => {
 			data = data.filter(d => d != undefined);
 			if (data.length == 0) return;
-			this.treeData$.next(data);
+			this.clientConfigurationService.setTreeData(data);
 			this.showUpdatedConfigurationFileDownloadButton = replacements.length > 0;
 			for (let replacement of replacements){
 				if (this.inputtype=="xml") {

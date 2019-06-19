@@ -1,19 +1,63 @@
 import { Injectable } from '@angular/core';
+import { ReplaySubject } from 'rxjs';
+import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
+import { TreeDataService } from 'src/app/core/services/tree-data.service';
+import { TreeStyleService, TreeItemStyle } from 'src/app/core/services/tree-style.service';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClientConfigurationService {
-  private cc:ClientConfiguration;
-  constructor() { }
+  	private cc:ClientConfiguration;
+  	private treeData$:ReplaySubject<ConceptInformation[]>=new ReplaySubject<ConceptInformation[]>(1);
+  	constructor(
+		private treeDataService:TreeDataService,
+		private treeStyleService:TreeStyleService,
+	) {
+		this.treeDataService.addConceptInformation(this.treeData$);
+		this.treeStyleService.addTreeItemStyles(this.treeData$.pipe(
+			map(td => {
+				let treeItemStyles:TreeItemStyle[] = td.map(ci => {
+					let style = this.treeStyleService.getEmptyStyle(ci.concept);
+					style.icons.push({
+						style,
+						type: "chip",
+						"background-color": "#FFFBD5",
+						"border-color": "#DDD",
+						color: "#333",
+						id: "clientconfiguration",
+						description: "This element has been configured.",
+						text: "configured",
+						"bubble-up": {
+							style,
+								type: "dot",
+								"background-color": "#FFFBD5",
+								"border-color": "#DDD",
+								id: "clientconfiguration_bubble",
+								color: "#333",
+								description: "There are COUNTER sub-elements that have been configured."
+						}
+					});
+					return style;
+				})
+				return treeItemStyles;
+			})
+		));
+		this.treeDataService.reset$.subscribe(()=>this.setTreeData([]));
+	}
 
-  public getMappings(icc:IClientConfiguration):Mapping[]{
-    this.cc = new ClientConfiguration(icc);
-    return this.cc.extractMappings();
-  }
-  public getTreeLines(m:Mapping):string[][]{
-    return this.cc.getTreeLines(m);
-  }
+	public setTreeData(ci:ConceptInformation[]){
+		this.treeData$.next(ci);
+	}
+
+	public getMappings(icc:IClientConfiguration):Mapping[]{
+		this.cc = new ClientConfiguration(icc);
+		return this.cc.extractMappings();
+	}
+	public getTreeLines(m:Mapping):string[][]{
+		return this.cc.getTreeLines(m);
+	}
 }
 
 

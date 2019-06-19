@@ -1,27 +1,34 @@
-<table>
-  <tr>
-    <td class='clickable' (click)="inputtype='csc'"><input type="radio" name="inputtype" [checked]="inputtype=='csc'"/> Comma Delimited Codes</td>
-    <td>
-      <input type="text" id="codes" [(ngModel)]="csc_content" [attr.disabled]="inputtype!='csc' ? '' : null" placeholder="Enter codes here."/>
-      <input type="text" id="newcodes" [(ngModel)]="csc_new_content" [attr.disabled]="inputtype!='csc' ? '' : null" placeholder="Updated codes will be shown here."/>
-    </td>
-  </tr>
-  <tr>
-    <td class='clickable' (click)="inputtype='xml'"><input type="radio" name="inputtype" [checked]="inputtype=='xml'"/> Configuration XML</td>
-    <td>
-      <input type="file" [attr.disabled]="inputtype!='xml' ? '' : null" (change)="inputFileSelected($event)"/>
-      <textarea id="configxml" [attr.disabled]="inputtype!='xml' ? '' : null" [(ngModel)]="xmlFileContent"></textarea>
-    </td> 
-  </tr>
-  <tr>
-    <td></td>
-    <td><input type='button' value='Analyze' (click)="analyze()"/></td>
-  </tr>
-  <tr *ngIf="showUpdatedConfigurationFileDownloadButton">
-    <td></td>
-    <td><input type='button' value='Download Updated Configuration File' (click)="downloadNewFile()"/></td>
-  </tr>
-</table>
-<div id='feedback'>
-  <div class='feedbackpart' style="margin-top:10px" *ngFor="let f of feedback">{{f}}</div>
-</div>
+<app-section title="Example" category="bulb" [foldable]="true" [expanded]="false" [shrinking]="false">
+  <input type='button' value='Load an example configuration file.' (click)="loadExample()"/>
+</app-section>
+<app-section title="Selection" class="selection">
+  <table>
+    <tr>
+      <td class='clickable' (click)="inputtype='csc'"><input type="radio" name="inputtype" [checked]="inputtype=='csc'"/> Comma Delimited Codes</td>
+      <td>
+        <input type="text" id="codes" [(ngModel)]="csc_content" [attr.disabled]="inputtype!='csc' ? '' : null" placeholder="Enter codes here."/>
+        <input type="text" id="newcodes" [(ngModel)]="csc_new_content" [attr.disabled]="inputtype!='csc' ? '' : null" placeholder="Updated codes will be shown here."/>
+      </td>
+    </tr>
+    <tr>
+      <td class='clickable' (click)="inputtype='xml'"><input type="radio" name="inputtype" [checked]="inputtype=='xml'"/> Configuration XML</td>
+      <td>
+        <input type="file" [attr.disabled]="inputtype!='xml' ? '' : null" (change)="inputFileSelected($event)"/>
+        <textarea id="configxml" [attr.disabled]="inputtype!='xml' ? '' : null" [(ngModel)]="xmlFileContent"></textarea>
+      </td> 
+    </tr>
+    <tr>
+      <td></td>
+      <td><input type='button' value='Analyze' (click)="analyze()"/></td>
+    </tr>
+    <tr *ngIf="showUpdatedConfigurationFileDownloadButton">
+      <td></td>
+      <td><input type='button' value='Download Updated Configuration File' (click)="downloadNewFile()"/></td>
+    </tr>
+  </table>
+</app-section>
+<app-section title="Feedback" min_height="100">
+  <div id='feedback'>
+    <div class='feedbackpart' style="margin-top:10px" *ngFor="let f of feedback">{{f}}</div>
+  </div>
+</app-section>
