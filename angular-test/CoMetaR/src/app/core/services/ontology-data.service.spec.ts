@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { TreeItemsService } from './treeitems.service';
+import { OntologyDataService } from './ontology-data.service';
 
-describe('ToplevelelementsService', () => {
+describe('OntologyDataService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: TreeItemsService = TestBed.get(TreeItemsService);
+    const service: OntologyDataService = TestBed.get(OntologyDataService);
     expect(service).toBeTruthy();
   });
 });

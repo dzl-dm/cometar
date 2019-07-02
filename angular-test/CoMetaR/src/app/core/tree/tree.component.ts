@@ -28,7 +28,7 @@ export class TreeComponent implements OnInit {
   ngOnInit() {    
     this.treeDataService.init(this.route,(width)=>this.claimWidth.emit(width));
     this.treeStyleService.registerTreeDomElement(this.el.nativeElement);
-    this.treeStyleService.scrollHeadingsSubject$.subscribe(()=>this.cd.markForCheck());
+    //this.treeStyleService.scrollHeadingsSubject$.subscribe(()=>this.cd.markForCheck());
   }
 
   public onscroll(event){

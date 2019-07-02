@@ -141,10 +141,11 @@ div.treeItemTitle:focus {
 .treeItemInformation{
     background-color:#FFFBD5;
     color:#333;
-    width:100%;
+    width:calc(100% - 35px);
     display: flex;
     flex-direction: column;
     position: relative;
+    left:30px;
     padding:5px;
     border-radius: 3px;
     margin-bottom:5px;

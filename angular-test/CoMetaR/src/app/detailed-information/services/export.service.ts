@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { TreeItemAttributes, TreeItemsService } from 'src/app/core/services/queries/treeitems.service';
 import { Observable, combineLatest, Subject, of, Subscription, BehaviorSubject } from 'rxjs';
 import { map, flatMap, single, first, combineAll } from 'rxjs/operators';
 import { InformationQueryService, OntologyElementDetails } from './queries/information-query.service';
+import { OntologyAccessService } from 'src/app/core/services/ontology-access.service';
+import { TreeItem } from 'src/app/core/classes/tree-item';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +14,12 @@ export class ExportService {
 
   constructor(
     private informationQueryService:InformationQueryService,
-    private treeItemsService: TreeItemsService
+    private ontologyAccessService: OntologyAccessService
   ) { }
 
   public get(iri:string, callback:(exportString: string)=>void):void {
-    let o = this.treeItemsService.get({range: "single",iri}).pipe(first()).subscribe(tias => {
-      this.exportItem = { treeItemAttributes: tias[0], subExportItems: [], ontologyElementDetails: [] };
+    let o = this.ontologyAccessService.getSubItems$(iri).pipe(first()).subscribe(tis => {
+      this.exportItem = { treeItem: tis[0], subExportItems: [], ontologyElementDetails: [] };
       this.getRecursive(this.exportItem).subscribe(next => {
         if (next == false) return;
         let s = "label;status;codes;units;is modifier\n";
@@ -34,9 +35,9 @@ export class ExportService {
     };
     let intent="";
     for(let i = 0; i < level; i++) intent+= "  ";
-    let label = ei.treeItemAttributes.label.value;
-    let status = ei.treeItemAttributes.status?ei.treeItemAttributes.status.value:"";
-    let isMod = ei.treeItemAttributes.isModifier && ei.treeItemAttributes.isModifier.value == true?"true":"false";
+    let label = ei.treeItem.label.value;
+    let status = ei.treeItem.status?ei.treeItem.status.value:"";
+    let isMod = ei.treeItem.isModifier && ei.treeItem.isModifier.value == true?"true":"false";
     let notations = ei.ontologyElementDetails.map(oed => oed.notation && oed.notation.value).filter(a => a != undefined).filter(distinctFilter).join(",");
     let units = ei.ontologyElementDetails.map(oed => oed.unit && oed.unit.value).filter(a => a != undefined).filter(distinctFilter).join(",");
     s +=  [intent+label,status,notations,units,isMod].join(";") + "\n";
@@ -46,12 +47,12 @@ export class ExportService {
 
   private getRecursive(ei:ExportItem):BehaviorSubject<boolean>{   
     let s = new BehaviorSubject<boolean>(false);
-    this.informationQueryService.get(ei.treeItemAttributes.element.value).pipe(first()).subscribe(i => ei.ontologyElementDetails = i);
-    this.treeItemsService.get({range: "sub",iri: ei.treeItemAttributes.element.value}).pipe(first()).subscribe(tias => {
+    this.informationQueryService.get(ei.treeItem.element.value).pipe(first()).subscribe(i => ei.ontologyElementDetails = i);
+    this.ontologyAccessService.getSubItems$(ei.treeItem.element.value).pipe(first()).subscribe(tias => {
       let subs: Subject<boolean>[] = [];
       tias.forEach(t => {
         let newEi:ExportItem = {
-          treeItemAttributes:t, 
+          treeItem:t, 
           ontologyElementDetails:[],
           subExportItems:[]
         };
@@ -68,7 +69,7 @@ export class ExportService {
 }
 
 export interface ExportItem {
-  treeItemAttributes: TreeItemAttributes,
+  treeItem: TreeItem,
   ontologyElementDetails: OntologyElementDetails[],
   subExportItems: ExportItem[]
 }

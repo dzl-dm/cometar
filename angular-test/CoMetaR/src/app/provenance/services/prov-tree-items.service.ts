@@ -4,6 +4,7 @@ import { TreeItemAttributes } from 'src/app/core/services/queries/treeitems.serv
 import { ProvTreeItemsQueryService, ProvTreeItemAttributes } from './queries/prov-tree-items-query.service';
 import { TreeStyleService, TreeItemIcon, TreeItemStyle } from 'src/app/core/services/tree-style.service';
 import { TreeDataService } from 'src/app/core/services/tree-data.service';
+import { OntologyAccessService } from 'src/app/core/services/ontology-access.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ export class ProvTreeItemsService {
   constructor(
     private provItemsQueryService: ProvTreeItemsQueryService,
     private treeStyleService: TreeStyleService,
+    private ontologyAccessService: OntologyAccessService,
     private treeDataService: TreeDataService
   ) { 
     this.treeStyleService.addTreeItemStyles(this.treeItemStyles$);
@@ -110,14 +112,11 @@ export class ProvTreeItemsService {
         });
         this.concatProvTreeItems(tempAddedTreeItems,tempMovedTreeItems,tempRemovedTreeItems);
         this.treeItemStyles = [];
-        this.treeDataService.setGhostTreeItems(this.removedTreeItems.concat(this.movedTreeItems).map(r=>{
+        this.ontologyAccessService.setGhostTreeItems(this.removedTreeItems.concat(this.movedTreeItems).map(r=>{
             return {
                 element: {value: r.element},
-                hasChildren: {value:false},
-                isModifier: {value:false},
                 label: {value:r.label||r.element,"xml:lang":'en'},
-                type: {value:"http://www.w3.org/2004/02/skos/core#Concept"},
-                ghostItemParent: r.oldparent
+                parent: r.oldparent
             }})
         );
 
