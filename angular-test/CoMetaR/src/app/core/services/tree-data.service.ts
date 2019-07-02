@@ -2,13 +2,14 @@ import { Injectable, ElementRef } from '@angular/core';
 import { map, flatMap, filter, distinct, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Observable, combineLatest, ReplaySubject, BehaviorSubject, Subject } from 'rxjs';
 import { SearchResultAttributes, SearchtreeitemService } from './queries/searchtreeitem.service';
-import { TreeItemAttributes, TreeItemsService } from './queries/treeitems.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TreepathitemsService } from './queries/treepathitems.service';
 import { UrlService } from '../../services/url.service'
 import { Component } from '@angular/compiler/src/core';
 import { ConceptInformation } from '../concept-information/concept-information.component';
 import { TreeStyleService } from './tree-style.service';
+import { OntologyDataService } from './ontology-data.service';
+import { OntologyAccessService } from './ontology-access.service';
+import { TreeItem } from '../classes/tree-item';
 
 @Injectable({
   providedIn: 'root'
@@ -31,19 +32,18 @@ export class TreeDataService {
   private claimWidth=(number)=>{};
 
   constructor(
-    private treeitemsService: TreeItemsService, 
-    private treepathitemsService: TreepathitemsService, 
     private router: Router,
     private searchtreeitemService: SearchtreeitemService,
     private urlService: UrlService,
-    private treeStyleService: TreeStyleService
+    private treeStyleService: TreeStyleService,
+    private ontologyAccessService: OntologyAccessService
   ) {
     this.selectedIri$ = new ReplaySubject(1);
     this.searchPattern$ = new ReplaySubject(1);
     this.searchActivated$ = this.searchPattern$.pipe(map(searchPattern => searchPattern != ""));
     this.selectedIri$.subscribe(()=>this.openedElements$.next([]));
     this.selectedPaths$ = combineLatest(this.selectedIri$, this.openedElements$).pipe(
-      flatMap(([iri,iris]) => this.treepathitemsService.getAllAncestors(iris.concat(iri)))
+      flatMap(([iri,iris]) => this.ontologyAccessService.getAllAncestors(iris.concat(iri)))
     )
     this.searchIris$ = this.searchPattern$.pipe(
       distinctUntilChanged(),
@@ -52,10 +52,10 @@ export class TreeDataService {
       ))
     )
     this.searchPaths$ = this.searchIris$.pipe(
-      flatMap(iris => this.treepathitemsService.getAllAncestors(iris))
+      flatMap(iris => this.ontologyAccessService.getAllAncestors(iris))
     ) 
     this.informationPaths$ = this.conceptInformation$.pipe(
-      flatMap(cis => this.treepathitemsService.getAllAncestors(cis.map(ci => ci.concept)))
+      flatMap(cis => this.ontologyAccessService.getAllAncestors(cis.map(ci => ci.concept)))
     )   
   }
 
@@ -75,7 +75,7 @@ export class TreeDataService {
     ).subscribe(this.searchPattern$);
     this.claimWidth=claimWidth;
     route.queryParamMap.subscribe(()=>{
-      setTimeout(()=>this.treeStyleService.onTreeDomChange(),0);
+      setTimeout(()=>this.treeStyleService.onTreeDomChange("Query Parameter changed."),0);
     })
   }
 
@@ -90,11 +90,11 @@ export class TreeDataService {
   }
 
   //item offering
-  public getTopLevelItems$():Observable<TreeItemAttributes[]>{
-    return this.searchItemFilter(this.treeitemsService.get({range:"top"}));
+  public getTopLevelItems$():Observable<TreeItem[]>{
+    return this.searchItemFilter(this.ontologyAccessService.getTopLevelItems$());
   }
-  public getSubItems$(iri:string):Observable<TreeItemAttributes[]>{
-    return this.searchItemFilter(this.treeitemsService.get({range:"sub",iri:iri}));
+  public getSubItems$(iri:string):Observable<TreeItem[]>{
+    return this.searchItemFilter(this.ontologyAccessService.getSubItems$(iri));
   }
   public isSelectedPathPart$(iri:string):Observable<boolean>{
     return this.selectedPaths$.pipe(
@@ -111,10 +111,10 @@ export class TreeDataService {
       map(data => data.includes(true))
     )
   }
-  private searchItemFilter(o:Observable<TreeItemAttributes[]>):Observable<TreeItemAttributes[]>{
+  private searchItemFilter(o:Observable<TreeItem[]>):Observable<TreeItem[]>{
     return combineLatest(o, this.searchIris$, this.searchPaths$, this.searchActivated$).pipe(
       map(data => {
-        let tias = <TreeItemAttributes[]> data[0];
+        let tias = <TreeItem[]> data[0];
         let searchIris = <string[]> data[1];
         let searchPaths = <string[]> data[2];
         let searchActivated = <boolean> data[3];
@@ -163,10 +163,5 @@ export class TreeDataService {
     return this.informationPaths$.pipe(
       map(informationPaths => informationPaths.includes(iri))
     )
-  }
-
-  public setGhostTreeItems(items: TreeItemAttributes | TreeItemAttributes[]) {
-    if (!(items instanceof Array)) items = [items];
-    this.treeitemsService.setGhostTreeItems(items);
   }
 }

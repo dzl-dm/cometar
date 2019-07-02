@@ -1,10 +1,10 @@
 import { Injectable, ChangeDetectorRef } from '@angular/core';
 import { Subject, Observable, BehaviorSubject, combineLatest, of, ReplaySubject } from 'rxjs';
-import { map, filter, flatMap, first } from 'rxjs/operators';
-import { TreepathitemsService } from './queries/treepathitems.service';
+import { map, filter, flatMap, first, startWith } from 'rxjs/operators';
 //import html2canvas from 'html2canvas';
 //import { WebWorkerService } from 'ngx-web-worker';
 import { BrowserService } from './browser.service';
+import { OntologyAccessService } from './ontology-access.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ import { BrowserService } from './browser.service';
 export class TreeStyleService {
 
   constructor(
-    private treePathItemService: TreepathitemsService,
+    private ontologyAccessService: OntologyAccessService,
     private browserService: BrowserService
   ) { 
   }
@@ -24,7 +24,7 @@ export class TreeStyleService {
         this.treeDomElement = child;
       }
     });
-    this.browserService.resizeSubject.subscribe(()=>this.onTreeDomChange());
+    this.browserService.resizeSubject.subscribe(()=>this.onTreeDomChange("Browser resize."));
   }
   /**
    * right now only return a number for the information div intent as Observable
@@ -55,13 +55,15 @@ export class TreeStyleService {
   public outlineElements$ = new Subject<{}[]>();
   private observer:MutationObserver;
   private domChangeTimeout;
-  public onTreeDomChange(){
+  public onTreeDomChange(caller:string){
+    //console.log(caller);
     if (this.domChangeTimeout != undefined){
       clearTimeout(this.domChangeTimeout);
     }
     this.domChangeTimeout = setTimeout(()=>this.setOutlineElements(),0);
   }
   private setOutlineElements(){
+    //console.log("Outline Elements refresh.");
     /*html2canvas(<HTMLElement>(<HTMLElement>this.treeDomElement).getElementsByTagName("app-tree-item-list")[0],{
     }).then(function(canvas) {
       canvas.setAttribute("style","width:100;height:100%");
@@ -205,10 +207,10 @@ export class TreeStyleService {
   public addTreeItemStyles(styles$:Observable<TreeItemStyle[]>){
     let s:Observable<TreeItemStyle[]>[];
     this.allTreeItemStyles$.subscribe(d => s = d).unsubscribe();
-    this.allTreeItemStyles$.next(s.concat(styles$));
+    this.allTreeItemStyles$.next(s.concat(styles$.pipe(startWith([]))));
   }
   public getTreeItemStyle$(iri:string):Observable<TreeItemStyle> {
-    return combineLatest(this.treeItemStyles$,this.treePathItemService.getAllChildren([iri])).pipe(
+    return combineLatest(this.treeItemStyles$,this.ontologyAccessService.getAllChildren([iri])).pipe(
       map(([sa, children]) => {
         let style = sa.filter(tis => tis.concept == iri).reduce((result,next)=>{
           result["background-color"] = next["background-color"] || result["background-color"];

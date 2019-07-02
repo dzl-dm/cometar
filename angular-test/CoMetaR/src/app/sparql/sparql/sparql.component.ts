@@ -3,8 +3,6 @@ import { DataService, prefixes } from 'src/app/services/data.service';
 import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { SearchtreeitemService } from 'src/app/core/services/queries/searchtreeitem.service';
-import { TreeItemsService } from 'src/app/core/services/queries/treeitems.service';
-import { TreepathitemsService } from 'src/app/core/services/queries/treepathitems.service';
 import { UrlService } from 'src/app/services/url.service';
 
 @Component({
@@ -22,8 +20,6 @@ export class SparqlComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private searchTreeItemService: SearchtreeitemService,
-    private treeItemsService: TreeItemsService,
-    private treePathItemsService: TreepathitemsService,
     private route:ActivatedRoute,
     private urlService:UrlService
   ) { }
@@ -32,10 +28,6 @@ export class SparqlComponent implements OnInit {
     this.route.queryParamMap.pipe(
       map(data => data.get('concept'))
     ).subscribe(data => this.concept = data && this.urlService.extendRdfPrefix(data) || "ELEMENT_ID");
-    this.queries.push(["Tree Path Items", this.treePathItemsService.getQueryString([this.concept])]);
-    this.queries.push(["Top Tree Items", this.treeItemsService.getCurrentTreeItemsQueryString("top",this.concept)]);
-    this.queries.push(["Sub Tree Items", this.treeItemsService.getCurrentTreeItemsQueryString("sub",this.concept)]);
-    this.queries.push(["Single Tree Item", this.treeItemsService.getCurrentTreeItemsQueryString("single",this.concept)]);
     this.queries.push(["Search Items", this.searchTreeItemService.getQueryString("Test")]);
   }
 

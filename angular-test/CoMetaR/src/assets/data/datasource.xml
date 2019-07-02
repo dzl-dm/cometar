@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <datasource version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
 	<meta>
-		<id>lungenclinic_grosshansdorf</id>
+		<id></id>
 		<etl-strategy>replace-source</etl-strategy>
 	</meta>
 
@@ -11,11 +11,11 @@
 			<separator>;</separator>
 		</source>
 		<idat>
-			<patient-id column="MedicoIDStamm"/>
-			<given-name column="Patienten_Vorname"/>
-			<surname column="Patienten_Nachname"/>
-			<birthdate format="d.M.u[ H[:m[:s]]]" na="" column="Patienten_Geburtsdatum"/>
-			<gender column="Patienten_Geschlecht">
+			<patient-id column="PatID"/>
+			<given-name column="Vorname"/>
+			<surname column="Nachname"/>
+			<birthdate format="d.M.u[ H[:m[:s]]]" na="" column="Geburtsdatum"/>
+			<gender column="Geschlecht">
 				<map> 
 					<case value="1" set-value="male"/>
 					<case value="2" set-value="female"/>
@@ -47,7 +47,7 @@
 			<separator>;</separator>
 		</source>
 		<idat>
-			<patient-id column="MedicoID"/>
+			<patient-id column="PatID"/>
 			<visit-id column="InitDatum"/>
 			<start column="InitDatum" format="d.M.u[ H[:m[:s]]]" na=""/>
 		</idat>
@@ -82,16 +82,6 @@
 			<concept id="S:266929003">
 				<value column="ZigarettenDatum" xsi:type="string" na="" na-action="drop-fact"/>
 			</concept>
-			
-			<!-- at rest or on exertion ?
-			<concept id="">
-				<value column="Dyspnoe" xsi:type="integer" na="">
-					<map>
-						<case value="1" set-value=""/>
-						<otherwise action="drop-fact"/>
-					</map>
-				</value>
-			</concept> -->
 			<concept id="S:49727002">
 				<value column="Husten" xsi:type="integer" na="">
 					<map>
@@ -123,46 +113,37 @@
 						<otherwise action="drop-fact"/>
 					</map>
 				</value>
-			</concept>
-			
+			</concept>			
 			<concept id="L:19862-2">
 				<value column="Body_TLC" xsi:type="decimal" na="" locale="de" na-action="drop-fact"/>
-				<!--<start column="BodyDatum" format="d.M.u[ H[:m[:s]]]"/>-->
 				<unit constant-value="L"/>
 			</concept>
 			<concept id="L:20146-7">
 				<value column="Body_RV" xsi:type="decimal" na="" locale="de" na-action="drop-fact"/>
-				<!--<start column="BodyDatum" format="d.M.u[ H[:m[:s]]]"/>-->
 				<unit constant-value="L"/>
 			</concept>
 			<concept id="S:16162007">
 				<value column="Body_Rtot" xsi:type="decimal" na="" locale="de" na-action="drop-fact"/>
-				<!--<start column="BodyDatum" format="d.M.u[ H[:m[:s]]]"/>-->
 				<unit constant-value="cm[H20]/(L/s)"/>
 			</concept>
 			<concept id="L:20150-9">
 				<value column="Spiro_FEV1" xsi:type="decimal" na="" locale="de" na-action="drop-fact"/>
-				<!--<start column="SpiroDatum" format="d.M.u[ H[:m[:s]]]"/>-->
 				<unit constant-value="L"/>
 			</concept>
 			<concept id="L:19866-3">
 				<value column="Spiro_VC" xsi:type="decimal" na="" locale="de" na-action="drop-fact"/>
-				<!--<start column="SpiroDatum" format="d.M.u[ H[:m[:s]]]"/>-->
 				<unit constant-value="L"/>
 			</concept>
 			<concept id="L:19911-7">
 				<value column="Diffu_Absolut" xsi:type="decimal" na="" locale="de" na-action="drop-fact"/>
-				<!--<start column="DiffuDatum" format="d.M.u[ H[:m[:s]]]"/>-->
 				<unit constant-value="cm3/min/mm[Hg]"/>
 			</concept>
 			<concept id="L:69578-3">
 				<value column="Diffu_HB_DURCH_AV" xsi:type="decimal" na="" locale="de" na-action="drop-fact"/>
-				<!--<start column="DiffuDatum" format="d.M.u[ H[:m[:s]]]"/>-->
 				<unit constant-value="L/min/mm [Hg]"/>
 			</concept>
 			<concept id="L:19913-3">
 				<value column="Diffu_HB_PLUS_AV" xsi:type="decimal" na="" locale="de" na-action="drop-fact"/>
-				<!--<start column="DiffuDatum" format="d.M.u[ H[:m[:s]]]"/>-->
 				<unit constant-value="cm3/min/mm[Hg]"/>
 			</concept>
 		</mdat>
@@ -180,29 +161,9 @@
 			<start column="Tumor_Diagnosedatum" format="d.M.u[ H[:m[:s]]]" na=""/>
 		</idat>
 		<mdat>		
-			<!-- konstantes Lungenkrebs-Konzept -->
 			<concept id="ICD10:C34">
 				<value xsi:type="string" constant-value="" na=""/>
 			</concept>
-			<!-- <concept id="Tumordiagnose_ICD10">
-				<value column="ICD10" na="" xsi:type="integer">
-					<map>
-						<case value="C34.0" set-concept="C34.0" set-value=""/>
-						<case value="C34.1" set-concept="C34.1" set-value=""/>
-						<case value="C34.2" set-concept="C34.2" set-value=""/>
-						<case value="C34.3" set-concept="C34.3" set-value=""/>
-						<case value="C34.8" set-concept="C34.8" set-value=""/>
-						<case value="C34.9" set-concept="C34.9" set-value=""/>
-						<case value="C45.0" set-concept="C45.0" set-value=""/>
-						<case value="C45.1" set-concept="C45.1" set-value=""/>
-						<case value="C45.2" set-concept="C45.2" set-value=""/>
-						<case value="C45.7" set-concept="C45.7" set-value=""/>
-						<case value="C45.9" set-concept="C45.9" set-value=""/>
-						<case value="D38.1" set-concept="D38.1" set-value=""/>
-						<otherwise log-warning="Tumorcode not maped" action="drop-fact"/>
-					</map>
-				</value>
-			</concept> -->
 			<concept id="Tumordiagnose_ICDO">
 				<value column="ICD-O" na="" xsi:type="integer">
 					<map>
@@ -295,8 +256,9 @@
 				<modifier id="Edition">
 					<value column="Auflage" xsi:type="string" na="">
 						<map>
-							<case value="7. TNM Auflage" set-concept="TNM_edition_7" set-value=""/> 
-							<case value="8. TNM Auflage" set-concept="TNM_edition_8" set-value=""/> 
+							<case value="7. TNM Auflage" set-concept="edition7" set-value=""/> 
+							<case value="8. TNM Auflage" set-concept="edition8" set-value=""/> 
+							<otherwise action="drop-fact"/>
 						</map>	
 					</value>
 				</modifier>
@@ -320,8 +282,9 @@
 				<modifier id="Edition">
 					<value column="Auflage" xsi:type="string" na="">
 						<map>
-							<case value="7. TNM Auflage" set-concept="TNM_edition_7" set-value=""/> 
-							<case value="8. TNM Auflage" set-concept="TNM_edition_8" set-value=""/> 
+							<case value="7. TNM Auflage" set-concept="edition7" set-value=""/> 
+							<case value="8. TNM Auflage" set-concept="edition8" set-value=""/> 
+							<otherwise action="drop-fact"/>
 						</map>	
 					</value>
 				</modifier>
@@ -346,8 +309,9 @@
 				<modifier id="Edition">
 					<value column="Auflage" xsi:type="string" na="">
 						<map>
-							<case value="7. TNM Auflage" set-concept="TNM_edition_7" set-value=""/> 
-							<case value="8. TNM Auflage" set-concept="TNM_edition_8" set-value=""/> 
+							<case value="7. TNM Auflage" set-concept="edition7" set-value=""/> 
+							<case value="8. TNM Auflage" set-concept="edition8" set-value=""/> 
+							<otherwise action="drop-fact"/>
 						</map>	
 					</value>
 				</modifier>
@@ -391,8 +355,9 @@
 				<modifier id="Edition_Stage">
 					<value column="Auflage_Stage" xsi:type="string" na="">
 						<map>
-							<case value="7. TNM Auflage" set-concept="TNM_edition_7" set-value=""/> 
-							<case value="8. TNM Auflage" set-concept="TNM_edition_8" set-value=""/> 
+							<case value="7. TNM Auflage" set-concept="edition7" set-value=""/> 
+							<case value="8. TNM Auflage" set-concept="edition8" set-value=""/> 
+							<otherwise action="drop-fact"/>
 						</map>	
 					</value>
 				</modifier>
@@ -400,69 +365,6 @@
 		</mdat>
 		<ignore column="*" xsi:type="string"/>
 	</wide-table>
-			<!-- TODO 
-	<eav-table>
-		<source xsi:type="csv-file">
-			<url>Proben.csv</url>
-			<type>text/csv</type>
-			<separator>;</separator>
-		</source>
-		<idat>
-			<patient-id column="MedicoID"/>
-			<visit-id column="EntnahmeDatum"/>
-		</idat>		
-		<mdat>
-			<concept column="ProbenArt">
-				<modifier id="GewebeModifier">
-					<value column="ProbenArt" xsi:type="string">
-						<map>
-							<case value="GewebeHOPE" set-concept="hope"/> 
-							<case value="GewebeKryo" set-concept="kryo"/> 
-						</map>	
-					</value>
-				</modifier>
-			</concept>
-			<start column="EntnahmeDatum" format="d.M.u[ H[:m[:s]]]" na=""/>
-			<type constant-value="string"/>
-			<end constant-value="" na=""/>
-			<value column="ProbenAnzahl"/>
-			<unit constant-value="" na=""/>
-		</mdat>
-		<virtual>
-			<value column="EDTA" xsi:type="string">
-				<map set-concept="B:B-WE" />
-			</value>
-			<value column="Plasma" xsi:type="string">
-				<map set-concept="B:B-PL" />
-			</value> 
-			<value column="GewebeKryo" xsi:type="string">
-				<map set-concept="B:T">
-					<case value="" action="drop-fact"/>
-				</map>
-			</value>
-			<value column="GewebeHOPE" xsi:type="string">
-				<map set-concept="B:T">
-					<case value="" action="drop-fact"/>
-				</map>
-			</value>
-			<value column="GewebeFormalin" xsi:type="string">
-				<map set-concept="B:T">
-					<case value="" action="drop-fact"/>
-				</map>
-			</value>
-			<value column="GewebeSchleimhaut" xsi:type="string">
-				<map set-concept="B:T">
-					<case value="" action="drop-fact"/>
-				</map>
-			</value>
-			<value column="FFPE Borstel" xsi:type="string">
-				<map set-concept="B:T">
-					<case value="" action="drop-fact"/>
-				</map>
-			</value>
-		</virtual>
-		<ignore column="*" xsi:type="string"/>
-	</eav-table> -->
 	<wide-table>
 		<source xsi:type="csv-file">
 			<url>Proben.csv</url>
@@ -500,6 +402,7 @@
 							<case value="GewebeFormalin" set-concept="PF" set-value=""/>
 							<case value="GewebeSchleimhaut" action="drop-fact"/>
 							<case value="FFPE Borstel" set-concept="PF" set-value=""/>
+							<otherwise action="drop-fact"/>
 						</map>	
 					</value>
 				</modifier>
@@ -526,26 +429,11 @@
 			<unit constant-value="" na=""/>
 		</mdat>
 		<virtual>
-			<value column="1" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
-			<value column="2" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
-			<value column="3" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
-			<value column="4" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
-			<value column="5" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
-			<value column="6" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
 			<value column="7" xsi:type="string"><map set-concept="S:73211009" /></value>
 			<value column="8" xsi:type="string"><map set-concept="S:399957001" /></value>
-			<value column="9" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
-			<value column="10" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
 			<value column="11" xsi:type="string"><map set-concept="ICD10:N17-N19" /></value>
 			<value column="12" xsi:type="string"><map set-concept="S:22298006" /></value>
 			<value column="13" xsi:type="string"><map set-concept="S:119292006" /></value>
-			<value column="14" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
-			<value column="15" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
-			<value column="16" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
-			<value column="17" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
-			<value column="18" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
-			<value column="30" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
-			<value column="99" xsi:type="string"><map><otherwise action="drop-fact"/></map></value> 
 		</virtual>
 		<ignore column="*" xsi:type="string"/>
 	</eav-table>
@@ -565,89 +453,10 @@
 				<value column="Untersuchung" xsi:type="string" na="">
 					<map>
 						<case value="CT" set-concept="S:241540006" set-value=""/>
-						<case value="MRT" set-concept="" set-value=""				action="drop-fact"/>
 						<case value="PET-CT" set-concept="S:82918005" set-value=""/>
 						<case value="PET CT" set-concept="S:82918005" set-value=""/>
 						<case value="Röntgen" set-concept="S:303931008" set-value=""/>
-						<case value="Klinischer Progress" set-concept="" set-value=""		action="drop-fact"/>
-						<case value="Tumormarker" set-concept="" set-value=""			action="drop-fact"/>
-						<case value="Zytologie" set-concept="" set-value=""			action="drop-fact"/>
-						<case value="Histologie" set-concept="" set-value=""			action="drop-fact"/>
-						<case value="Unbekannt" set-concept="" set-value=""			action="drop-fact"/>
-						<case value="Klinische Diagnostik" set-concept="" set-value=""		action="drop-fact"/>
-						<case value="EBUS/EUS" set-concept="" set-value=""			action="drop-fact"/>
-						<case value="Mediastinoskopie" set-concept="" set-value=""		action="drop-fact"/>
-						<case value="Bildgebende Verfahren" set-concept="" set-value=""		action="drop-fact"/>
-						<case value="Sonographie" set-concept="" set-value=""			action="drop-fact"/>
-						<case value="Knochenszintigrafie" set-concept="" set-value=""		action="drop-fact"/>
-						<case value="Knochenmarksbiopsie" set-concept="" set-value=""		action="drop-fact"/>
 						<case value="Bronchoskopie" set-concept="S:10847001" set-value=""/>
-						<case value="Thorakoskopie" set-concept="" set-value=""			action="drop-fact"/>
-						<case value="Explorative Thorakotomie" set-concept="" set-value=""	action="drop-fact"/>
-						<case value="Angiographie" set-concept="" set-value=""			action="drop-fact"/>
-						<otherwise log-warning="Unexpected value" action="drop-fact"/>
-					</map>
-				</value>
-			</concept>
-		</mdat>
-		<ignore column="*" xsi:type="string"/>
-	</wide-table>
-	<wide-table>
-		<source xsi:type="csv-file">
-			<url>Therapien.csv</url>
-			<type>text/csv</type>
-			<separator>;</separator>
-		</source>
-		<idat>
-			<patient-id column="MedicoID"/>
-			<visit-id column="PrimTh_Begin"/>
-		</idat>
-		<mdat>			
-			<concept id="Primaertherapie">
-				<start column="PrimTh_Begin" format="d.M.u[ H[:m[:s]]]" na=""/>
-				<end column="PrimTh_End" format="d.M.u[ H[:m[:s]]]" na=""/>
-				<value column="PrimaryTherapy" xsi:type="string" na="">
-					<map>
-						<case value="Op" set-concept="PRIMTHE:32" set-value=""/>
-						<case value="St" set-concept="PRIMTHE:8" set-value=""/>
-						<case value="Sy" set-concept="PRIMTHE:16" set-value=""/>
-						<case value="OpSt" set-concept="PRIMTHE:40" set-value=""/>
-						<case value="OpSy" set-concept="PRIMTHE:48" set-value=""/>
-						<case value="StSy" set-concept="PRIMTHE:24" set-value=""/>
-						<case value="OpStSy" set-concept="PRIMTHE:56" set-value=""/>
-						<case value="none" set-concept="PRIMTHE:0" set-value=""/>
-						<otherwise log-warning="Unexpected value" action="drop-fact"/>
-					</map>
-				</value>
-			</concept>
-			<concept id="AdjuvanteTherapie">
-				<start column="AdjuTh_Begin" format="d.M.u[ H[:m[:s]]]" na=""/>
-				<end column="AdjuTh_End" format="d.M.u[ H[:m[:s]]]" na=""/>
-				<value column="AdjuvantTherapy" xsi:type="string" na="">
-					<map>
-						<case value="St" set-concept="ADJT:2" set-value=""/>
-						<case value="Sy" set-concept="ADJT:1" set-value=""/>
-						<case value="StSy" set-concept="ADJT:3" set-value=""/>
-						<case value="none" set-concept="ADJT:0" set-value=""/>
-						<otherwise set-concept="ADJT:0" set-value=""/>
-					</map>
-				</value>
-			</concept>
-			<concept id="PrimaryTherapyResult">
-				<start column="PrimTh_End" format="d.M.u[ H[:m[:s]]]" na=""/>
-				<value column="Primaertherapie_Ergebnis" xsi:type="string" na="">
-					<map>
-						<case value="1" set-concept="PRIMTHER:CR" set-value=""/>
-						<case value="2" set-concept="PRIMTHER:PR" set-value=""/>
-						<case value="3" set-concept="PRIMTHER:MR" set-value=""/>
-						<case value="4" set-concept="PRIMTHER:SD" set-value=""/>
-						<case value="5" set-concept="PRIMTHER:MR" set-value=""/>
-						<case value="6" set-concept="PRIMTHER:PD" set-value=""/>
-						<case value="7" set-concept="PRIMTHER:PD" set-value=""/>
-						<case value="8" set-concept="PRIMTHER:PD" set-value=""/>
-						<case value="9" set-concept="PRIMTHER:X" set-value=""/>
-						<case value="10" set-concept="PRIMTHER:X" set-value=""/>
-						<case value="11" set-concept="PRIMTHER:DG" set-value=""/>
 						<otherwise log-warning="Unexpected value" action="drop-fact"/>
 					</map>
 				</value>

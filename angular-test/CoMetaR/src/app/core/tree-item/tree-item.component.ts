@@ -1,12 +1,13 @@
 import { Component, OnInit, Input, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Observable, of, combineLatest, from } from 'rxjs';
-import { TreeItemsService, TreeItemAttributes } from '../services/queries/treeitems.service'
 import { TreeDataService } from '../services/tree-data.service';
 import { TreeStyleService, TreeItemStyle, TreeItemIcon } from "../services/tree-style.service";
 import { SearchResultAttributes } from '../services/queries/searchtreeitem.service';
 import { withLatestFrom, map, combineAll } from 'rxjs/operators';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { ConceptInformation } from '../concept-information/concept-information.component';
+import { TreeItem } from '../classes/tree-item';
+import { OntologyAccessService } from '../services/ontology-access.service';
 
 @Component({
   selector: 'app-tree-item',
@@ -15,22 +16,19 @@ import { ConceptInformation } from '../concept-information/concept-information.c
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TreeItemComponent implements OnInit {
-  @Input('treeItemAttributes') attributes?:TreeItemAttributes={
+  @Input('treeItemAttributes') treeitem?:TreeItem=new TreeItem({
     element:{value:""},
-    hasChildren:{value:false},
     isModifier:{value:false},
     label:{value:"","xml:lang":"en"},
     status:{value:""},
     type:{value:""}
-  };
+  });
   @Input() conceptIri?:string;
-  @Input('expanded') initialExpanded?:boolean;
+  @Input('expanded') initialExpanded?:boolean=false;
   @Input('cascade_expand') cascade_expand?:boolean;
   @Input('') parent?:string;
   @Input('') style$?:Observable<TreeItemStyle>;
-  @Input('') hasChildren$?:Observable<boolean>;
 
-  private treeItems$:Observable<TreeItemAttributes[]>;
   private searchResultAttributes$:Observable<SearchResultAttributes[]>;
   private showSearchResult$:Observable<boolean>;
   public searchResults$:Observable<string[][]>;
@@ -38,13 +36,13 @@ export class TreeItemComponent implements OnInit {
   public expanded:boolean;
   private conceptInformation$:Observable<ConceptInformation[]>;
   public showInformationDiv$:Observable<boolean>;
-  public style:TreeItemStyle = this.treeStyleService.getEmptyStyle(this.attributes.element.value);
+  public style:TreeItemStyle = this.treeStyleService.getEmptyStyle(this.treeitem.element.value);
 
   constructor(
-    private treeitemsService: TreeItemsService, 
     public treeDataService: TreeDataService,
     private treeStyleService: TreeStyleService,
     private configurationService: ConfigurationService,
+    private ontologyAccessService: OntologyAccessService,
     private el: ElementRef,
     private cd: ChangeDetectorRef
   ){
@@ -53,32 +51,33 @@ export class TreeItemComponent implements OnInit {
   ngOnInit() {
     setTimeout(()=>{
       this.intent$ = this.treeStyleService.getIntent(this.el.nativeElement);
-      this.intent$.subscribe(data => this.cd.markForCheck());
+      //this.intent$.subscribe(data => this.cd.markForCheck());
     });
-    if (this.attributes) (<HTMLElement>this.el.nativeElement).setAttribute("iri",this.attributes.element.value);
-    if (this.conceptIri) this.treeitemsService.get({range:"single",iri:this.conceptIri}).subscribe(a => {
-      this.attributes = a[0];
+    if (this.treeitem) (<HTMLElement>this.el.nativeElement).setAttribute("iri",this.treeitem.element.value);
+    if (this.conceptIri) this.ontologyAccessService.getItem$(this.conceptIri).subscribe(ti => {
+      this.treeitem = ti;
       this.load();
     });
     else this.load();
-    if (this.style$)this.style$.subscribe(()=>this.treeStyleService.onTreeDomChange())
+    if (this.style$)this.style$.subscribe(()=> { this.treeStyleService.onTreeDomChange("TreeItem Style added.") });
   }  
+
   private load(){
     if (this.style$) this.style$.subscribe(style => {
       this.style = style;
-    })
-    this.treeDataService.isAnyPathPart$(this.attributes.element.value).pipe(
+    });
+    this.treeDataService.isAnyPathPart$(this.treeitem.element.value).pipe(
       withLatestFrom(
-        this.treeDataService.isSelected$(this.attributes.element.value),
-        of(this.initialExpanded)
+        this.treeDataService.isSelected$(this.treeitem.element.value),
+        of(this.initialExpanded || false)
       )
     ).subscribe(next => { 
       this.expanded = next.includes(true);
-      this.cd.markForCheck();
+      //this.cd.markForCheck();
     });
     
-    this.showSearchResult$ = this.treeDataService.isSearchMatch$(this.attributes.element.value);
-    this.searchResultAttributes$ = this.treeDataService.getSearchMatch$(this.attributes.element.value).pipe(
+    this.showSearchResult$ = this.treeDataService.isSearchMatch$(this.treeitem.element.value);
+    this.searchResultAttributes$ = this.treeDataService.getSearchMatch$(this.treeitem.element.value).pipe(
       map(sras => {
         sras.map(sra => {
           sra.property.value = this.configurationService.getHumanReadableRDFPredicate(sra.property.value);
@@ -91,17 +90,17 @@ export class TreeItemComponent implements OnInit {
       sra.value.value
     ])));
     this.conceptInformation$ = this.treeDataService.conceptInformation$.pipe(
-      map(cis => cis.filter(ci => ci.concept==this.attributes.element.value))
+      map(cis => cis.filter(ci => ci.concept==this.treeitem.element.value))
     )
     this.showInformationDiv$ = combineLatest(
       this.conceptInformation$,
       this.showSearchResult$
     ).pipe(map(data => data[0].length > 0 || data[1] ));
-    this.showInformationDiv$.subscribe(()=>this.treeStyleService.onTreeDomChange());
+    this.showInformationDiv$.subscribe((show)=> { if (show) this.treeStyleService.onTreeDomChange("TreeItem Information added.") });
   }
 
   public onSelect(){
-    this.treeDataService.onConceptSelection(this.attributes.element.value);
+    this.treeDataService.onConceptSelection(this.treeitem.element.value);
   }
 
   public navigate(iri){
@@ -113,7 +112,9 @@ export class TreeItemComponent implements OnInit {
   }
   public getBubbleIconCounter(icon:TreeItemIcon):number{
     if (!this.style.bubbleicons) return;
-    return this.style.bubbleicons.filter(i => i.id == icon.id).length;
+    let rightTypeIcons = this.style.bubbleicons.filter(bi => bi.id == icon.id);
+    let distinctIcons = rightTypeIcons.filter((bi, index, self) => self.map(s => s.style.concept).indexOf(bi.style.concept) === index);
+    return distinctIcons.length;
   }
 
   private searchMatchArray(s:string):string[]{
@@ -139,13 +140,15 @@ export class TreeItemComponent implements OnInit {
 
   public expandOrCollapse(){
     this.expanded=!this.expanded;
-    this.treeStyleService.onTreeDomChange();
+    this.treeStyleService.onTreeDomChange("TreeItem expanded.");
   }
 
   public onIconClick(event:Event, icon:TreeItemIcon){
     event.stopPropagation();
     let bubbleConcepts = this.style.bubbleicons.filter(bi => bi.id == icon.id).map(bi => bi.style.concept);
-    if (bubbleConcepts.length>0) this.treeDataService.openedElements$.next(bubbleConcepts);
+    if (bubbleConcepts.length>0) {
+      this.treeDataService.openedElements$.next(bubbleConcepts);
+    }
   }
 
   private cloneRemoveFunction;

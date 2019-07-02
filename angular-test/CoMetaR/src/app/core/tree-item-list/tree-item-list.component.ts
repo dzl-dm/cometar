@@ -2,9 +2,10 @@ import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy
 import { TreeItemAttributes } from '../services/queries/treeitems.service'
 import { TreeDataService } from '../services/tree-data.service';
 import { trigger, style, transition, animate, AnimationEvent } from '@angular/animations';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { TreeStyleService } from '../services/tree-style.service';
-import { TreepathitemsService } from '../services/queries/treepathitems.service';
+import { OntologyAccessService } from '../services/ontology-access.service';
+import { TreeItem } from '../classes/tree-item';
 
 @Component({
   selector: 'app-tree-item-list',
@@ -18,7 +19,7 @@ import { TreepathitemsService } from '../services/queries/treepathitems.service'
       ]),
       transition(':leave', [
         style({ height: '*', opacity: 1 }),
-        animate('0.1s ease-out', style({ height: '0px', opacity: 0 })),
+        animate('0.5s ease-out', style({ height: '0px', opacity: 0 })),
       ]),
     ]),
   ]
@@ -27,19 +28,26 @@ export class TreeItemListComponent implements OnInit {
   @Input() conceptIri:string;
   @Input('expanded') expanded?:boolean;
   @Input('cascade_expand') cascade_expand?:boolean;
-  private treeItems$:Observable<TreeItemAttributes[]>;
   constructor(
     private treeDataService:TreeDataService,
     private cd: ChangeDetectorRef,
     public treeStyleService:TreeStyleService,
-    public treepathitemService:TreepathitemsService
+    private ontologyAccessService: OntologyAccessService
   ) { }
 
   ngOnInit() {
+    if (this.conceptIri == "root") {
+      this.treeItems$ = this.ontologyAccessService.getTopLevelItems$();
+      this.expanded = true;
+    }
+    else this.treeItems$ = this.ontologyAccessService.getSubItems$(this.conceptIri);
+    this.treeItems$.subscribe(data => { 
+      //this.cd.markForCheck();
+    });
   }
 
-  public style = [];
-  public getTreeItems(){
+  public treeItems$ = new Observable<TreeItem[]>();
+  /*public getTreeItems(){
     let result:TreeItemAttributes[] = [];
     if (this.conceptIri == "root") {
       this.treeDataService.getTopLevelItems$().subscribe(data => {
@@ -49,22 +57,23 @@ export class TreeItemListComponent implements OnInit {
       this.expanded = true;
     }
     else this.treeDataService.getSubItems$(this.conceptIri).subscribe(data => { 
+      console.log(data);
       result = data;
       this.cd.markForCheck();
     });
-    this.style = result.map(iri => this.treeStyleService.getTreeItemStyle$(iri.element.value))
     return result;
-  }
+  }*/
 
-  isSelected$(treeItem:TreeItemAttributes):Observable<boolean>{
+  isSelected$(treeItem:TreeItem):Observable<boolean>{
     return this.treeDataService.isSelected$(treeItem.element.value)
   }
 
   openCloseDone(event: AnimationEvent) {
+    console.log(event);
     (<HTMLElement>event.element).removeAttribute("animating");
     let animatingElements:number = Array.from(document.getElementById("tree").getElementsByTagName("APP-TREE-ITEM")).filter((a:HTMLElement)=>a.hasAttribute("animating")).length;
     if (animatingElements == 0) {
-      this.treeStyleService.onTreeDomChange();
+      this.treeStyleService.onTreeDomChange("All expand animations finished.");
     }
   }
 }
