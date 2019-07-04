@@ -101,10 +101,10 @@ export class StartComponent implements OnInit {
         label: "Removals"
       };
       let d = [];
-      for (let i = data.length-1; i >= 0; i--){
+      for (let i = data.length-1; i >= 1; i--){
         let diff = data[i].additions.value-data[i].removals.value
         if (i==data.length-1) d[i] = data[0].total.value;
-        else d[i] = d[i+1]-diff;
+        d[i-1] = d[i]-diff;
       }
       this.totalElementsDataset[0]={
         data: d,
