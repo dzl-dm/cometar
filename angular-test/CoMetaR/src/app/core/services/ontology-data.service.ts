@@ -32,6 +32,8 @@ export class OntologyDataService {
     let informationQueryString = this.getItemInformationQueryString();
     let informationQuery:Observable<TreeItemInformation[]> = this.dataService.getData(informationQueryString);
     
+    //this triggers once when the page loads and afterwards when a new provenance date is entered so that this.ghostTreeItems$ changes
+    //could be optimized by not fully rebuilding the concept tree
     combineLatest(rootQuery,parentsQuery,informationQuery,this.ghostTreeItems$).subscribe(([rootElements,pcs,is,gtis])=>{
       this.rootItems=[];
       this.treeItems=[];

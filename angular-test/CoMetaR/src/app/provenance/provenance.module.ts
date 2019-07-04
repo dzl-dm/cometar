@@ -26,15 +26,17 @@ import { UrlService } from '../services/url.service';
     ProvenanceComponent
   ]
 })
-export class ProvenanceModule {   constructor(
-  private provenanceService:ProvenanceService,
-  private configurationService:ConfigurationService,
-  private getDerivedConceptService:GetDerivedConceptService,
-  private getRemovedConceptService:GetRemovedConceptService,
-  private browserService:BrowserService,
-  private router: Router,
-  private urlService:UrlService,
-  private route:ActivatedRoute
+export class ProvenanceModule {   
+  private savedDate;
+  constructor(
+    private provenanceService:ProvenanceService,
+    private configurationService:ConfigurationService,
+    private getDerivedConceptService:GetDerivedConceptService,
+    private getRemovedConceptService:GetRemovedConceptService,
+    private browserService:BrowserService,
+    private router: Router,
+    private urlService:UrlService,
+    private route:ActivatedRoute
   ) {
     this.route.queryParamMap.pipe(
       map(data => this.configurationService.extendRdfPrefix(data.get('concept')))
@@ -59,7 +61,12 @@ export class ProvenanceModule {   constructor(
     });
 		this.route.queryParamMap.pipe(
 			map(data => data.get('provenancefrom'))
-    ).subscribe(date => this.provenanceService.setProvenanceDate(date && new Date(date)));
+    ).subscribe(date => { 
+      if (date && date != this.savedDate){
+        this.provenanceService.setProvenanceDate(new Date(date));
+        this.savedDate=date;
+      }
+    });
     
 
 
