@@ -5,6 +5,8 @@
 -->
     <app-tree-item 
         animating
+        @openClose
+        (@openClose.done)="openCloseDone($event)"
         *ngFor="let treeitem of (treeItems$ | async); let i = index" 
         [treeItemAttributes]="treeitem" 
         [expanded]="expanded"

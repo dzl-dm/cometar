@@ -68,7 +68,6 @@ export class TreeItemListComponent implements OnInit {
   }
 
   openCloseDone(event: AnimationEvent) {
-    console.log(event);
     (<HTMLElement>event.element).removeAttribute("animating");
     let animatingElements:number = Array.from(document.getElementById("tree").getElementsByTagName("APP-TREE-ITEM")).filter((a:HTMLElement)=>a.hasAttribute("animating")).length;
     if (animatingElements == 0) {
