@@ -62,8 +62,8 @@ export class ProvenanceModule {
 		this.route.queryParamMap.pipe(
 			map(data => data.get('provenancefrom'))
     ).subscribe(date => { 
-      if (date && date != this.savedDate){
-        this.provenanceService.setProvenanceDate(new Date(date));
+      if (date && date != this.savedDate || !date && this.savedDate){
+        this.provenanceService.setProvenanceDate(date && new Date(date));
         this.savedDate=date;
       }
     });
