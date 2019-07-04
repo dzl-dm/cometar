@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject, BehaviorSubject, Observable, of } from 'rxjs';
-import { TreeItemAttributes } from 'src/app/core/services/queries/treeitems.service';
 import { ProvTreeItemsQueryService, ProvTreeItemAttributes } from './queries/prov-tree-items-query.service';
 import { TreeStyleService, TreeItemIcon, TreeItemStyle } from 'src/app/core/services/tree-style.service';
 import { TreeDataService } from 'src/app/core/services/tree-data.service';

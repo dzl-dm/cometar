@@ -1,7 +1,6 @@
 import { Component, OnInit, ElementRef, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { TreeItemAttributes } from '../services/queries/treeitems.service';
 import { TreeDataService } from '../services/tree-data.service';
 import { TreeStyleService } from "../services/tree-style.service";
 import { combineLatest } from 'rxjs/operators';
@@ -16,7 +15,6 @@ import { ChangeDetectionStrategy } from '@angular/core';
 export class TreeComponent implements OnInit {
   @Input() width:number;  
   @Output() claimWidth = new EventEmitter<number>();
-  private treeItems$:Observable<TreeItemAttributes[]>;
   constructor(
     private route: ActivatedRoute,
     public treeDataService: TreeDataService,

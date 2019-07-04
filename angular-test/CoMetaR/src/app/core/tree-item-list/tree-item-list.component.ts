@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { TreeItemAttributes } from '../services/queries/treeitems.service'
 import { TreeDataService } from '../services/tree-data.service';
 import { trigger, style, transition, animate, AnimationEvent } from '@angular/animations';
 import { Observable, BehaviorSubject } from 'rxjs';

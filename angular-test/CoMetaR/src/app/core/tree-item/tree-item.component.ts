@@ -89,9 +89,9 @@ export class TreeItemComponent implements OnInit {
       sra.property.value + (sra.value['xml:lang']?" ("+sra.value['xml:lang']+")":""),
       sra.value.value
     ])));
-    this.conceptInformation$ = this.treeDataService.conceptInformation$.pipe(
+    this.conceptInformation$ = this.treeDataService.getTreeItemConceptInformation(this.treeitem.element.value);/*this.treeDataService.conceptInformation$.pipe(
       map(cis => cis.filter(ci => ci.concept==this.treeitem.element.value))
-    )
+    )*/
     this.showInformationDiv$ = combineLatest(
       this.conceptInformation$,
       this.showSearchResult$

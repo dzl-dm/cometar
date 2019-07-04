@@ -1,5 +1,5 @@
 import { Injectable, ElementRef } from '@angular/core';
-import { map, flatMap, filter, distinct, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { map, flatMap, filter, distinct, distinctUntilChanged, switchMap, startWith } from 'rxjs/operators';
 import { Observable, combineLatest, ReplaySubject, BehaviorSubject, Subject } from 'rxjs';
 import { SearchResultAttributes, SearchtreeitemService } from './queries/searchtreeitem.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -26,7 +26,6 @@ export class TreeDataService {
   private informationPaths$:Observable<string[]>;
   public openedElements$:BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   public searchActivated$:Observable<boolean>;
-  public conceptInformation$:BehaviorSubject<ConceptInformation[]> = new BehaviorSubject<ConceptInformation[]>([]);
   public reset$ = new Subject();
 
   private claimWidth=(number)=>{};
@@ -41,7 +40,7 @@ export class TreeDataService {
     this.selectedIri$ = new ReplaySubject(1);
     this.searchPattern$ = new ReplaySubject(1);
     this.searchActivated$ = this.searchPattern$.pipe(map(searchPattern => searchPattern != ""));
-    this.selectedIri$.subscribe(()=>this.openedElements$.next([]));
+    //this.selectedIri$.subscribe(()=>this.openedElements$.next([]));
     this.selectedPaths$ = combineLatest(this.selectedIri$, this.openedElements$).pipe(
       flatMap(([iri,iris]) => this.ontologyAccessService.getAllAncestors(iris.concat(iri)))
     )
@@ -54,13 +53,13 @@ export class TreeDataService {
     this.searchPaths$ = this.searchIris$.pipe(
       flatMap(iris => this.ontologyAccessService.getAllAncestors(iris))
     ) 
-    this.informationPaths$ = this.conceptInformation$.pipe(
+    this.informationPaths$ = this.treeItemConceptInformation$.pipe(
       flatMap(cis => this.ontologyAccessService.getAllAncestors(cis.map(ci => ci.concept)))
     )   
   }
 
   public reset(){
-    this.conceptInformation$.next([]);
+    this.allTreeItemConceptInformation$.next([]);
     this.openedElements$.next([]);
     this.reset$.next();
   }
@@ -152,13 +151,20 @@ export class TreeDataService {
 
   //external
 
-
-  public addConceptInformation(cis$:Observable<ConceptInformation[]>){
-    cis$.subscribe(cis => {
-      this.conceptInformation$.next(cis);
-      //this.claimWidth(800);
-    });
+  private allTreeItemConceptInformation$:BehaviorSubject<Observable<ConceptInformation[]>[]> = new BehaviorSubject<Observable<ConceptInformation[]>[]>([]);
+  private treeItemConceptInformation$:Observable<ConceptInformation[]> = this.allTreeItemConceptInformation$.pipe(flatMap(styles => combineLatest(styles).pipe(
+    map(s => s.reduce((result,next)=>result=result.concat(next),[]))
+  )));
+  public addTreeItemConceptInformation(cis$:Observable<ConceptInformation[]>){
+    let s:Observable<ConceptInformation[]>[];
+    this.allTreeItemConceptInformation$.subscribe(d => s = d).unsubscribe();
+    this.allTreeItemConceptInformation$.next(s.concat(cis$.pipe(startWith([]))));
   }
+  public getTreeItemConceptInformation(iri:string):Observable<ConceptInformation[]>{
+    return this.treeItemConceptInformation$.pipe(map(cis => cis.filter(ci => ci.concept==iri)))
+  }
+
+
   public isInformationPathPart$(iri:string):Observable<boolean>{
     return this.informationPaths$.pipe(
       map(informationPaths => informationPaths.includes(iri))
