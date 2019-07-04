@@ -15,6 +15,7 @@ import { MatSliderChange } from '@angular/material';
 export class ProvenanceComponent implements OnInit {
 	public fromDate:Date;
 	public commitMetaDataByDay=[];
+	private defaultProvFromDays=30;
 	public demometadata = {
 		author:{value:'Author'},
 		commitid:{value:'Commit-ID'},
@@ -38,7 +39,7 @@ export class ProvenanceComponent implements OnInit {
 			this.fromDate = date && new Date(date);
 			if (!this.fromDate) {
 				this.fromDate = new Date(Date.now());
-				this.fromDate.setHours(this.fromDate.getHours()-(7*24));
+				this.fromDate.setHours(this.fromDate.getHours()-(this.defaultProvFromDays*24));
 				this.navigateToFromDate();
 			}
 		}).unsubscribe();

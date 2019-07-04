@@ -23,7 +23,7 @@ export class ProvenanceService {
 		private treeStyleService:TreeStyleService,
     ) {         
 
-		this.treeDataService.addConceptInformation(this.treeData$);
+		this.treeDataService.addTreeItemConceptInformation(this.treeData$);
 		this.treeStyleService.addTreeItemStyles(this.treeData$.pipe(
 			map(td => {
 				let treeItemStyles:TreeItemStyle[] = td.map(ci => {
@@ -52,7 +52,6 @@ export class ProvenanceService {
 				return treeItemStyles;
 			})
 		));
-		
 		this.combinedCommitDetails$.pipe(
 			flatMap(cds => this.getConceptTableInformation(cds, this.displayOptions$))
 		).subscribe(this.treeData$);

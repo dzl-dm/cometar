@@ -18,8 +18,8 @@ export class ExportService {
   ) { }
 
   public get(iri:string, callback:(exportString: string)=>void):void {
-    let o = this.ontologyAccessService.getSubItems$(iri).pipe(first()).subscribe(tis => {
-      this.exportItem = { treeItem: tis[0], subExportItems: [], ontologyElementDetails: [] };
+    let o = this.ontologyAccessService.getItem$(iri).pipe(first()).subscribe(tis => {
+      this.exportItem = { treeItem: tis, subExportItems: [], ontologyElementDetails: [] };
       this.getRecursive(this.exportItem).subscribe(next => {
         if (next == false) return;
         let s = "label;status;codes;units;is modifier\n";

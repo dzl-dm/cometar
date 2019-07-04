@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { parseString } from 'xml2js';
-import { TreeDataService } from 'src/app/core/services/tree-data.service';
-import { ReplaySubject, combineLatest } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { ClientConfigurationService, IClientConfiguration, Mapping } from '../services/client-configuration.service';
 import { ConceptByNotationService } from '../services/queries/concept-by-notation.service';
-import { map, filter } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
-import { HttpClient,HttpHeaders, HttpRequest } from '@angular/common/http';
-import { TreeStyleService, TreeItemStyle } from 'src/app/core/services/tree-style.service';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-upload-client-configuration',
@@ -50,7 +48,7 @@ export class UploadClientConfigurationComponent implements OnInit {
   public loadExample(){
 	const _headers = new HttpHeaders();
     const headers = _headers.set('Content-Type', 'text/xml')
-	let exampleConfiguration = this.http.get('../assets/data/datasource.xml',{headers: _headers,responseType: 'text'});
+	let exampleConfiguration = this.http.get('assets/data/datasource.xml',{headers: _headers,responseType: 'text'});
 	exampleConfiguration.subscribe(data => this.xmlFileContent = data);
   }
 
@@ -118,9 +116,16 @@ export class UploadClientConfigurationComponent implements OnInit {
 		});
   }
 
-  public downloadNewFile(){			
-		let thefile = new Blob([this.replacedFileContent], { type: "application/octet-stream" });
-		let url = window.URL.createObjectURL(thefile);
-		window.open(url);
+  public downloadNewFile(){		
+	var a = <HTMLElement>document.createElement("a");
+	let thefile = new Blob([this.replacedFileContent], { type: "application/octet-stream" });
+	let url = window.URL.createObjectURL(thefile);
+	a.setAttribute("href", url);
+	a.setAttribute("download", "datasource.xml");
+	a.setAttribute("style","display:none");
+	document.body.appendChild(a);
+	a.click()
+	window.URL.revokeObjectURL(url);
+	a.remove();  
   }
 }

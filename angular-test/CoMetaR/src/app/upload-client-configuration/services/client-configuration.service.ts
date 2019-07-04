@@ -15,7 +15,7 @@ export class ClientConfigurationService {
 		private treeDataService:TreeDataService,
 		private treeStyleService:TreeStyleService,
 	) {
-		this.treeDataService.addConceptInformation(this.treeData$);
+		this.treeDataService.addTreeItemConceptInformation(this.treeData$);
 		this.treeStyleService.addTreeItemStyles(this.treeData$.pipe(
 			map(td => {
 				let treeItemStyles:TreeItemStyle[] = td.map(ci => {
