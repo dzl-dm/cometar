@@ -52,16 +52,22 @@ export class ProvenanceService {
 				return treeItemStyles;
 			})
 		));
-		this.combinedCommitDetails$.pipe(
-			flatMap(cds => this.getConceptTableInformation(cds, this.displayOptions$))
-		).subscribe(this.treeData$);
+		this.selectedCommits$.subscribe(commitidsarr => {
+			if (commitidsarr) commitidsarr.forEach(cia => this.loadCommitIntoTree(cia));
+		});
+		this.selectedWholeTimespan$.subscribe(pf => {
+			if (pf) this.loadAllIntoTree(pf);
+		})
+		this.selectedDateValue$.subscribe(date => {
+			if (date) this.loadDateIntoTree(date);
+		})
     }
 	public displayOptions$:BehaviorSubject<{}> = new BehaviorSubject<{}>(this.configuration.initialCheckedPredicates);
 	private combinedCommitDetails$:ReplaySubject<CommitDetails[]>=new ReplaySubject<CommitDetails[]>(1);
 	private treeData$:ReplaySubject<ConceptInformation[]>=new ReplaySubject<ConceptInformation[]>(1);
 	public selectedCommits$ = new ReplaySubject<string[]>(1);
-	public selectedDateValue$ = new ReplaySubject<number>(1);
-	public selectedWholeTimespan$ = new ReplaySubject<boolean>(1);
+	public selectedDateValue$ = new ReplaySubject<string>(1);
+	public selectedWholeTimespan$ = new ReplaySubject<string>(1);
 
     public getMetaData(from:Date, until?:Date):Observable<CommitMetaData[]>{
         return this.commitMetaDataService.get(from, until);
@@ -172,13 +178,18 @@ export class ProvenanceService {
 
 	public clearTree(){
 		this.combinedCommitDetails$.next([]);
+		this.updateTreeData();
     }
-    
+	
+	private loadingCommits:string[]=[];
 	public loadCommitIntoTree(commitid){  
+		this.loadingCommits.push(commitid);
 		this.commitDetailsService.getByCommitId(commitid).subscribe(newcds => {
 			let currentcds:CommitDetails[] = [];
 			this.combinedCommitDetails$.subscribe(cds => currentcds = cds).unsubscribe();
 			this.combinedCommitDetails$.next(currentcds.concat(newcds));
+			this.loadingCommits.splice(this.loadingCommits.indexOf(commitid),1);
+			if (this.loadingCommits.length==0) this.updateTreeData();
 		});
 	}
 
@@ -192,5 +203,12 @@ export class ProvenanceService {
 		this.getAllMetaDataSince$(new Date(date)).subscribe(data => data.forEach((cmd)=>{
 			this.loadCommitIntoTree(cmd.commitid.value);
 		}));
+	}
+
+	public updateTreeData(){
+		this.combinedCommitDetails$.pipe(
+			flatMap(cds => this.getConceptTableInformation(cds, this.displayOptions$))
+		).subscribe(data => this.treeData$.next(data)).unsubscribe();
+
 	}
 }

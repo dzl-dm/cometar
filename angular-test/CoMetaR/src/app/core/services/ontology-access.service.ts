@@ -69,6 +69,10 @@ export class OntologyAccessService {
   public setGhostTreeItems(gtis: GhostTreeItem[]) {
     this.ontologyDataService.setGhostTreeItems(gtis);
   }
+
+  public getAllTreeItems():Observable<TreeItem[]>{
+    return this.ontologyDataService.treeItems$
+  }
 }
 
 export interface GhostTreeItem {

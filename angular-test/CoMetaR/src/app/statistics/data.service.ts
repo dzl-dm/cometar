@@ -5,7 +5,12 @@ import phenobd from "src/assets/data/statistics/phenobd.json";
 import mapping from "src/assets/data/statistics/mapping.json";
 import multiphenotype from "src/assets/data/statistics/multiphenotype.json";
 import i2b2usage from "src/assets/data/statistics/i2b2usage.json";
+import codecoverage from "src/assets/data/statistics/code_coverage.json";
 import { ChartDataSets, ChartData, ChartPoint } from 'chart.js';
+import { OntologyAccessService } from '../core/services/ontology-access.service';
+import { TreeStyleService, TreeItemStyle } from '../core/services/tree-style.service';
+import { map } from 'rxjs/operators';
+import { Subject, ReplaySubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -242,7 +247,10 @@ export class DataService {
   public phenotypes: string[];
   private i2b2usageJson:I2b2UsageDataSet[];
 
-  constructor() { 
+  constructor(
+    private ontologyAccessService:OntologyAccessService,
+    private treeStyleService:TreeStyleService
+  ) { 
     //this.qpfddLabels = this.qpfddJson.map(d => d.date).filter((value, index, self) => self.map(d => d.substr(0,10)).indexOf(value.substr(0,10)) === index);
     this.qpfddLabels = qpfdd["data"].map(d => d.date).reverse().filter((value, index, self) => self.map(d => d.substr(0,7)).indexOf(value.substr(0,7)) === index).reverse();
     this.qpfddJson = qpfdd["data"].map(data => {
@@ -273,6 +281,38 @@ export class DataService {
     this.multiPhenotypeJson = multiphenotype["data"];
     this.phenotypes = this.multiPhenotypeJson.map(a => <string[]>a["phenotypes"]).reduce((result, subarray) => result.concat(subarray), []).filter(this.distinctFilter);
     this.i2b2usageJson = i2b2usage["data"];
+
+    let styleSubject = new ReplaySubject<TreeItemStyle[]>(1);
+    this.ontologyAccessService.getAllTreeItems().subscribe(tis => {
+      let styles = tis.map(ti => {
+        let notations = ti.notations && ti.notations.value || [];
+        let sources = codecoverage["data"].filter(a => notations.includes(a.concept_cd)).map(a => a.source);
+        let style = this.treeStyleService.getEmptyStyle(ti.element.value);
+        sources.forEach(source => {
+          let map = mapping[source] && mapping[source]["same as"] && mapping[mapping[source]["same as"]] || mapping[source] || {"site":"none","label":"not defined"}
+          style.icons.push({
+            style,
+            type: "chip",
+            "background-color": this.siteColors[map["site"]] || "orange",
+            "text": map["label"],
+            color: "black",
+            id: "coverage",
+            description: "This element is covered by "+map["site"]+"/"+map["label"]+".",
+              "bubble-up": {
+                style,
+                type: "dot",
+                "background-color": this.siteColors[map["site"]],
+                id: "coverage_"+map["site"],
+                color: "black",
+                description: "There are COUNTER sub-elements covered by "+map["site"]+"."
+              }
+          })
+        });
+        return style;
+      });
+      styleSubject.next(styles);
+    });
+    this.treeStyleService.addTreeItemStyles(styleSubject);
   }
 
   private sortDatasetsByLastValue(a: ChartDataSets, b: ChartDataSets){

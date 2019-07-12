@@ -93,7 +93,7 @@ export class ProvenanceComponent implements OnInit {
 
 	public isSelectedCommit(commitid:string){
 		let result = false;
-		this.provenanceService.selectedCommits$.subscribe(data => result = data.includes(commitid));
+		this.provenanceService.selectedCommits$.subscribe(data => result = data && data.includes(commitid));
 		return result;
 	}
 
@@ -108,14 +108,15 @@ export class ProvenanceComponent implements OnInit {
 	public isSelectedDate(date:Date):Observable<boolean>{
 		return this.provenanceService.selectedDateValue$.pipe(
 			map(selectedDate => {
+				if (selectedDate == null) return false;
 				let compareDateValue = new Date(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()).valueOf();
-				return compareDateValue == selectedDate.valueOf()
+				return compareDateValue == new Date(selectedDate).valueOf()
 			})
 		);
 	}
 
 	public isAllSelected():Observable<boolean>{
-		return this.provenanceService.selectedWholeTimespan$;
+		return this.provenanceService.selectedWholeTimespan$.pipe(map(s => s!=null));
 	}
 
 

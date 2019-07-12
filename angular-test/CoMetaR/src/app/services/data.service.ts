@@ -20,13 +20,13 @@ export class DataService {
   private busyQueries = 0;
   dataUrl = 'https://data.dzl.de/fuseki/cometar_live/query';
 
-  getData(queryString:string, logstart?:()=>void, logend?:(result:any[])=>void): Observable<any[]> {
+  getData(queryString:string, typerules?:{}, logstart?:()=>void, logend?:(result:any[])=>void): Observable<any[]> {
     this.loading.next(true);
     this.busyQueries++;
     if (!this.pendings[queryString]){
       this.progressService.addTask();
       let rs = new ReplaySubject<any[]>(1);
-      this.getObservable(queryString).subscribe(rs);
+      this.getObservable(queryString, typerules).subscribe(rs);
       this.pendings[queryString] = rs;
 
       rs.subscribe(data => {
@@ -48,7 +48,7 @@ export class DataService {
     }));
   }
 
-  private getObservable(queryString:string):Observable<any[]>{
+  private getObservable(queryString:string, typerules?:{}):Observable<any[]>{
     return this.http.get<JSONResponse>(
       this.dataUrl+"?query="+encodeURIComponent(queryString),
       { observe: 'response', headers:{'Accept': 'application/sparql-results+json; charset=utf-8'}}
@@ -59,6 +59,7 @@ export class DataService {
             ([key, part]:[string,JSONResponsePart]) => {
               if (part.datatype && part.datatype == "http://www.w3.org/2001/XMLSchema#boolean") part.value = part.value == "true";
               if (part.datatype && part.datatype == "http://www.w3.org/2001/XMLSchema#dateTime") part.value = new Date(part.value);
+              if (typerules && typerules[key] && typerules[key] == "|array") part.value = part.value.split("|");
               delete part.datatype;
               delete part.type;
             }
@@ -133,6 +134,11 @@ export interface JSONResponsePartString {
 
 export interface JSONResponsePartDate {
   value:Date,
+  name?:string
+}
+
+export interface JSONResponsePartArray {
+  value: string[],
   name?:string
 }
 
