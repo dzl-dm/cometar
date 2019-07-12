@@ -264,9 +264,9 @@ class ClientConfiguration {
     let s = m.concept + ": ";
     m.occurances.forEach(o => {
 			let dropvalues=m.occurances.filter(occ => occ.file == o.file && occ.column == o.column && occ.drop).map(occ => occ.value);
-
 			let column = "";
 			if (o.column && o.column != "constant-value") column = `"${o.file}" / "${o.column}"`;
+			else if (o.column && o.column == "constant-value") column = "constant";
 			else if (!o.column && m.constantvalue != undefined && m.constantvalue == m.navalue) column = "constant";
 
 			if (o.modifiers && o.modifiers.length > 0) column+= " modified by " + o.modifiers.map(m => "\""+m+"\"").join(",");

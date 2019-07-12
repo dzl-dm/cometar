@@ -131,7 +131,6 @@ export class DetailedInformationComponent implements OnInit {
 
   public export(){
     this.selectedIri$.subscribe(iri => this.exportService.get(iri, (exportString:string)=>{
-      //console.log(exportString);return;
       let thefile = new Blob([exportString], { type: "application/octet-stream" });
       let anchor = document.createElement('a');
   

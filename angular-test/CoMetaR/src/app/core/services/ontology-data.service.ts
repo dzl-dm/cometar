@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TreeItem } from '../classes/tree-item';
-import { prefixes, DataService, JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartString } from 'src/app/services/data.service';
+import { prefixes, DataService, JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartString, JSONResponsePartArray } from 'src/app/services/data.service';
 import { element, pipe } from '@angular/core/src/render3';
 import { withLatestFrom, map } from 'rxjs/operators';
 import { combineLatest, forkJoin, Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
@@ -30,7 +30,7 @@ export class OntologyDataService {
     let parentsQuery:Observable<ParentChildRelation[]> = this.dataService.getData(parentsQueryString);
 
     let informationQueryString = this.getItemInformationQueryString();
-    let informationQuery:Observable<TreeItemInformation[]> = this.dataService.getData(informationQueryString);
+    let informationQuery:Observable<TreeItemInformation[]> = this.dataService.getData(informationQueryString, {notations:"|array"});
     
     //this triggers once when the page loads and afterwards when a new provenance date is entered so that this.ghostTreeItems$ changes
     //could be optimized by not fully rebuilding the concept tree
@@ -54,7 +54,7 @@ export class OntologyDataService {
     });
   }
   
-  private fillOntologyRecursively(ti:TreeItem,pcs:ParentChildRelation[],is:TreeItemInformation[],gtis:GhostTreeItem[]){
+  private fillOntologyRecursively(ti:TreeItem,pcs:ParentChildRelation[],is:TreeItemInformation[],gtis:GhostTreeItem[]){    
     let children = pcs.filter(pc => pc.parent.value == ti.element.value).map(pc => pc.child);
     children.forEach(c => {
       let checkti = this.treeItems.filter(ti => ti.element.value == c.value);
@@ -64,10 +64,10 @@ export class OntologyDataService {
         let info = is.filter(i => i.element.value == c.value)[0];
         newti = new TreeItem(info);
         this.treeItems.push(newti);
-        ti.children.push(newti);
+        this.fillOntologyRecursively(newti,pcs,is,gtis);  
       }
-      newti.parents.push(ti);
-      this.fillOntologyRecursively(newti,pcs,is,gtis);      
+      ti.children.push(newti);
+      newti.parents.push(ti);    
     });
 
     let ghostChildren = gtis.filter(gti => gti.parent == ti.element.value);
@@ -77,6 +77,7 @@ export class OntologyDataService {
         let newti = new TreeItem({
           element: gc.element,
           label: {value: gc.label.value, "xml:lang":"en"},
+          notations: { value:[] },
           isModifier: {value: false},
           type: {value: "http://www.w3.org/2004/02/skos/core#Concept"}
         });
@@ -98,7 +99,7 @@ export class OntologyDataService {
     this.ghostTreeItems$.next(gtis);
   }
 
-  private addGhostTreeItems(gtis:GhostTreeItem[]){
+  /*private addGhostTreeItems(gtis:GhostTreeItem[]){
     let insertedAnotherGhostTreeItem = true;
     while (insertedAnotherGhostTreeItem){
       insertedAnotherGhostTreeItem = false;
@@ -125,7 +126,7 @@ export class OntologyDataService {
       console.log(this.treeItems.filter(ti => ti.isGhostItem))
     }
     this.treeItems$.next(this.treeItems);
-  }
+  }*/
 
   private getRootElementsQueryString():string{
     return `${prefixes}
@@ -156,11 +157,12 @@ WHERE
 
   private getItemInformationQueryString(){
     return `${prefixes}
-SELECT ?element ?type ?label (COUNT(?top)>0 as ?isModifier) ?status
+SELECT ?element ?type ?label (COUNT(?top)>0 as ?isModifier) ?status (GROUP_CONCAT(?notation;separator="|") as ?notations)
 WHERE {	    
   FILTER (bound(?element))
   ?element skos:prefLabel ?label FILTER (lang(?label)='en') .
   OPTIONAL { ?element skos:broader* [ rdf:partOf ?top ] . }
+  OPTIONAL { ?element skos:notation ?notation }
   OPTIONAL { ?element rdf:type ?type . }
   OPTIONAL { ?element :status ?status . }
 } 
@@ -182,6 +184,7 @@ interface ParentChildRelation {
 export interface TreeItemInformation {
   element: JSONResponsePartUriString,
   type: JSONResponsePartUriString,
+  notations: JSONResponsePartArray,
   label: JSONResponsePartLangString,
   isModifier: JSONResponsePartBoolean,
   status?: JSONResponsePartString

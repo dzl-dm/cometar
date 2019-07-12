@@ -55,7 +55,7 @@
   [ngStyle]="{
     'opacity':treeitem.isGhostItem?0.5:1.0
   }"
-  *ngIf="showInformationDiv$ | async "
+  *ngIf="showInformationDiv$ | async"
   #treeItemInformation
   (mouseenter)="onInformationMouseEnter($event)"> 
   <app-concept-information 

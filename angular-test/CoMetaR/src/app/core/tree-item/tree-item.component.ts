@@ -20,6 +20,7 @@ export class TreeItemComponent implements OnInit {
     element:{value:""},
     isModifier:{value:false},
     label:{value:"","xml:lang":"en"},
+    notations:{value:[]},
     status:{value:""},
     type:{value:""}
   });
