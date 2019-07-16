@@ -5,6 +5,7 @@ import { map, filter, flatMap, first, startWith } from 'rxjs/operators';
 //import { WebWorkerService } from 'ngx-web-worker';
 import { BrowserService } from './browser.service';
 import { OntologyAccessService } from './ontology-access.service';
+import { TreeItem } from '../classes/tree-item';
 
 @Injectable({
   providedIn: 'root'
@@ -209,10 +210,10 @@ export class TreeStyleService {
     this.allTreeItemStyles$.subscribe(d => s = d).unsubscribe();
     this.allTreeItemStyles$.next(s.concat(styles$.pipe(startWith([]))));
   }
-  public getTreeItemStyle$(iri:string):Observable<TreeItemStyle> {
-    return combineLatest(this.treeItemStyles$,this.ontologyAccessService.getAllChildren([iri])).pipe(
-      map(([sa, children]) => {
-        let style = sa.filter(tis => tis.concept == iri).reduce((result,next)=>{
+  public getTreeItemStyle$(iri:string,parentiri?:string):Observable<TreeItemStyle> {
+    return combineLatest(this.treeItemStyles$,this.ontologyAccessService.getTreeItem$(iri)).pipe(
+      map(([sa, treeitem]) => {
+        let style = sa.filter(tis => tis.concept == iri && (!tis.parent || tis.parent == parentiri)).reduce((result,next)=>{
           result["background-color"] = next["background-color"] || result["background-color"];
           result["border-color"] = next["border-color"] || result["border-color"];
           result.color = next.color || result.color;
@@ -221,6 +222,7 @@ export class TreeStyleService {
           result["opacity"] = next["opacity"] || result["opacity"];
           return result;
         },this.getEmptyStyle(iri));
+        let children = this.getMatchingTreeItemChildren(treeitem);
         let bubbleIcons:TreeItemIcon[] = children.map(childiri => sa.filter(tis => tis.concept == childiri)) //array of child style arrays
           .reduce((result,next)=>result = result.concat(next),[]) //array of child styles
           .map(tis => tis.icons.filter(icon => icon["bubble-up"]).map(icon => icon["bubble-up"])) //array of bubble icons of child style array
@@ -229,6 +231,16 @@ export class TreeStyleService {
         return style;
       })
     );
+  }
+  private getMatchingTreeItemChildren(ti:TreeItem,children:string[]=[]):string[]{
+    ti.children.forEach(c => {
+      if (c.ghostParents.length == 0 || c.ghostParents.filter(gp => gp.value == ti.element.value).length > 0)
+      {
+        children.push(c.element.value);
+        this.getMatchingTreeItemChildren(c,children);
+      }
+    })
+    return children;
   }
 
   public getIcons(style:TreeItemStyle):TreeItemIcon[]{
@@ -243,6 +255,7 @@ export class TreeStyleService {
 
 export interface TreeItemStyle {
   "concept":string,
+  "parent"?:string,//to limit style for concepts that are child of specific parent
   "text-decoration"?:string,
   "color"?: string,
   "background-color"?: string,

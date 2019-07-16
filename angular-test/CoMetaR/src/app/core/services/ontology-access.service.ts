@@ -73,6 +73,13 @@ export class OntologyAccessService {
   public getAllTreeItems():Observable<TreeItem[]>{
     return this.ontologyDataService.treeItems$
   }
+
+  public getTreeItem$(iri:string):Observable<TreeItem>{
+    return this.ontologyDataService.treeItems$.pipe(map(tis => {
+      let match = tis.filter(ti => ti.element.value==iri);
+      return match.length > 0 && match[0] || undefined;
+    }))
+  }
 }
 
 export interface GhostTreeItem {

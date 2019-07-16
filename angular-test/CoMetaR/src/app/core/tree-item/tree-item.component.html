@@ -1,7 +1,7 @@
 <div class="treeItemHeading"
     (click)="expandOrCollapse()"
     [ngStyle]="{
-      'opacity':treeitem.isGhostItem?0.5:1.0
+      'opacity':isGhostItem()?0.5:1.0
     }">
   <div 
     [ngClass]="{
@@ -53,7 +53,7 @@
 <div 
   class="treeItemInformation" 
   [ngStyle]="{
-    'opacity':treeitem.isGhostItem?0.5:1.0
+    'opacity':isGhostItem()?0.5:1.0
   }"
   *ngIf="showInformationDiv$ | async"
   #treeItemInformation
@@ -65,7 +65,7 @@
     [truncateText]="true"
     [maxWidth]="treeItemInformation.offsetWidth"
     [highlightTerm]="treeDataService.getSearchPattern()"
-    [collapsed]="treeitem.isGhostItem"
+    [collapsed]="isGhostItem()"
     [cellWidthPercentages]="[35,65]"></app-concept-information>
   <ng-container *ngFor="let conceptInformation of conceptInformation$ | async">
       <app-concept-information 
@@ -73,7 +73,7 @@
         [hiddenHeading]="false"
         [maxWidth]="treeItemInformation.clientWidth"
         [truncateText]="true"
-        [collapsed]="treeitem.isGhostItem"></app-concept-information>
+        [collapsed]="isGhostItem()"></app-concept-information>
   </ng-container>
 </div>
 <app-tree-item-list *ngIf="expanded" [expanded]="expanded && cascade_expand" [cascade_expand]="cascade_expand" [conceptIri]="treeitem.element.value"></app-tree-item-list>

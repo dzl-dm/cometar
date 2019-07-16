@@ -16,7 +16,7 @@ export class TreeItem {
     isModifier:JSONResponsePartBoolean;
     notations:JSONResponsePartArray;
     status?:JSONResponsePartString;
-    isGhostItem:boolean=false;
+    ghostParents:JSONResponsePartUriString[]=[];
     children:TreeItem[]=[];
     parents:TreeItem[]=[];
 

@@ -23,7 +23,8 @@ export class GetDerivedConceptService {
 SELECT DISTINCT ?derived_concept
 WHERE { 
 	?derived_concept prov:wasDerivedFrom+ <${iri}> .
-	FILTER NOT EXISTS { ?b prov:wasDerivedFrom ?derived_concept . }
+  FILTER NOT EXISTS { ?b prov:wasDerivedFrom ?derived_concept . }
+  FILTER NOT EXISTS { <${iri}> skos:prefLabel ?label } #it may be that the "old" concept exists "in a new way"
 }`;
   }
 }
