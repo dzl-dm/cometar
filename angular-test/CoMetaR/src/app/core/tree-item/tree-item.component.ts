@@ -118,6 +118,10 @@ export class TreeItemComponent implements OnInit {
     return distinctIcons.length;
   }
 
+  public isGhostItem(){
+    return this.treeitem && this.parent && this.treeitem.ghostParents.filter(gp => gp.value == this.parent).length > 0;
+  }
+
   private searchMatchArray(s:string):string[]{
     let index = 0;
     let result:string[] = [];

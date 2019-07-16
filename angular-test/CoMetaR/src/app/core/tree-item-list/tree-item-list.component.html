@@ -12,6 +12,6 @@
         [expanded]="expanded"
         [cascade_expand]="cascade_expand"
         [parent]="conceptIri"
-        [style$]="treeStyleService.getTreeItemStyle$(treeitem.element.value)"
+        [style$]="treeStyleService.getTreeItemStyle$(treeitem.element.value,conceptIri)"
         [ngClass]="{'selected':isSelected$(treeitem) | async, 'topLevel':conceptIri == 'root'}">
     </app-tree-item>

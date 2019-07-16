@@ -121,6 +121,7 @@ export class ProvTreeItemsService {
 
         this.treeItemStyles = this.treeItemStyles.concat(this.addedTreeItems.map(a => {
             let style = this.treeStyleService.getEmptyStyle(a.element);
+            style.parent=a.newparent;
             style.icons = [{
                 style,
                 id: "prov_addition",
@@ -161,6 +162,7 @@ export class ProvTreeItemsService {
 
         this.treeItemStyles = this.treeItemStyles.concat(this.removedTreeItems.map(r => {
             let style = this.treeStyleService.getEmptyStyle(r.element);
+            style.parent=r.oldparent;
             style["text-decoration"] = "line-through";
             style.icons = [{
                 style,

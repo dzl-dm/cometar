@@ -81,7 +81,7 @@ export class OntologyDataService {
           isModifier: {value: false},
           type: {value: "http://www.w3.org/2004/02/skos/core#Concept"}
         });
-        newti.isGhostItem = true;   
+        newti.ghostParents.push(ti.element);   
         ti.children.push(newti); 
         newti.parents.push(ti);
         this.treeItems.push(newti);
