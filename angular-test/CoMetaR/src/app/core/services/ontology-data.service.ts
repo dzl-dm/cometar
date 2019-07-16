@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TreeItem } from '../classes/tree-item';
 import { prefixes, DataService, JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartString, JSONResponsePartArray } from 'src/app/services/data.service';
-import { element, pipe } from '@angular/core/src/render3';
-import { withLatestFrom, map } from 'rxjs/operators';
-import { combineLatest, forkJoin, Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
+import { combineLatest, Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { GhostTreeItem } from './ontology-access.service';
 
 @Injectable({
