@@ -69,11 +69,13 @@ export class DetailedInformationComponent implements OnInit {
           if (key=="notation"){
             if (detail[key].value && detail[key].value.indexOf("L:")==0) {
               let infosObject = this.externalCodeInformationService.getInformation(detail[key].value);
-              let infosArray:string[][]=[];
-              Object.keys(infosObject).forEach(key=>infosArray.push([key,infosObject[key]]))
-              this.additionalDetails["loincTable"]={
-                name:"LOINC Information", 
-                values: infosArray
+              if (infosObject) {
+                let infosArray:string[][]=[];
+                Object.keys(infosObject).forEach(key=>infosArray.push([key,infosObject[key]]))
+                this.additionalDetails["loincTable"]={
+                  name:"LOINC Information", 
+                  values: infosArray
+                }
               }
             }
           }
