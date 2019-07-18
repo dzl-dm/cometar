@@ -199,6 +199,7 @@ WHERE
 };
 
 #all statements with an old concept as subject are linked to the new concept
+#in case of re-introduced concepts, we only want to link the statements before derivation
 INSERT
 {
 	?commit prov:qualifiedUsage [
@@ -213,21 +214,30 @@ INSERT
 WHERE
 {
 	{
-		SELECT ?oldConcept ?derivedConcept
+		SELECT ?oldConcept ?derivedConcept ?derivedate
 		WHERE
-		{
+		{			
+			?commit2 prov:qualifiedUsage ?usage2 ;
+				prov:endedAtTime ?derivedate .
+			?usage2 cs:addition [
+				a rdf:Statement; 
+				rdf:subject ?derivedConcept;
+				rdf:predicate prov:wasDerivedFrom
+			] .
 			?derivedConcept prov:wasDerivedFrom+ ?oldConcept .	
 		}
 	}
 
-	?commit prov:qualifiedUsage [
-		?addorremove [
-			a rdf:Statement;
-			rdf:subject ?oldConcept;
-			rdf:predicate ?p;
-			rdf:object ?o
-		]
+	?commit prov:qualifiedUsage ?usage ;
+		prov:endedAtTime ?changedate .
+	?usage ?addorremove [
+		a rdf:Statement;
+		rdf:subject ?oldConcept;
+		rdf:predicate ?p;
+		rdf:object ?o
 	]
+	
+	FILTER (!bound(?derivedate) || ?changedate < ?derivedate)
 	
 	FILTER NOT EXISTS {
 		?commit prov:qualifiedUsage [
