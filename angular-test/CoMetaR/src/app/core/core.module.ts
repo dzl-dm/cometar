@@ -17,6 +17,7 @@ import { ProgressbarComponent } from './progressbar/progressbar.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SectionComponent } from './section/section.component';
+import { TextWithNavigationComponent } from './text-with-navigation/text-with-navigation.component';
 //import { WebWorkerService } from 'ngx-web-worker';
 
 @NgModule({
@@ -32,7 +33,8 @@ import { SectionComponent } from './section/section.component';
     NoSanitizePipe,
     ConceptInformationComponent,
     ProgressbarComponent,
-    SectionComponent
+    SectionComponent,
+    TextWithNavigationComponent
   ],
   imports: [
     CommonModule,
@@ -52,7 +54,8 @@ import { SectionComponent } from './section/section.component';
     BrowserComponent,
     CommonModule,
     ConceptInformationComponent,
-    SectionComponent
+    SectionComponent,
+    TextWithNavigationComponent
   ],
   entryComponents: [
     SnackbarComponent

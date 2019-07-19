@@ -31,6 +31,11 @@ WHERE {
     rdf:predicate rdf:type
   ] .
   FILTER NOT EXISTS { <${iri}> rdf:type ?type }
+  FILTER NOT EXISTS { 
+    ?derived_concept prov:wasDerivedFrom+ <${iri}> .
+    FILTER NOT EXISTS { ?b prov:wasDerivedFrom ?derived_concept . }
+    FILTER NOT EXISTS { <${iri}> skos:prefLabel ?label } #it may be that the "old" concept exists "in a new way"
+  }
 }`;
   }
 }

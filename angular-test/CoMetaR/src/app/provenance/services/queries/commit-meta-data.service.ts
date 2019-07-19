@@ -13,11 +13,11 @@ export class CommitMetaDataService {
   ) { }
 
   public get(from:Date, until:Date=new Date(Date.now())):Observable<CommitMetaData[]> {
-    const queryString = this.getQueryString(from.toISOString(), until.toISOString());
+    const queryString = this.getQueryString(from, until);
     return this.dataService.getData(queryString).pipe(map(data=> { return <CommitMetaData[]> data }))
   };
 
-  private getQueryString(from:string, until:string):string {
+  public getQueryString(from:Date, until:Date):string {
   return `
     ${prefixes}
     SELECT ?commitid ?author ?message ?enddate
@@ -28,7 +28,7 @@ export class CommitMetaDataService {
         prov:endedAtTime ?enddate ;
         prov:label ?message ;
       .	
-      filter (?enddate >= "${from}"^^xsd:dateTime && ?enddate <= "${until}"^^xsd:dateTime)
+      filter (?enddate >= "${from.toISOString()}"^^xsd:dateTime && ?enddate <= "${until.toISOString()}"^^xsd:dateTime)
     }
     order by DESC(?enddate )`;
   }

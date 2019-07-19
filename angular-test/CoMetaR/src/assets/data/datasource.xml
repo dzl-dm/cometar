@@ -3,6 +3,7 @@
 	<meta>
 		<id></id>
 		<etl-strategy>replace-source</etl-strategy>
+		<version-date>2019-03-12</version-date>
 	</meta>
 
 	<patient-table>
@@ -361,6 +362,14 @@
 						</map>	
 					</value>
 				</modifier>
+			</concept>
+			<concept id="S:91302008">
+				<value column="sepsis" xsi:type="integer" na="">
+					<map>
+						<case value="1" set-value=""/>
+						<otherwise action="drop-fact"/>
+					</map>
+				</value>
 			</concept>
 		</mdat>
 		<ignore column="*" xsi:type="string"/>

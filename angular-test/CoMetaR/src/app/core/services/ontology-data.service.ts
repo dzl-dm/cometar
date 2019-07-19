@@ -126,7 +126,7 @@ export class OntologyDataService {
     this.treeItems$.next(this.treeItems);
   }*/
 
-  private getRootElementsQueryString():string{
+  public getRootElementsQueryString():string{
     return `${prefixes}
 SELECT ?element
 WHERE

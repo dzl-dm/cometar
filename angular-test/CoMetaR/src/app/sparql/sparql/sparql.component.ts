@@ -4,6 +4,12 @@ import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { SearchtreeitemService } from 'src/app/core/services/queries/searchtreeitem.service';
 import { UrlService } from 'src/app/services/url.service';
+import { OntologyDataService } from 'src/app/core/services/ontology-data.service';
+import { CommitHistoryService } from 'src/app/core/services/queries/commit-history.service';
+import { InformationQueryService } from 'src/app/detailed-information/services/queries/information-query.service';
+import { CommitDetailsService } from 'src/app/provenance/services/queries/commit-details.service';
+import { CommitMetaDataService } from 'src/app/provenance/services/queries/commit-meta-data.service';
+import { ConceptByNotationService } from 'src/app/upload-client-configuration/services/queries/concept-by-notation.service';
 
 @Component({
   selector: 'app-sparql',
@@ -21,7 +27,13 @@ export class SparqlComponent implements OnInit {
     private dataService: DataService,
     private searchTreeItemService: SearchtreeitemService,
     private route:ActivatedRoute,
-    private urlService:UrlService
+    private urlService:UrlService,
+    private ontologyDataService:OntologyDataService,
+    private commitHistoryService:CommitHistoryService,
+    private informationQueryService:InformationQueryService,
+    private commitDetailsService:CommitDetailsService,
+    private commitMetaDataService:CommitMetaDataService,
+    private conceptByNotationService:ConceptByNotationService
   ) { }
 
   ngOnInit() {
@@ -29,6 +41,12 @@ export class SparqlComponent implements OnInit {
       map(data => data.get('concept'))
     ).subscribe(data => this.concept = data && this.urlService.extendRdfPrefix(data) || "ELEMENT_ID");
     this.queries.push(["Search Items", this.searchTreeItemService.getQueryString("Test")]);
+    this.queries.push(["Root Items", this.ontologyDataService.getRootElementsQueryString()]);
+    this.queries.push(["Commit History", this.commitHistoryService.getQueryString(new Date("2019-05-01"),new Date("2019-07-01"))]);
+    this.queries.push(["Concept Information", this.informationQueryService.getQueryString("http://loinc.org/owl#39156-5")]);
+    this.queries.push(["Commit Overview", this.commitMetaDataService.getQueryString(new Date("2019-05-01"),new Date("2019-07-01"))]);
+    this.queries.push(["Commit Details", this.commitDetailsService.getQueryString(":commit_6ab3748ab7ca5af2c472fe8708269cf1e08f33e4")]);
+    this.queries.push(["Notation Updates", this.conceptByNotationService.getQueryString("S:91302008",new Date("2019-05-01"))]);
   }
 
   public selectionChange(newQuery:string){

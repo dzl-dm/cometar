@@ -50,7 +50,7 @@ export class ProvenanceModule {
       let iri = data[0]["derived_concept"].value;
       iri = this.configurationService.shortenRdfPrefix(iri);
       this.browserService.snackbarNotification.next([`You got redirected from "${location.href}".`, `info`]);
-      this.router.navigate([],{queryParams: {concept: iri}, queryParamsHandling: "merge" });
+      this.router.navigate([],{queryParams: {concept: iri}, queryParamsHandling: "merge", replaceUrl: true });
     });
     this.route.queryParamMap.pipe(
       map(data => this.configurationService.extendRdfPrefix(data.get('concept')))
