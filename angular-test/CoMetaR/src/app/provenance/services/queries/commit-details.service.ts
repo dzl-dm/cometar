@@ -22,7 +22,7 @@ export class CommitDetailsService {
     return this.dataService.getData(queryString).pipe(map(data=> { return <CommitDetails[]> data }))
   };
 
-  private getQueryString(commit:string, subject?:string):string{
+  public getQueryString(commit:string, subject?:string):string{
     return `
     ${prefixes}
 SELECT DISTINCT ?subject ?sl ?predicate ?object ?ol ?addition (!bound(?p) as ?deprecatedsubject) ?date
@@ -37,7 +37,20 @@ WHERE
     rdf:predicate ?predicate; 
     rdf:object ?object .
   FILTER NOT EXISTS { ?statement rdf:comment "hidden" } 
-  FILTER NOT EXISTS { ?newsubject prov:wasDerivedFrom+ ?subject }
+  
+  #case of re-introduced concepts like "Sepsis"
+  OPTIONAL {
+  ?commit2 prov:qualifiedUsage ?usage2 ;
+    prov:endedAtTime ?date2 .
+    ?usage2 cs:addition [
+      a rdf:Statement; 
+      rdf:subject ?newsubject;
+      rdf:predicate prov:wasDerivedFrom; 
+      rdf:object ?subject 
+    ]
+  }
+  FILTER(!bound(?date2) || ?date > ?date2)
+
   OPTIONAL { ?subject skos:prefLabel ?sl filter (lang(?sl)='en') . }
   OPTIONAL { ?object skos:prefLabel ?ol filter (lang(?ol)='en') . }
   

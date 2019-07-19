@@ -34,3 +34,9 @@ textarea {
     flex-direction: column;
     overflow: auto;
 }
+#warning_text{
+    color:rgba(161, 0, 0, 0.993);
+}
+#feedback table td:not(:last-child){
+    border-right: 1px solid #DDD;
+}

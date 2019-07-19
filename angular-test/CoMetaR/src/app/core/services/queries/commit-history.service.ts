@@ -16,11 +16,11 @@ export class CommitHistoryService {
       from = new Date(until);
       from.setHours(from.getHours()-(10*7*24));
     }
-    const queryString = this.getQueryString(from.toISOString(), until.toISOString());
+    const queryString = this.getQueryString(from, until);
     return this.dataService.getData(queryString).pipe(map(data=> { return <CommitHistoryData[]> data }))
   };
 
-  private getQueryString(from:string, until:string):string {
+  public getQueryString(from:Date, until:Date):string {
   return `
     ${prefixes}
     SELECT ?date (COUNT(DISTINCT ?add) as ?additions) (COUNT(DISTINCT ?rem) as ?removals) ?total
@@ -42,7 +42,7 @@ export class CommitHistoryService {
         STR(MONTH(?d)), 
         "-", 
         STR(DAY(?d))) as ?date)
-      filter (?d >= "${from}"^^xsd:dateTime && ?d <= "${until}"^^xsd:dateTime)
+      filter (?d >= "${from.toISOString()}"^^xsd:dateTime && ?d <= "${until.toISOString()}"^^xsd:dateTime)
     }
     group by ?date ?total
     order by ?date`;

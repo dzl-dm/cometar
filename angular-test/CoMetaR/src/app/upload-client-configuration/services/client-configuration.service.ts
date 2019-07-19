@@ -378,11 +378,15 @@ export interface IClientConfiguration {
   "datasource": {
     $:{},
     "eav-table":EAVTable[],
-    meta:{},
+    meta:Meta,
     "patient-table":{},
 		"visit-table":WideTable[],
 		"wide-table":WideTable[]
   }
+}
+
+interface Meta {
+	"version-date":string
 }
 
 interface EAVTable {

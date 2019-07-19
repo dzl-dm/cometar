@@ -15,7 +15,7 @@ export class InformationQueryService {
       return this.dataService.getData(queryString).pipe(map(data=> { return <OntologyElementDetails[]> data }))
   };
 
-  private getQueryString(iri?):string {
+  public getQueryString(iri?):string {
       return `
       ${prefixes}
       SELECT ?element ?type ?label ?status ?description ?unit ?altlabel ?author ?domain ?editnote ?modifier ?modifierlabel ?notation ?related (MAX(?changesdate) AS ?lastchangesdate)

@@ -1,0 +1,5 @@
+span {
+    color:var(--dzl-blue);
+    text-decoration: underline;
+    cursor:pointer;
+}

@@ -23,12 +23,29 @@
     </tr>
     <tr *ngIf="showUpdatedConfigurationFileDownloadButton">
       <td></td>
-      <td><input type='button' value='Download Updated Configuration File' (click)="downloadNewFile()"/></td>
+      <td>
+        <input type='button' value='Download Updated Configuration File' (click)="downloadNewFile()"/>
+        <p id="warning_text" *ngIf="warnings_occured">Please notice the warnings listed below to ensure a correct configuration.</p>
+      </td>
     </tr>
   </table>
 </app-section>
 <app-section title="Feedback" min_height="100">
+  <div *ngIf="version_date">Configuration file version: {{ version_date | date :'yyyy-MM-dd' }}</div>
+  <br>
   <div id='feedback'>
-    <div class='feedbackpart' style="margin-top:10px" *ngFor="let f of feedback">{{f}}</div>
+    <table *ngIf="feedback.length > 0">
+      <tr>
+        <th>Code</th>
+        <th>Issue</th>
+        <th>Warning</th>
+      </tr>
+      <tr *ngFor="let f of feedback">
+        <td><app-text-with-navigation [data]="f[0]?f[0]:[]"></app-text-with-navigation></td>
+        <td><app-text-with-navigation [data]="f[1]?f[1]:[]"></app-text-with-navigation></td>
+        <td><app-text-with-navigation [data]="f[2]?f[2]:[]"></app-text-with-navigation></td>
+      </tr>
+    </table>
+    <!--<div class='feedbackpart' style="margin-top:10px" *ngFor="let f of feedback">{{f}}</div>-->
   </div>
 </app-section>
