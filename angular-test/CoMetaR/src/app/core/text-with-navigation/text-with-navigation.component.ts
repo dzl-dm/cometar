@@ -8,6 +8,7 @@ import { TreeDataService } from '../services/tree-data.service';
 })
 export class TextWithNavigationComponent implements OnInit {
   @Input('') data:string|NavigationTextPart|NavigationTextPart[];
+  public dataarray:NavigationTextPart[];
   constructor(
     private treeDataService:TreeDataService
   ) { }
@@ -15,9 +16,10 @@ export class TextWithNavigationComponent implements OnInit {
   ngOnInit() {
     if (!Array.isArray(this.data)){
       let check:NavigationTextPart = this.data as NavigationTextPart
-      if (check != null) this.data = <NavigationTextPart[]>[this.data];
-      else this.data = {text:<string>this.data}
+      if (check != null) this.dataarray = <NavigationTextPart[]>[this.data];
+      else this.dataarray = [{text:<string>this.data}]
     }
+    else this.dataarray = this.data;
   }
 
   public navigateTo(iri){

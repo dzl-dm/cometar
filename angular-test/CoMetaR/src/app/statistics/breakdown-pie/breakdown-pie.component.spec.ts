@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BreakdownPieComponent } from './breakdown-pie.component';
+import { StatisticsModule } from '../statistics.module';
 
 describe('BreakdownPieComponent', () => {
   let component: BreakdownPieComponent;
@@ -8,7 +9,7 @@ describe('BreakdownPieComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BreakdownPieComponent ]
+      imports: [ StatisticsModule ]
     })
     .compileComponents();
   }));

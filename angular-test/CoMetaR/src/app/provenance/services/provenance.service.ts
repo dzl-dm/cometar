@@ -117,7 +117,7 @@ export class ProvenanceService {
                 let overwritePreviousAddition = false;
                 if (subject == cd.subject.value
 					&& predicate == cd.predicate.value
-					&& date == cd.date.value
+					&& date== cd.date.value
                     && (!cd.object["xml:lang"] || lang == cd.object["xml:lang"])
                     && this.configuration.uniquePredicates.includes(predicate)) 
                 {
@@ -127,29 +127,32 @@ export class ProvenanceService {
                 subject = cd.subject.value;
                 predicate = cd.predicate.value;
 				lang = cd.object["xml:lang"] || "";
-                date = cd.date.value;
+				date = cd.date.value;
+				let author = cd.author.value;
+				author=this.configuration.cutPrefix(author);
 
 				cd = this.configuration.getHumanReadableCommitDetailData(cd);
 				let cia = result.filter(r => r.concept == cd.subject.value);
 				let ci:ConceptInformation = cia[0] || { 
 					concept: cd.subject.value,
-					headings: ["Date","Attribute","Old Value","New Value"],
+					headings: ["Meta","Attribute","Old Value","New Value"],
 					cellWidthPercentages: [20,20,30,30],
 					cellMaxWidth: [130,130,0,0],
 					sourceId: "Provenance",
 					cells:[]
 				};
-                let objectlabel = cd.ol?cd.ol.value:cd.object?cd.object.value:"";
+				let objectlabel = cd.ol?cd.ol.value:cd.object?cd.object.value:"";
+				if (overwritePreviousAddition)console.log("joooo");
                 if (overwritePreviousAddition){
-                    ci.cells[ci.cells.length -1][2]=objectlabel;
+                    ci.cells[ci.cells.length -1][3]=objectlabel;
                 }
                 else ci.cells.push([
-                    date.toLocaleString(),//toLocaleDateString("de-DE", {day: '2-digit', month: '2-digit', year: 'numeric'}),
+                    date.toLocaleDateString("de-DE", {day: '2-digit', month: '2-digit', year: 'numeric'}) + " " + author,
 					cd.predicate?cd.predicate.value+(lang?" ("+lang.toUpperCase()+")":""):"",
 					!cd.addition.value?objectlabel:"",
 					cd.addition.value?objectlabel:""
-                ]);
-				if (cia.length == 0) result.push(ci);
+				]);
+				if (cia.length == 0 && ci.cells.length>0) result.push(ci);
             });
             //merge lines
             result.forEach(ci => {
@@ -159,10 +162,11 @@ export class ProvenanceService {
                         if (mergeParts[0][2] != "" && mergeParts[1][3] != "") mergeParts[0][3] = mergeParts[1][3];
                         else mergeParts[0][2] = mergeParts[1][2];
                         ci.cells.splice(ci.cells.indexOf(mergeParts[1]),1);
-                    }
+					}
+					if (mergeParts[0][2]==mergeParts[0][3])	ci.cells.splice(ci.cells.indexOf(mergeParts[0]),1)
                 }
             })
-			cis.next(result);
+			cis.next(result.filter(ci => ci.cells.length>0));
 		});
 		return cis;
     }

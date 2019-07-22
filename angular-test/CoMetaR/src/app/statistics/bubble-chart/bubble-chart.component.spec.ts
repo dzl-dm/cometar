@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BubbleChartComponent } from './bubble-chart.component';
+import { StatisticsModule } from '../statistics.module';
 
 describe('BubbleChartComponent', () => {
   let component: BubbleChartComponent;
@@ -8,7 +9,7 @@ describe('BubbleChartComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BubbleChartComponent ]
+      imports: [ StatisticsModule ]
     })
     .compileComponents();
   }));

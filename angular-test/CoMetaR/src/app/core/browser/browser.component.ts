@@ -2,7 +2,7 @@ import { Component, OnInit, NgZone, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, query, animateChild, group, animate, state } from '@angular/animations';
 import { DataService } from '../../services/data.service';
-import { MatSnackBar, MatSnackBarConfig, MatIconRegistry } from '@angular/material';
+import { MatSnackBar, MatIconRegistry } from '@angular/material';
 import { BrowserService } from '../services/browser.service';
 import { SnackbarComponent } from '../snackbar/snackbar.component';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';

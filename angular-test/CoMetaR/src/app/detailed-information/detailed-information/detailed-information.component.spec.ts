@@ -1,6 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DetailedInformationComponent } from './detailed-information.component';
+import { CoreModule } from 'src/app/core/core.module';
+import { MatIconRegistry } from '@angular/material';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('DetailedInformationComponent', () => {
   let component: DetailedInformationComponent;
@@ -8,7 +13,9 @@ describe('DetailedInformationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DetailedInformationComponent ]
+      declarations: [ DetailedInformationComponent ],
+      imports: [ CoreModule, HttpClientTestingModule, RouterTestingModule, BrowserAnimationsModule ],
+      providers: [MatIconRegistry]
     })
     .compileComponents();
   }));

@@ -8,7 +8,7 @@ import Chart, { ChartData } from 'chart.js';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BreakdownPieComponent implements OnInit {
-  @Input("") chartData: ChartData[]
+  @Input("") chartData: ChartData[] = [{datasets:[],labels:[]},{datasets:[],labels:[]}]
   @Input("") sites: string[]
   constructor(
     private e: ElementRef,

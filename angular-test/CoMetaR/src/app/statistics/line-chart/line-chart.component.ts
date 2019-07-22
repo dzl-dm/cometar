@@ -10,7 +10,7 @@ import { MatTable } from '@angular/material';
 })
 export class LineChartComponent implements OnInit {
   @Input('') chartData$: ReplaySubject<ChartData>;
-  @Input('') chartData:ChartData;
+  @Input('') chartData:ChartData = {datasets:[], labels:[]};
   @Input('') XaxeDateFormat:string = 'YYYY-M-D HH:mm:ss';
   @Input('') legend:boolean;
 

@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TreeItemComponent } from './tree-item.component';
+import { CoreModule } from '../core.module';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('TreeItemComponent', () => {
   let component: TreeItemComponent;
@@ -8,7 +11,8 @@ describe('TreeItemComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TreeItemComponent ]
+      declarations: [  ],
+      imports: [ CoreModule, RouterTestingModule, HttpClientTestingModule ]
     })
     .compileComponents();
   }));

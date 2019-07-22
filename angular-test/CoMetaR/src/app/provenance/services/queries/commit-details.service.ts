@@ -25,11 +25,12 @@ export class CommitDetailsService {
   public getQueryString(commit:string, subject?:string):string{
     return `
     ${prefixes}
-SELECT DISTINCT ?subject ?sl ?predicate ?object ?ol ?addition (!bound(?p) as ?deprecatedsubject) ?date
+SELECT DISTINCT ?subject ?sl ?predicate ?object ?ol ?addition (!bound(?p) as ?deprecatedsubject) ?date ?author
 WHERE	
 {
   ${commit} prov:qualifiedUsage ?usage ;
-  prov:endedAtTime ?date .
+    prov:wasAssociatedWith ?author ;
+    prov:endedAtTime ?date .
   ?usage ?addorremove ?statement .
   BIND(IF(?addorremove = cs:addition,true,false) as ?addition ) .
   ?statement a rdf:Statement; 
@@ -75,5 +76,6 @@ export interface CommitDetails {
   ol:JSONResponsePartLangString,
   addition:JSONResponsePartBoolean,
   deprecatedsubject:JSONResponsePartBoolean,
-  date:JSONResponsePartDate
+  date:JSONResponsePartDate,
+  author:JSONResponsePartString
 }

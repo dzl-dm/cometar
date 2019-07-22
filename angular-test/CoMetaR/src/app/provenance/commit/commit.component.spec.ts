@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CommitComponent } from './commit.component';
+import { CoreModule } from 'src/app/core/core.module';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('CommitComponent', () => {
   let component: CommitComponent;
@@ -8,7 +11,8 @@ describe('CommitComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CommitComponent ]
+      declarations: [ CommitComponent ],
+      imports: [ CoreModule, HttpClientTestingModule, RouterTestingModule ],
     })
     .compileComponents();
   }));
