@@ -1,4 +1,4 @@
-<ng-container *ngFor="let d of data">
+<ng-container *ngFor="let d of dataarray">
     <span *ngIf="d.navigationtype && d.navigationtype=='tree' && d.navigationlink; else elseBlock" (click)="navigateTo(d.navigationlink)">{{d.text}}</span>
     <ng-template #elseBlock>{{d.text}}</ng-template>
 </ng-container>

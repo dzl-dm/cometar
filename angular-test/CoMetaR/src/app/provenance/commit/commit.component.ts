@@ -13,7 +13,7 @@ import { filter, map, withLatestFrom, combineAll } from 'rxjs/operators';
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CommitComponent implements OnInit {
-  @Input() commitMetaData:CommitMetaData;
+  @Input() commitMetaData:CommitMetaData = {author:{value:""},commitid:{value:""},enddate:{value: new Date(Date.now())},message:{value:""}};
   @Input() displayOptions$:Observable<{}>;
   @Input() displaycontainer;
   @Input() democommit?;

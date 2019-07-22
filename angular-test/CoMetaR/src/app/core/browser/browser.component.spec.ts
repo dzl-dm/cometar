@@ -1,6 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BrowserComponent } from './browser.component';
+import { CoreModule } from '../core.module';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MatSnackBar, MatIconRegistry } from '@angular/material';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('BrowserComponent', () => {
   let component: BrowserComponent;
@@ -8,7 +13,9 @@ describe('BrowserComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BrowserComponent ]
+      declarations: [  ],
+      imports: [ CoreModule, RouterTestingModule, HttpClientTestingModule, BrowserAnimationsModule ],
+      providers: [MatSnackBar, MatIconRegistry]
     })
     .compileComponents();
   }));

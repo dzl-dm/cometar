@@ -8,7 +8,7 @@ import Chart, { ChartData, ChartOptions } from 'chart.js';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BubbleChartComponent implements OnInit {
-  @Input('') chartData:ChartData;
+  @Input('') chartData:ChartData = {datasets:[], labels:[]};
   @Input('') phenotypes:string[];
 
   constructor(
