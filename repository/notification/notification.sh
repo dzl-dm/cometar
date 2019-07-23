@@ -73,6 +73,7 @@ query=$(sed 's/<NOTATIONS>/'"$notations"'/' "$NOTIFICATIONDIR/get_affected_sourc
 affectedsourcesbysource=$(PGPASSWORD=$I2B2DEMOPW /usr/bin/psql -H --host=$I2B2HOST --username=$I2B2DEMOUSER --dbname=$I2B2DBNAME -c "$query")
 query=$(sed 's/<NOTATIONS>/'"$notations"'/' "$NOTIFICATIONDIR/get_loose_mappings.sql")
 loosemappingstable=$(PGPASSWORD=$I2B2DEMOPW /usr/bin/psql -H -q --host=$I2B2HOST --username=$I2B2DEMOUSER --dbname=$I2B2DBNAME -c "$query")
+loosemappingstablewithoutblanks=$(echo $loosemappingstable | sed 's/&nbsp;//g')
 
 ### suggestion sql update
 query=$(cat "$NOTIFICATIONDIR/get_loose_notations.sql")
@@ -101,6 +102,6 @@ while read i; do
 	unset IFS
 done < <(curl -s -H "Accept: text/csv;charset=utf-8" -G "https://data.dzl.de/fuseki/cometar_live/query" --data-urlencode query="$query")
 
-curl -X POST https://data.dzl.de/biomaterial_request/sendform.php -H "Content-Type: application/x-www-form-urlencoded" -d "formtype=notation_changes&commit_ids=${rdfcommitids}&affected_sources_by_source=${affectedsourcesbysource}&affected_sources_by_notation=${affectedsourcesbynotation}&loose_mappings=${loosemappingstable}&suggested_sql=${suggestedsql}"
+curl -X POST https://data.dzl.de/biomaterial_request/sendform.php -H "Content-Type: application/x-www-form-urlencoded" -d "formtype=notation_changes&commit_ids=${rdfcommitids}&affected_sources_by_source=${affectedsourcesbysource}&affected_sources_by_notation=${affectedsourcesbynotation}&loose_mappings=${loosemappingstablewithoutblanks}&suggested_sql=${suggestedsql}"
 
 exit 0
