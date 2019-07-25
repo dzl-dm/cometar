@@ -14,11 +14,11 @@ export class CommitMetaDataService {
 
   public get(from:Date, until:Date=new Date(Date.now())):Observable<CommitMetaData[]> {
     const queryString = this.getQueryString(from, until);
-    return this.dataService.getData(queryString).pipe(map(data=> { return <CommitMetaData[]> data }))
+    return this.dataService.getData(queryString, "commit metadata from "+from.toISOString()+" until "+until.toISOString()).pipe(map(data=> { return <CommitMetaData[]> data }))
   };
 
   public getQueryString(from:Date, until:Date):string {
-  return `
+  return `#commit metadata
     ${prefixes}
     SELECT ?commitid ?author ?message ?enddate
     WHERE

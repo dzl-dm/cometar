@@ -67,11 +67,11 @@ export class TreeItemListComponent implements OnInit {
     return this.treeDataService.isSelected$(treeItem.element.value)
   }
 
+  openCloseStart(event: AnimationEvent) {
+    this.treeStyleService.animationStarted();
+  }
   openCloseDone(event: AnimationEvent) {
     (<HTMLElement>event.element).removeAttribute("animating");
-    let animatingElements:number = Array.from(document.getElementById("tree").getElementsByTagName("APP-TREE-ITEM")).filter((a:HTMLElement)=>a.hasAttribute("animating")).length;
-    if (animatingElements == 0) {
-      this.treeStyleService.onTreeDomChange("All expand animations finished.");
-    }
+    this.treeStyleService.animationFinished();
   }
 }

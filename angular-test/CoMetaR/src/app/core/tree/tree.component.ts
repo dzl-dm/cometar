@@ -5,6 +5,7 @@ import { TreeDataService } from '../services/tree-data.service';
 import { TreeStyleService } from "../services/tree-style.service";
 import { combineLatest } from 'rxjs/operators';
 import { ChangeDetectionStrategy } from '@angular/core';
+import { ProgressService } from 'src/app/services/progress.service';
 
 @Component({
   selector: 'app-tree',
@@ -15,13 +16,18 @@ import { ChangeDetectionStrategy } from '@angular/core';
 export class TreeComponent implements OnInit {
   @Input() width:number;  
   @Output() claimWidth = new EventEmitter<number>();
+  private runningTask$ = this.progressService.treeTaskRunning$;
+  private taskProgress=0;
   constructor(
     private route: ActivatedRoute,
     public treeDataService: TreeDataService,
     public treeStyleService: TreeStyleService,
+    private progressService: ProgressService,
     private el: ElementRef,
     private cd: ChangeDetectorRef
-  ){}
+  ){
+    this.progressService.treeTaskProgress$.subscribe(data => this.taskProgress=data);
+  }
 
   ngOnInit() {    
     this.treeDataService.init(this.route,(width)=>this.claimWidth.emit(width));

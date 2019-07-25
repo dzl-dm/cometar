@@ -12,11 +12,12 @@ export class SearchtreeitemService {
   public get(pattern:string):Observable<SearchResultAttributes[]> { 
       if (pattern == "") return of([]);
       const queryString = this.getQueryString(pattern);
-      return this.dataService.getData(queryString);
+      return this.dataService.getData(queryString,"search for pattern "+pattern);
   };
 
   public getQueryString(pattern:string):string {
-      return `${prefixes}
+      return `#search for pattern...
+${prefixes}
 SELECT ?element ?property ?value
 WHERE { 
   ?element rdf:type ?t .

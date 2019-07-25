@@ -16,11 +16,11 @@ export class ConceptByNotationService {
    */
   public get(notation:string,version_date:Date):Observable<IConceptByNotation> { 
     const queryString = this.getQueryString(notation,version_date);
-    return this.dataService.getData(queryString).pipe(map(data=> <IConceptByNotation>data[0] || {}))
+    return this.dataService.getData(queryString, "newest concept and notation for "+notation+" since "+version_date.toISOString()).pipe(map(data=> <IConceptByNotation>data[0] || {}))
   };
 
   public getQueryString(notation:string,version_date:Date):string {
-      return `
+      return `#concept by notation
       ${prefixes}
       SELECT DISTINCT ?concept ?newnotation ?removedate ?new_concept_with_code ?new_concept_label
       WHERE

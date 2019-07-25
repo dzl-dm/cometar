@@ -25,8 +25,26 @@
                 <mat-icon aria-hidden="false" aria-label="Provenance" svgIcon="statistics" color="accent"></mat-icon><div class="moduleMenuItemLabel">Statistics</div>
             </div> -->
         </div>
-        <div id="moduleContent" [@routeAnimations]="prepareRoute(outlet)">
+        <div id="moduleContent" [@routeAnimations]="prepareRoute(outlet)" #moduleContent>
             <router-outlet #outlet="outlet" (activate)="onRouterOutletActivate(outlet)"></router-outlet>
+        </div>
+        <div id="runningTaskOverlay" 
+            [style.display]="(runningTask$|async)?'block':'none'" 
+            [style.width.px]="moduleContent.offsetWidth" 
+            [style.top.px]="moduleContent.offsetTop" 
+            [style.height.px]="moduleContent.offsetHeight">
+        </div>
+        <div id="runningTaskContent" 
+            [style.display]="(runningTask$|async)?'block':'none'" 
+            [style.width.px]="moduleContent.offsetWidth" 
+            [style.top.px]="moduleContent.offsetTop" 
+            [style.height.px]="moduleContent.offsetHeight">
+            <div id="runningTaskContentCenter">
+                <img 
+                    class="runningTaskLogo" 
+                    src="assets/img/cometar_c_small_transparent.png"/>
+                <!--{{taskProgress+'%'}}-->
+            </div>
         </div>
     </div>
 </div>

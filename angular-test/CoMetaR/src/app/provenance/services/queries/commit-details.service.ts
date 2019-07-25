@@ -14,16 +14,16 @@ export class CommitDetailsService {
 
   public getByCommitId(commitid:string):Observable<CommitDetails[]> {
     const queryString = this.getQueryString("<"+commitid+">");
-    return this.dataService.getData(queryString).pipe(map(data=> { return <CommitDetails[]> data }))
+    return this.dataService.getData(queryString, "commit details for commit "+commitid).pipe(map(data=> { return <CommitDetails[]> data }))
   };
 
   public getBySubject(subject:string):Observable<CommitDetails[]> {
     const queryString = this.getQueryString("?commit", subject);
-    return this.dataService.getData(queryString).pipe(map(data=> { return <CommitDetails[]> data }))
+    return this.dataService.getData(queryString, "commit details for subject "+subject).pipe(map(data=> { return <CommitDetails[]> data }))
   };
 
   public getQueryString(commit:string, subject?:string):string{
-    return `
+    return `#commit details
     ${prefixes}
 SELECT DISTINCT ?subject ?sl ?predicate ?object ?ol ?addition (!bound(?p) as ?deprecatedsubject) ?date ?author
 WHERE	

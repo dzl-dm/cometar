@@ -56,7 +56,7 @@ export class SparqlComponent implements OnInit {
   public getResults(){
     this.resultHeadings=[];
     this.results=[];
-    this.dataService.getData(this.queryText).subscribe(data => { 
+    this.dataService.getData(this.queryText, "SPARQL module query").subscribe(data => { 
       if (data.length == 0 || data.length == 1 && Object.keys(data[0]).length==0) {
         this.resultHeadings.push("No Results.");
       }

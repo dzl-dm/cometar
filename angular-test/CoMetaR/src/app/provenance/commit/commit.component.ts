@@ -19,6 +19,7 @@ export class CommitComponent implements OnInit {
   @Input() democommit?;
   @Input() label?;
   @Output() onSelect: EventEmitter<string> = new EventEmitter();
+  @Output() finishedLoading: EventEmitter<string> = new EventEmitter();
   private commitDetails:CommitDetails[]=[];
   public categories={};
   public commitMetaDataHR:CommitMetaData;
@@ -33,6 +34,7 @@ export class CommitComponent implements OnInit {
   ngOnInit() {    
     combineLatest(this.democommit && of(this.democommit) || this.commitDetailsService.getByCommitId(this.commitMetaData.commitid.value),this.displayOptions$).pipe(
       map(data => {
+        this.finishedLoading.emit(this.commitMetaData.commitid.value);
         let cds = data[0];
         let displayOptions = data[1];
         return cds.filter(cd => {
