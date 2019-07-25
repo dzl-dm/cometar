@@ -25,7 +25,6 @@ div.diagram {
     align-items: stretch;
     width:100%;
     background-color:#EEE;
-    margin-bottom:10px;
     min-height: 150px; 
 }
 .diagramDescription {

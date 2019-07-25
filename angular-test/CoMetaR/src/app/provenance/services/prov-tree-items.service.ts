@@ -9,13 +9,14 @@ import { OntologyAccessService } from 'src/app/core/services/ontology-access.ser
   providedIn: 'root'
 })
 export class ProvTreeItemsService {
-
+    public busy$:BehaviorSubject<boolean>;
   constructor(
     private provItemsQueryService: ProvTreeItemsQueryService,
     private treeStyleService: TreeStyleService,
     private ontologyAccessService: OntologyAccessService,
     private treeDataService: TreeDataService
-  ) { 
+  ) {
+    this.busy$ = this.provItemsQueryService.busy$;
     this.treeStyleService.addTreeItemStyles(this.treeItemStyles$);
     this.provItemsQueryService.get().subscribe((ptias) => {
         this.addedTreeItems=[];

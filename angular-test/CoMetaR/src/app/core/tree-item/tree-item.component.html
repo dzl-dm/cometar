@@ -20,7 +20,7 @@
         class="treeItemTitleLabel"
         [ngStyle]="{
           'text-decoration':style['text-decoration'] || 'none'
-        }">{{treeitem.label.value}}</div>
+        }">{{treeitem.displayLabel.value}}</div>
     <ng-container *ngFor="let icon of getIcons()">
       <div 
         [ngClass]="{
