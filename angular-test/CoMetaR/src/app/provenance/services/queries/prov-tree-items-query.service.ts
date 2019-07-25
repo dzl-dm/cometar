@@ -12,10 +12,19 @@ export class ProvTreeItemsQueryService {
     private dataService: DataService
   ) { }
 
+  public busy$ = new BehaviorSubject<boolean>(false);
+  private busyQueries=0;
   private fromDate$ = new BehaviorSubject<Date>(new Date(Date.now()));
   private result$ = this.fromDate$.pipe(flatMap(from => {
+    this.busyQueries++;
+    this.busy$.next(true);
     const provItemsQueryString = this.getProvTreeItemsQueryString(from.toISOString(), new Date(Date.now()).toISOString());
-    return this.dataService.getData(provItemsQueryString, "provenance of ontology items");
+    let o = this.dataService.getData(provItemsQueryString, "provenance of ontology items");
+    o.subscribe(data => {
+      this.busyQueries--;
+      this.busy$.next(this.busyQueries>0);
+    });
+    return o;
   }))
 
   public setDate(from?:Date) {

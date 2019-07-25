@@ -5,6 +5,7 @@ export class TreeItem {
     constructor(is:TreeItemInformation){
         this.element = is.element;
         this.label = is.label;
+        this.displayLabel = is.displaylabel? is.displaylabel : is.label;
         this.notations = is.notations;
         this.type = is.type;
         this.isModifier = is.isModifier;
@@ -13,6 +14,7 @@ export class TreeItem {
     element:JSONResponsePartUriString;
     type:JSONResponsePartUriString;
     label:JSONResponsePartLangString;
+    displayLabel:JSONResponsePartLangString;
     isModifier:JSONResponsePartBoolean;
     notations:JSONResponsePartArray;
     status?:JSONResponsePartString;

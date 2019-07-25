@@ -1,6 +1,6 @@
 import { Injectable, ChangeDetectorRef } from '@angular/core';
 import { CommitMetaDataService, CommitMetaData } from './queries/commit-meta-data.service';
-import { Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
+import { Observable, ReplaySubject, BehaviorSubject, Subject, combineLatest } from 'rxjs';
 import { CommitDetails, CommitDetailsService } from './queries/commit-details.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
@@ -59,9 +59,20 @@ export class ProvenanceService {
 		});
 		this.selectedWholeTimespan$.subscribe(pf => {
 			if (pf) this.loadAllIntoTree(pf);
-		})
+		});
 		this.selectedDateValue$.subscribe(date => {
 			if (date) this.loadDateIntoTree(date);
+		});
+		combineLatest(this.getOverViewSubtaskRunning$,this.getProvTreeItemsSubtaskRunning$).subscribe(data=>{
+			if (data.includes(true) && this.provenanceTask && this.provenanceTask.status=="running"){
+				let add = data[1]?1:0;
+				this.provenanceTask.update(this.loadedElements,this.elementsToLoad+add,this.commitsLeft.join(", "));
+			}
+			else if (!data.includes(true) && this.provenanceTask && this.provenanceTask.status!="finished"){
+				this.provenanceTask.finish();
+			}
+			else this.provenanceTask = this.progressService.addModuleTask("Get Provenance",this.elementsToLoad);
+
 		})
     }
 	public displayOptions$:BehaviorSubject<{}> = new BehaviorSubject<{}>(this.configuration.initialCheckedPredicates);
@@ -84,35 +95,38 @@ export class ProvenanceService {
         return this.commitMetaDataService.get(new Date(date), new Date(Date.now()));
     }
 
-	private getProvenanceOverviewTask:Task;
-	private commitsToLoad:number=0;
-	private loadedCommits:number=0;
+	private provenanceTask:Task;
+	private getOverViewSubtaskRunning$=new BehaviorSubject<boolean>(false);
+	private getProvTreeItemsSubtaskRunning$ = this.provTreeItemsService.busy$;
+	private elementsToLoad:number=0;
+	private loadedElements:number=0;
+	private commitsLeft:string[]=[];
     public getProvenance(from:Date) {
-		console.log("Trigger");
         let commitMetaDataByDay=[];
-		this.commitsToLoad=0;
-		this.loadedCommits=0;
+		this.elementsToLoad=0;
+		this.loadedElements=0;
 
 		let index = 0;
 		for (let date = new Date(Date.now()); date >= from; date.setHours(date.getHours() - 24)){
-			this.commitsToLoad++;
+			this.elementsToLoad++;
 			let day = new Date(date);
 			commitMetaDataByDay[index] =[day,[]];
 			let myindex = index;
 			this.getCommitMetaDataByDay$(day).subscribe(cmd => {
-				this.commitsToLoad+=cmd.length;
-				this.loadedCommits++;
+				this.elementsToLoad+=cmd.length;
+				cmd.map(c => this.configuration.cutPrefix(c.commitid.value)).forEach(c=>this.commitsLeft.push(c));
+				this.loadedElements++;
 				commitMetaDataByDay[myindex] =[day,cmd];
 			});
 			index++;
 		}
-		this.getProvenanceOverviewTask = this.progressService.addModuleTask("Get Provenance Overview",this.commitsToLoad);
+		this.getOverViewSubtaskRunning$.next(true);
         return commitMetaDataByDay;
 	}
 	public onCommitFinishedLoading(commitid:string){
-		this.loadedCommits++;
-		this.getProvenanceOverviewTask.update(this.loadedCommits,this.commitsToLoad);
-		if (this.loadedCommits >= this.commitsToLoad) this.getProvenanceOverviewTask.finish();
+		this.loadedElements++;
+		this.commitsLeft.splice(this.commitsLeft.indexOf(this.configuration.cutPrefix(commitid)),1);
+		if (this.loadedElements >= this.elementsToLoad) this.getOverViewSubtaskRunning$.next(false);
 	}
 
     public setProvenanceDate(from:Date){    

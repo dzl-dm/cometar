@@ -158,16 +158,17 @@ WHERE
   private getItemInformationQueryString(){
     return `#basic information for all concepts
 ${prefixes}
-SELECT ?element ?type ?label (COUNT(?top)>0 as ?isModifier) ?status (GROUP_CONCAT(?notation;separator="|") as ?notations)
+SELECT ?element ?type ?label (COUNT(?top)>0 as ?isModifier) ?status ?displaylabel (GROUP_CONCAT(?notation;separator="|") as ?notations)
 WHERE {	    
   FILTER (bound(?element))
   ?element skos:prefLabel ?label FILTER (lang(?label)='en') .
   OPTIONAL { ?element skos:broader* [ rdf:partOf ?top ] . }
   OPTIONAL { ?element skos:notation ?notation }
+  OPTIONAL { ?element :displayLabel ?displaylabel FILTER (lang(?displaylabel)='en') }
   OPTIONAL { ?element rdf:type ?type . }
   OPTIONAL { ?element :status ?status . }
 } 
-GROUP BY ?element ?label ?type ?status
+GROUP BY ?element ?label ?type ?status ?displaylabel
 HAVING bound(?element)
 ORDER BY ?isModifier ?label`;
   }
@@ -187,6 +188,7 @@ export interface TreeItemInformation {
   type: JSONResponsePartUriString,
   notations: JSONResponsePartArray,
   label: JSONResponsePartLangString,
+  displaylabel?:JSONResponsePartLangString,
   isModifier: JSONResponsePartBoolean,
   status?: JSONResponsePartString
 }
