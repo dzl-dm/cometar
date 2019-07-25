@@ -3,7 +3,9 @@
         <img 
             id="loading" 
             src="assets/img/cometar_c_small.png"
-            [ngClass]="{'active':(loadingStatus$ | async)}" (click)="navigateModule()"/>
+            [matTooltip]="(loadingStatus$ | async)?tooltip:'CoMetaR - a Collaborative Metadata Repository'"
+            [ngClass]="{'active':(loadingStatus$ | async)}" 
+            (click)="navigateModule()"/>
         <img src="assets/img/CoMetaR_Logo_small.png"/>
     </div>
     <div class='logo' (click)="navigateModule('https://www.dzl.de/index.php/de/forschung/plattformen/biobank')"><img src="assets/img/DZL_Logo_small.png"/></div>

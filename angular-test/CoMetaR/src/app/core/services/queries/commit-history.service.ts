@@ -17,11 +17,11 @@ export class CommitHistoryService {
       from.setHours(from.getHours()-(10*7*24));
     }
     const queryString = this.getQueryString(from, until);
-    return this.dataService.getData(queryString).pipe(map(data=> { return <CommitHistoryData[]> data }))
+    return this.dataService.getData(queryString, "ontology changes from "+from.toISOString()+" until "+until.toISOString()).pipe(map(data=> { return <CommitHistoryData[]> data }))
   };
 
   public getQueryString(from:Date, until:Date):string {
-  return `
+  return `#ontology changes since...
     ${prefixes}
     SELECT ?date (COUNT(DISTINCT ?add) as ?additions) (COUNT(DISTINCT ?rem) as ?removals) ?total
     WHERE { 

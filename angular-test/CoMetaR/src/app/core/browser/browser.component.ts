@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ElementRef } from '@angular/core';
+import { Component, OnInit, NgZone, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, query, animateChild, group, animate, state } from '@angular/animations';
 import { DataService } from '../../services/data.service';
@@ -9,6 +9,7 @@ import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TreeStyleService } from '../services/tree-style.service';
+import { ProgressService } from 'src/app/services/progress.service';
 
 @Component({
   selector: 'app-browser',
@@ -79,7 +80,8 @@ import { TreeStyleService } from '../services/tree-style.service';
         params: { newWidth: 0 }
       }), 
     ])
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BrowserComponent implements OnInit {
   title = 'CoMetaR';
@@ -88,6 +90,8 @@ export class BrowserComponent implements OnInit {
   public resizeToogle = false;
   public newWidth = 0;
   public activatedRoute;
+  private runningTask$ = this.progressService.moduleTaskRunning$;
+  private taskProgress=0;
   constructor(
     private route:ActivatedRoute,
     private router: Router,
@@ -95,6 +99,7 @@ export class BrowserComponent implements OnInit {
     private snackBar: MatSnackBar,
     private browserService: BrowserService,
     private treeStyleService: TreeStyleService,
+    private progressService: ProgressService,
     iconRegistry: MatIconRegistry, 
     sanitizer: DomSanitizer,
     private zone: NgZone
@@ -103,6 +108,7 @@ export class BrowserComponent implements OnInit {
     iconRegistry.addSvgIcon('client-configuration', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-settings_ethernet-24px.svg'));
     iconRegistry.addSvgIcon('sparql', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-question_answer-24px.svg'));
     iconRegistry.addSvgIcon('statistics', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-timeline-24px.svg'));
+    this.progressService.moduleTaskProgress$.subscribe(data => this.taskProgress=data);
   }
 
   ngOnInit() {

@@ -17,12 +17,16 @@ export class DataService {
 
   private pendings = {};
   public loading = new BehaviorSubject<boolean>(false);
-  private busyQueries = 0;
+  public loadingNames = new BehaviorSubject<string[]>([]);
+  public busyQueriesStartTimes:number[] = [];
+  private busyQueries = [];
   dataUrl = 'https://data.dzl.de/fuseki/cometar_live/query';
 
-  getData(queryString:string, typerules?:{}, logstart?:()=>void, logend?:(result:any[])=>void): Observable<any[]> {
+  getData(queryString:string, queryName:string, typerules?:{}): Observable<any[]> {
     this.loading.next(true);
-    this.busyQueries++;
+    this.busyQueries.push(queryName);
+    this.busyQueriesStartTimes.push(Date.now().valueOf())
+    this.loadingNames.next(this.busyQueries);
     if (!this.pendings[queryString]){
       this.progressService.addTask();
       let rs = new ReplaySubject<any[]>(1);
@@ -39,8 +43,11 @@ export class DataService {
       })
     }
     this.pendings[queryString].subscribe(()=>{
-      this.busyQueries--;
-      if (this.busyQueries == 0) this.loading.next(false);
+      let index = this.busyQueries.indexOf(queryName);
+      this.busyQueries.splice(index,1);
+      this.busyQueriesStartTimes = this.busyQueriesStartTimes.splice(index,1);
+      this.loadingNames.next(this.busyQueries);
+      if (this.busyQueries.length == 0) this.loading.next(false);
     });
     return this.pendings[queryString].pipe(map(data => {
       if (data instanceof HttpErrorResponse) return [];

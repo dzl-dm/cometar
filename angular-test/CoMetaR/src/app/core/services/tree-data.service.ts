@@ -10,6 +10,7 @@ import { TreeStyleService } from './tree-style.service';
 import { OntologyDataService } from './ontology-data.service';
 import { OntologyAccessService } from './ontology-access.service';
 import { TreeItem } from '../classes/tree-item';
+import { ProgressService, Task } from 'src/app/services/progress.service';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,9 @@ export class TreeDataService {
   public searchActivated$:Observable<boolean>;
   public reset$ = new Subject();
 
+  private openElementsTask:Task;
+  private allOpenedTreeItems$:Subject<string[]>=new BehaviorSubject<string[]>([]);
+
   private claimWidth=(number)=>{};
 
   constructor(
@@ -35,7 +39,8 @@ export class TreeDataService {
     private searchtreeitemService: SearchtreeitemService,
     private urlService: UrlService,
     private treeStyleService: TreeStyleService,
-    private ontologyAccessService: OntologyAccessService
+    private ontologyAccessService: OntologyAccessService,
+    private progressService:ProgressService
   ) {
     this.selectedIri$ = new ReplaySubject(1);
     this.searchPattern$ = new ReplaySubject(1);
@@ -57,12 +62,34 @@ export class TreeDataService {
     this.informationPaths$ = this.treeItemConceptInformation$.pipe(
       flatMap(cis => this.ontologyAccessService.getAllAncestors(cis.map(ci => ci.concept)))
     ) 
+    
+    let subtasks:number=0;
+    combineLatest(this.allOpenedTreeItems$,this.selectedIri$,this.searchIris$,this.openedElements$,this.treeStyleService.animatingElements$).subscribe(data=>{
+      let taskrunning = this.openElementsTask && this.openElementsTask.status=="running";
+      let animationsrunning = data[4]>0;
+      let openedIris=data[0];
+      let selectedIri = data[1]!=""?[data[1]]:[];
+      let requiredIris:string[] = selectedIri.concat(data[2]).concat(data[3]);
+      let missingIris = requiredIris.filter(iri => !openedIris.includes(iri));
+      let allRequiredIrisOpened = missingIris.length==0 && !animationsrunning;
+      //console.log("missing: "+missingIris.length + " animating: "+data[4]);
+      if (taskrunning) this.openElementsTask.update(subtasks-(missingIris.length+data[4]),subtasks);
+      if (taskrunning && allRequiredIrisOpened) this.openElementsTask.finish();
+      else if (!taskrunning && !allRequiredIrisOpened){
+        subtasks=missingIris.length+data[4];
+        this.openElementsTask = this.progressService.addTreeTask("Opening elements",subtasks);
+      }
+    });
   }
 
   public reset(){
     this.allTreeItemConceptInformation$.next([]);
     this.openedElements$.next([]);
     this.reset$.next();
+  }
+
+  public treeItemViewCreated(iri:string){
+    this.allOpenedTreeItems$.next(this.treeStyleService.getAllOpenedTreeItems());
   }
 
   //init (through tree component)
@@ -72,7 +99,9 @@ export class TreeDataService {
     ).subscribe(this.selectedIri$);
     route.queryParamMap.pipe(
       map(data => data.get('searchpattern') ? data.get('searchpattern') : "")
-    ).subscribe(this.searchPattern$);
+    ).subscribe(pattern => {
+      this.searchPattern$.next(pattern);
+    });
     this.claimWidth=claimWidth;
     route.queryParamMap.subscribe(()=>{
       setTimeout(()=>this.treeStyleService.onTreeDomChange("Query Parameter changed."),0);

@@ -14,11 +14,11 @@ export class GetDerivedConceptService {
 
   public get(iri:string):Observable<string[]> {
     const queryString = this.getQueryString(iri);
-    return this.dataService.getData(queryString).pipe(map(data=> { return <string[]> data || [] }))
+    return this.dataService.getData(queryString, "derived concept of "+iri).pipe(map(data=> { return <string[]> data || [] }))
   };
 
   private getQueryString(iri:string):string {
-  return `
+  return `#derived concept
     ${prefixes}
 SELECT DISTINCT ?derived_concept
 WHERE { 

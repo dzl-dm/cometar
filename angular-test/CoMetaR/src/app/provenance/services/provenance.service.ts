@@ -8,6 +8,7 @@ import { ProvTreeItemsService } from './prov-tree-items.service';
 import { TreeDataService } from 'src/app/core/services/tree-data.service';
 import { TreeStyleService, TreeItemStyle } from 'src/app/core/services/tree-style.service';
 import { map, flatMap } from 'rxjs/operators';
+import { ProgressService, Task } from 'src/app/services/progress.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class ProvenanceService {
         private commitMetaDataService:CommitMetaDataService,
         private provTreeItemsService: ProvTreeItemsService,
 		private commitDetailsService:CommitDetailsService,
+		private progressService:ProgressService,
 		private treeDataService:TreeDataService,
 		private treeStyleService:TreeStyleService,
     ) {         
@@ -82,21 +84,36 @@ export class ProvenanceService {
         return this.commitMetaDataService.get(new Date(date), new Date(Date.now()));
     }
 
+	private getProvenanceOverviewTask:Task;
+	private commitsToLoad:number=0;
+	private loadedCommits:number=0;
     public getProvenance(from:Date) {
+		console.log("Trigger");
         let commitMetaDataByDay=[];
+		this.commitsToLoad=0;
+		this.loadedCommits=0;
 
 		let index = 0;
 		for (let date = new Date(Date.now()); date >= from; date.setHours(date.getHours() - 24)){
+			this.commitsToLoad++;
 			let day = new Date(date);
 			commitMetaDataByDay[index] =[day,[]];
 			let myindex = index;
 			this.getCommitMetaDataByDay$(day).subscribe(cmd => {
+				this.commitsToLoad+=cmd.length;
+				this.loadedCommits++;
 				commitMetaDataByDay[myindex] =[day,cmd];
 			});
 			index++;
-        }
+		}
+		this.getProvenanceOverviewTask = this.progressService.addModuleTask("Get Provenance Overview",this.commitsToLoad);
         return commitMetaDataByDay;
-    }
+	}
+	public onCommitFinishedLoading(commitid:string){
+		this.loadedCommits++;
+		this.getProvenanceOverviewTask.update(this.loadedCommits,this.commitsToLoad);
+		if (this.loadedCommits >= this.commitsToLoad) this.getProvenanceOverviewTask.finish();
+	}
 
     public setProvenanceDate(from:Date){    
 		this.provTreeItemsService.setProvTreeItemAttributes(from);

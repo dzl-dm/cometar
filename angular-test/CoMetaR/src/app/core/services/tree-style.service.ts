@@ -252,6 +252,25 @@ export class TreeStyleService {
     });
     return icons.concat(bi);
   }
+
+  public getAllOpenedTreeItems():string[]{
+    return Array.from(this.treeDomElement.getElementsByTagName("APP-TREE-ITEM")).map((element:HTMLElement) => element.getAttribute("iri"));
+  }
+
+  public animatingElements$ = new BehaviorSubject<number>(0);
+  public animationStarted(){
+    this.calcAnimatingElements();
+  }
+  public animationFinished(){
+    if (this.calcAnimatingElements() == 0) {
+      this.onTreeDomChange("All expand animations finished.");
+    }
+  }
+  private calcAnimatingElements():number{
+    let animatingElements:number = Array.from(document.getElementById("tree").getElementsByTagName("APP-TREE-ITEM")).filter((a:HTMLElement)=>a.hasAttribute("animating")).length;
+    this.animatingElements$.next(animatingElements);
+    return animatingElements
+  }
 }
 
 export interface TreeItemStyle {

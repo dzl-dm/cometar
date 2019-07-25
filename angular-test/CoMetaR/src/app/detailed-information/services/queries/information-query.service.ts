@@ -12,11 +12,11 @@ export class InformationQueryService {
 
   public get(iri:string):Observable<OntologyElementDetails[]> {
       const queryString = this.getQueryString(iri);
-      return this.dataService.getData(queryString).pipe(map(data=> { return <OntologyElementDetails[]> data }))
+      return this.dataService.getData(queryString, "information for concept "+iri).pipe(map(data=> { return <OntologyElementDetails[]> data }))
   };
 
   public getQueryString(iri?):string {
-      return `
+      return `#concept information
       ${prefixes}
       SELECT ?element ?type ?label ?status ?description ?unit ?altlabel ?author ?domain ?editnote ?modifier ?modifierlabel ?notation ?related (MAX(?changesdate) AS ?lastchangesdate)
       WHERE {	          

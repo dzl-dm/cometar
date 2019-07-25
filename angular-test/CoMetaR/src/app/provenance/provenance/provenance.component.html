@@ -65,6 +65,7 @@
           *ngFor="let metadata of day[1] | keyvalue" 
           [commitMetaData]="metadata.value" 
           (onSelect)="onSelect($event)"
+          (finishedLoading)="onCommitFinishedLoading($event)"
           [ngClass]="{'selected':isSelectedCommit(metadata.value.commitid.value)}"
           [displayOptions$]="displayOptions$"
           [displaycontainer]="provenancedata"

@@ -12,11 +12,11 @@ export class TreeIconsQueryService {
 
   public get():Observable<TreeIconsQueryData[]> {
     const queryString = this.getQueryString();
-    return this.dataService.getData(queryString).pipe(map(data => { return <TreeIconsQueryData[]>data }));
+    return this.dataService.getData(queryString, "draft and editorialnote elements").pipe(map(data => { return <TreeIconsQueryData[]>data }));
   };
 
   private getQueryString(iri?):string {
-      return `
+      return `#draft and editorialnote elements
       ${prefixes}
       SELECT DISTINCT ?element (COUNT(?status) = 1 as ?draft) (COUNT(?editnote) as ?editnotes)
       WHERE {	      

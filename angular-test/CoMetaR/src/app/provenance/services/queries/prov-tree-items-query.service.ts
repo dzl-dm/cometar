@@ -15,7 +15,7 @@ export class ProvTreeItemsQueryService {
   private fromDate$ = new BehaviorSubject<Date>(new Date(Date.now()));
   private result$ = this.fromDate$.pipe(flatMap(from => {
     const provItemsQueryString = this.getProvTreeItemsQueryString(from.toISOString(), new Date(Date.now()).toISOString());
-    return this.dataService.getData(provItemsQueryString);
+    return this.dataService.getData(provItemsQueryString, "provenance of ontology items");
   }))
 
   public setDate(from?:Date) {

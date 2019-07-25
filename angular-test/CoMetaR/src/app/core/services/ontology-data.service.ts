@@ -22,13 +22,13 @@ export class OntologyDataService {
 
   private loadOntology(){
     let rootQueryString = this.getRootElementsQueryString();
-    let rootQuery:Observable<RootElement[]> = this.dataService.getData(rootQueryString);
+    let rootQuery:Observable<RootElement[]> = this.dataService.getData(rootQueryString, "root elements");
 
     let parentsQueryString = this.getAllParentRelationsQueryString();
-    let parentsQuery:Observable<ParentChildRelation[]> = this.dataService.getData(parentsQueryString);
+    let parentsQuery:Observable<ParentChildRelation[]> = this.dataService.getData(parentsQueryString, "all parent-child relations");
 
     let informationQueryString = this.getItemInformationQueryString();
-    let informationQuery:Observable<TreeItemInformation[]> = this.dataService.getData(informationQueryString, {notations:"|array"});
+    let informationQuery:Observable<TreeItemInformation[]> = this.dataService.getData(informationQueryString, "all basic concept information", {notations:"|array"});
     
     //this triggers once when the page loads and afterwards when a new provenance date is entered so that this.ghostTreeItems$ changes
     //could be optimized by not fully rebuilding the concept tree
@@ -127,7 +127,8 @@ export class OntologyDataService {
   }*/
 
   public getRootElementsQueryString():string{
-    return `${prefixes}
+    return `#root elements
+${prefixes}
 SELECT ?element
 WHERE
 {
@@ -144,7 +145,8 @@ WHERE
   }
 
   private getAllParentRelationsQueryString():string {
-    return `${prefixes}
+    return `#parent-child relations
+${prefixes}
 SELECT ?parent ?child
 WHERE
 {
@@ -154,7 +156,8 @@ WHERE
   }
 
   private getItemInformationQueryString(){
-    return `${prefixes}
+    return `#basic information for all concepts
+${prefixes}
 SELECT ?element ?type ?label (COUNT(?top)>0 as ?isModifier) ?status (GROUP_CONCAT(?notation;separator="|") as ?notations)
 WHERE {	    
   FILTER (bound(?element))

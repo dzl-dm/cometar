@@ -14,11 +14,11 @@ export class GetRemovedConceptService {
 
   public get(iri:string):Observable<Date> {
     const queryString = this.getQueryString(iri);
-    return this.dataService.getData(queryString).pipe(map(data=> { return data.length > 0 && new Date(data[0]["date"].value) || null }))
+    return this.dataService.getData(queryString, "removal date of "+iri).pipe(map(data=> { return data.length > 0 && new Date(data[0]["date"].value) || null }))
   };
 
   private getQueryString(iri:string):string {
-  return `
+  return `#removed concept
     ${prefixes}
 SELECT DISTINCT ?date
 WHERE { 

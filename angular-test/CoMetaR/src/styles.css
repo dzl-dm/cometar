@@ -137,3 +137,7 @@ mat-slider.mat-slider-horizontal .mat-slider-wrapper {
     font-size:14px;
     white-space: pre-wrap;
 }
+.cdk-overlay-pane.mat-tooltip-panel{
+    word-break: break-all !important;
+    white-space: normal !important;
+}

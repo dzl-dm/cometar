@@ -63,6 +63,10 @@ export class TreeItemComponent implements OnInit {
     if (this.style$)this.style$.subscribe(()=> { this.treeStyleService.onTreeDomChange("TreeItem Style added.") });
   }  
 
+  ngAfterViewInit() {
+    this.treeDataService.treeItemViewCreated(this.treeitem.element.value);
+  }
+
   private load(){
     if (this.style$) this.style$.subscribe(style => {
       this.style = style;
