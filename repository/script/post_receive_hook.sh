@@ -72,13 +72,25 @@ echo "$(date +'%d.%m.%y %H:%M:%S') i2b2 import sql is being produced." >> "$LOGF
 "$TTLTOSQLDIR/write-sql.sh" -p "$conffile"
 echo "$(date +'%d.%m.%y %H:%M:%S') Metadata import into i2b2 server part 1..."
 echo "$(date +'%d.%m.%y %H:%M:%S') Metadata import into i2b2 server part 1..." >> "$LOGFILE" 
-PGPASSWORD=$I2B2METAPW /usr/bin/psql -q --host=$I2B2HOST --username=$I2B2METAUSER --dbname=$I2B2DBNAME -f "$TEMPDIR/i2b2-sql/meta.sql"
+PGPASSWORD=$I2B2METAPW /usr/bin/psql -v ON_ERROR_STOP=1 -v statement_timeout=120000 -L "$TEMPDIR/postgres.log" -q --host=$I2B2HOST --username=$I2B2METAUSER --dbname=$I2B2DBNAME -f "$TEMPDIR/i2b2-sql/meta.sql"
+if [ $? -eq 1 ] || [ $? -eq 2 ] || [ $? -eq 3 ]; then
+	echo "PostgreSQL command failed."
+	curl -X POST https://data.dzl.de/biomaterial_request/sendform.php -H "Content-Type: application/x-www-form-urlencoded" -d "formtype=postgresql_fail&log=$(cat '$TEMPDIR/postgres.log')"
+fi
 echo "$(date +'%d.%m.%y %H:%M:%S') Metadata import into i2b2 server part 2..."
 echo "$(date +'%d.%m.%y %H:%M:%S') Metadata import into i2b2 server part 2..." >> "$LOGFILE" 
-PGPASSWORD=$I2B2DEMOPW /usr/bin/psql -q --host=$I2B2HOST --username=$I2B2DEMOUSER --dbname=$I2B2DBNAME -f "$TEMPDIR/i2b2-sql/data.sql"
+PGPASSWORD=$I2B2DEMOPW /usr/bin/psql -v ON_ERROR_STOP=1 -v statement_timeout=120000 -L "$TEMPDIR/postgres.log" -q --host=$I2B2HOST --username=$I2B2DEMOUSER --dbname=$I2B2DBNAME -f "$TEMPDIR/i2b2-sql/data.sql"
+if [ $? -eq 1 ] || [ $? -eq 2 ] || [ $? -eq 3 ]; then
+	echo "PostgreSQL command failed."
+	curl -X POST https://data.dzl.de/biomaterial_request/sendform.php -H "Content-Type: application/x-www-form-urlencoded" -d "formtype=postgresql_fail&log=$(cat '$TEMPDIR/postgres.log')"
+fi
 echo "$(date +'%d.%m.%y %H:%M:%S') Refreshing patient count..."
 echo "$(date +'%d.%m.%y %H:%M:%S') Refreshing patient count..." >> "$LOGFILE" 
-PGPASSWORD=$I2B2DMPW /usr/bin/psql -q --host=$I2B2HOST --username=$I2B2DMUSER --dbname=$I2B2DBNAME -f "$SCRIPTDIR/patient_count.sql"
+PGPASSWORD=$I2B2DMPW /usr/bin/psql -v ON_ERROR_STOP=1 -v statement_timeout=120000 -L "$TEMPDIR/postgres.log" -q --host=$I2B2HOST --username=$I2B2DMUSER --dbname=$I2B2DBNAME -f "$SCRIPTDIR/patient_count.sql"
+if [ $? -eq 1 ] || [ $? -eq 2 ] || [ $? -eq 3 ]; then
+	echo "PostgreSQL command failed."
+	curl -X POST https://data.dzl.de/biomaterial_request/sendform.php -H "Content-Type: application/x-www-form-urlencoded" -d "formtype=postgresql_fail&log=$(cat '$TEMPDIR/postgres.log')"
+fi
 echo "$(date +'%d.%m.%y %H:%M:%S') Sending notifications..."
 "$NOTIFICATIONDIR/notification.sh" -p "$conffile" -f "$from_date"
 
