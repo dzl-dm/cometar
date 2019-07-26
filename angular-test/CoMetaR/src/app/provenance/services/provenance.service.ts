@@ -55,7 +55,7 @@ export class ProvenanceService {
 			})
 		));
 		this.selectedCommits$.subscribe(commitidsarr => {
-			if (commitidsarr) commitidsarr.forEach(cia => this.loadCommitIntoTree(cia));
+			if (commitidsarr) this.loadCommitsIntoTree(commitidsarr);
 		});
 		this.selectedWholeTimespan$.subscribe(pf => {
 			if (pf) this.loadAllIntoTree(pf);
@@ -63,15 +63,20 @@ export class ProvenanceService {
 		this.selectedDateValue$.subscribe(date => {
 			if (date) this.loadDateIntoTree(date);
 		});
-		combineLatest(this.getOverViewSubtaskRunning$,this.getProvTreeItemsSubtaskRunning$).subscribe(data=>{
+		combineLatest(this.getOverViewSubtaskRunning$,this.getProvTreeItemsSubtaskRunning$,this.commitsLoadingIntoTree$).subscribe(data=>{
+			let add = data[1]?1:0;
+			let message = "";
+			if (data[0]) message += "Metadata loading. ";
+			if (data[1]) message += "Tree provenance data loading. ";
+			if (data[2]) message += "Tree commit detail data loading. ";
+			
 			if (data.includes(true) && this.provenanceTask && this.provenanceTask.status=="running"){
-				let add = data[1]?1:0;
-				this.provenanceTask.update(this.loadedElements,this.elementsToLoad+add,this.commitsLeft.join(", "));
+				this.provenanceTask.update(this.loadedElements+this.loadedIntoTreeCommits,this.elementsToLoad+this.commitsToLoadIntoTree,message);
 			}
 			else if (!data.includes(true) && this.provenanceTask && this.provenanceTask.status!="finished"){
 				this.provenanceTask.finish();
 			}
-			else this.provenanceTask = this.progressService.addModuleTask("Get Provenance",this.elementsToLoad);
+			else if (data.includes(true)) this.provenanceTask = this.progressService.addModuleTask("Provenance",this.elementsToLoad+this.commitsToLoadIntoTree);
 
 		})
     }
@@ -216,31 +221,47 @@ export class ProvenanceService {
 		this.updateTreeData();
     }
 	
-	private loadingCommits:string[]=[];
-	public loadCommitIntoTree(commitid){  
-		this.loadingCommits.push(commitid);
+	private loadingIntoTreeCommits:string[]=[];
+	private commitsLoadingIntoTree$=new BehaviorSubject(false);
+	private commitsToLoadIntoTree=0;
+	private loadedIntoTreeCommits=0;
+	private loadCommitIntoTree(commitid){  
+		this.loadingIntoTreeCommits.push(commitid);
+		this.commitsLoadingIntoTree$.next(true);
 		this.commitDetailsService.getByCommitId(commitid).subscribe(newcds => {
 			let currentcds:CommitDetails[] = [];
 			this.combinedCommitDetails$.subscribe(cds => currentcds = cds).unsubscribe();
 			this.combinedCommitDetails$.next(currentcds.concat(newcds));
-			this.loadingCommits.splice(this.loadingCommits.indexOf(commitid),1);
-			if (this.loadingCommits.length==0) this.updateTreeData();
+			this.loadingIntoTreeCommits.splice(this.loadingIntoTreeCommits.indexOf(commitid),1);
+			this.loadedIntoTreeCommits++;
+			if (this.loadingIntoTreeCommits.length==0 && this.loadedIntoTreeCommits==this.commitsToLoadIntoTree) {
+				this.commitsLoadingIntoTree$.next(false);
+				this.updateTreeData();
+			}
 		});
 	}
 
-	public loadDateIntoTree(date:string){
+	private loadCommitsIntoTree(commitids:string[]){
+		this.loadedIntoTreeCommits=0;
+		this.commitsToLoadIntoTree=commitids.length;
+		commitids.forEach(id => this.loadCommitIntoTree(id));
+	}
+	private loadDateIntoTree(date:string){
+		this.loadedIntoTreeCommits=0;
 		this.getCommitMetaDataByDay$(new Date(date)).subscribe(data => data.forEach((cmd)=>{
+			this.commitsToLoadIntoTree=data.length;
 			this.loadCommitIntoTree(cmd.commitid.value);
 		}));
 	}
-
-	public loadAllIntoTree(date:string){
+	private loadAllIntoTree(date:string){
+		this.loadedIntoTreeCommits=0;
 		this.getAllMetaDataSince$(new Date(date)).subscribe(data => data.forEach((cmd)=>{
+			this.commitsToLoadIntoTree=data.length;
 			this.loadCommitIntoTree(cmd.commitid.value);
 		}));
 	}
 
-	public updateTreeData(){
+	private updateTreeData(){
 		this.combinedCommitDetails$.pipe(
 			flatMap(cds => this.getConceptTableInformation(cds, this.displayOptions$))
 		).subscribe(data => this.treeData$.next(data)).unsubscribe();

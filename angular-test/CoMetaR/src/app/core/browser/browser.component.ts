@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, NgZone, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, query, animateChild, group, animate, state } from '@angular/animations';
 import { DataService } from '../../services/data.service';
@@ -102,6 +102,7 @@ export class BrowserComponent implements OnInit {
     private progressService: ProgressService,
     iconRegistry: MatIconRegistry, 
     sanitizer: DomSanitizer,
+    private cd: ChangeDetectorRef,
     private zone: NgZone
   ) { 
     iconRegistry.addSvgIcon('history', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-history-24px.svg'));
@@ -150,14 +151,19 @@ export class BrowserComponent implements OnInit {
     (<HTMLElement>event.currentTarget).getElementsByClassName("treeResizeExpandCollapseDiv")[0].innerHTML="&gt;";
     return false;
   }
+  private scrollInterval=100;
   public onTreeResizeDrag(event: MouseEvent) {  
     this.zone.run(() => {
       event.stopPropagation();
       let diff = event.clientX - this.savedX;
+      diff = Math.floor((diff+this.scrollInterval/2)/this.scrollInterval)*this.scrollInterval;
+      diff = Math.max(300-this.width,diff);
+      diff = Math.min(window.innerWidth-300-this.width,diff);
       this.savedX += diff;
       this.width += diff;
       let tree = document.getElementById("tree");
       tree.scrollTop = tree.scrollHeight*this.savedRelativeTreeScrolltop;
+      this.cd.markForCheck();
       return false;
     });  
   }
