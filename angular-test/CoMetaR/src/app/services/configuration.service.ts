@@ -86,7 +86,8 @@ export class ConfigurationService {
     "http://www.w3.org/2004/02/skos/core#prefLabel", 
     "http://www.w3.org/2004/02/skos/core#altLabel",
     "http://data.dzl.de/ont/dwh#status",
-    "http://sekmi.de/histream/dwh#restriction"
+    "http://sekmi.de/histream/dwh#restriction",
+    "http://data.dzl.de/ont/dwh#displayLabel"
   ]
 
   public rdfUrlMap = {
@@ -100,6 +101,7 @@ export class ConfigurationService {
 		"http://www.w3.org/2004/02/skos/core#Concept": "Concept",
 		"http://www.w3.org/1999/02/22-rdf-syntax-ns#hasPart": "Modifier",
 		"http://sekmi.de/histream/dwh#restriction": "Datatype",
+		"http://data.dzl.de/ont/dwh#displayLabel": "Display Label",
 		"http://purl.org/dc/elements/1.1/creator": "Author",
 		"http://www.w3.org/1999/02/22-rdf-syntax-ns#about": "Concept Identifier",
 		"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "Classification",
@@ -136,6 +138,7 @@ export class ConfigurationService {
 		"http://www.w3.org/2004/02/skos/core#prefLabel": "literal",
 		"http://www.w3.org/2004/02/skos/core#altLabel": "literal",
 		"http://purl.org/dc/elements/1.1/description": "literal",
+		"http://data.dzl.de/ont/dwh#displayLabel": "literal",
 		
 		"http://www.w3.org/2004/02/skos/core#narrower": "structure",
 		"http://www.w3.org/2004/02/skos/core#broader": "structure",
@@ -173,6 +176,7 @@ export class ConfigurationService {
   public initialCheckedPredicates={    
 		"http://www.w3.org/2004/02/skos/core#prefLabel": true,
 		"http://www.w3.org/2004/02/skos/core#altLabel": true,
+		"http://data.dzl.de/ont/dwh#displayLabel": true,
     "http://purl.org/dc/elements/1.1/description": true,
     "http://data.dzl.de/ont/dwh#unit": true,
 		"http://www.w3.org/2004/02/skos/core#notation": true,		

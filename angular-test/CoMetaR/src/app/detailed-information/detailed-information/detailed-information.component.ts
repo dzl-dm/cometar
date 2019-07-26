@@ -113,7 +113,7 @@ export class DetailedInformationComponent implements OnInit {
     this.browserService.snackbarNotification.next([`Text "${item}" copied to clipboard.`, `info`]);
   }
 
-  public showChangeDetails=false;
+  /*public showChangeDetails=false;
   public showMoreChangesToggle(){
     this.showChangeDetails = !this.showChangeDetails;
     if (this.showChangeDetails) {
@@ -129,7 +129,7 @@ export class DetailedInformationComponent implements OnInit {
     else {
       this.changeDetails$ = of([]);
     }
-  }
+  }*/
 
   public export(){
     this.selectedIri$.subscribe(iri => this.exportService.get(iri, (exportString:string)=>{
