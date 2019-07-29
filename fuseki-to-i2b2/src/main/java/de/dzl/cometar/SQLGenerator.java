@@ -40,6 +40,7 @@ public abstract class SQLGenerator {
 	String query_child_elements = "";
 	String query_notations = "";
 	String query_label = "";
+	String query_display_label = "";
 	String query_description = "";	
 	String query_display = "";
 	
@@ -49,6 +50,7 @@ public abstract class SQLGenerator {
     	InputStream query_child_elements_input = getClass().getResourceAsStream("/query_child_elements.txt");
     	InputStream query_notations_input = getClass().getResourceAsStream("/query_notations.txt");
     	InputStream query_label_input = getClass().getResourceAsStream("/query_label.txt");
+    	InputStream query_display_label_input = getClass().getResourceAsStream("/query_display_label.txt");
     	InputStream query_datatype_input = getClass().getResourceAsStream("/query_datatype.txt");
     	InputStream query_description_input = getClass().getResourceAsStream("/query_description.txt");
     	InputStream query_display_input = getClass().getResourceAsStream("/query_display.txt");
@@ -58,6 +60,7 @@ public abstract class SQLGenerator {
 			query_child_elements = readFile(query_child_elements_input);
 			query_notations = readFile(query_notations_input);
 			query_label = readFile(query_label_input);
+			query_display_label = readFile(query_display_label_input);
 			query_datatype = readFile(query_datatype_input);
 			query_description = readFile(query_description_input);
 			query_display = readFile(query_display_input);
@@ -129,6 +132,8 @@ public abstract class SQLGenerator {
 	{		
 		String current_timestamp = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0")).format(new Date());
 		String label = getLabel(element);	
+		String displayLabel = getDisplayLabel(element);
+		if (displayLabel == null) displayLabel = label;
 		String datatypexml = getDatatypeXml(element, current_timestamp);
 		String description = getDescription(element);
 		boolean i2b2Hidden = getDisplay(element).equals("i2b2Hidden");
@@ -164,9 +169,9 @@ public abstract class SQLGenerator {
 
 		counter+=1;	
 		//Write statements for concept. In case of not exactly one concept notation, String notation will be "NULL".
-		generateI2b2InsertStatement(c_hlevel, notation, element_path, label, description, visualAttribute, current_timestamp, isModifier, appliedPath, datatypexml);
+		generateI2b2InsertStatement(c_hlevel, notation, element_path, displayLabel, description, visualAttribute, current_timestamp, isModifier, appliedPath, datatypexml);
 		if (isRootElement)
-			generateTableAccessInsertStatement(element_path, label, visualAttribute);		
+			generateTableAccessInsertStatement(element_path, displayLabel, visualAttribute);		
 		if (notation != null)
 		{
 			if (isModifier) generateModifierDimensionInsertStatement(notation, element_path, label, current_timestamp);
@@ -195,7 +200,7 @@ public abstract class SQLGenerator {
 				notationPrefix = getNotationPrefix(notations.get(i));
 				notation = notationPrefix + notations.get(i).getString();
 				
-				generateI2b2InsertStatement(c_hlevel, notation, element_path_sub, label, description, visualAttribute, current_timestamp, isModifier, appliedPath, datatypexml);
+				generateI2b2InsertStatement(c_hlevel, notation, element_path_sub, displayLabel, description, visualAttribute, current_timestamp, isModifier, appliedPath, datatypexml);
 				if (isModifier) generateModifierDimensionInsertStatement(notation, element_path_sub, label, current_timestamp);
 				else generateConceptDimensionInsertStatement(notation, element_path_sub, label, current_timestamp);
 			}
@@ -387,6 +392,22 @@ public abstract class SQLGenerator {
 		httpQuery.close();
 		// possibly generate error if there are multiple labels
 		return cleanLabel(label);
+	}
+	
+	private String getDisplayLabel(String concept) throws NullPointerException
+	{
+    	String queryString = query_display_label.replace("<CONCEPT>", "<"+concept+">");
+		Query query = QueryFactory.create(queryString);
+		QueryEngineHTTP httpQuery = new QueryEngineHTTP(sparqlEndpoint, query);
+		ResultSet results = httpQuery.execSelect();
+		if( !results.hasNext() ){
+			httpQuery.close();
+			return null;
+		}
+		QuerySolution solution = results.next();
+		String displayLabel = solution.getLiteral("displayLabel").getString();
+		httpQuery.close();
+		return cleanLabel(displayLabel);
 	}
 	
 	private String getDatatypeXml(String concept, String current_timestamp) throws NullPointerException

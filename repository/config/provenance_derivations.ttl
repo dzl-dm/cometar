@@ -237,7 +237,7 @@ WHERE
 		rdf:object ?o
 	]
 	
-	FILTER (!bound(?derivedate) || ?changedate < ?derivedate)
+	FILTER (!bound(?derivedate) || ?changedate <= ?derivedate)
 	
 	FILTER NOT EXISTS {
 		?commit prov:qualifiedUsage [
