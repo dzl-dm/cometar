@@ -3,7 +3,7 @@
 	<meta>
 		<id></id>
 		<etl-strategy>replace-source</etl-strategy>
-		<version-date>2019-03-12</version-date>
+		<version-date>2018-10-12</version-date>
 	</meta>
 
 	<patient-table>
@@ -438,6 +438,8 @@
 			<unit constant-value="" na=""/>
 		</mdat>
 		<virtual>
+			<value column="3" xsi:type="string"><map set-concept="B:COPD" /></value>
+			<value column="5" xsi:type="string"><map set-concept="B:PH" /></value>
 			<value column="7" xsi:type="string"><map set-concept="S:73211009" /></value>
 			<value column="8" xsi:type="string"><map set-concept="S:399957001" /></value>
 			<value column="11" xsi:type="string"><map set-concept="ICD10:N17-N19" /></value>
