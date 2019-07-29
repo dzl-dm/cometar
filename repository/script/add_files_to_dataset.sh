@@ -42,18 +42,22 @@ do
 done
 
 source "$conffile"
+echo "Adding files to fuseki script called."
 EXITCODE=0
 
 touch "$TEMPDIR/out.txt"
 if $cleardata; then
 	if $testmode; 
 	then
+		echo "Clearing test server data."
 		curl -X PUT -H "Content-Type: text/turtle;charset=utf-8" $silentmode -G "$FUSEKITESTDATASET/data" -d default --data ""
 	else
+		echo "Clearing live server data."
   		curl -X PUT -H "Content-Type: text/turtle;charset=utf-8" $silentmode -G "$FUSEKILIVEDATASET/data" -d default --data ""
 	fi
 fi
 if $testmode; then
+	echo "Adding files to test server."
 	shopt -s nullglob
 	while read line ; do
 		filename=$line
@@ -70,6 +74,7 @@ if $testmode; then
 	endpoint="$FUSEKITESTDATASET/update"
 	curl -X POST -s -T "$CONFDIR/insertrules.ttl" -G "$endpoint"
 else
+	echo "Adding files to live server."
 	endpoint="$FUSEKILIVEDATASET/update"
 	if $loadProvenanceFiles; then
 		echo "Loading provenance files into live server."
