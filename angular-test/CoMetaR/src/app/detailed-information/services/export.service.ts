@@ -47,7 +47,11 @@ export class ExportService {
 
   private getRecursive(ei:ExportItem):BehaviorSubject<boolean>{   
     let s = new BehaviorSubject<boolean>(false);
-    this.informationQueryService.get(ei.treeItem.element.value).pipe(first()).subscribe(i => ei.ontologyElementDetails = i);
+    let informationLoaded$ = new BehaviorSubject<boolean>(false);
+    this.informationQueryService.get(ei.treeItem.element.value).pipe(first()).subscribe(i => {
+      ei.ontologyElementDetails = i;
+      informationLoaded$.next(true);
+    });
     this.ontologyAccessService.getSubItems$(ei.treeItem.element.value).pipe(first()).subscribe(tias => {
       let subs: Subject<boolean>[] = [];
       tias.forEach(t => {
@@ -59,10 +63,9 @@ export class ExportService {
         ei.subExportItems.push(newEi);
         subs.push(this.getRecursive(newEi));
       });
-      combineLatest(subs).subscribe(next => {
+      combineLatest(subs.concat(informationLoaded$)).subscribe(next => {
         if (!next.includes(false)) s.next(true);
       });
-      if (tias.length == 0) s.next(true);
     }); 
     return s;
   }
