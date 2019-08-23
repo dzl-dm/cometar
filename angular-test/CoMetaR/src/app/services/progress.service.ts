@@ -78,7 +78,7 @@ export class Task {
   public update(subtasks_done:number,subtasks_left:number,message?:string){
     if (subtasks_done)this.subtasks_done=subtasks_done;
     if (subtasks_left)this.subtasks=subtasks_left;
-    if(this.log) console.log("Task \""+this.name+"\" update ("+this.subtasks_done+" of "+this.subtasks+"). "+(message||""));
+    if(this.log) console.log("Task \""+this.name+"\" update ("+Math.floor(this.subtasks_done/this.subtasks*100)+"%). "+(message||""));
     this.progress$.next(Math.floor(this.subtasks_done/this.subtasks*100));
   }
   public finish(){

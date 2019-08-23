@@ -50,7 +50,7 @@ WHERE
       rdf:object ?subject 
     ]
   }
-  FILTER(!bound(?date2) || ?date > ?date2)
+  FILTER(!bound(?date2) || ?date >= ?date2)
 
   OPTIONAL { ?subject skos:prefLabel ?sl filter (lang(?sl)='en') . }
   OPTIONAL { ?object skos:prefLabel ?ol filter (lang(?ol)='en') . }

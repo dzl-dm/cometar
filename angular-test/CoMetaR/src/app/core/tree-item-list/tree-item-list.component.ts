@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { TreeDataService } from '../services/tree-data.service';
 import { trigger, style, transition, animate, AnimationEvent } from '@angular/animations';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { TreeStyleService } from '../services/tree-style.service';
 import { OntologyAccessService } from '../services/ontology-access.service';
 import { TreeItem } from '../classes/tree-item';
@@ -18,7 +18,7 @@ import { TreeItem } from '../classes/tree-item';
       ]),
       transition(':leave', [
         style({ height: '*', opacity: 1 }),
-        animate('0.5s ease-out', style({ height: '0px', opacity: 0 })),
+        animate('0.2s ease-out', style({ height: '0px', opacity: 0 })),
       ]),
     ]),
   ]
@@ -27,6 +27,7 @@ export class TreeItemListComponent implements OnInit {
   @Input() conceptIri:string;
   @Input('expanded') expanded?:boolean;
   @Input('cascade_expand') cascade_expand?:boolean;
+  public animations:BehaviorSubject<boolean>[];
   constructor(
     private treeDataService:TreeDataService,
     private cd: ChangeDetectorRef,
@@ -34,34 +35,26 @@ export class TreeItemListComponent implements OnInit {
     private ontologyAccessService: OntologyAccessService
   ) { }
 
+  public treeItems:TreeItem[] = [];
   ngOnInit() {
     if (this.conceptIri == "root") {
-      this.treeItems$ = this.ontologyAccessService.getTopLevelItems$();
+      this.ontologyAccessService.getTopLevelItems$().subscribe(tis => {
+        this.animations=tis.map(t => new BehaviorSubject<boolean>(false));
+        this.treeItems = tis; 
+        this.cd.markForCheck();
+      });
       this.expanded = true;
     }
-    else this.treeItems$ = this.ontologyAccessService.getSubItems$(this.conceptIri);
+    else this.ontologyAccessService.getSubItems$(this.conceptIri).subscribe(tis => {
+      this.animations=tis.map(t => new BehaviorSubject<boolean>(false));
+      this.treeItems=tis;
+    });
     this.treeItems$.subscribe(data => { 
       //this.cd.markForCheck();
     });
   }
 
   public treeItems$ = new Observable<TreeItem[]>();
-  /*public getTreeItems(){
-    let result:TreeItemAttributes[] = [];
-    if (this.conceptIri == "root") {
-      this.treeDataService.getTopLevelItems$().subscribe(data => {
-        result = data;
-        this.cd.markForCheck();
-      });
-      this.expanded = true;
-    }
-    else this.treeDataService.getSubItems$(this.conceptIri).subscribe(data => { 
-      console.log(data);
-      result = data;
-      this.cd.markForCheck();
-    });
-    return result;
-  }*/
 
   isSelected$(treeItem:TreeItem):Observable<boolean>{
     return this.treeDataService.isSelected$(treeItem.element.value)
@@ -70,8 +63,9 @@ export class TreeItemListComponent implements OnInit {
   openCloseStart(event: AnimationEvent) {
     this.treeStyleService.animationStarted();
   }
-  openCloseDone(event: AnimationEvent) {
+  openCloseDone(event: AnimationEvent, index) {
     (<HTMLElement>event.element).removeAttribute("animating");
+    this.animations[index].next(true);
     this.treeStyleService.animationFinished();
   }
 }

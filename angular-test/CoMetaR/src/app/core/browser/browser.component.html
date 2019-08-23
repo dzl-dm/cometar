@@ -29,13 +29,13 @@
             <router-outlet #outlet="outlet" (activate)="onRouterOutletActivate(outlet)"></router-outlet>
         </div>
         <div id="runningTaskOverlay" 
-            [style.display]="(runningTask$|async)?'block':'none'" 
+            [ngClass]="{'visible':runningTask}"
             [style.width.px]="moduleContent.offsetWidth" 
             [style.top.px]="moduleContent.offsetTop" 
             [style.height.px]="moduleContent.offsetHeight">
         </div>
         <div id="runningTaskContent" 
-            [style.display]="(runningTask$|async)?'block':'none'" 
+            [ngClass]="{'visible':runningTask}"
             [style.width.px]="moduleContent.offsetWidth" 
             [style.top.px]="moduleContent.offsetTop" 
             [style.height.px]="moduleContent.offsetHeight">

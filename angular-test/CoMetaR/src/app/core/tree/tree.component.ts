@@ -16,7 +16,7 @@ import { ProgressService } from 'src/app/services/progress.service';
 export class TreeComponent implements OnInit {
   @Input() width:number;  
   @Output() claimWidth = new EventEmitter<number>();
-  private runningTask$ = this.progressService.treeTaskRunning$;
+  public runningTask$ = this.progressService.treeTaskRunning$;
   private taskProgress=0;
   constructor(
     private route: ActivatedRoute,

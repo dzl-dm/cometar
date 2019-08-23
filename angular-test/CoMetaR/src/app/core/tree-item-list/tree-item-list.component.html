@@ -1,18 +1,20 @@
 <div id="noResults" *ngIf="(treeItems$ | async) && (treeItems$ | async).length == 0 && conceptIri == 'root'">No Results.</div>
 <!--
-    @openClose
-    (@openClose.done)="openCloseDone($event)"
+        @openClose
+        (@openClose.start)="openCloseStart($event)"
+        (@openClose.done)="openCloseDone($event)"
 -->
     <app-tree-item 
         animating
         @openClose
         (@openClose.start)="openCloseStart($event)"
-        (@openClose.done)="openCloseDone($event)"
-        *ngFor="let treeitem of (treeItems$ | async); let i = index" 
+        (@openClose.done)="openCloseDone($event,i)"
+        *ngFor="let treeitem of treeItems; let i = index" 
         [treeItemAttributes]="treeitem" 
         [expanded]="expanded"
         [cascade_expand]="cascade_expand"
         [parent]="conceptIri"
+        [animationFinished$]="animations && animations[i]"
         [style$]="treeStyleService.getTreeItemStyle$(treeitem.element.value,conceptIri)"
         [ngClass]="{'selected':isSelected$(treeitem) | async, 'topLevel':conceptIri == 'root'}">
     </app-tree-item>
