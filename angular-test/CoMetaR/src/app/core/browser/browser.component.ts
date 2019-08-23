@@ -90,7 +90,7 @@ export class BrowserComponent implements OnInit {
   public resizeToogle = false;
   public newWidth = 0;
   public activatedRoute;
-  private runningTask$ = this.progressService.moduleTaskRunning$;
+  public runningTask=false;
   private taskProgress=0;
   constructor(
     private route:ActivatedRoute,
@@ -110,6 +110,7 @@ export class BrowserComponent implements OnInit {
     iconRegistry.addSvgIcon('sparql', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-question_answer-24px.svg'));
     iconRegistry.addSvgIcon('statistics', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-timeline-24px.svg'));
     this.progressService.moduleTaskProgress$.subscribe(data => this.taskProgress=data);
+    this.progressService.moduleTaskRunning$.subscribe(data => this.runningTask = data);
   }
 
   ngOnInit() {

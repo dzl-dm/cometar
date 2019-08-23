@@ -66,7 +66,7 @@ export class ProvenanceService {
 		combineLatest(this.getOverViewSubtaskRunning$,this.getProvTreeItemsSubtaskRunning$,this.commitsLoadingIntoTree$).subscribe(data=>{
 			let add = data[1]?1:0;
 			let message = "";
-			if (data[0]) message += "Metadata loading. ";
+			if (data[0]) message += "Metadata loading. ("+this.commitsLeft+") ";
 			if (data[1]) message += "Tree provenance data loading. ";
 			if (data[2]) message += "Tree commit detail data loading. ";
 			
@@ -119,13 +119,13 @@ export class ProvenanceService {
 			let myindex = index;
 			this.getCommitMetaDataByDay$(day).subscribe(cmd => {
 				this.elementsToLoad+=cmd.length;
+				if (cmd.length > 0) this.getOverViewSubtaskRunning$.next(true);
 				cmd.map(c => this.configuration.cutPrefix(c.commitid.value)).forEach(c=>this.commitsLeft.push(c));
 				this.loadedElements++;
 				commitMetaDataByDay[myindex] =[day,cmd];
 			});
 			index++;
 		}
-		this.getOverViewSubtaskRunning$.next(true);
         return commitMetaDataByDay;
 	}
 	public onCommitFinishedLoading(commitid:string){

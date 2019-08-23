@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { Observable, of, combineLatest, from } from 'rxjs';
+import { Observable, of, combineLatest, from, BehaviorSubject } from 'rxjs';
 import { TreeDataService } from '../services/tree-data.service';
 import { TreeStyleService, TreeItemStyle, TreeItemIcon } from "../services/tree-style.service";
 import { SearchResultAttributes } from '../services/queries/searchtreeitem.service';
@@ -29,6 +29,7 @@ export class TreeItemComponent implements OnInit {
   @Input('cascade_expand') cascade_expand?:boolean;
   @Input('') parent?:string;
   @Input('') style$?:Observable<TreeItemStyle>;
+  @Input('') animationFinished$:BehaviorSubject<boolean>=new BehaviorSubject<boolean>(true);
 
   private searchResultAttributes$:Observable<SearchResultAttributes[]>;
   private showSearchResult$:Observable<boolean>;
@@ -77,7 +78,7 @@ export class TreeItemComponent implements OnInit {
         of(this.initialExpanded || false)
       )
     ).subscribe(next => { 
-      this.expanded = next.includes(true);
+      setTimeout(()=>{this.expanded = next.includes(true)},0);
       //this.cd.markForCheck();
     });
     
@@ -157,6 +158,7 @@ export class TreeItemComponent implements OnInit {
     let bubbleConcepts = this.style.bubbleicons.filter(bi => bi.id == icon.id).map(bi => bi.style.concept);
     if (bubbleConcepts.length>0) {
       this.treeDataService.openedElements$.next(bubbleConcepts);
+      this.cd.markForCheck();
     }
   }
 

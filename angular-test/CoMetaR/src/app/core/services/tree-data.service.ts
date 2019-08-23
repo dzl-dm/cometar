@@ -64,19 +64,24 @@ export class TreeDataService {
     ) 
     
     let subtasks:number=0;
-    combineLatest(this.allOpenedTreeItems$,this.selectedIri$,this.searchIris$,this.openedElements$,this.treeStyleService.animatingElements$).subscribe(data=>{
+    /*this.allOpenedTreeItems$.subscribe(next => console.log("allOpenedTreeItems"));
+    this.selectedIri$.subscribe(next => console.log("selectedIri"));
+    this.searchIris$.subscribe(next => console.log("searchIris"));
+    this.openedElements$.subscribe(next => console.log("openedElements"));
+    this.treeStyleService.animatingElements$.subscribe(next => console.log("treeStyleService.animatingElements"));*/
+    combineLatest(this.allOpenedTreeItems$,this.selectedIri$,this.searchIris$,this.openedElements$/*,this.treeStyleService.animatingElements$*/).subscribe(data=>{
       let taskrunning = this.openElementsTask && this.openElementsTask.status=="running";
-      let animationsrunning = data[4]>0;
+      let animationsrunning = false;//data[4]>0;
       let openedIris=data[0];
       let selectedIri = data[1]!=""?[data[1]]:[];
       let requiredIris:string[] = selectedIri.concat(data[2]).concat(data[3]);
       let missingIris = requiredIris.filter(iri => !openedIris.includes(iri));
       let allRequiredIrisOpened = missingIris.length==0 && !animationsrunning;
       //console.log("missing: "+missingIris.length + " animating: "+data[4]);
-      if (taskrunning) this.openElementsTask.update(subtasks-(missingIris.length+data[4]),subtasks);
+      if (taskrunning) this.openElementsTask.update(subtasks-(missingIris.length/*+data[4]*/),subtasks);
       if (taskrunning && allRequiredIrisOpened) this.openElementsTask.finish();
       else if (!taskrunning && !allRequiredIrisOpened){
-        subtasks=missingIris.length+data[4];
+        subtasks=missingIris.length;//+data[4];
         this.openElementsTask = this.progressService.addTreeTask("Opening elements",subtasks);
       }
     });

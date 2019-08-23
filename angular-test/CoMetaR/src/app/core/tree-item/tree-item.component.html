@@ -76,4 +76,4 @@
         [collapsed]="isGhostItem()"></app-concept-information>
   </ng-container>
 </div>
-<app-tree-item-list *ngIf="expanded" [expanded]="expanded && cascade_expand" [cascade_expand]="cascade_expand" [conceptIri]="treeitem.element.value"></app-tree-item-list>
+<app-tree-item-list *ngIf="expanded && (animationFinished$ | async)" [expanded]="expanded && cascade_expand" [cascade_expand]="cascade_expand" [conceptIri]="treeitem.element.value"></app-tree-item-list>

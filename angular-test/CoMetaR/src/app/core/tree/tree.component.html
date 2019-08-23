@@ -22,13 +22,19 @@
         >
     </div>
 </div>
-<div id="runningTaskOverlay" [style.display]="(runningTask$|async)?'block':'none'" [style.width.px]="tree.offsetWidth" [style.height.px]="tree.offsetHeight">
+<div id="runningTaskOverlay" 
+    [ngClass]="{'visible':runningTask$|async}"
+    [style.width.px]="tree.offsetWidth" 
+    [style.height.px]="tree.offsetHeight">
 </div>
-<div id="runningTaskContent" [style.display]="(runningTask$|async)?'block':'none'" [style.width.px]="tree.offsetWidth" [style.height.px]="tree.offsetHeight">
+<div id="runningTaskContent" 
+    [ngClass]="{'visible':runningTask$|async}"
+    [style.width.px]="tree.offsetWidth" 
+    [style.height.px]="tree.offsetHeight">
     <div id="runningTaskContentCenter">
         <img 
             class="runningTaskLogo" 
             src="assets/img/cometar_c_small_transparent.png"/>
-        <!--{{taskProgress+'%'}}-->
+        <div class="runningTaskProgress">{{taskProgress+'%'}}</div>
     </div>
 </div>
