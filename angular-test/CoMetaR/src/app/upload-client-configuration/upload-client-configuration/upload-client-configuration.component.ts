@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { parseString } from 'xml2js';
 import { combineLatest, Subject } from 'rxjs';
 import { ClientConfigurationService, IClientConfiguration, Mapping } from '../services/client-configuration.service';
@@ -30,7 +30,8 @@ export class UploadClientConfigurationComponent implements OnInit {
 		private clientConfigurationService:ClientConfigurationService,
 		private conceptByNotationService:ConceptByNotationService,
 		private http:HttpClient,
-		private componentStateService:ComponentStateService
+		private componentStateService:ComponentStateService,
+		private cd: ChangeDetectorRef
 	) { }
 
   ngOnInit() {
@@ -84,7 +85,7 @@ export class UploadClientConfigurationComponent implements OnInit {
 	const _headers = new HttpHeaders();
     const headers = _headers.set('Content-Type', 'text/xml')
 	let exampleConfiguration = this.http.get('assets/data/datasource.xml',{headers: _headers,responseType: 'text'});
-	exampleConfiguration.subscribe(data => this.xmlFileContent = data);
+	exampleConfiguration.subscribe(data => {this.xmlFileContent = data; this.cd.markForCheck()});
   }
 
   public navigateTo(iri:string){
