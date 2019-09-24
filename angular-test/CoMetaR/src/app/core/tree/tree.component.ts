@@ -17,7 +17,8 @@ export class TreeComponent implements OnInit {
   @Input() width:number;  
   @Output() claimWidth = new EventEmitter<number>();
   public runningTask$ = this.progressService.treeTaskRunning$;
-  private taskProgress=0;
+  public taskProgress=0;
+  private taskRefreshInterval;
   constructor(
     private route: ActivatedRoute,
     public treeDataService: TreeDataService,
@@ -27,6 +28,10 @@ export class TreeComponent implements OnInit {
     private cd: ChangeDetectorRef
   ){
     this.progressService.treeTaskProgress$.subscribe(data => this.taskProgress=data);
+    this.runningTask$.subscribe(running => {
+      if (running) this.taskRefreshInterval = setInterval(()=>{this.cd.markForCheck()},500);
+      else clearInterval(this.taskRefreshInterval);
+    })
   }
 
   ngOnInit() {    
