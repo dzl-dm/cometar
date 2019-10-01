@@ -2,13 +2,14 @@
     <div class="expandDiv" (click)="collapsed = !collapsed">Show Provenance Details</div>
 </ng-container>
 <ng-container *ngIf="!collapsed">
-    <table 
+    <table class="conceptInformationTable"
         #table
         [ngClass]="{
             'rowHeadingTable':headingDirection == 'row', 
             'columnHeadingTable':headingDirection == 'column',
             'hiddenHeading':hiddenHeading,
-            'truncateText':truncateText == true && maxWidth != undefined
+            'truncateText':truncateText == true && maxWidth != undefined,
+            'stayTruncated':stayTruncated
         }">
         <tr *ngIf="conceptInformation">
             <td *ngFor="let cell of conceptInformation.headings; let i = index" [style.width]="getWidth(i)">

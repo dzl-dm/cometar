@@ -47,9 +47,6 @@
     </ng-container>
   </div>
 </div>
-<!--     'margin-left':((intent$ | async) * 21 + 21) +'px',
-    'width':'calc(100% - ' + ((intent$ | async) * 22 + 26) +'px)',
-    'opacity':treeitem.isGhostItem?0.5:1.0 -->
 <div 
   class="treeItemInformation" 
   [ngStyle]="{
@@ -59,6 +56,7 @@
   #treeItemInformation
   (mouseenter)="onInformationMouseEnter($event)"> 
   <app-concept-information 
+    [stayTruncated]="true"
     *ngIf="showSearchResult$ | async"
     [data]="searchResults$ | async" 
     [headingDirection]="'column'"
@@ -69,6 +67,7 @@
     [cellWidthPercentages]="[35,65]"></app-concept-information>
   <ng-container *ngFor="let conceptInformation of conceptInformation$ | async">
       <app-concept-information 
+        [stayTruncated]="true"
         [conceptInformation]="conceptInformation" 
         [hiddenHeading]="false"
         [maxWidth]="treeItemInformation.clientWidth"
@@ -76,4 +75,12 @@
         [collapsed]="isGhostItem()"></app-concept-information>
   </ng-container>
 </div>
-<app-tree-item-list *ngIf="expanded && (animationFinished$ | async)" [expanded]="expanded && cascade_expand" [cascade_expand]="cascade_expand" [conceptIri]="treeitem.element.value"></app-tree-item-list>
+<app-tree-item-list
+  @openClose
+  (@openClose.start)="openCloseStart($event)"
+  (@openClose.done)="openCloseDone($event)"
+  *ngIf="expanded && (parentAnimation$ | async)" 
+  [expanded]="expanded && cascade_expand" 
+  [animation]="animation"
+  [cascade_expand]="cascade_expand" 
+  [conceptIri]="treeitem.element.value"></app-tree-item-list>

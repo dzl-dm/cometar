@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ElementDetailsService } from "../element-details.service";
 import { ActivatedRoute } from '@angular/router';
 import { UrlService } from 'src/app/services/url.service';
-import { map, flatMap } from 'rxjs/operators';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, flatMap, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { BrowserService } from 'src/app/core/services/browser.service';
 import { CommitDetailsService } from 'src/app/provenance/services/queries/commit-details.service';
@@ -19,6 +19,9 @@ import { ExportService } from '../services/export.service';
   styleUrls: ['./detailed-information.component.css']
 })
 export class DetailedInformationComponent implements OnInit {
+  
+  private unsubscribe: Subject<void> = new Subject();
+  
   public coreDetails = {};
   public additionalDetails = {};
   public label = "";
@@ -46,7 +49,7 @@ export class DetailedInformationComponent implements OnInit {
       map(data => {
         return this.urlService.extendRdfPrefix(data.get('concept'))
       })
-    ).subscribe(this.selectedIri$);
+    ).pipe(takeUntil(this.unsubscribe)).subscribe(this.selectedIri$);
     this.selectedIri$.pipe(
       flatMap(iri => {
         this.label = iri;
@@ -54,7 +57,7 @@ export class DetailedInformationComponent implements OnInit {
         this.additionalDetails = {};
         return this.informationQueryService.get(iri)
       })
-    ).subscribe(data => {
+    ).pipe(takeUntil(this.unsubscribe)).subscribe(data => {
       if (data.length == 1 && Object.keys(data[0]).length == 0) {
         this.label += " The concept is not part of the ontology.";
         return;
@@ -104,12 +107,14 @@ export class DetailedInformationComponent implements OnInit {
   }
 
   private copyToClipboard(item) {
-    document.addEventListener('copy', (e: ClipboardEvent) => {
+    const copyFunction = (e: ClipboardEvent) => {
       e.clipboardData.setData('text/plain', (item));
       e.preventDefault();
       document.removeEventListener('copy', null);
-    });
+    };
+    document.addEventListener('copy', copyFunction);
     document.execCommand('copy');
+    document.removeEventListener('copy', copyFunction);
     this.browserService.snackbarNotification.next([`Text "${item}" copied to clipboard.`, `info`]);
   }
 
@@ -132,7 +137,8 @@ export class DetailedInformationComponent implements OnInit {
   }*/
 
   public export(){
-    this.selectedIri$.subscribe(iri => this.exportService.get(iri, (exportString:string)=>{
+    const iri = this.selectedIri$.getValue();
+    this.exportService.get(iri, (exportString:string)=>{
       let thefile = new Blob([exportString], { type: "application/octet-stream" });
       let anchor = document.createElement('a');
   
@@ -141,7 +147,7 @@ export class DetailedInformationComponent implements OnInit {
       anchor.dataset.downloadurl = ['text/plain;charset=UTF-8', anchor.download, anchor.href].join(':');
       window.document.body.appendChild(anchor);
       anchor.click();
-    })).unsubscribe();
+    });
   }
 
   public onSectionExpand(sectionKey:string){
@@ -155,5 +161,10 @@ export class DetailedInformationComponent implements OnInit {
         flatMap(cds => this.provenanceService.getConceptTableInformation(cds, new BehaviorSubject(displayOptions)))
       );      
     }
+  }
+  
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 }

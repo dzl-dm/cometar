@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { TreeDataService } from '../services/tree-data.service';
 import { TreeStyleService } from "../services/tree-style.service";
@@ -48,5 +48,9 @@ export class TreeComponent implements OnInit {
     let tree = Array.from((<HTMLElement>this.el.nativeElement).children).filter(c => c.id == "tree")[0];
     tree.scrollTop=Math.min(outlineElement.top*tree.scrollHeight,outlineElement.top*tree.scrollHeight-tree.clientHeight/2+(outlineElement.height?outlineElement.height:31)*tree.scrollHeight/2);
     setTimeout(()=>tree.scrollTop=Math.min(outlineElement.top*tree.scrollHeight-scrollHeadings.offsetHeight,outlineElement.top*tree.scrollHeight-tree.clientHeight/2+(outlineElement.height?outlineElement.height:31)*tree.scrollHeight/2),0);
+  }
+
+  public getOfTrue(){
+    return of(true);
   }
 }

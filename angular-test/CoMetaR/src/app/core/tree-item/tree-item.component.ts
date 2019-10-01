@@ -1,19 +1,29 @@
 import { Component, OnInit, Input, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { Observable, of, combineLatest, from, BehaviorSubject } from 'rxjs';
+import { Observable, of, combineLatest, from, BehaviorSubject, Subject } from 'rxjs';
 import { TreeDataService } from '../services/tree-data.service';
 import { TreeStyleService, TreeItemStyle, TreeItemIcon } from "../services/tree-style.service";
 import { SearchResultAttributes } from '../services/queries/searchtreeitem.service';
-import { withLatestFrom, map, combineAll } from 'rxjs/operators';
+import { withLatestFrom, map, combineAll, takeUntil } from 'rxjs/operators';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { ConceptInformation } from '../concept-information/concept-information.component';
 import { TreeItem } from '../classes/tree-item';
 import { OntologyAccessService } from '../services/ontology-access.service';
+import { trigger, state, transition, animate, style } from '@angular/animations';
 
 @Component({
   selector: 'app-tree-item',
   templateUrl: './tree-item.component.html',
   styleUrls: ['./tree-item.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('openClose', [
+      state('void', style({
+        opacity: '0',
+        transform: 'translateX(50px)'
+      })),
+      transition('void <=> *', animate(100))
+    ]),
+  ]
 })
 export class TreeItemComponent implements OnInit {
   @Input('treeItemAttributes') treeitem?:TreeItem=new TreeItem({
@@ -29,7 +39,9 @@ export class TreeItemComponent implements OnInit {
   @Input('cascade_expand') cascade_expand?:boolean;
   @Input('') parent?:string;
   @Input('') style$?:Observable<TreeItemStyle>;
-  @Input('') animationFinished$:BehaviorSubject<boolean>=new BehaviorSubject<boolean>(true);
+  @Input('') parentAnimation$:BehaviorSubject<boolean>=new BehaviorSubject<boolean>(true);
+  
+  private unsubscribe: Subject<void> = new Subject();
 
   private searchResultAttributes$:Observable<SearchResultAttributes[]>;
   private showSearchResult$:Observable<boolean>;
@@ -56,12 +68,16 @@ export class TreeItemComponent implements OnInit {
       //this.intent$.subscribe(data => this.cd.markForCheck());
     });
     if (this.treeitem) (<HTMLElement>this.el.nativeElement).setAttribute("iri",this.treeitem.element.value);
-    if (this.conceptIri) this.ontologyAccessService.getItem$(this.conceptIri).subscribe(ti => {
-      this.treeitem = ti;
-      this.load();
+    if (this.conceptIri) this.ontologyAccessService.getItem$(this.conceptIri)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(ti => {
+        this.treeitem = ti;
+        this.load();
     });
     else this.load();
-    if (this.style$)this.style$.subscribe(()=> { this.treeStyleService.onTreeDomChange("TreeItem Style added.") });
+    if (this.style$)this.style$
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(()=> { this.treeStyleService.onTreeDomChange("TreeItem Style added.") });
   }  
 
   ngAfterViewInit() {
@@ -69,17 +85,20 @@ export class TreeItemComponent implements OnInit {
   }
 
   private load(){
-    if (this.style$) this.style$.subscribe(style => {
-      this.style = style;
+    if (this.style$) this.style$
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(style => {
+        this.style = style;
     });
     this.treeDataService.isAnyPathPart$(this.treeitem.element.value).pipe(
       withLatestFrom(
         this.treeDataService.isSelected$(this.treeitem.element.value),
         of(this.initialExpanded || false)
       )
-    ).subscribe(next => { 
-      setTimeout(()=>{this.expanded = next.includes(true)},0);
-      //this.cd.markForCheck();
+    ).pipe(takeUntil(this.unsubscribe))
+      .subscribe(next => { 
+        setTimeout(()=>{this.expanded = next.includes(true)},0);
+        //this.cd.markForCheck();
     });
     
     this.showSearchResult$ = this.treeDataService.isSearchMatch$(this.treeitem.element.value);
@@ -102,7 +121,9 @@ export class TreeItemComponent implements OnInit {
       this.conceptInformation$,
       this.showSearchResult$
     ).pipe(map(data => data[0].length > 0 || data[1] ));
-    this.showInformationDiv$.subscribe((show)=> { if (show) this.treeStyleService.onTreeDomChange("TreeItem Information added.") });
+    this.showInformationDiv$
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe((show)=> { if (show) this.treeStyleService.onTreeDomChange("TreeItem Information added.") });
   }
 
   public onSelect(){
@@ -174,14 +195,39 @@ export class TreeItemComponent implements OnInit {
     let top = informationDiv.getBoundingClientRect().top;
     let maxHeight = Math.min(500,window.innerHeight-top-20);
     clone.classList.add("hoveredInformationDiv");
+    (<HTMLElement>clone.getElementsByClassName("conceptInformationTable")[0]).classList.remove("truncateText");
     clone.setAttribute("style","left:"+left+"px;top:"+top+"px;max-height:"+maxHeight+"px;width:"+maxWidth+"px;");
+    let mouseX = event.x;
+    let mouseY = event.y;
     this.cloneRemoveFunction = (event)=>{
-      if (event.x < left || event.x > left + informationDiv.offsetWidth || event.y < top || event.y > top + informationDiv.offsetHeight){
+      if (event.type == "mousemove"){
+        mouseX = event.x;
+        mouseY = event.y;
+      }
+      if (mouseX < informationDiv.getBoundingClientRect().left || mouseX > informationDiv.getBoundingClientRect().left + informationDiv.offsetWidth 
+        || mouseY < informationDiv.getBoundingClientRect().top || mouseY > informationDiv.getBoundingClientRect().top + informationDiv.offsetHeight){
         clone.remove();
-        document.body.removeEventListener("mosuemove",this.cloneRemoveFunction);
+        document.body.removeEventListener("mousemove",this.cloneRemoveFunction);
+        document.getElementById("tree").removeEventListener("scroll",this.cloneRemoveFunction);
       }
     }
     document.body.addEventListener("mousemove",this.cloneRemoveFunction);
+    document.getElementById("tree").addEventListener("scroll",this.cloneRemoveFunction);
     document.body.append(clone);
+  }
+  
+  public animation:BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  openCloseStart(event: AnimationEvent) {
+    this.treeStyleService.animationStarted();
+  }
+  openCloseDone(event: AnimationEvent) {
+    this.animation.next(true);
+    this.treeStyleService.animationFinished();
+  }
+
+  ngOnDestroy() {
+    document.body.removeEventListener("mosuemove",this.cloneRemoveFunction);
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 }

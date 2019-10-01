@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError, Subject, BehaviorSubject, ReplaySubject, of } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { map, catchError, startWith, shareReplay, retry } from 'rxjs/operators';
+import { map, catchError, startWith, shareReplay, retry, first } from 'rxjs/operators';
 import { BrowserService } from '../core/services/browser.service';
 import { ProgressService } from './progress.service';
 
@@ -49,10 +49,13 @@ export class DataService {
       this.loadingNames.next(this.busyQueries);
       if (this.busyQueries.length == 0) this.loading.next(false);
     });
-    return this.pendings[queryString].pipe(map(data => {
-      if (data instanceof HttpErrorResponse) return [];
-      else return data;
-    }));
+    return this.pendings[queryString].pipe(
+      map(data => {
+        if (data instanceof HttpErrorResponse) return [];
+        else return data;
+      }),
+      first()
+    );
   }
 
   private getObservable(queryString:string, typerules?:{}):Observable<any[]>{

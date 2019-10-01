@@ -75,9 +75,9 @@ export class Task {
     if(this.log) console.log("Task \""+name+"\" started ("+subtasks+").");
     this.status="running";
   }
-  public update(subtasks_done:number,subtasks_left:number,message?:string){
+  public update(subtasks_done:number,subtasks:number,message?:string){
     if (subtasks_done)this.subtasks_done=subtasks_done;
-    if (subtasks_left)this.subtasks=subtasks_left;
+    if (subtasks)this.subtasks=subtasks;
     if(this.log) console.log("Task \""+this.name+"\" update ("+Math.floor(this.subtasks_done/this.subtasks*100)+"%). "+(message||""));
     this.progress$.next(Math.floor(this.subtasks_done/this.subtasks*100));
   }

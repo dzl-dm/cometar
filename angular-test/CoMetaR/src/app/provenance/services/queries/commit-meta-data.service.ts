@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DataService, JSONResponsePartNumber, JSONResponsePartString, JSONResponsePartDate, prefixes } from 'src/app/services/data.service';
-import { map } from 'rxjs/operators';
+import { map, first } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,8 @@ export class CommitMetaDataService {
 
   public get(from:Date, until:Date=new Date(Date.now())):Observable<CommitMetaData[]> {
     const queryString = this.getQueryString(from, until);
-    return this.dataService.getData(queryString, "commit metadata from "+from.toISOString()+" until "+until.toISOString()).pipe(map(data=> { return <CommitMetaData[]> data }))
+    return this.dataService.getData(queryString, "commit metadata from "+from.toISOString()+" until "+until.toISOString())
+      .pipe(map(data=> { return <CommitMetaData[]> data }))
   };
 
   public getQueryString(from:Date, until:Date):string {

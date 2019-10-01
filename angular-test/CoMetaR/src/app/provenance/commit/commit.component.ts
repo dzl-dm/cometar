@@ -1,10 +1,10 @@
 import { Component, OnInit, Input, ElementRef, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommitMetaData } from '../services/queries/commit-meta-data.service';
-import { Observable, combineLatest, of } from 'rxjs';
+import { Observable, combineLatest, of, Subject } from 'rxjs';
 import { CommitDetails, CommitDetailsService } from '../services/queries/commit-details.service';
 import { TreeDataService } from 'src/app/core/services/tree-data.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
-import { filter, map, withLatestFrom, combineAll } from 'rxjs/operators';
+import { filter, map, withLatestFrom, combineAll, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-commit',
@@ -24,6 +24,9 @@ export class CommitComponent implements OnInit {
   public categories={};
   public commitMetaDataHR:CommitMetaData;
   public mouseOvered=false;
+  
+  private unsubscribe: Subject<void> = new Subject();
+  
   constructor(
     private commitDetailsService:CommitDetailsService,
     private configuration:ConfigurationService,
@@ -41,7 +44,7 @@ export class CommitComponent implements OnInit {
           return displayOptions[cd.predicate.value] == true
         })
       })
-    ).subscribe(data => {
+    ).pipe(takeUntil(this.unsubscribe)).subscribe(data => {
       this.commitDetails=data;
       this.categories={};
       this.commitDetails.forEach(cd => {
@@ -68,5 +71,10 @@ export class CommitComponent implements OnInit {
   public getCommitDetailsHorizontalDirection(){
     if (this.ele.nativeElement.offsetLeft + 400 > this.displaycontainer.offsetWidth + this.displaycontainer.scrollLeft) return "left";
     else return "right"
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 }
