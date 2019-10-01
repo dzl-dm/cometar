@@ -25,7 +25,7 @@ table.truncateText td, table.truncateText th {
     overflow:hidden;
     text-overflow: ellipsis;
 }
-:host:hover table.truncateText td, :host:hover table.truncateText th {
+:host:hover table.truncateText:not(.stayTruncated) td, :host:hover table.truncateText:not(.stayTruncated) th {
     white-space: normal;
     overflow:auto;
 }

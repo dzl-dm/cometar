@@ -22,7 +22,7 @@ export class TreeDataService {
   private selectedIri$:ReplaySubject<string>;
   private selectedPaths$:Observable<string[]>;
   private searchPaths$:Observable<string[]>;
-  private searchPattern$:ReplaySubject<string>;
+  private searchPattern$:BehaviorSubject<string> = new BehaviorSubject("");
   private searchIris$:Observable<string[]>;
   private informationPaths$:Observable<string[]>;
   public openedElements$:BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
@@ -43,7 +43,6 @@ export class TreeDataService {
     private progressService:ProgressService
   ) {
     this.selectedIri$ = new ReplaySubject(1);
-    this.searchPattern$ = new ReplaySubject(1);
     this.searchActivated$ = this.searchPattern$.pipe(map(searchPattern => searchPattern != ""));
     this.treeItemConceptInformation$.subscribe(next => this.treeItemConceptInformationReplay$.next(next));
     //this.selectedIri$.subscribe(()=>this.openedElements$.next([]));
@@ -78,7 +77,7 @@ export class TreeDataService {
       let missingIris = requiredIris.filter(iri => !openedIris.includes(iri));
       let allRequiredIrisOpened = missingIris.length==0 && !animationsrunning;
       //console.log("missing: "+missingIris.length + " animating: "+data[4]);
-      if (taskrunning) this.openElementsTask.update(subtasks-(missingIris.length/*+data[4]*/),subtasks);
+      if (taskrunning) this.openElementsTask.update(requiredIris.length-(missingIris.length/*+data[4]*/),requiredIris.length);
       if (taskrunning && allRequiredIrisOpened) this.openElementsTask.finish();
       else if (!taskrunning && !allRequiredIrisOpened){
         subtasks=missingIris.length;//+data[4];
@@ -168,9 +167,7 @@ export class TreeDataService {
     )
   }
   public getSearchPattern():string{
-    let searchPattern;
-    this.searchPattern$.subscribe(next => searchPattern = next).unsubscribe();
-    return searchPattern;
+    return this.searchPattern$.getValue();
   }
   public isSearchMatch$(iri:string):Observable<boolean>{
     return this.searchIris$.pipe(
@@ -192,8 +189,7 @@ export class TreeDataService {
   )));
   private treeItemConceptInformationReplay$ = new ReplaySubject<ConceptInformation[]>(1);
   public addTreeItemConceptInformation(cis$:Observable<ConceptInformation[]>){
-    let s:Observable<ConceptInformation[]>[];
-    this.allTreeItemConceptInformation$.subscribe(d => s = d).unsubscribe();
+    let s:Observable<ConceptInformation[]>[] = this.allTreeItemConceptInformation$.getValue();
     this.allTreeItemConceptInformation$.next(s.concat(cis$.pipe(startWith([]))));
   }
   public getTreeItemConceptInformation(iri:string):Observable<ConceptInformation[]>{

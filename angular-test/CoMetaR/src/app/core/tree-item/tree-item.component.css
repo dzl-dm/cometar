@@ -11,6 +11,7 @@
     border-bottom-left-radius: 3px;*/
     border-radius: 3px;
     /*background-color:white; */
+    font-size:15px;
 }
 
 :host.selected{
@@ -158,6 +159,7 @@ app-concept-information {
 
 .hoveredInformationDiv{
     position:absolute;
-    z-index:2;
+    z-index:11;
     overflow-y:auto;
+    pointer-events:none;
 }

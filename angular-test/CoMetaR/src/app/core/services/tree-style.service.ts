@@ -1,5 +1,5 @@
 import { Injectable, ChangeDetectorRef } from '@angular/core';
-import { Subject, Observable, BehaviorSubject, combineLatest, of, ReplaySubject } from 'rxjs';
+import { Subject, Observable, BehaviorSubject, combineLatest, of, ReplaySubject, Subscription } from 'rxjs';
 import { map, filter, flatMap, first, startWith } from 'rxjs/operators';
 //import html2canvas from 'html2canvas';
 //import { WebWorkerService } from 'ngx-web-worker';
@@ -63,6 +63,7 @@ export class TreeStyleService {
     }
     this.domChangeTimeout = setTimeout(()=>this.setOutlineElements(),0);
   }
+  private subscriptions:Subscription[] = [];
   private setOutlineElements(){
     //console.log("Outline Elements refresh.");
     /*html2canvas(<HTMLElement>(<HTMLElement>this.treeDomElement).getElementsByTagName("app-tree-item-list")[0],{
@@ -73,6 +74,7 @@ export class TreeStyleService {
     });*/
 
     let outlineElements = [];
+    this.subscriptions.forEach(s => s.unsubscribe());
     let treeItems = Array.from(this.treeDomElement.getElementsByTagName("APP-TREE-ITEM"));
     treeItems.forEach((ti:HTMLElement) => {
       let iri = ti.getAttribute("iri");
@@ -103,7 +105,7 @@ export class TreeStyleService {
           concept: iri
         })
       }
-      this.getTreeItemStyle$(iri).subscribe(style => {
+      this.subscriptions.push(this.getTreeItemStyle$(iri).subscribe(style => {
         this.getIcons(style).filter(i => {
           if (i["background-color"] && i["background-color"] == "white") return false;
           let realicon = style.icons.includes(i);  
@@ -123,7 +125,7 @@ export class TreeStyleService {
             concept: iri
           })
         })
-      })
+      }));
     });
     this.outlineElements$.next(outlineElements);
   }
@@ -206,8 +208,7 @@ export class TreeStyleService {
     map(s => s.reduce((result,next)=>result=result.concat(next),[]))
   )));
   public addTreeItemStyles(styles$:Observable<TreeItemStyle[]>){
-    let s:Observable<TreeItemStyle[]>[];
-    this.allTreeItemStyles$.subscribe(d => s = d).unsubscribe();
+    let s:Observable<TreeItemStyle[]>[] = this.allTreeItemStyles$.getValue();
     this.allTreeItemStyles$.next(s.concat(styles$.pipe(startWith([]))));
   }
   public getTreeItemStyle$(iri:string,parentiri?:string):Observable<TreeItemStyle> {

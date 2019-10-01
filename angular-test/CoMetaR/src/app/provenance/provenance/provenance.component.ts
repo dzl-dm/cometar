@@ -95,10 +95,8 @@ export class ProvenanceComponent implements OnInit {
 		this.provenanceService.onCommitFinishedLoading(commitid);
 	}
 
-	public isSelectedCommit(commitid:string){
-		let result = false;
-		this.provenanceService.selectedCommits$.subscribe(data => result = data && data.includes(commitid));
-		return result;
+	public isSelectedCommit(commitid:string):Observable<boolean>{
+		return this.provenanceService.selectedCommits$.pipe(map(data => data && data.includes(commitid)));
 	}
 
 	public onDaySelect(date:Date){

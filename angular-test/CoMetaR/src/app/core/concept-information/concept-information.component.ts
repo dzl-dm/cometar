@@ -20,6 +20,8 @@ export class ConceptInformationComponent implements OnInit {
   @Input() maxWidth?:number;
   @Input() truncateText?:boolean;
   @Input() conceptInformation:ConceptInformation;
+  @Input() stayTruncated?:boolean = true;
+
   constructor(
     private configurationService: ConfigurationService,
     private treeDataService: TreeDataService,
