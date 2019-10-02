@@ -182,39 +182,6 @@ export class TreeItemComponent implements OnInit {
       this.cd.markForCheck();
     }
   }
-
-  private cloneRemoveFunction;
-  public onInformationMouseEnter(event:MouseEvent){
-    let informationDiv = <HTMLElement>event.target
-    let clone = <HTMLElement>informationDiv.cloneNode(true);
-    let left = informationDiv.getBoundingClientRect().left;
-    let maxWidth = Math.min(1000,window.innerWidth-left-20);
-    if (informationDiv.offsetWidth > 1000){
-      maxWidth = informationDiv.offsetWidth;
-    }
-    let top = informationDiv.getBoundingClientRect().top;
-    let maxHeight = Math.min(500,window.innerHeight-top-20);
-    clone.classList.add("hoveredInformationDiv");
-    (<HTMLElement>clone.getElementsByClassName("conceptInformationTable")[0]).classList.remove("truncateText");
-    clone.setAttribute("style","left:"+left+"px;top:"+top+"px;max-height:"+maxHeight+"px;width:"+maxWidth+"px;");
-    let mouseX = event.x;
-    let mouseY = event.y;
-    this.cloneRemoveFunction = (event)=>{
-      if (event.type == "mousemove"){
-        mouseX = event.x;
-        mouseY = event.y;
-      }
-      if (mouseX < informationDiv.getBoundingClientRect().left || mouseX > informationDiv.getBoundingClientRect().left + informationDiv.offsetWidth 
-        || mouseY < informationDiv.getBoundingClientRect().top || mouseY > informationDiv.getBoundingClientRect().top + informationDiv.offsetHeight){
-        clone.remove();
-        document.body.removeEventListener("mousemove",this.cloneRemoveFunction);
-        document.getElementById("tree").removeEventListener("scroll",this.cloneRemoveFunction);
-      }
-    }
-    document.body.addEventListener("mousemove",this.cloneRemoveFunction);
-    document.getElementById("tree").addEventListener("scroll",this.cloneRemoveFunction);
-    document.body.append(clone);
-  }
   
   public animation:BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   openCloseStart(event: AnimationEvent) {
@@ -226,7 +193,6 @@ export class TreeItemComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    document.body.removeEventListener("mosuemove",this.cloneRemoveFunction);
     this.unsubscribe.next();
     this.unsubscribe.complete();
   }

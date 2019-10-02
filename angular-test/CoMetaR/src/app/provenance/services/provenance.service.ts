@@ -172,8 +172,9 @@ export class ProvenanceService {
 				let ci:ConceptInformation = cia[0] || { 
 					concept: cd.subject.value,
 					headings: ["Meta","Attribute","Old Value","New Value"],
-					cellWidthPercentages: [20,20,30,30],
-					cellMaxWidth: [130,130,0,0],
+					columnWidthPercentages: [20,20,30,30],
+					columnMinWidth: [130,130,100,100],
+					columnDisplayOptions: ["showAndShrink","showAndShrink","hideOrGrow","hideOrGrow"],
 					sourceId: "Provenance",
 					cells:[]
 				};

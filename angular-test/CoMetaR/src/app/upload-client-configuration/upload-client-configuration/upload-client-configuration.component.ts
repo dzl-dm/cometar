@@ -142,9 +142,10 @@ export class UploadClientConfigurationComponent implements OnInit {
 					if (this.inputtype=="xml") ci = {
 						concept: result.concept && result.concept.value,
 						headings:["Source", "Value", "Mapped Value", "Unit"],
-						cellWidthPercentages:[55,15,15,15],
-						cellMinWidth:[150,150,150,50],
-						cellMaxWidth:[250,150,150,50],
+						columnWidthPercentages:[55,15,15,15],
+						columnMinWidth:[150,150,150,50],
+						columnDisplayOptions:["showAndShrink","hideOrShrink","hideOrShrink","hideOrShrink"],
+						/*columnMaxWidth:[250,150,150,50],*/
 						cells:this.clientConfigurationService.getTreeLines(m),
 						sourceId:"clientconfig"
 					}
@@ -152,7 +153,7 @@ export class UploadClientConfigurationComponent implements OnInit {
 						concept: result.concept && result.concept.value,
 						headings:["Code", "New Code"],
 						cells:[[m.concept, result.newnotation && result.newnotation.value]],
-						cellWidthPercentages:[50,50],
+						columnWidthPercentages:[50,50],
 						sourceId:"clientconfig"
 					}
 					return ci;
