@@ -236,7 +236,7 @@ export class TreeStyleService {
   }
   private getMatchingTreeItemChildren(ti:TreeItem,children:string[]=[]):string[]{
     ti.children.forEach(c => {
-      if (c.ghostParents.length == 0 || c.ghostParents.filter(gp => gp.value == ti.element.value).length > 0)
+      //if (c.ghostParents.length == 0 || c.ghostParents.filter(gp => gp.value == ti.element.value).length > 0)
       {
         children.push(c.element.value);
         this.getMatchingTreeItemChildren(c,children);

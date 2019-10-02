@@ -38,7 +38,7 @@ export class ProvTreeItemsQueryService {
   
   private getProvTreeItemsQueryString(from:string,until:string):string{
     return `${prefixes}
-SELECT (?lastelement as ?element) ?date (?lastparent as ?parent) ?otherparent ?addorremove ?label ?parentlabel (GROUP_CONCAT(?lastpreflabel;separator=",") as ?lastlabel)
+SELECT (?lastelement as ?element) ?date (?lastparent as ?parent) ?addorremove ?label ?parentlabel (GROUP_CONCAT(?lastpreflabel;separator=",") as ?lastlabel)
 WHERE {	          
 ?commit prov:qualifiedUsage ?cs ;
     prov:endedAtTime ?date .
@@ -51,7 +51,7 @@ WHERE {
     rdf:predicate ?narrower;
     rdf:object ?someelement
 ] .
-?lastparent prov:wasDerivedFrom* ?someparent .
+?lastparent prov:wasDerivedFrom* ?someparent.
 FILTER NOT EXISTS {
     ?anyparent prov:wasDerivedFrom ?lastparent
 }
@@ -63,7 +63,7 @@ OPTIONAL {
   ?lastelement skos:prefLabel ?label FILTER (lang(?label)='en')
 }
 OPTIONAL {
-  ?someparent skos:prefLabel ?parentlabel FILTER (lang(?label)='en')
+  ?lastparent skos:prefLabel ?parentlabel FILTER (lang(?parentlabel)='en')
 }
 OPTIONAL {
   ?cs cs:removal [
@@ -76,7 +76,7 @@ OPTIONAL {
     
 FILTER (?addorremove IN (cs:addition,cs:removal) && ?narrower IN (skos:narrower, rdf:hasPart, skos:member, :topLevelNode, skos:hasTopConcept)) .
 }
-GROUP BY ?lastelement ?date ?lastparent ?otherparent ?addorremove ?label ?parentlabel
+GROUP BY ?lastelement ?date ?lastparent ?addorremove ?label ?parentlabel
 HAVING (bound(?element) || ?label != "")
 ORDER BY ?element ?date DESC(?addorremove)`;        
   }
