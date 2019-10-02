@@ -159,7 +159,13 @@ app-concept-information {
 
 .hoveredInformationDiv{
     position:absolute;
-    z-index:11;
+    z-index:21;
     overflow-y:auto;
     pointer-events:none;
+}
+.hoveredInformationDiv table {
+    table-layout: auto !important;
+} 
+.hoveredInformationDiv td, .hoveredInformationDiv th {
+    width: auto !important;
 }
