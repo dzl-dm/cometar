@@ -53,8 +53,7 @@
     'opacity':isGhostItem()?0.5:1.0
   }"
   *ngIf="showInformationDiv$ | async"
-  #treeItemInformation
-  (mouseenter)="onInformationMouseEnter($event)"> 
+  #treeItemInformation> 
   <app-concept-information 
     [stayTruncated]="true"
     *ngIf="showSearchResult$ | async"
@@ -64,7 +63,9 @@
     [maxWidth]="treeItemInformation.offsetWidth"
     [highlightTerm]="treeDataService.getSearchPattern()"
     [collapsed]="isGhostItem()"
-    [cellWidthPercentages]="[35,65]"></app-concept-information>
+    [columnDisplayOptions]="['show','hideOrGrow']"
+    [columnMinWidth]="[150,250]"
+    [columnWidthPercentages]="[35,65]"></app-concept-information>
   <ng-container *ngFor="let conceptInformation of conceptInformation$ | async">
       <app-concept-information 
         [stayTruncated]="true"

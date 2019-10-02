@@ -8,7 +8,7 @@ table {
     margin-bottom:10px;
     overflow-x: hidden;
     background-color:inherit;
-    table-layout: fixed;
+    table-layout: auto;
     overflow-wrap: break-word;
 }
 table td, table th {
@@ -21,7 +21,7 @@ table td, table th {
     box-sizing: border-box;
 }
 table.truncateText td, table.truncateText th {
-    white-space: nowrap;
+    /*white-space: nowrap;*/
     overflow:hidden;
     text-overflow: ellipsis;
 }

@@ -2,7 +2,8 @@
     <div class="expandDiv" (click)="collapsed = !collapsed">Show Provenance Details</div>
 </ng-container>
 <ng-container *ngIf="!collapsed">
-    <table class="conceptInformationTable"
+    <table class="conceptInformationTable" #conceptInformationTable
+    (mouseenter)="onInformationMouseEnter($event)"
         #table
         [ngClass]="{
             'rowHeadingTable':headingDirection == 'row', 
@@ -12,7 +13,7 @@
             'stayTruncated':stayTruncated
         }">
         <tr *ngIf="conceptInformation">
-            <td *ngFor="let cell of conceptInformation.headings; let i = index" [style.width]="getWidth(i)">
+            <td *ngFor="let cell of conceptInformation.headings; let i = index" [style.minWidth]="getMinWidth(i)" [style.width]="getWidth(i)" [style.display]="getDisplay(i)">
                 {{cell}}
             </td>
         </tr>
@@ -22,7 +23,7 @@
             </ng-container>               
             <ng-template #noheading>
             </ng-template>-->
-            <td *ngFor="let cell of row; let i = index" [style.width]="getWidth(i)">
+            <td *ngFor="let cell of row; let i = index" [style.minWidth]="getMinWidth(i)" [style.width]="getWidth(i)" [style.display]="getDisplay(i)">
                 <ng-container *ngFor="let match of matchArray(cell)">
                     <span *ngIf="isConceptIri(match)" (click)="navigateToConcept(cell)" class="conceptLink">{{match}}</span>
                     <span *ngIf="!isConceptIri(match)"

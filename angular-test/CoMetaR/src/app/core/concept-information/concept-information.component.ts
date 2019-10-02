@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, ElementRef, ViewChild } from '@angular/core';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { TreeDataService } from '../services/tree-data.service';
 
@@ -12,9 +12,10 @@ export class ConceptInformationComponent implements OnInit {
   @Input() headingDirection:string;
   @Input() data:string[][];
   @Input() hiddenHeading:boolean;
-  @Input() cellWidthPercentages:number[];
-  @Input() cellMaxWidth?:number[];
-  @Input() cellMinWidth?:number[];
+  @Input() columnWidthPercentages:number[];
+  @Input() columnMinWidth?:number[];
+  @Input() columnDisplayOptions?:("show"|"showAndShrink"|"hideOrGrow"|"hideOrShrink")[];
+  //@Input() cellMinWidth?:number[];
   @Input() highlightTerm:string;
   @Input() collapsed:boolean;
   @Input() maxWidth?:number;
@@ -32,9 +33,10 @@ export class ConceptInformationComponent implements OnInit {
     if (this.conceptInformation && !this.data) {
       this.data = this.conceptInformation.cells;
       this.headingDirection="row";
-      this.cellWidthPercentages = this.conceptInformation.cellWidthPercentages;
-      this.cellMaxWidth = this.conceptInformation.cellMaxWidth;
-      this.cellMinWidth = this.conceptInformation.cellMinWidth;
+      this.columnWidthPercentages = this.conceptInformation.columnWidthPercentages;
+      this.columnMinWidth = this.conceptInformation.columnMinWidth;
+      this.columnDisplayOptions = this.conceptInformation.columnDisplayOptions;
+      //this.cellMinWidth = this.conceptInformation.cellMinWidth;
     }
   }
 
@@ -94,18 +96,93 @@ export class ConceptInformationComponent implements OnInit {
   public navigateToConcept(iri:string){
     this.treeDataService.onConceptSelection(iri);
   }
+  
+  public getMinWidth(i:number, width?):string{
+    if (!this.columnMinWidth) return this.columnWidthPercentages[i]+"%"; 
+    let divWidth = width || (<HTMLElement>this.el.nativeElement).offsetWidth;
+    if (this.columnWidthPercentages[i]*divWidth/100 < this.columnMinWidth[i]) return this.columnWidthPercentages[i]+"%";
+    return this.columnMinWidth[i]+"px";
+  }
 
-  public getWidth(i:number):string{
-    return this.cellWidthPercentages[i]+"%";
-    //leads to performance issues
-    let percentValue = this.cellWidthPercentages[i];
-    let maxValue = this.cellMaxWidth && this.cellMaxWidth[i];
-    let minValue = this.cellMinWidth && this.cellMinWidth[i];
-    let minvaluesum = this.cellMinWidth && this.cellMinWidth.reduce((previous,current,index)=>previous+current) || 0;
-    let divWidth = (<HTMLElement>this.el.nativeElement).offsetWidth;
-    if (divWidth > minvaluesum && minValue > 0 && percentValue*divWidth/100 < minValue) return minValue+"px";
-    if (maxValue > 0 && percentValue*divWidth/100 > maxValue) return maxValue+"px";
-    else return percentValue + "%";
+  public getWidth(i:number, width?):string{
+    if (this.columnDisplayOptions && this.columnDisplayOptions[i]=="hideOrGrow") return "auto";
+    if (this.columnDisplayOptions && this.columnMinWidth && this.columnDisplayOptions[i] == "showAndShrink"){
+      let divWidth = width || (<HTMLElement>this.el.nativeElement).offsetWidth;
+      if (this.columnWidthPercentages[i]*divWidth/100 > this.columnMinWidth[i]) return this.columnMinWidth[i]+"px"
+    }
+    return this.columnWidthPercentages[i]+"%";
+  }
+
+  public getDisplay(i:number, width?):("none"|"table-cell"){
+    let divWidth = width || (<HTMLElement>this.el.nativeElement).offsetWidth;
+    let cdo = this.columnDisplayOptions;
+    if (!cdo) return "table-cell";
+    if (cdo[i]=="show"||cdo[i]=="showAndShrink") return "table-cell";
+    let cmw = this.columnMinWidth;
+    let shownColumnWidthSum=0;
+    cdo.forEach((o,index)=>{
+      if (cmw) shownColumnWidthSum+=cmw[index];
+    });
+    if (shownColumnWidthSum >= divWidth) return "none";
+    return "table-cell";
+  }
+  
+  private mouseEventFunction;
+  private cloneRemoveFunction;
+  public onInformationMouseEnter(event:MouseEvent){
+    if (this.cloneRemoveFunction) this.cloneRemoveFunction();
+    let informationDiv = <HTMLElement>event.target;
+    while (!(informationDiv.className.indexOf("treeItemInformation")>-1)) {
+      informationDiv = <HTMLElement>informationDiv.parentNode;
+    }
+    let clone = <HTMLElement>informationDiv.cloneNode(true);
+    let cit = <HTMLTableElement>clone.getElementsByClassName("conceptInformationTable")[0];
+    let hiddenCells;
+    Array.from(cit.children).forEach((tr:HTMLTableRowElement) => {
+      hiddenCells = Array.from(tr.children).filter((c:HTMLTableCellElement|HTMLTableHeaderCellElement)=>c.style.display=="none");
+    })
+    if (hiddenCells.length == 0) return;
+    document.body.append(clone);
+    let left = informationDiv.getBoundingClientRect().left;
+    let maxWidth = Math.min(1000,window.innerWidth-left-20);
+    if (informationDiv.offsetWidth > 1000){
+      maxWidth = informationDiv.offsetWidth;
+    }
+    let maxHeight = Math.min(1500,window.innerHeight-40);
+    clone.classList.add("hoveredInformationDiv");
+    cit.classList.remove("truncateText");
+    Array.from(cit.children).forEach((tr:HTMLTableRowElement) => {
+      Array.from(tr.children).forEach((c:HTMLTableCellElement|HTMLTableHeaderCellElement,index)=>{
+        c.style.width = this.getWidth(index,maxWidth);
+        c.style.display = this.getDisplay(index,maxWidth);
+        c.style.minWidth = this.getMinWidth(index,maxWidth);
+      })
+    })
+    setTimeout(()=>{
+      let top = Math.min(informationDiv.getBoundingClientRect().top, window.innerHeight-clone.offsetHeight-20);
+      clone.setAttribute("style","left:"+left+"px;top:"+top+"px;max-height:"+maxHeight+"px;width:"+maxWidth+"px;");
+    },0);
+    let top = Math.min(informationDiv.getBoundingClientRect().top, window.innerHeight-clone.offsetHeight-20);
+    clone.setAttribute("style","left:"+left+"px;top:"+top+"px;max-height:"+maxHeight+"px;width:"+maxWidth+"px;");
+    let mouseX = event.x;
+    let mouseY = event.y;
+    this.cloneRemoveFunction = (event)=>{
+      clone.remove();
+      document.body.removeEventListener("mousemove",this.mouseEventFunction);
+      document.getElementById("tree").removeEventListener("scroll",this.mouseEventFunction);
+    }
+    this.mouseEventFunction = (event)=>{
+      if (event.type == "mousemove"){
+        mouseX = event.x;
+        mouseY = event.y;
+      }
+      if (mouseX < informationDiv.getBoundingClientRect().left || mouseX > informationDiv.getBoundingClientRect().left + informationDiv.offsetWidth 
+        || mouseY < informationDiv.getBoundingClientRect().top || mouseY > informationDiv.getBoundingClientRect().top + informationDiv.offsetHeight){
+        this.cloneRemoveFunction();
+      }
+    }
+    document.body.addEventListener("mousemove",this.mouseEventFunction);
+    document.getElementById("tree").addEventListener("scroll",this.mouseEventFunction);
   }
 }
 
@@ -113,8 +190,8 @@ export interface ConceptInformation{
   concept:string,
   headings?:string[],
   cells:string[][],
-  cellWidthPercentages:number[],
-  cellMaxWidth?:number[],
-  cellMinWidth?:number[],
+  columnWidthPercentages:number[],
+  columnMinWidth?:number[],
+  columnDisplayOptions?:("show"|"showAndShrink"|"hideOrGrow"|"hideOrShrink")[],
   sourceId:string
 }
