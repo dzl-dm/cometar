@@ -57,7 +57,7 @@ export class ProgressService {
 }
 
 export class Task {
-  private log:boolean=true;
+  private log:boolean=false;
   private name:string;
   private promise:Promise<any>;
   private type:"tree"|"module";

@@ -30,13 +30,13 @@
         </div>
         <div id="runningTaskOverlay" 
             [ngClass]="{'visible':runningTask}"
-            [style.width.px]="moduleContent.offsetWidth" 
+            [style.width]="'100%'" 
             [style.top.px]="moduleContent.offsetTop" 
             [style.height.px]="moduleContent.offsetHeight">
         </div>
         <div id="runningTaskContent" 
             [ngClass]="{'visible':runningTask}"
-            [style.width.px]="moduleContent.offsetWidth" 
+            [style.width]="'100%'" 
             [style.top.px]="moduleContent.offsetTop" 
             [style.height.px]="moduleContent.offsetHeight">
             <div id="runningTaskContentCenter">

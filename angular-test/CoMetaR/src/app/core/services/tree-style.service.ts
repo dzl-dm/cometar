@@ -215,7 +215,7 @@ export class TreeStyleService {
     return combineLatest(this.treeItemStyles$,this.ontologyAccessService.getTreeItem$(iri)).pipe(
       map(([sa, treeitem]) => {
         if (!treeitem) return this.getEmptyStyle(iri);
-        let style = sa.filter(tis => tis.concept == iri && (!tis.parent || tis.parent == parentiri)).reduce((result,next)=>{
+        let style = sa.filter(tis => tis.concept == iri && (!tis.parent || !parentiri || tis.parent == parentiri)).reduce((result,next)=>{
           result["background-color"] = next["background-color"] || result["background-color"];
           result["border-color"] = next["border-color"] || result["border-color"];
           result.color = next.color || result.color;
