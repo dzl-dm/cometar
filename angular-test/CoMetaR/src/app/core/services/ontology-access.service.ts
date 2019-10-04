@@ -20,7 +20,11 @@ export class OntologyAccessService {
   }
   public getSubItems$(iri:string):Observable<TreeItem[]>{
     return this.ontologyDataService.treeItems$.pipe(
-      map(tis => tis.filter(ti => ti.element.value == iri)[0].children)
+      map(tis => {
+        let item = tis.filter(ti => ti.element.value == iri)
+        if (item && item.length > 0) return item[0].children;
+        return [];
+      })
     )
   }
   public getItem$(iri:string):Observable<TreeItem>{
