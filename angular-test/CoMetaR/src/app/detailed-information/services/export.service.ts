@@ -17,8 +17,32 @@ export class ExportService {
     private ontologyAccessService: OntologyAccessService
   ) { }
 
+  private exportString="";
   public get(iri:string, callback:(exportString: string)=>void):void {
+    
+    let o = this.ontologyAccessService.getItem$(iri).pipe(first()).subscribe(ti => {
+      this.exportString = "label;status;codes;units;is modifier\n";
+      this.writeRecursive(ti);
+      callback(this.exportString);
+    });
+  }
+
+  private writeRecursive(ti: TreeItem, level:number=0) {
+    let intent="";
+    for(let i = 0; i < level; i++) intent+= "   ";
+    let label = ti.label.value;
+    let status = ti.status?ti.status.value:"";
+    let isMod = ti.isModifier && ti.isModifier.value == true?"true":"false";
+    let notations = ti.notations && ti.notations.value.join(",") || "";
+    let units = ti.units && ti.units.value.join(",") || "";
+    this.exportString +=  [intent+label,status,notations,units,isMod].join(";") + "\n";
+    ti.children.forEach(c=>this.writeRecursive(c, level+1));
+  }
+
+  /*public get(iri:string, callback:(exportString: string)=>void):void {
+    
     let o = this.ontologyAccessService.getItem$(iri).pipe(first()).subscribe(tis => {
+      console.log(tis);
       this.exportItem = { treeItem: tis, subExportItems: [], ontologyElementDetails: [] };
       this.getRecursive(this.exportItem).subscribe(next => {
         if (next == false) return;
@@ -68,7 +92,7 @@ export class ExportService {
       });
     }); 
     return s;
-  }
+  }*/
 }
 
 export interface ExportItem {

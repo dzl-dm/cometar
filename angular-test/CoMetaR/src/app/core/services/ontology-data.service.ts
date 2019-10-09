@@ -28,7 +28,7 @@ export class OntologyDataService {
     let parentsQuery:Observable<ParentChildRelation[]> = this.dataService.getData(parentsQueryString, "all parent-child relations");
 
     let informationQueryString = this.getItemInformationQueryString();
-    let informationQuery:Observable<TreeItemInformation[]> = this.dataService.getData(informationQueryString, "all basic concept information", {notations:"|array"});
+    let informationQuery:Observable<TreeItemInformation[]> = this.dataService.getData(informationQueryString, "all basic concept information", {notations:"|array", units:"|array"});
     
     //this triggers once when the page loads and afterwards when a new provenance date is entered so that this.ghostTreeItems$ changes
     //could be optimized by not fully rebuilding the concept tree
@@ -77,6 +77,7 @@ export class OntologyDataService {
           label: {value: gc.label.value, "xml:lang":"en"},
           notations: { value:[] },
           isModifier: {value: false},
+          units: { value:[] },
           type: {value: "http://www.w3.org/2004/02/skos/core#Concept"}
         });
         newti.ghostParents.push(ti.element);   
@@ -158,12 +159,13 @@ WHERE
   private getItemInformationQueryString(){
     return `#basic information for all concepts
 ${prefixes}
-SELECT ?element ?type ?label (COUNT(?top)>0 as ?isModifier) ?status ?displaylabel (GROUP_CONCAT(?notation;separator="|") as ?notations)
+SELECT ?element ?type ?label (COUNT(?top)>0 as ?isModifier) ?status ?displaylabel (GROUP_CONCAT(?notation;separator="|") as ?notations) (GROUP_CONCAT(?unit;separator="|") as ?units)
 WHERE {	    
   FILTER (bound(?element))
   ?element skos:prefLabel ?label FILTER (lang(?label)='en') .
   OPTIONAL { ?element skos:broader* [ rdf:partOf ?top ] . }
   OPTIONAL { ?element skos:notation ?notation }
+  OPTIONAL { ?element :unit ?unit }
   OPTIONAL { ?element :displayLabel ?displaylabel FILTER (lang(?displaylabel)='en') }
   OPTIONAL { ?element rdf:type ?type . }
   OPTIONAL { ?element :status ?status . }
@@ -190,5 +192,6 @@ export interface TreeItemInformation {
   label: JSONResponsePartLangString,
   displaylabel?:JSONResponsePartLangString,
   isModifier: JSONResponsePartBoolean,
-  status?: JSONResponsePartString
+  status?: JSONResponsePartString,
+  units:JSONResponsePartArray
 }
