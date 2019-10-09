@@ -19,7 +19,7 @@ export class ConceptInformationComponent implements OnInit {
   @Input() highlightTerm:string;
   @Input() collapsed:boolean;
   @Input() maxWidth?:number;
-  @Input() truncateText?:boolean;
+  @Input() truncateText?:boolean=false;
   @Input() conceptInformation:ConceptInformation;
   @Input() stayTruncated?:boolean = true;
 
@@ -114,6 +114,7 @@ export class ConceptInformationComponent implements OnInit {
   }
 
   public getDisplay(i:number, width?):("none"|"table-cell"){
+    if (!this.truncateText) return "table-cell";
     let divWidth = width || (<HTMLElement>this.el.nativeElement).offsetWidth;
     let cdo = this.columnDisplayOptions;
     if (!cdo) return "table-cell";
