@@ -10,6 +10,7 @@ export class TreeItem {
         this.type = is.type;
         this.isModifier = is.isModifier;
         this.status = is.status;
+        this.units = is.units;
     }
     element:JSONResponsePartUriString;
     type:JSONResponsePartUriString;
@@ -17,6 +18,7 @@ export class TreeItem {
     displayLabel:JSONResponsePartLangString;
     isModifier:JSONResponsePartBoolean;
     notations:JSONResponsePartArray;
+    units:JSONResponsePartArray;
     status?:JSONResponsePartString;
     ghostParents:JSONResponsePartUriString[]=[];
     children:TreeItem[]=[];
