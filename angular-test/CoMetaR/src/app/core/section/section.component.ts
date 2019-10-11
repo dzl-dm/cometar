@@ -32,6 +32,7 @@ export class SectionComponent implements OnInit {
   @Input() min_height?:number;
   @Input() backgroundstyle?:'solid'|'shadow'='solid';
   @Input() margin?:number=5;
+  @Input() padding?:number=10;
   @Output() open = new EventEmitter<Event>();
   constructor(
     iconRegistry: MatIconRegistry, 

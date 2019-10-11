@@ -22,8 +22,7 @@
     position:absolute;
     height:calc(100% - 20px);
 }
-.modal-content {    
-    padding: 10px;
+.modal-content {   
     height:100%;
     flex-direction: column;
     display:flex;

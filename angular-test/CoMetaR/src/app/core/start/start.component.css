@@ -32,6 +32,8 @@ div.statistics {
 }
 div.statistic {
     width:40%;
+    background-color: white;
+    box-shadow: 0 0 10px #777;
 }
 
 .sectionWrapper {
@@ -52,7 +54,7 @@ div.statistic {
     flex-direction: row-reverse;
     justify-content: flex-end;
     align-content: stretch;
-    margin-bottom:40px;  
+    max-width: 900px;
 }
 #startVideo h5, #startVideo h2 {
     text-align: left;
