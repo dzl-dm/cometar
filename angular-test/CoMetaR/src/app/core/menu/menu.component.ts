@@ -8,6 +8,7 @@ import { DataService } from 'src/app/services/data.service';
 import { combineAll, combineLatest } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TreeStyleService } from '../services/tree-style.service';
+import { HelpVideosService } from '../services/help-videos.service';
 
 @Component({
   selector: 'app-menu',
@@ -26,6 +27,7 @@ export class MenuComponent implements OnInit {
     private router: Router,
     public treeDataService: TreeDataService,
     public treeStyleService: TreeStyleService,
+    public helpVideosService: HelpVideosService,
     private route:ActivatedRoute,
     private e: ElementRef,
     private cd: ChangeDetectorRef,
@@ -108,6 +110,11 @@ export class MenuComponent implements OnInit {
         hi.top = Math.max(0,hi.relativeTop && offset.top + hi.relativeTop || offset.top);
       }
     })
+  }
+
+  public onSectionHeadingClick(event:MouseEvent, sectionWrapper:HTMLElement){
+    console.log(sectionWrapper);
+    sectionWrapper.scrollTop=50
   }
 
   public helpItems:HelpItem[] = [];

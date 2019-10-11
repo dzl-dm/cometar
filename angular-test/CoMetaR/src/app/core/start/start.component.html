@@ -1,29 +1,33 @@
-<div class="logo"><img src="assets/img/CoMetaR_Logo.png"/></div>
-<div class="heading">CoMetaR - a Collaborative Metadata Repository</div>
-<div align="center"><h4>Latest Activities</h4></div>
-<div class="statistics">
-  <div class="statistic">
-    <canvas
-          baseChart width="500" height="400"
-          [datasets]="commitsDataset"
-          [labels]="commitsLabels"
-          [options]="barChartOptions"
-          [colors]="barChartColors"
-          [legend]="true"
-          [chartType]="'bar'"></canvas>  
-  </div>
-  <div class="statistic">
-    <canvas
-          baseChart width="500" height="400"
-          [datasets]="totalElementsDataset"
-          [labels]="commitsLabels"
-          [options]="lineChartOptions"
-          [colors]="lineChartColors"
-          [legend]="true"
-          [chartType]="'line'"></canvas> 
-  </div> 
+<div class="header">
+  <div class="logo"><img src="assets/img/CoMetaR_Logo.png"/></div>
+  <div class="heading">CoMetaR - a Collaborative Metadata Repository</div>
 </div>
-<div class="functions">
+<app-section [backgroundstyle]="'shadow'" [margin]="20">
+  <h4>Latest Activities</h4>
+  <div class="statistics">
+    <div class="statistic">
+      <canvas
+            baseChart width="500" height="400"
+            [datasets]="commitsDataset"
+            [labels]="commitsLabels"
+            [options]="barChartOptions"
+            [colors]="barChartColors"
+            [legend]="true"
+            [chartType]="'bar'"></canvas>  
+    </div>
+    <div class="statistic">
+      <canvas
+            baseChart width="500" height="400"
+            [datasets]="totalElementsDataset"
+            [labels]="commitsLabels"
+            [options]="lineChartOptions"
+            [colors]="lineChartColors"
+            [legend]="true"
+            [chartType]="'line'"></canvas> 
+    </div> 
+  </div>
+</app-section>
+<!--<div class="functions">
   <p>This platform provides:</p>
   <ul>
     <li>DZL Metadata Tree Visualization</li>
@@ -38,4 +42,21 @@
     <li>Click provenance menu tab to see more about latest changes to the DZL ontology.</li>
     <li>Click help button in the upper left corner to learn more about the CoMetaR Browser.</li>
   </ul>
-</div>
+</div>-->
+<app-section [backgroundstyle]="'shadow'" [margin]="20">
+  <h4>Did you know?</h4>
+  <div id="startVideo">
+      <div class="text">
+          <h2>{{randomSection.heading}}</h2>
+          <h5>{{randomVideo.heading}}</h5>
+          <p>{{randomVideo.description}}</p>
+          <a (click)="toggleHelp()">show me more</a>
+      </div>
+      <div class="videoContainer" style="height:294px">
+          <video width="480" height="320" autoplay loop style="margin-top:-12px">
+              <source src="{{randomVideo.url}}" type="video/mp4">
+              Your browser does not support the video tag.
+          </video>
+      </div>
+  </div>
+</app-section>

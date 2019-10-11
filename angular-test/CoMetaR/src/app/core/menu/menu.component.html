@@ -22,8 +22,38 @@
     </form>
 </div>
 <div id="helpDiv" [ngClass]="{'open':helpDivOpened}" #helpDiv>
-    <div id="opacityDiv" (click)="toggleHelp(helpDiv)"></div>
-    <div *ngFor="let helpItem of helpItems" 
+    <div id="opacityDiv"></div>
+    <div id="helpContainerWrapper" (click)="toggleHelp(helpDiv)">
+        <ng-container *ngIf="helpDivOpened">
+            <div id="helpContainer" (click)="$event.stopPropagation()">
+                <div class="helpMenu">
+                    <div *ngFor="let section of helpVideosService.helpSections; let i = index">
+                        <div class="helpMenuItem" (click)="sectionWrapper.scrollTop=sectionWrapper.children[i].offsetTop-sectionWrapper.offsetTop">{{section.heading}}</div>
+                    </div>
+                </div>
+                <div class="sectionWrapper" #sectionWrapper>
+                    <div *ngFor="let section of helpVideosService.helpSections; let i = index">
+                        <h1>{{section.heading}}</h1>
+                        <div class="section">
+                            <div *ngFor="let video of section.videos" class="part">
+                                <div class="text">
+                                    <h5>{{video.heading}}</h5>
+                                    <p>{{video.description}}</p>
+                                </div>
+                                <div class="videoContainer" style="height:294px">
+                                    <video width="480" height="320" autoplay loop style="margin-top:-12px">
+                                        <source src="{{video.url}}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+    <!--<div *ngFor="let helpItem of helpItems" 
         class="helpItem" 
         [style.left.px]="helpItem.left" 
         [style.top.px]="helpItem.top"
@@ -31,6 +61,6 @@
         [style.right.px]="helpItem.right"
         [style.bottom.px]="helpItem.bottom"><h3>{{helpItem.heading}}</h3>
         <p *ngFor="let d of helpItem.description">{{d}}</p>
-    </div>
+    </div>-->
 </div>
 <app-progressbar></app-progressbar>

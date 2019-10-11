@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommitHistoryService } from '../services/queries/commit-history.service';
+import { HelpVideosService, HelpVideo, HelpSection } from '../services/help-videos.service';
 
 @Component({
   selector: 'app-start',
@@ -86,9 +87,19 @@ export class StartComponent implements OnInit {
     }
   };
   constructor(
-    private commitHistoryService: CommitHistoryService
+    private commitHistoryService: CommitHistoryService,
+    private helpVideosService: HelpVideosService
   ) { }
 
+  public randomVideo: HelpVideo = {
+    heading: "",
+    description: "",
+    url: ""
+  };
+  public randomSection: HelpSection = {
+    heading: "",
+    videos:[]
+  }
   ngOnInit() {
     this.commitHistoryService.get().subscribe(data => {
       this.commitsLabels = data.map(d => d.date.value);
@@ -111,6 +122,12 @@ export class StartComponent implements OnInit {
         label: "Total Ontology Statements"
       };
     });
+    let random1 = Math.floor(Math.random()*this.helpVideosService.helpSections.length);
+    this.randomSection = this.helpVideosService.helpSections[random1];
+    let random2 = Math.floor(Math.random()*this.randomSection.videos.length);
+    this.randomVideo = this.randomSection.videos[random2];
   }
-
+  public toggleHelp(){
+    document.getElementById('helpbutton').click()
+  }
 }
