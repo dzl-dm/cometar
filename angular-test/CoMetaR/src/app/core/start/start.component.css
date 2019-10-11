@@ -52,9 +52,8 @@ div.statistic {
     margin-right:auto;
     display: flex;
     flex-direction: row-reverse;
-    justify-content: flex-end;
-    align-content: stretch;
-    max-width: 900px;
+    flex-wrap: wrap;
+    width:100%;
 }
 #startVideo h5, #startVideo h2 {
     text-align: left;
@@ -81,10 +80,16 @@ div.statistic {
     flex-direction: column;
     justify-items: flex-end;
     position: relative;
+    max-width: 484px;
+    margin-bottom:20px;
+    margin-left:auto;
+    margin-right:auto;
 }
 #startVideo .videoContainer {
     border: 2px solid #666; 
     overflow: hidden;
     width:484px;
     flex-shrink: 0;
+    margin-left:auto;
+    margin-right:auto;
 }
