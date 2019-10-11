@@ -1,4 +1,8 @@
 :host {    
+    width:100%;
+    display: flex;
+}
+.container {
     margin-bottom:10px;
     display:flex;
     flex-direction: row;
@@ -23,7 +27,12 @@
     height:100%;
     flex-direction: column;
     display:flex;
+}
+.modal-content.solid{    
     background-color: #EEE;
+}
+.modal-content.shadow{
+    box-shadow: 0 0 10px #777;
 }
 .modal-header {
     font-size:20px;

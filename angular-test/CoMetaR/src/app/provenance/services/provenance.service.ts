@@ -71,6 +71,10 @@ export class ProvenanceService {
 			if (data[2]) message += "Tree commit detail data loading. ";
 			
 			if (data.includes(true) && this.provenanceTask && this.provenanceTask.status=="running"){
+				/*console.log(this.loadedElements);
+				console.log(this.loadedIntoTreeCommits);
+				console.log(this.elementsToLoad);
+				console.log(this.commitsToLoadIntoTree);*/
 				this.provenanceTask.update(this.loadedElements+this.loadedIntoTreeCommits,this.elementsToLoad+this.commitsToLoadIntoTree,message);
 			}
 			else if (!data.includes(true) && this.provenanceTask && this.provenanceTask.status!="finished"){
@@ -78,7 +82,7 @@ export class ProvenanceService {
 			}
 			else if (data.includes(true)) this.provenanceTask = this.progressService.addModuleTask("Provenance",this.elementsToLoad+this.commitsToLoadIntoTree);
 
-		})
+		});
     }
 	public displayOptions$:BehaviorSubject<{}> = new BehaviorSubject<{}>(this.configuration.initialCheckedPredicates);
 	private combinedCommitDetails$:ReplaySubject<CommitDetails[]>=new ReplaySubject<CommitDetails[]>(1);
@@ -101,15 +105,18 @@ export class ProvenanceService {
     }
 
 	private provenanceTask:Task;
-	private getOverViewSubtaskRunning$=new BehaviorSubject<boolean>(false);
+	private getOverViewSubtaskPercentage$=new BehaviorSubject<number>(0);
+	private getOverViewSubtaskRunning$:Observable<boolean>=this.getOverViewSubtaskPercentage$.pipe(map(p => p>=100))//new BehaviorSubject<boolean>(false);
 	private getProvTreeItemsSubtaskRunning$ = this.provTreeItemsService.busy$;
 	private elementsToLoad:number=0;
 	private loadedElements:number=0;
 	private commitsLeft:string[]=[];
     public getProvenance(from:Date) {
-        let commitMetaDataByDay=[];
+		let commitMetaDataByDay=[];
+		this.getOverViewSubtaskPercentage$.next(0);
 		this.elementsToLoad=0;
 		this.loadedElements=0;
+		this.commitsLeft=[];
 
 		let index = 0;
 		for (let date = new Date(Date.now()); date >= from; date.setHours(date.getHours() - 24)){
@@ -119,8 +126,10 @@ export class ProvenanceService {
 			let myindex = index;
 			this.getCommitMetaDataByDay$(day).subscribe(cmd => {
 				this.elementsToLoad+=cmd.length;
-				if (cmd.length > 0) this.getOverViewSubtaskRunning$.next(true);
-				cmd.map(c => this.configuration.cutPrefix(c.commitid.value)).forEach(c=>this.commitsLeft.push(c));
+				//if (cmd.length > 0) this.getOverViewSubtaskRunning$.next(true);
+				cmd.map(c => this.configuration.cutPrefix(c.commitid.value)).forEach(c=>{
+					if (this.commitsLeft.indexOf(c)==-1) this.commitsLeft.push(c)
+				});
 				this.loadedElements++;
 				commitMetaDataByDay[myindex] =[day,cmd];
 			});
@@ -131,16 +140,17 @@ export class ProvenanceService {
 	public onCommitFinishedLoading(commitid:string){
 		this.loadedElements++;
 		this.commitsLeft.splice(this.commitsLeft.indexOf(this.configuration.cutPrefix(commitid)),1);
-		if (this.loadedElements >= this.elementsToLoad) this.getOverViewSubtaskRunning$.next(false);
+		//if (this.loadedElements >= this.elementsToLoad) this.getOverViewSubtaskRunning$.next(false);
+		this.getOverViewSubtaskPercentage$.next(Math.round(this.loadedElements/this.elementsToLoad));
 	}
 
     public setProvenanceDate(from:Date){    
 		this.provTreeItemsService.setProvTreeItemAttributes(from);
     }
 
-	public getConceptTableInformation(commitDetails:CommitDetails[], displayOptions$:BehaviorSubject<{}>):Observable<ConceptInformation[]>{
+	public getConceptTableInformation(commitDetails:CommitDetails[]):Observable<ConceptInformation[]>{
 		let cis = new ReplaySubject<ConceptInformation[]>(1);
-		displayOptions$.subscribe(displayOptions => {
+		this.displayOptions$.subscribe(displayOptions => {
             let result:ConceptInformation[] = [];
             let subject = "";
             let predicate = "";
@@ -214,7 +224,8 @@ export class ProvenanceService {
 
     
     public setDisplayOptions(displayOptions$){
-        this.displayOptions$ = displayOptions$
+        this.displayOptions$ = displayOptions$;
+		this.displayOptions$.subscribe(d => this.updateTreeData());
     }
 
 	public clearTree(){
@@ -264,7 +275,7 @@ export class ProvenanceService {
 
 	private updateTreeData(){
 		this.combinedCommitDetails$.pipe(
-			flatMap(cds => this.getConceptTableInformation(cds, this.displayOptions$))
+			flatMap(cds => this.getConceptTableInformation(cds))
 		).subscribe(data => this.treeData$.next(data)).unsubscribe();
 
 	}

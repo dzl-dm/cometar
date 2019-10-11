@@ -47,6 +47,7 @@ export class ProvenanceComponent implements OnInit {
 		this.route.queryParamMap.pipe(
 			map(data => data.get('provenancefrom'))
 		).subscribe(date => {
+			if (!date) return;
 			this.fromDate = date && new Date(date) || new Date(Date.now());
 			let datediff = Date.now().valueOf()-this.fromDate.valueOf();
 			this.historyFromDays = Math.floor(datediff/1000/60/60/24);

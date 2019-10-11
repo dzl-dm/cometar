@@ -46,7 +46,7 @@ export class ConceptInformationComponent implements OnInit {
     let result:string[] = [];
     let counter = 0;
     while (index < s.length && counter < 20){
-      let newSearchIndex = this.highlightTerm && s.toUpperCase().indexOf(this.highlightTerm.toUpperCase(),index) || -1;
+      let newSearchIndex = this.highlightTerm?s.toUpperCase().indexOf(this.highlightTerm.toUpperCase(),index):-1;
       if (newSearchIndex > -1) {
         result.push(s.substring(index,newSearchIndex));
         result.push(s.substr(newSearchIndex,this.highlightTerm.length));
