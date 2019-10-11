@@ -2,8 +2,8 @@
   <div class="logo"><img src="assets/img/CoMetaR_Logo.png"/></div>
   <div class="heading">CoMetaR - a Collaborative Metadata Repository</div>
 </div>
-<app-section [backgroundstyle]="'shadow'" [margin]="20">
-  <h4>Latest Activities</h4>
+<app-section backgroundstyle="solid" [margin]="20" title="Latest Activities">
+  <br>
   <div class="statistics">
     <div class="statistic">
       <canvas
@@ -26,6 +26,7 @@
             [chartType]="'line'"></canvas> 
     </div> 
   </div>
+  <br>
 </app-section>
 <!--<div class="functions">
   <p>This platform provides:</p>
@@ -43,8 +44,8 @@
     <li>Click help button in the upper left corner to learn more about the CoMetaR Browser.</li>
   </ul>
 </div>-->
-<app-section [backgroundstyle]="'shadow'" [margin]="20">
-  <h4>Did you know?</h4>
+<app-section backgroundstyle="solid" margin="20" padding="20" title="Did you know?">
+    <br>
   <div id="startVideo">
       <div class="text">
           <h2>{{randomSection.heading}}</h2>

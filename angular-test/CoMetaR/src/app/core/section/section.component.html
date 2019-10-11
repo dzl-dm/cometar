@@ -9,7 +9,8 @@
     'shadow':backgroundstyle=='shadow'
   }"
   [style.width]="category?'calc(100% - 50px - '+(margin*2)+'px)':'100%'" 
-  [style.flexShrink]="shrinking?1:0" 
+  [style.flexShrink]="shrinking?1:0"
+  [style.padding.px]="padding"
   [style.height]="shrinking?'100%':'fit-content'"
   [style.minHeight.px]="min_height?min_height:0">
   <div class="modal-header" (click)="expandOrCollapse($event)" [ngClass]="{'foldable':foldable}">

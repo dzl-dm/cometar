@@ -91,7 +91,7 @@ export class BrowserComponent implements OnInit {
   public newWidth = 0;
   public activatedRoute;
   public runningTask=false;
-  private taskProgress=0;
+  public taskProgress=0;
   constructor(
     private route:ActivatedRoute,
     private router: Router,

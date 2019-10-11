@@ -158,7 +158,7 @@ export class DetailedInformationComponent implements OnInit {
       });
       this.changeDetails$ = this.selectedIri$.pipe(
         flatMap(subject => this.commitDetailsService.getBySubject(subject)),
-        flatMap(cds => this.provenanceService.getConceptTableInformation(cds, new BehaviorSubject(displayOptions)))
+        flatMap(cds => this.provenanceService.getConceptTableInformation(cds))
       );      
     }
   }
