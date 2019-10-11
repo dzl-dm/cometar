@@ -1,15 +1,26 @@
 <div id="browser" (mouseup)='onTreeResizeEnd($event)'>
-    <div id="treeResizeContainer" [style.width.px]="width" [@changeWidth]="{ value:resizeToogle?'random1':'random2', params: { startWidth: this.width, newWidth: this.newWidth }}">
+    <div id="treeResizeContainer" 
+        [style.width.px]="width" 
+        [style.left.px]="left"
+        [@changeWidth]="{ value:resizeToogle?'random1':'random2', params: { startWidth: this.width, newWidth: this.newWidth }}"
+        [ngClass]="{overlayed:treeAsOverlay}">
         <div id="treeContainer">
             <app-menu></app-menu>
             <app-tree [width]="width" (claimWidth)="onClaimWidth($event)"></app-tree>
             <app-logos></app-logos>
         </div>
         <div id="treeResizeComponent"  
-            (mousedown)='onTreeResizeStart($event)'
-        ><div class="treeResizeExpandCollapseDiv" (mousedown)="expandOrCollapseTreeContainer($event)">&gt;</div></div>
+            (mousedown)='onTreeResizeStart($event)'>
+            <div class="treeResizeExpandCollapseDiv" (mousedown)="expandOrCollapseTreeContainer($event)">
+                <div id="treeExpandCollapseButton">
+                    <mat-icon aria-hidden="false" aria-label="Help" 
+                        [svgIcon]="!treeExpanded || treeAsOverlay && !treeScrolledIn?'expandTree':'collapseTree'"
+                        [style.marginLeft.px]="!treeExpanded || treeAsOverlay && !treeScrolledIn?'0':'5'"></mat-icon>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="modules">
+    <div id="modules" [style.marginLeft.px]="treeAsOverlay?20:0" (click)="treeAsOverlay && treeScrolledIn?expandOrCollapseTreeContainer($event):null">
         <div id="moduleMenu">
             <!-- <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'details'}" (click)="navigateModule('details')">Details</div> -->
             <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'provenance'}" (click)="navigateModule('provenance')">

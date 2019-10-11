@@ -16,10 +16,16 @@ div#treeResizeContainer{
     display: flex;
     flex-direction: row;
     align-items: stretch;
+    justify-items: stretch;
+    height:100%;
     flex-shrink:0;
-    min-width:300px;
     width:500px;
-    transition: width 0.2s ease-in-out;
+    transition: width 0.2s ease-in-out, left 0.2s ease-in-out;
+    background-color:#0492D0;
+}
+div#treeResizeContainer.overlayed {
+    position: absolute;
+    z-index:2;
 }
 div#treeContainer {
     display:flex;
@@ -99,6 +105,22 @@ div.moduleMenuItem:hover{
     cursor:pointer;
     height:20px;
     width:20px;
+}
+
+#treeExpandCollapseButton {
+    position: relative;
+    margin-left:auto;
+    margin-right:auto;
+    width:40px;
+    height:40px;
+    border-radius: 20px;
+    left:-10px;
+    z-index:2;
+    background-color:white;
+    border: 5px solid var(--dzl-blue);
+}
+#treeExpandCollapseButton mat-icon {
+    margin-top:3px;
 }
 
 div#runningTaskOverlay {

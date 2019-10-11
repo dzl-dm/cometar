@@ -87,6 +87,7 @@ export class BrowserComponent implements OnInit {
   title = 'CoMetaR';
 
   public width = 500;
+  public left = 0;
   public resizeToogle = false;
   public newWidth = 0;
   public activatedRoute;
@@ -109,6 +110,8 @@ export class BrowserComponent implements OnInit {
     iconRegistry.addSvgIcon('client-configuration', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-settings_ethernet-24px.svg'));
     iconRegistry.addSvgIcon('sparql', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-question_answer-24px.svg'));
     iconRegistry.addSvgIcon('statistics', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-timeline-24px.svg'));
+    iconRegistry.addSvgIcon('expandTree', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/arrow_forward_ios-24px.svg'));
+    iconRegistry.addSvgIcon('collapseTree', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/arrow_back_ios-24px.svg'));
     this.progressService.moduleTaskProgress$.subscribe(data => this.taskProgress=data?data:0);
     this.progressService.moduleTaskRunning$.subscribe(data => this.runningTask = data);
   }
@@ -128,19 +131,24 @@ export class BrowserComponent implements OnInit {
         verticalPosition: "bottom"
       });
     });
-    window.onresize = ()=>{
-      this.browserService.onResize();
-      this.width=Math.min(this.width, window.innerWidth*0.8,window.innerWidth-300);
-    }
+    window.onresize = ()=>{this.onWindowResize()};
+    this.onWindowResize();
   }
   
   private savedX;
   private savedRelativeTreeScrolltop;
   private boundResizeFunction;
   private dragging = false;
+  private minTreeWidth=300;
+  private minModuleWidth=400;
+  private treeOverlayThreshold=1000;
+  private minModuleWidthAtThreshold=100;
+  public treeAsOverlay=false;
+  public treeScrolledIn=false;
 
   public onTreeResizeStart(event: MouseEvent) {
     event.stopPropagation();
+    this.scrollInTree();
     this.savedX = event.clientX;
     let tree = document.getElementById("tree");
     this.savedRelativeTreeScrolltop = tree.scrollTop/tree.scrollHeight;
@@ -149,7 +157,7 @@ export class BrowserComponent implements OnInit {
       this.dragging=true;
       window.document.addEventListener('mousemove', this.boundResizeFunction);
     });
-    (<HTMLElement>event.currentTarget).getElementsByClassName("treeResizeExpandCollapseDiv")[0].innerHTML="&gt;";
+    this.treeExpanded=true;
     return false;
   }
   private scrollInterval=100;
@@ -158,8 +166,9 @@ export class BrowserComponent implements OnInit {
       event.stopPropagation();
       let diff = event.clientX - this.savedX;
       diff = Math.floor((diff+this.scrollInterval/2)/this.scrollInterval)*this.scrollInterval;
-      diff = Math.max(300-this.width,diff);
-      diff = Math.min(window.innerWidth-300-this.width,diff);
+      if (!this.treeAsOverlay) diff = Math.min(window.innerWidth-this.minModuleWidth-this.width,diff);
+      else diff = Math.min(window.innerWidth-this.width-this.minModuleWidthAtThreshold,diff);
+      diff = Math.max(this.minTreeWidth-this.width,diff);
       this.savedX += diff;
       this.width += diff;
       let tree = document.getElementById("tree");
@@ -194,24 +203,57 @@ export class BrowserComponent implements OnInit {
     this.width = width;
   }
 
+  public treeExpanded:boolean=false;
   public expandOrCollapseTreeContainer(event: MouseEvent){
     event.stopPropagation();
     let tree = document.getElementById("tree");
     this.savedRelativeTreeScrolltop = tree.scrollTop/tree.scrollHeight;
-    let el = <HTMLElement>event.currentTarget;
-    if (el.innerHTML == "&gt;") {
+    if (!this.treeExpanded || this.treeAsOverlay && !this.treeScrolledIn) {
       this.savedX = this.width;
-      this.width=Math.round(Math.min(window.innerWidth-300,window.innerWidth*0.8));
-      el.innerHTML = "&lt;";
+      if (this.treeAsOverlay) {
+        this.scrollInTree();
+        this.width=Math.round(Math.max(window.innerWidth-this.minModuleWidthAtThreshold,this.minTreeWidth));
+      }
+      else {
+        this.width=Math.round(Math.max(Math.min(window.innerWidth-this.minModuleWidth,window.innerWidth*0.8),this.minTreeWidth));
+      }
+      this.treeExpanded=true;
     }
     else {
-      el.innerHTML = "&gt;";
-      this.width=this.savedX;
+      this.treeExpanded=false;      
+      if (this.treeAsOverlay) {
+        this.width=this.minTreeWidth;
+        this.scrollOutTree();
+      }
+      else this.width=this.savedX;
     }
     setTimeout(()=>{
       tree.scrollTop = tree.scrollHeight*this.savedRelativeTreeScrolltop;
       this.browserService.onResize();
     },0);
     return false;
+  }
+
+  private scrollInTree(){
+    this.left=0;
+    this.treeScrolledIn=true;
+  }
+  private scrollOutTree(){
+    this.left=this.minTreeWidth*(-1)+20;
+    this.width=this.minTreeWidth;
+    this.treeScrolledIn=false;
+  }
+
+  private onWindowResize(){
+    this.browserService.onResize();
+    this.width=Math.max(Math.min(this.width, window.innerWidth*0.8,window.innerWidth-this.minModuleWidth),this.minTreeWidth);
+    if (window.innerWidth<this.treeOverlayThreshold) {
+      this.scrollOutTree();
+      this.treeAsOverlay=true;
+    }
+    else {
+      this.scrollInTree();
+      this.treeAsOverlay=false;
+    }
   }
 }
