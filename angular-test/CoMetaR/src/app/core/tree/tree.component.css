@@ -42,7 +42,7 @@ div.treeOutlineElement {
     opacity: 0.85;
     cursor: pointer;
     border-style:solid;
-    box-sizing: content-box
+    box-sizing: border-box
 }
 div#tree::-webkit-scrollbar {
     width: 35px;
