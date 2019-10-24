@@ -34,7 +34,7 @@ export class ProvenanceService {
 						style,
 						type: "chip",
 						"background-color": "#FFFBD5",
-						"border-color": "#DDD",
+						"border-color": "#AAA",
 						color: "#333",
 						id: "propertychange",
 						description: "This element has changed properties.",
@@ -43,7 +43,7 @@ export class ProvenanceService {
 							style,
 						  	type: "dot",
 						  	"background-color": "#FFFBD5",
-							"border-color": "#DDD",
+							"border-color": "#AAA",
 						  	id: "propertychange_bubble",
 							color: "#333",
 						  	description: "There are COUNTER sub-elements with changed properties."
