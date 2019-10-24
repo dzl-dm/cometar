@@ -99,8 +99,8 @@ export class ConceptInformationComponent implements OnInit {
   
   public getMinWidth(i:number, width?):string{
     if (!this.columnMinWidth) return this.columnWidthPercentages[i]+"%"; 
-    let divWidth = width || (<HTMLElement>this.el.nativeElement).offsetWidth;
-    if (this.columnWidthPercentages[i]*divWidth/100 < this.columnMinWidth[i]) return this.columnWidthPercentages[i]+"%";
+    /*let divWidth = width || (<HTMLElement>this.el.nativeElement).offsetWidth;
+    if (this.columnWidthPercentages[i]*divWidth/100 < this.columnMinWidth[i]) return this.columnWidthPercentages[i]+"%";*/
     return this.columnMinWidth[i]+"px";
   }
 
@@ -131,6 +131,7 @@ export class ConceptInformationComponent implements OnInit {
   private mouseEventFunction;
   private cloneRemoveFunction;
   public onInformationMouseEnter(event:MouseEvent){
+    if (!this.truncateText) return;
     if (this.cloneRemoveFunction) this.cloneRemoveFunction();
     let informationDiv = <HTMLElement>event.target;
     while (!(informationDiv.className.indexOf("treeItemInformation")>-1)) {

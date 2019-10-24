@@ -53,7 +53,7 @@ export class TreeStyleService {
   }
 
 
-  public outlineElements$ = new Subject<{}[]>();
+  public outlineElements$ = new BehaviorSubject<OutlineElement[]>([]);
   private observer:MutationObserver;
   private domChangeTimeout;
   public onTreeDomChange(caller:string){
@@ -119,6 +119,8 @@ export class TreeStyleService {
           outlineElements.push({
             top: relativetop,
             color: value["background-color"],
+            bordercolor: value["border-color"],
+            backgroundStripes: value["background-stripes"],
             siblings: array.length,
             position: index,
             height:relativetitleheight,
@@ -127,6 +129,7 @@ export class TreeStyleService {
         })
       }));
     });
+    console.log(outlineElements)
     this.outlineElements$.next(outlineElements);
   }
 
@@ -294,7 +297,19 @@ export interface TreeItemIcon {
   "background-color"?: string,
   "border-color"?: string,
   "text"?: string,
+  "background-stripes"?: boolean,
   "type"?: "dot" | "chip" | "imgIcon" | "smallImgIcon",
   "bubble-up"?: TreeItemIcon,
   "description"?: string
+}
+
+export interface OutlineElement {
+  top: number,
+  color: string,
+  bordercolor: string,
+  backgroundStripes: boolean,
+  siblings: number,
+  position: number,
+  height:number,
+  concept: string
 }
