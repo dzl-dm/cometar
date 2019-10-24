@@ -129,7 +129,6 @@ export class TreeStyleService {
         })
       }));
     });
-    console.log(outlineElements)
     this.outlineElements$.next(outlineElements);
   }
 
