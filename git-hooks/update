@@ -1,0 +1,4 @@
+#!/bin/bash
+
+/home/mark/cometar/repository/script/update_hook.sh -r $3
+exit $?

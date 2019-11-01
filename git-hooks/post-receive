@@ -1,0 +1,4 @@
+#!/bin/bash
+touch /var/tmp/cometar/worked
+#/home/mark/cometar/repository/script/post_receive_hook.sh
+exit $?
