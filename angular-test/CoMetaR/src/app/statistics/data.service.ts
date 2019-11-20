@@ -61,11 +61,29 @@ export class DataService {
     return {labels, datasets}
   }
 
+  private new_calculation_since_november_2019_filter(d:QpfddDataSet,datelabel:string,granularity:string):boolean{
+    if (d.location == "TOTALPATIENTSTATS") return true;
+    if (new Date(datelabel) < new Date("2019-11-15")) {
+      //Hier wird leicht geschummelt: Ich nehme die Werte der Location mit den meisten distinct facts. Sonst gäbe es am 15.11. einen großen Absacker nach unten.
+      let dfsnum = this.qpfddJson.filter(data => data.date == datelabel && data.source == d.source).map(data => data["distinct facts"]);
+      if (d["distinct facts"] == Math.max(...dfsnum)) return true;
+    }
+    return false;
+  }
+  private fake_data = [
+    ["*","27_CPCM","total patients","2019-04-24","2019-11-15",5730],
+    ["*","27_CPCM","distinct facts","2019-04-24","2019-11-15",157],
+    ["*","27_CPCM","total facts","2019-04-24","2019-11-15",65004],
+
+    ["*","22_ARCN ALLIANCE KIRA","total patients","2019-02-20","2019-11-15",309,"less"],
+    ["*","22_ARCN ALLIANCE KIRA","distinct facts","2019-02-20","2019-11-15",11,"less"],
+  ];
+
   public getQpfddCount(granularity:"total"|"site"|"source"|"location", valueOfInterest:"total patients"|"distinct facts"|"total facts", filterSite?:string):ChartData{
     this.resetColors();
     let baseArray:string[] = granularity == "source" && this.qpfddSources 
       || granularity == "site" && this.qpfddSites
-      || granularity == "location" && this.qpfddLocations
+      || granularity == "location" && this.qpfddLocations.filter(l => l.split("::")[1] != "TOTALPATIENTSTATS")
       || granularity == "total" && [""];
     let datasets: ChartDataSets[] = baseArray.filter(b => {
       return !filterSite || filterSite == "all" || granularity == "total" || granularity == "site" || mapping[b] && mapping[b].site==filterSite || mapping[b.split("::")[0]] && mapping[b.split("::")[0]].site==filterSite
@@ -77,14 +95,39 @@ export class DataService {
           || granularity == "total" && "Total" ,
         data: this.qpfddLabels.map(l => {
           let granularData = this.qpfddJson.filter(d => d.date == l && (
-            granularity == "source" && d.source == group 
+            granularity == "source" && d.source == group && this.new_calculation_since_november_2019_filter(d,l,granularity)
             || granularity == "location" && d.source == group.split("::")[0] && d.location == group.split("::")[1]
-            || granularity == "site" && mapping[d.source] && mapping[d.source].site == group
-            || granularity == "total"
+            || granularity == "site" && mapping[d.source] && mapping[d.source].site == group && this.new_calculation_since_november_2019_filter(d,l,granularity)
+            || granularity == "total" && this.new_calculation_since_november_2019_filter(d,l,granularity)
           ));
-          let sum = granularData.reduce((sum, a) => sum+a[valueOfInterest], 0);
+          let sum = granularData.reduce((s, a) => s+a[valueOfInterest] , 0);
+
+          let fakevalue = 0;
+          let fakedata = this.fake_data.filter(fd => 
+            (fd[0] == granularity || fd[0] == "*")
+            && (granularity == "source" && fd[1]==group || granularity == "site" && mapping[fd[1]] && mapping[fd[1]].site == group)
+            && fd[2]==valueOfInterest 
+            && new Date(l) >= new Date(fd[3])
+            && new Date(l) <= new Date(fd[4])
+          );
+          fakedata.forEach(fd => {
+            if (fd[6]=="less") fakevalue = fakevalue - <number>fd[5]
+            else if (fd[6]=="more") fakevalue = fakevalue + <number>fd[5]
+            else fakevalue = <number>fd[5] - sum;
+          });
+          sum+=fakevalue;
+          
           return sum > 0 ? sum : undefined;
         }),
+        lastUpdate: (()=>{
+          let d = new Date(Math.max.apply(null,this.qpfddJson.filter(d => 
+            granularity == "source" && d.source == group
+            || granularity == "location" && d.source == group.split("::")[0] 
+            || granularity == "site" && mapping[d.source] && mapping[d.source].site == group
+            || granularity == "total"
+          ).map(d => new Date(d["last update"]))));
+          return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+        })(),
         backgroundColor: this.backgroundColor,
         borderColor: this.siteColors[group] || this.getNewColor(all.length)
       }
@@ -290,6 +333,7 @@ export class DataService {
         let style = this.treeStyleService.getEmptyStyle(ti.element.value);
         sources.forEach(source => {
           let map = mapping[source] && mapping[source]["same as"] && mapping[mapping[source]["same as"]] || mapping[source] || {"site":"none","label":"not defined"}
+          if (!(mapping[source] && mapping[source]["same as"] && mapping[mapping[source]["same as"]] || mapping[source])) console.log("The source \""+source + "\" is not mapped.");
           style.icons.push({
             style,
             type: "chip",

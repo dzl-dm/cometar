@@ -15,8 +15,20 @@
     </div>
 </div>
 <div id="searchDiv" [ngClass]="{'open':searchDivOpened}">
-    <form>
-        <input type='text' [value]="treeDataService.getSearchPattern()" name="searchPatternInput" #searchPatternInput placeholder="search term"/> 
+    <form #searchForm>
+        <input type='text' 
+            [value]="treeDataService.getSearchPattern()" 
+            [ngModel]="neededPlaceholderSoNgModelChangeWorks" 
+            (ngModelChange)=searchPatternChanged(searchPatternInput.value) 
+            name="searchPatternInput" 
+            #searchPatternInput 
+            [matAutocomplete]="auto"
+            placeholder="search term"/> 
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="performSearch(searchPatternInput.value)" [panelWidth]="searchForm.offsetWidth">
+            <mat-option *ngFor="let option of options" [value]="option">
+                {{option}}
+            </mat-option>
+        </mat-autocomplete>
         <input type="submit" (click)='performSearch(searchPatternInput.value)' value="search"/>
         <input type="button" (click)='clearSearch()' [value]="'x '+(searchResultCount!=undefined&&searchPatternInput.value!=''?searchResultCount:'')"/>
     </form>

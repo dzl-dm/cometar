@@ -18,11 +18,6 @@
             </td>
         </tr>
         <tr *ngFor="let row of data; let isFirst = first">
-            <!-- <ng-container *ngIf="isFirst; else noheading">
-                <th *ngFor="let cell of row; let i = index" [width]="cellWidthPercentages[i]+'%'">{{cell}}</th>
-            </ng-container>               
-            <ng-template #noheading>
-            </ng-template>-->
             <td *ngFor="let cell of row; let i = index" [style.minWidth]="getMinWidth(i)" [style.width]="getWidth(i)" [style.display]="getDisplay(i)">
                 <ng-container *ngFor="let match of matchArray(cell)">
                     <span *ngIf="isConceptIri(match)" (click)="navigateToConcept(cell)" class="conceptLink">{{match}}</span>

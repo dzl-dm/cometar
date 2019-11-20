@@ -18,6 +18,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SectionComponent } from './section/section.component';
 import { TextWithNavigationComponent } from './text-with-navigation/text-with-navigation.component';
+import { FormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete'; 
 //import { WebWorkerService } from 'ngx-web-worker';
 
 @NgModule({
@@ -42,7 +44,9 @@ import { TextWithNavigationComponent } from './text-with-navigation/text-with-na
     ChartsModule,
     MatProgressBarModule,
     MatIconModule,
-    MatTooltipModule
+    MatTooltipModule,
+    FormsModule,
+    MatAutocompleteModule
   ],
   /*providers: [
     WebWorkerService

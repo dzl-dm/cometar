@@ -49,6 +49,7 @@ export class TreeItemComponent implements OnInit {
   public searchResults$:Observable<string[][]>;
   public intent$:Observable<number>;
   public expanded:boolean;
+  private manualExpandOrCollapse:boolean;
   private conceptInformation$:Observable<ConceptInformation[]>;
   public showInformationDiv$:Observable<boolean>;
   public style:TreeItemStyle = this.treeStyleService.getEmptyStyle(this.treeitem.element.value);
@@ -91,16 +92,26 @@ export class TreeItemComponent implements OnInit {
       .subscribe(style => {
         this.style = style;
     });
-    this.treeDataService.isAnyPathPart$(this.treeitem.element.value).pipe(
+    if (this.initialExpanded) this.treeDataService.addShownElements(this.treeitem.children.map(c => c.element.value));
+    combineLatest(this.treeDataService.shownElements$,this.treeDataService.selectedIri$).subscribe(([se,iri]) => {
+      if (this.manualExpandOrCollapse != undefined) {
+        this.expanded = this.manualExpandOrCollapse;
+        return;
+      }
+      let children;
+      this.ontologyAccessService.getAllChildren([this.treeitem.element.value]).subscribe(data => children = data);
+      this.expanded=this.treeitem.element.value==iri || children.map(c => se.includes(c)).includes(true);
+    });
+    /*this.treeDataService.isAnyPathPart$(this.treeitem.element.value).pipe(
       withLatestFrom(
-        this.treeDataService.isSelected$(this.treeitem.element.value),
+        /*this.treeDataService.isSelected$(this.treeitem.element.value),
         of(this.initialExpanded || false)
       )
     ).pipe(takeUntil(this.unsubscribe))
       .subscribe(next => { 
         setTimeout(()=>{this.expanded = next.includes(true)},0);
         //this.cd.markForCheck();
-    });
+    });*/
     
     this.showSearchResult$ = this.treeDataService.isSearchMatch$(this.treeitem.element.value);
     this.searchResultAttributes$ = this.treeDataService.getSearchMatch$(this.treeitem.element.value).pipe(
@@ -172,6 +183,8 @@ export class TreeItemComponent implements OnInit {
 
   public expandOrCollapse(){
     this.expanded=!this.expanded;
+    this.manualExpandOrCollapse = this.expanded;
+    if (!this.expanded) this.treeDataService.onCollapse(this.treeitem.element.value)
     this.treeStyleService.onTreeDomChange("TreeItem expanded.");
   }
 
@@ -179,7 +192,7 @@ export class TreeItemComponent implements OnInit {
     event.stopPropagation();
     let bubbleConcepts = this.style.bubbleicons.filter(bi => bi.id == icon.id).map(bi => bi.style.concept);
     if (bubbleConcepts.length>0) {
-      this.treeDataService.openedElements$.next(bubbleConcepts);
+      this.treeDataService.addShownElements(bubbleConcepts);
       this.cd.markForCheck();
     }
   }

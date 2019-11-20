@@ -15,7 +15,7 @@ export class StatisticsComponent implements OnInit {
     this.updateCharts();
   }
 
-  public statisticsPage:number = 2;
+  public statisticsPage:number = 1;
   public granularityIndex:number = 0;
   private granularities:("total"|"site"|"source"|"location")[]=["total","site","source","location"];
   public siteIndex:number = 0;

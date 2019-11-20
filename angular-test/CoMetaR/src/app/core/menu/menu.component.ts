@@ -9,6 +9,7 @@ import { combineAll, combineLatest } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TreeStyleService } from '../services/tree-style.service';
 import { HelpVideosService } from '../services/help-videos.service';
+import { SearchSuggestionService } from '../services/queries/search-suggestion.service';
 
 @Component({
   selector: 'app-menu',
@@ -28,6 +29,7 @@ export class MenuComponent implements OnInit {
     public treeDataService: TreeDataService,
     public treeStyleService: TreeStyleService,
     public helpVideosService: HelpVideosService,
+    private searchSuggestionService: SearchSuggestionService,
     private route:ActivatedRoute,
     private e: ElementRef,
     private cd: ChangeDetectorRef,
@@ -47,6 +49,21 @@ export class MenuComponent implements OnInit {
     this.searchDivOpened = this.treeDataService.getSearchPattern() && this.treeDataService.getSearchPattern() != "";
   }
 
+  options=[];
+  public searchPatternChanged(pattern:string){
+    this.searchSuggestionService.get(pattern).subscribe(data => {
+      if (data.length > 0 && data[0].match) {
+        let result = []
+        data.map(d => d.match.value).forEach(m => {
+          let firstWord = m.split(" ")[0];
+          if (!result.includes(firstWord)) result.push(firstWord);
+          if (m != firstWord) result.push(m);
+        })
+        this.options = result;
+      }
+      this.cd.markForCheck();
+    });
+  }
   public performSearch(pattern:string){
     this.router.navigate([],{queryParams: {searchpattern: pattern}, queryParamsHandling: "merge" });
     return false;
