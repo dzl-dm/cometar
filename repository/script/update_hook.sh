@@ -18,6 +18,9 @@ do
 		-e)
 			exec_post_receive=0
 			;;
+		-b)
+			shift
+			branch=$1
 	esac
 	shift
 done
@@ -27,21 +30,14 @@ source "$conffile"
 if [ ! -f "$LOGFILE" ]; then 
 	echo -n "" > "$LOGFILE" 
 fi
-echo "$(date +'%d.%m.%y %H:%M:%S') Update hook triggered for $newrev." >> "$LOGFILE" 
-unset GIT_DIR;
-rm -rf "$TEMPDIR/git"
-mkdir -p "$TEMPDIR/git"
-eval "$GITBIN clone -q \"$TTLDIRECTORY\" \"$TEMPDIR/git\""
-cd "$TEMPDIR/git"
-eval "$GITBIN checkout -q $newrev"
+echo "$(date +'%d.%m.%y %H:%M:%S') Update hook triggered for $newrev (branch $branch)." >> "$LOGFILE" 
 
 exitcode=0
 errorsummary="$TEMPDIR/errorsummary.txt"
 echo "" > "$errorsummary"
 echo -------------------------------------
-echo "Loading files into fuseki test server..."
 echo "$(date +'%d.%m.%y %H:%M:%S') Loading files into fuseki test server..." >> "$LOGFILE" 
-"$SCRIPTDIR/add_files_to_dataset.sh" -s -t -c -d "$TEMPDIR/git" -p "$conffile" -e "$errorsummary"
+"$SCRIPTDIR/add_files_to_dataset.sh" -s -t -c -p "$conffile" -e "$errorsummary" -r "$newrev"
 insertexitcode=$?
 if [ $insertexitcode -eq 0 ]
 then
@@ -75,7 +71,8 @@ echo "-------------"
 if [ $exitcode -gt 0 ]; then 
 	echo "UPLOAD FAILED"
 	cat "$errorsummary"
-	cat "$(date +'%d.%m.%y %H:%M:%S') $errorsummary" >> "$LOGFILE" 
+	echo "$(date +'%d.%m.%y %H:%M:%S') ERROR SUMMARY" >> "$LOGFILE" 
+	cat "$errorsummary" >> "$LOGFILE" 
 else 
 	echo "UPLOAD SUCCEED"	
 	echo "$(date +'%d.%m.%y %H:%M:%S') UPLOAD SUCCEED" >> "$LOGFILE" 
@@ -86,8 +83,6 @@ else
 fi
 echo "-------------"
 
-cd "$TEMPDIR"
-rm -rf "$TEMPDIR/git"
 rm -f "$TEMPDIR/errorsummary.txt"
 rm -f "$TEMPDIR/out.txt"
 rm -f "$TEMPDIR/error.txt"

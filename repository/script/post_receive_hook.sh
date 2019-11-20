@@ -20,6 +20,10 @@ done
 
 source "$conffile"
 
+branch=$(git name-rev --name-only $newrev | sed -e 's/\(.*\)~[0-9]\+/\1/g')
+echo "$branch"
+exit 1
+
 # calc last hook call
 from_date="2017-01-01 00:00:00"
 shopt -s nullglob
@@ -43,12 +47,6 @@ done
 unset IFS
 # calc last hook call end
 
-unset GIT_DIR;
-rm -rf "$TEMPDIR/git"
-mkdir -p "$TEMPDIR/git"
-eval "$GITBIN clone -q \"$TTLDIRECTORY\" \"$TEMPDIR/git\""
-cd "$TEMPDIR/git"
-eval "$GITBIN checkout -q $newrev"
 
 echo "$(date +'%d.%m.%y %H:%M:%S') ---------------- POST RECEIVE ---------------------"
 echo "$(date +'%d.%m.%y %H:%M:%S') ---------------- POST RECEIVE ---------------------" >> "$LOGFILE"
