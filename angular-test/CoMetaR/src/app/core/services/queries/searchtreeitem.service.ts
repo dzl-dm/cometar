@@ -11,6 +11,7 @@ export class SearchtreeitemService {
 
   public get(pattern:string):Observable<SearchResultAttributes[]> { 
       if (pattern == "") return of([]);
+      pattern = pattern.replace("\\","\\\\\\)").replace("(","\\\\(").replace(")","\\\\)").replace("^","\\\\^").replace("$","\\\\$)").replace("+","\\\\+");
       const queryString = this.getQueryString(pattern);
       return this.dataService.getData(queryString,"search for pattern "+pattern);
   };

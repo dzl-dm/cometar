@@ -137,6 +137,19 @@ mat-slider.mat-slider-horizontal .mat-slider-wrapper {
     font-size:14px;
     white-space: pre-wrap;
 }
+.mat-autocomplete-panel {
+    background:white;
+}
+.mat-option {
+    color:var(--dzl-blue)
+}
+.mat-option.mat-active {
+    background:var(--soft-blue);
+    color:var(--dzl-blue)
+}
+.mat-option:hover:not(.mat-option-disabled) {
+    background: #DDD;
+}
 /*.cdk-overlay-pane.mat-tooltip-panel{
     word-break: break-all !important;
     white-space: normal !important;

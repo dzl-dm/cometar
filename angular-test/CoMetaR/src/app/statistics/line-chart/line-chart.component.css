@@ -20,6 +20,7 @@
     width:60%;
     overflow:auto;
     max-height:400px;
+    scroll-behavior: smooth;
 }
 .col.full {
     width:80%;

@@ -105,6 +105,8 @@ export class ConceptInformationComponent implements OnInit {
   }
 
   public getWidth(i:number, width?):string{
+    return "auto";
+
     if (this.columnDisplayOptions && this.columnDisplayOptions[i]=="hideOrGrow") return "auto";
     if (this.columnDisplayOptions && this.columnMinWidth && this.columnDisplayOptions[i] == "showAndShrink"){
       let divWidth = width || (<HTMLElement>this.el.nativeElement).offsetWidth;
@@ -113,7 +115,12 @@ export class ConceptInformationComponent implements OnInit {
     return this.columnWidthPercentages[i]+"%";
   }
 
+  private cache = {
+    divWidth: 0,
+    showColumn: []
+  }
   public getDisplay(i:number, width?):("none"|"table-cell"){
+
     if (!this.truncateText) return "table-cell";
     let divWidth = width || (<HTMLElement>this.el.nativeElement).offsetWidth;
     let cdo = this.columnDisplayOptions;
@@ -121,11 +128,16 @@ export class ConceptInformationComponent implements OnInit {
     if (cdo[i]=="show"||cdo[i]=="showAndShrink") return "table-cell";
     let cmw = this.columnMinWidth;
     let shownColumnWidthSum=0;
-    cdo.forEach((o,index)=>{
-      if (cmw) shownColumnWidthSum+=cmw[index];
-    });
-    if (shownColumnWidthSum >= divWidth) return "none";
-    return "table-cell";
+
+    if (this.cache.divWidth != divWidth)
+    {
+      cdo.forEach((o,index)=>{
+        if (cmw) shownColumnWidthSum+=cmw[index];
+        this.cache.showColumn[index] = shownColumnWidthSum < divWidth;
+      });
+      this.cache.divWidth = divWidth;
+    }
+    return this.cache.showColumn[i]?"table-cell":"none"
   }
   
   private mouseEventFunction;

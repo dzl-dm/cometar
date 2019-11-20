@@ -54,6 +54,17 @@ export class OntologyAccessService {
       })
     )
   }
+  public getFirstLevelChildren(iris:string[]):Observable<string[]> {
+    return this.ontologyDataService.treeItems$.pipe(
+      map(tis => {
+        let children = [];
+        tis.filter(ti => iris.includes(ti.element.value)).forEach(ti => {
+          children.push(ti.children.map(c => c.element.value));
+        })
+        return children.reduce((result:string[],next:string[])=>result = result.concat(next),[]);
+      })
+    )
+  }
   private fillAllItemAncestors(ancestors:string[],ti:TreeItem){
     ti.parents.forEach(p => {
       if (!ancestors.includes(p.element.value)){
