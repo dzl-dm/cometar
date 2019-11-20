@@ -6,6 +6,7 @@ import mapping from "src/assets/data/statistics/mapping.json";
 import multiphenotype from "src/assets/data/statistics/multiphenotype.json";
 import i2b2usage from "src/assets/data/statistics/i2b2usage.json";
 import codecoverage from "src/assets/data/statistics/code_coverage.json";
+import value_corrections from "src/assets/data/statistics/value_corrections.json";
 import { ChartDataSets, ChartData, ChartPoint } from 'chart.js';
 import { OntologyAccessService } from '../core/services/ontology-access.service';
 import { TreeStyleService, TreeItemStyle } from '../core/services/tree-style.service';
@@ -70,14 +71,7 @@ export class DataService {
     }
     return false;
   }
-  private fake_data = [
-    ["*","27_CPCM","total patients","2019-04-24","2019-11-15",5730],
-    ["*","27_CPCM","distinct facts","2019-04-24","2019-11-15",157],
-    ["*","27_CPCM","total facts","2019-04-24","2019-11-15",65004],
-
-    ["*","22_ARCN ALLIANCE KIRA","total patients","2019-02-20","2019-11-15",309,"less"],
-    ["*","22_ARCN ALLIANCE KIRA","distinct facts","2019-02-20","2019-11-15",11,"less"],
-  ];
+  private value_corrections = [];
 
   public getQpfddCount(granularity:"total"|"site"|"source"|"location", valueOfInterest:"total patients"|"distinct facts"|"total facts", filterSite?:string):ChartData{
     this.resetColors();
@@ -102,20 +96,20 @@ export class DataService {
           ));
           let sum = granularData.reduce((s, a) => s+a[valueOfInterest] , 0);
 
-          let fakevalue = 0;
-          let fakedata = this.fake_data.filter(fd => 
-            (fd[0] == granularity || fd[0] == "*")
-            && (granularity == "source" && fd[1]==group || granularity == "site" && mapping[fd[1]] && mapping[fd[1]].site == group)
-            && fd[2]==valueOfInterest 
-            && new Date(l) >= new Date(fd[3])
-            && new Date(l) <= new Date(fd[4])
+          let corrected_value = 0;
+          let vcs = this.value_corrections.filter(vc => 
+            (vc[0] == granularity || vc[0] == "*")
+            && (granularity == "source" && vc[1]==group || granularity == "site" && mapping[vc[1]] && mapping[vc[1]].site == group)
+            && vc[2]==valueOfInterest 
+            && new Date(l) >= new Date(vc[3])
+            && new Date(l) <= new Date(vc[4])
           );
-          fakedata.forEach(fd => {
-            if (fd[6]=="less") fakevalue = fakevalue - <number>fd[5]
-            else if (fd[6]=="more") fakevalue = fakevalue + <number>fd[5]
-            else fakevalue = <number>fd[5] - sum;
+          vcs.forEach(vc => {
+            if (vc[6]=="less") corrected_value = corrected_value - <number>vc[5]
+            else if (vc[6]=="more") corrected_value = corrected_value + <number>vc[5]
+            else corrected_value = <number>vc[5] - sum;
           });
-          sum+=fakevalue;
+          sum+=corrected_value;
           
           return sum > 0 ? sum : undefined;
         }),
@@ -306,6 +300,8 @@ export class DataService {
     this.qpfddSources = this.qpfddJson.map(d => d.source).filter(this.distinctFilter);
     this.qpfddSites = this.qpfddJson.map(d => mapping[d.source] && mapping[d.source]["site"]).filter(this.distinctFilter);
     this.qpfddLocations = this.qpfddJson.filter(d => d.location!="").map(d => d.source+"::"+d.location).filter(this.distinctFilter);
+    
+    this.value_corrections = value_corrections["data"];
 
     this.phenoJson = phenobd["data"].map(data => {
       if (!mapping[data.source]) console.log("No mapping for "+data.source);
