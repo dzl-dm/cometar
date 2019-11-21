@@ -9,6 +9,7 @@
    fuseki:services (
      <#cometar_live>
      <#cometar_test>
+     <#cometar_dev>
    ) .
 
 <#cometar_live> rdf:type fuseki:Service ;
@@ -35,3 +36,12 @@
     fuseki:dataset                     <#emptyDataset> ;
     .
 
+<#cometar_dev> rdf:type fuseki:Service ;
+    fuseki:name                        "cometar_dev" ;
+    fuseki:serviceQuery                "sparql" ;
+    fuseki:serviceQuery                "query" ;
+    fuseki:serviceUpdate               "update" ;
+    fuseki:serviceUpload               "upload" ;
+    fuseki:serviceReadWriteGraphStore  "data" ;
+    fuseki:serviceReadGraphStore       "get" ;
+    fuseki:dataset                     <#emptyDataset> ;

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-conffile=$(dirname $0)/../config/conf.cfg
+conffile=$(realpath $(dirname $0)/../config/conf.cfg)
 cleardata=false
 DIRECTORY=`dirname $0`
 defaultdirectory=true
@@ -8,6 +8,7 @@ port=3030
 silentmode=""
 testmode=false
 loadProvenanceFiles=false
+loadDevBranch=false
 emf="/dev/stderr"
 revision="master"
 
@@ -36,6 +37,9 @@ do
 		-h)
 			loadProvenanceFiles=true
 			;;
+		-b)
+			loadDevBranch=true
+			;;
 		-p)
 			shift
 			conffile=$1
@@ -59,6 +63,11 @@ if $testmode; then
 	SERVERDATA="$FUSEKITESTDATASET/data"
 	SERVERUPDATE="$FUSEKITESTDATASET/update"
 	echo "Operating on test server."
+else 
+	if $loadDevBranch; then
+		SERVERDATA="$FUSEKIDEVDATASET/data"
+		SERVERUPDATE="$FUSEKIDEVDATASET/update"
+	fi
 fi
 if $defaultdirectory; then
 	if $loadProvenanceFiles; then
@@ -76,10 +85,11 @@ if $defaultdirectory; then
 	fi
 fi
 
+rm -rf "$TEMPDIR/out.txt"
 touch "$TEMPDIR/out.txt"
 if $cleardata; then
 	echo "Clearing data."
-	curl -X PUT -H "Content-Type: text/turtle;charset=utf-8" $silentmode -G "$SERVER" -d default --data ""
+	curl -X PUT -H "Content-Type: text/turtle;charset=utf-8" $silentmode -G "$SERVERDATA" -d default --data ""
 fi
 
 echo "Adding files."

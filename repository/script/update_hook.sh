@@ -78,7 +78,7 @@ else
 	echo "$(date +'%d.%m.%y %H:%M:%S') UPLOAD SUCCEED" >> "$LOGFILE" 
 	if [ $exec_post_receive -eq 1 ]; then
 		echo "$(date +'%d.%m.%y %H:%M:%S') Generating pidfile for post receive hook" >> "$LOGFILE"
-		"$SCRIPTDIR/write_pid_to_queue.sh" "$TEMPDIR/gitpid"
+		"$SCRIPTDIR/write_pid_and_id_to_queue.sh" "$TEMPDIR/gitpid"
 	fi
 fi
 echo "-------------"
