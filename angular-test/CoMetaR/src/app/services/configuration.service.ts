@@ -9,6 +9,14 @@ import { OntologyElementDetails } from '../detailed-information/services/queries
 })
 export class ConfigurationService {
   constructor() { }
+
+  private server:'live'|'dev';
+  public setServer(s:'live'|'dev'){
+    this.server = s;
+  }
+  public getServer():'live'|'dev'{
+    return this.server;
+  }
   public getRdfPrefixMap():{}{
     return {
       "http://data.dzl.de/ont/dwh#": "dzl",
@@ -25,7 +33,7 @@ export class ConfigurationService {
     return s;
   }
   public extendRdfPrefix(s:string):string{
-    if (!s) return "";
+    if (!s) return undefined;
     let c = s.substr(s.indexOf(":")+1);
     Object.entries(this.getRdfPrefixMap()).forEach(
       ([value, key]:[string,string]) => {

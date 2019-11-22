@@ -15,10 +15,10 @@
 }
 
 :host.selected{
-    border-left: 1px solid #BFE3F2; 
-    border-top: 1px solid #BFE3F2; 
-    border-bottom: 1px solid #BFE3F2; 
-    border-right:1px solid #BFE3F2; 
+    border-left: 1px solid var(--second-color); 
+    border-top: 1px solid var(--second-color); 
+    border-bottom: 1px solid var(--second-color); 
+    border-right:1px solid var(--second-color); 
     margin-left:-1px;
     margin-top:-1px;
     margin-bottom:-1px;
@@ -78,7 +78,7 @@ div.treeItemTitle:focus {
     margin-left:5px;
 }
 .chip {
-	background-color:var(--dzl-blue);
+	background-color:var(--first-color);
 	font-size:10px;
 	font-family:"arial";
 	font-weight:bold;

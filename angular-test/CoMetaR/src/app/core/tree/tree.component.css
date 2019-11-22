@@ -29,7 +29,7 @@ div#scrollHeadings > div > div {
     min-height:20px;
     padding-left:9px;
     padding-top:1px;
-    border-bottom:1px solid var(--dzl-blue);
+    border-bottom:1px solid var(--first-color);
     display:flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -59,7 +59,7 @@ div#runningTaskOverlay {
     margin-left:20px;
     margin-top:20px;
     position: absolute;
-    background-color:rgba(103, 174, 204, 0.5);
+    background-color:var(--second-color-transparent);
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.5s ease 1s;
@@ -91,7 +91,7 @@ div#runningTaskContent.visible {
     left:calc(50% - 35px);
     top:calc(50% - 40px);
     text-align: center;
-    color:var(--dzl-blue);
+    color:var(--first-color);
 }   
 #runningTaskContent .runningTaskLogo {    
     width:70px;
@@ -99,7 +99,7 @@ div#runningTaskContent.visible {
     animation: spin 2s linear infinite;
 }
 #runningTaskContent .runningTaskProgress {
-    background-color: #B2D6E5;
+    background-color: var(--second-color-transparent);
     padding: 5px;
     border-radius: 5px;
 }

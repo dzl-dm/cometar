@@ -13,7 +13,7 @@ body {
 }
 div {
     box-sizing: border-box;
-    scrollbar-color: var(--dzl-blue) white;
+    scrollbar-color: var(--first-color) white;
 }slider {
     min-width: 30px;
     } 
@@ -24,29 +24,30 @@ div {
     border-radius: 3px;
 } 
 ::-webkit-scrollbar-thumb {
-    background-color: #0492D0;
+    background-color: var(--first-color);
     border-radius: 3px;
     padding:3px;
     border:2px solid white;
     cursor:pointer;
 }
 :root {
-    --dzl-blue: #0492D0;
-    --soft-blue: #BFE3F2;
+    --first-color: #0492D0;
+    --second-color: #BFE3F2;
+    --second-color-transparent: rgba(103, 174, 204, 0.5);
 }
 input, textarea, select {
-    border:1px solid var(--dzl-blue);
+    border:1px solid var(--first-color);
     flex-shrink:1;
     border-radius: 3px;
 }
 input[type='submit'], input[type='button'], input[type='file'] {
-    background-color:var(--dzl-blue);
+    background-color:var(--first-color);
     color:white;
     cursor:pointer;
 }
 input[type='submit']:hover, input[type='button']:hover {
-    background-color:var(--soft-blue);
-    color:#0492D0;
+    background-color:var(--second-color);
+    color:var(--first-color);
 }
 
 th.mat-header-cell {
@@ -64,7 +65,7 @@ th.mat-header-cell, td.mat-cell {
     min-width:50px;
 }
 .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
-    background-color: var(--dzl-blue);
+    background-color: var(--first-color);
     height:3px;
 }
 .mat-tab-header-pagination-chevron {
@@ -80,8 +81,8 @@ th.mat-header-cell, td.mat-cell {
     background-color: #999;
 }
 .mat-slider-wrapper .mat-slider-track-wrapper .mat-slider-track-fill, .mat-accent .mat-slider-thumb {
-    background-color: var(--dzl-blue);
-    color: var(--dzl-blue);
+    background-color: var(--first-color);
+    color: var(--first-color);
 }
 mat-slider.mat-slider-horizontal .mat-slider-wrapper {
     top: 40px;
@@ -90,13 +91,13 @@ mat-slider.mat-slider-horizontal .mat-slider-wrapper {
     background-color:inherit;
 }
 .mat-slider-min-value .mat-slider-thumb {
-    background-color: var(--dzl-blue) !important;
+    background-color: var(--first-color) !important;
 }
 .mat-slider-vertical .mat-slider-thumb-label {
     left:5px !important;
 }
 .mat-slider-thumb-label span.mat-slider-thumb-label-text {
-    background-color:var(--dzl-blue);
+    background-color:var(--first-color);
     color: white;
     font-size:16px;
     padding:10px;
@@ -112,28 +113,28 @@ mat-slider.mat-slider-horizontal .mat-slider-wrapper {
 }
 .mat-slider-horizontal .mat-slider-ticks {
     height:6px !important;
-    background-image: repeating-linear-gradient(to right,var(--dzl-blue),var(--dzl-blue) 4px,transparent 0,transparent)
+    background-image: repeating-linear-gradient(to right,var(--first-color),var(--first-color) 4px,transparent 0,transparent)
 }
 .mat-slider-vertical .mat-slider-ticks {
     width:6px !important;
-    background-image: repeating-linear-gradient(to bottom,var(--dzl-blue),var(--dzl-blue) 4px,transparent 0,transparent)
+    background-image: repeating-linear-gradient(to bottom,var(--first-color),var(--first-color) 4px,transparent 0,transparent)
 }
 .mat-progress-bar-fill::after {
-    background-color:var(--dzl-blue);
+    background-color:var(--first-color);
 }
 .mat-progress-bar-buffer {
     background-color:#fff;
 }
 .mat-icon svg {
-    fill:var(--dzl-blue);
+    fill:var(--first-color);
 }
 .mat-icon.mat-accent svg {
     fill:white
 }
 .mat-tooltip.ng-trigger.ng-trigger-state {
     background-color: white;
-    border:1px solid var(--dzl-blue);
-    color: var(--dzl-blue);
+    border:1px solid var(--first-color);
+    color: var(--first-color);
     font-size:14px;
     white-space: pre-wrap;
 }
@@ -141,11 +142,11 @@ mat-slider.mat-slider-horizontal .mat-slider-wrapper {
     background:white;
 }
 .mat-option {
-    color:var(--dzl-blue)
+    color:var(--first-color)
 }
 .mat-option.mat-active {
-    background:var(--soft-blue);
-    color:var(--dzl-blue)
+    background:var(--second-color);
+    color:var(--first-color)
 }
 .mat-option:hover:not(.mat-option-disabled) {
     background: #DDD;

@@ -19,7 +19,7 @@ div.logo img {
 div.heading {
     display:inline-block;
     font-size:30px;
-    color:var(--dzl-blue);
+    color:var(--first-color);
 }
 div.functions{
     margin-top:50px;
@@ -67,7 +67,7 @@ div.statistic {
     bottom:0px;
     right:0px;
     position: absolute;
-    color:var(--dzl-blue);
+    color:var(--first-color);
     text-decoration: underline;
     cursor: pointer;
 }

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable, throwError, Subject, BehaviorSubject, ReplaySubject, of } from 'rxjs';
+import { Observable, throwError, Subject, BehaviorSubject, ReplaySubject, of, combineLatest, Subscription, from } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { map, catchError, startWith, shareReplay, retry, first } from 'rxjs/operators';
+import { map, catchError, startWith, shareReplay, retry, first, flatMap, last } from 'rxjs/operators';
 import { BrowserService } from '../core/services/browser.service';
 import { ProgressService } from './progress.service';
+import { ConfigurationService } from './configuration.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,8 @@ export class DataService {
   constructor(
     private http:HttpClient,
     private browserService:BrowserService,
-    private progressService:ProgressService
+    private progressService:ProgressService,
+    private configurationService:ConfigurationService
   ) { }
 
   private pendings = {};
@@ -20,47 +22,57 @@ export class DataService {
   public loadingNames = new BehaviorSubject<string[]>([]);
   public busyQueriesStartTimes:number[] = [];
   private busyQueries = [];
-  dataUrl = 'https://data.dzl.de/fuseki/cometar_live/query';
+  private dataUrl$ = new BehaviorSubject<string>("");
+  public setServer(s:'live'|'dev'){
+    if (s == 'dev' && this.configurationService.getServer() != 'dev') this.dataUrl$.next('https://data.dzl.de/fuseki/cometar_dev/query');
+    else if (s == 'live'&& this.configurationService.getServer() != 'live') this.dataUrl$.next('https://data.dzl.de/fuseki/cometar_live/query');
+    this.configurationService.setServer(s);
+  }
 
   getData(queryString:string, queryName:string, typerules?:{}): Observable<any[]> {
-    this.loading.next(true);
-    this.busyQueries.push(queryName);
-    this.busyQueriesStartTimes.push(Date.now().valueOf())
-    this.loadingNames.next(this.busyQueries);
     if (!this.pendings[queryString]){
-      this.progressService.addTask();
-      let rs = new ReplaySubject<any[]>(1);
-      this.getObservable(queryString, typerules).subscribe(rs);
-      this.pendings[queryString] = rs;
+      this.pendings[queryString] = new ReplaySubject<any>(1);
+      this.dataUrl$.subscribe(url => {
+        this.progressService.addTask();
+        this.loading.next(true);
+        this.busyQueries.push(queryName);
+        this.busyQueriesStartTimes.push(Date.now().valueOf())
+        this.loadingNames.next(this.busyQueries);
+        let s:Subscription;
+        s = this.getObservable(url, queryString, typerules).subscribe(data => {
 
-      rs.subscribe(data => {
-        if (data instanceof HttpErrorResponse){
-          console.log(data);
-          this.browserService.snackbarNotification.next([data.message,'error']);
-          this.pendings[queryString] = of([]);
-        }
-        this.progressService.taskDone();
+
+          if (data instanceof HttpErrorResponse){
+            this.browserService.snackbarNotification.next([data.message,'error']);
+            this.pendings[queryString] = of([]);
+          }
+          this.progressService.taskDone();
+  
+          let index = this.busyQueries.indexOf(queryName);
+          this.busyQueries.splice(index,1);
+          this.busyQueriesStartTimes.splice(index,1);
+          this.loadingNames.next(this.busyQueries);
+          if (this.busyQueries.length == 0) this.loading.next(false);
+
+
+          this.pendings[queryString].next(data);
+          if(s) s.unsubscribe();
+        });
       })
     }
-    this.pendings[queryString].subscribe(()=>{
-      let index = this.busyQueries.indexOf(queryName);
-      this.busyQueries.splice(index,1);
-      this.busyQueriesStartTimes = this.busyQueriesStartTimes.splice(index,1);
-      this.loadingNames.next(this.busyQueries);
-      if (this.busyQueries.length == 0) this.loading.next(false);
-    });
     return this.pendings[queryString].pipe(
       map(data => {
         if (data instanceof HttpErrorResponse) return [];
         else return data;
-      }),
-      first()
+      })/*,
+      first()*/
     );
   }
 
-  private getObservable(queryString:string, typerules?:{}):Observable<any[]>{
+  private getObservable(url:string, queryString:string, typerules?:{}):Observable<any[]>{
+    if (url=="") return of([]);
     return this.http.get<JSONResponse>(
-      this.dataUrl+"?query="+encodeURIComponent(queryString),
+      url+"?query="+encodeURIComponent(queryString),
       { observe: 'response', headers:{'Accept': 'application/sparql-results+json; charset=utf-8'}}
     ).pipe(
       map(data => data.body.results.bindings
@@ -79,7 +91,7 @@ export class DataService {
       catchError((err)=>{
         return of(err);
       })
-    );
+    )
   }
 
   /*private handleError(error: HttpErrorResponse) {

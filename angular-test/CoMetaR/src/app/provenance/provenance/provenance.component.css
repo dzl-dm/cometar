@@ -104,7 +104,7 @@ div.diagram {
     width:270px;
     position: relative;
     text-align: center;
-    background-color:var(--dzl-blue);
+    background-color:var(--first-color);
     color:white;
 }
 app-commit {
@@ -129,7 +129,7 @@ app-commit {
     min-width:150px;
 }
 .category_heading{
-    border-bottom:1px solid var(--dzl-blue);
+    border-bottom:1px solid var(--first-color);
     margin-bottom:10px;
 }
 .category.structure{

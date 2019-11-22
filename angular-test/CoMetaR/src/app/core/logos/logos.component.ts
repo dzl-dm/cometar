@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, combineLatest } from 'rxjs';
 import { DataService } from 'src/app/services/data.service';
 import { Router } from '@angular/router';
@@ -16,7 +16,8 @@ export class LogosComponent implements OnInit {
   private refreshTimeout;
   constructor(
     private dataService:DataService,
-    private router:Router
+    private router:Router,
+    private cd: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
@@ -24,6 +25,7 @@ export class LogosComponent implements OnInit {
     this.refreshTooltip();
     combineLatest(this.dataService.loadingNames,this.refreshTooltip$).subscribe(data => {
       this.tooltip = "Loading... \r\n" + data[0].map((message,index) => "("+Math.floor((new Date().valueOf() - this.dataService.busyQueriesStartTimes[index])/1000) + ") " + message).join(",\r\n");
+      this.cd.markForCheck();
     });
   }
 

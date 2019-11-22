@@ -41,7 +41,7 @@ export class ElementDetailsService {
               "iconName": "draft",
               "background-color": "white",
               id: "draft_bubble",
-              color: "var(--dzl-blue)",
+              color: "var(--first-color)",
               description: "There are COUNTER sub-elements on draft."
             }
           });
@@ -60,7 +60,7 @@ export class ElementDetailsService {
               "iconName": "editNote",
               "background-color": "white",
               id: "editNote_bubble",
-              color: "var(--dzl-blue)",
+              color: "var(--first-color)",
               description: "There are COUNTER sub-elements with editorial notes. Domain experts are asked to review.",
             }
           });

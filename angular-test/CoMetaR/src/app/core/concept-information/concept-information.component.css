@@ -96,6 +96,6 @@ table.hiddenHeading.rowHeadingTable tr:not(:first-child) td:not(:first-child) {
 
 span.conceptLink {
     text-decoration: underline;
-    color:var(--dzl-blue);
+    color:var(--first-color);
     cursor:pointer;
 }

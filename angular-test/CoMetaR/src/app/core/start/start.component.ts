@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef } from '@angular/core';
 import { CommitHistoryService } from '../services/queries/commit-history.service';
 import Chart, { ChartData, ChartOptions, ChartDataSets } from 'chart.js';
 import { HelpVideosService, HelpVideo, HelpSection } from '../services/help-videos.service';
+import { ConfigurationService } from 'src/app/services/configuration.service';
 
 @Component({
   selector: 'app-start',
@@ -76,6 +77,7 @@ export class StartComponent implements OnInit {
   constructor(
     private commitHistoryService: CommitHistoryService,
     private helpVideosService: HelpVideosService,
+    private configurationService: ConfigurationService,
     private e: ElementRef
   ) { }
 
@@ -114,7 +116,7 @@ export class StartComponent implements OnInit {
     n.getElementsByClassName("statistic")[1].appendChild(lineCanvas);
 
     this.commitHistoryService.get().subscribe(data => {
-      this.commitsLabels = data.map(d => d.date.value);
+      this.commitsLabels = data.map(d => d.date && d.date.value);
       this.commitsDataset[0]={
         data: data.map(d => d.additions.value),
         backgroundColor: 'rgba(89,179,0,0.5)',
@@ -167,5 +169,8 @@ export class StartComponent implements OnInit {
   }
   public toggleHelp(){
     document.getElementById('helpbutton').click()
+  }
+  public devServer():boolean{
+    return this.configurationService.getServer()=='dev'
   }
 }

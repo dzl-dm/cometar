@@ -60,7 +60,7 @@ app-progressbar {
 }
 div.helpItem{
     background-color:white;
-    border:1px solid var(--dzl-blue);
+    border:1px solid var(--first-color);
     display:block;
     position:absolute;
     padding:10px;
@@ -79,7 +79,7 @@ div.menuItem{
     border:1px solid white;
 }
 div.menuItem.active {
-    background-color:var(--soft-blue);
+    background-color:var(--second-color);
 }
 .mat-icon {
     height:100%;
@@ -116,7 +116,7 @@ form input:first-child, mat-slider{
     padding-left:15px;
     font-size:20px;
     background-color:white;
-    color:#0492D0;
+    color:var(--first-color);
 }
 form input {    
     width:70px;
@@ -160,7 +160,7 @@ form input {
     padding:20px;
     width:200px;
     height:100%;
-    background-color:var(--dzl-blue);
+    background-color:var(--first-color);
 }
 #helpContainer .helpMenuItem {
     margin-top:20px;
@@ -169,7 +169,7 @@ form input {
     font-size:20px;
 }
 #helpContainer .helpMenuItem:hover {
-    color:var(--soft-blue);
+    color:var(--second-color);
 }
 #helpContainer .part {
     display: flex;
