@@ -10,6 +10,7 @@ import { map } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TreeStyleService } from '../services/tree-style.service';
 import { ProgressService } from 'src/app/services/progress.service';
+import { ConfigurationService } from 'src/app/services/configuration.service';
 
 @Component({
   selector: 'app-browser',
@@ -101,6 +102,7 @@ export class BrowserComponent implements OnInit {
     private browserService: BrowserService,
     private treeStyleService: TreeStyleService,
     private progressService: ProgressService,
+    private configurationService:ConfigurationService,
     iconRegistry: MatIconRegistry, 
     sanitizer: DomSanitizer,
     private cd: ChangeDetectorRef,
@@ -201,6 +203,10 @@ export class BrowserComponent implements OnInit {
     this.newWidth = width;
     this.resizeToogle=!this.resizeToogle;
     this.width = width;
+  }
+
+  public devServer():boolean {
+    return this.configurationService.getServer()=='dev';
   }
 
   public treeExpanded:boolean=false;

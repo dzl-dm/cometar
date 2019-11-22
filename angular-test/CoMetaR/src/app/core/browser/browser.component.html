@@ -22,11 +22,10 @@
     </div>
     <div id="modules" [style.marginLeft.px]="treeAsOverlay?20:0" (click)="treeAsOverlay && treeScrolledIn?expandOrCollapseTreeContainer($event):null">
         <div id="moduleMenu">
-            <!-- <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'details'}" (click)="navigateModule('details')">Details</div> -->
-            <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'provenance'}" (click)="navigateModule('provenance')">
+            <div *ngIf="!devServer()" [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'provenance'}" (click)="navigateModule('provenance')">
                 <mat-icon aria-hidden="false" aria-label="Provenance" svgIcon="history" color="accent"></mat-icon><div class="moduleMenuItemLabel">Provenance</div>
             </div>
-            <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'client-configuration'}" (click)="navigateModule('client-configuration')">
+            <div *ngIf="!devServer()" [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'client-configuration'}" (click)="navigateModule('client-configuration')">
                 <mat-icon aria-hidden="false" aria-label="Provenance" svgIcon="client-configuration" color="accent"></mat-icon><div class="moduleMenuItemLabel">Client Configuration</div>
             </div>
             <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'sparql'}" (click)="navigateModule('sparql')">

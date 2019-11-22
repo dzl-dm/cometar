@@ -2,7 +2,7 @@
     position: relative;
 }
 div#logos {
-    background-color:var(--dzl-blue);
+    background-color:var(--first-color);
     height:70px;
     flex-shrink:0;
     width:100%;

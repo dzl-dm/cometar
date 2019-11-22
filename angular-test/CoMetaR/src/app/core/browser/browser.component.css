@@ -4,7 +4,7 @@
     flex-direction: row;
     align-items: stretch;
     width:100%;
-    background-color:#0492D0;
+    background-color:var(--first-color);
 }
 div#browser{
     display: flex;
@@ -21,7 +21,7 @@ div#treeResizeContainer{
     flex-shrink:0;
     width:500px;
     transition: width 0.2s ease-in-out, left 0.2s ease-in-out;
-    background-color:#0492D0;
+    background-color:var(--first-color);
 }
 div#treeResizeContainer.overlayed {
     position: absolute;
@@ -31,7 +31,7 @@ div#treeContainer {
     display:flex;
     flex-direction: column;
     width:calc(100% - 20px);
-    background-color:var(--dzl-blue);
+    background-color:var(--first-color);
 }
 app-tree {
     margin-bottom:20px;
@@ -46,7 +46,7 @@ div#modules {
     position: relative;
 }
 div#moduleMenu {
-    background-color:var(--dzl-blue);
+    background-color:var(--first-color);
     display: flex;
     flex-direction: row;
     flex-shrink: 0;
@@ -70,7 +70,7 @@ div#moduleContent {
 div.moduleMenuItem {
     cursor: pointer;
     padding:5px 15px;
-    border:0px solid #0492D0;
+    border:0px solid var(--first-color);
     color:white;
     display:flex;
     flex-direction: row;
@@ -87,7 +87,7 @@ div.moduleMenuItem.active{
     text-decoration: underline;
 }
 div.moduleMenuItem:hover{
-    color:var(--soft-blue);
+    color:var(--second-color);
 }
 #treeResizeComponent {
     width:20px;
@@ -115,9 +115,9 @@ div.moduleMenuItem:hover{
     height:40px;
     border-radius: 20px;
     left:-10px;
-    z-index:2;
+    z-index:3;
     background-color:white;
-    border: 5px solid var(--dzl-blue);
+    border: 5px solid var(--first-color);
 }
 #treeExpandCollapseButton mat-icon {
     margin-top:3px;
@@ -125,9 +125,10 @@ div.moduleMenuItem:hover{
 
 div#runningTaskOverlay {
     position: absolute;
-    background-color:rgba(103, 174, 204, 0.5);
+    background-color:var(--second-color-transparent);
     pointer-events: none;
     opacity: 0;
+    z-index: 2;
     transition: opacity 0.5s ease/*cubic-bezier(0.4,0,1,0.4)*/;
 }
 div#runningTaskOverlay.visible {
@@ -155,7 +156,7 @@ div#runningTaskContent.visible {
     left:calc(50% - 35px);
     top:calc(50% - 40px);
     text-align: center;
-    color:var(--dzl-blue);
+    color:var(--first-color);
 }   
 #runningTaskContent .runningTaskLogo {    
     width:70px;

@@ -33,10 +33,12 @@ export class OntologyDataService {
     //this triggers once when the page loads and afterwards when a new provenance date is entered so that this.ghostTreeItems$ changes
     //could be optimized by not fully rebuilding the concept tree
     combineLatest(rootQuery,parentsQuery,informationQuery,this.ghostTreeItems$).subscribe(([rootElements,pcs,is,gtis])=>{
+      if (rootElements.length==0 || pcs.length==0 || is.length == 0) return;
       this.rootItems=[];
       this.treeItems=[];
       rootElements.forEach(re=>{
         let info = is.filter(i => i.element.value == re.element.value)[0];
+        if (!info) return;
         let ti = new TreeItem(info);
         this.rootItems.push(ti);
         this.treeItems.push(ti);

@@ -37,7 +37,7 @@ table td:first-child{
     width:100%;
     overflow:scroll;
     height:100%;
-    border:1px solid var(--dzl-blue);
+    border:1px solid var(--first-color);
     padding:10px;
     box-sizing: border-box;
 }
