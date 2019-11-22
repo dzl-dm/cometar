@@ -19,4 +19,4 @@ screen -dm "$JAVADIR" -jar "$FUSEKIFILE" --config=$(realpath $CONFDIR/fuseki_com
 sleep 5
 
 "$SCRIPTDIR/add_files_to_dataset.sh" -s -c -p "$conffile" -e "$LOGFILE"
-"$SCRIPTDIR/add_files_to_dataset.sh" -s -p -h "$conffile" -e "$LOGFILE"
+"$SCRIPTDIR/add_files_to_dataset.sh" -s -p "$conffile" -h -e "$LOGFILE"

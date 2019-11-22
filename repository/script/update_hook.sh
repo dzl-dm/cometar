@@ -18,9 +18,6 @@ do
 		-e)
 			exec_post_receive=0
 			;;
-		-b)
-			shift
-			branch=$1
 	esac
 	shift
 done
@@ -30,7 +27,7 @@ source "$conffile"
 if [ ! -f "$LOGFILE" ]; then 
 	echo -n "" > "$LOGFILE" 
 fi
-echo "$(date +'%d.%m.%y %H:%M:%S') Update hook triggered for $newrev (branch $branch)." >> "$LOGFILE" 
+echo "$(date +'%d.%m.%y %H:%M:%S') Update hook triggered for $newrev." >> "$LOGFILE" 
 
 exitcode=0
 errorsummary="$TEMPDIR/errorsummary.txt"
@@ -78,7 +75,7 @@ else
 	echo "$(date +'%d.%m.%y %H:%M:%S') UPLOAD SUCCEED" >> "$LOGFILE" 
 	if [ $exec_post_receive -eq 1 ]; then
 		echo "$(date +'%d.%m.%y %H:%M:%S') Generating pidfile for post receive hook" >> "$LOGFILE"
-		"$SCRIPTDIR/write_pid_and_id_to_queue.sh" "$TEMPDIR/gitpid"
+		"$SCRIPTDIR/write_pid_and_id_to_queue.sh" -f "$TEMPDIR/gitpid" -r $newrev
 	fi
 fi
 echo "-------------"

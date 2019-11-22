@@ -9,9 +9,17 @@ do
 			shift
 			commit_id=$1
 			;;
+		-f)
+			shift
+			outputfile=$1
+			;;
 	esac
 	shift
 done
+
+if [ $outputfile == "" ]; then
+	exit 1
+fi
 
 pid=$$
 gitpid=""
@@ -26,4 +34,4 @@ while [ "$gitpid" == "" ]; do
 	fi
 done
 
-echo $gitpid > "$1"
+echo $gitpid > $outputfile

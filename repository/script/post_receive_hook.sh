@@ -20,7 +20,15 @@ done
 
 source "$conffile"
 
-branch=$(git name-rev --name-only $newrev | sed -e 's/\(.*\)~[0-9]\+/\1/g')
+unset GIT_DIR;
+rm -rf "$TEMPDIR/git"
+mkdir -p "$TEMPDIR/git"
+eval "$GITBIN clone -q \"$TTLDIRECTORY\" \"$TEMPDIR/git\""
+cd "$TEMPDIR/git"
+branch=$(git name-rev --name-only $newrev | sed -e 's/\(.*\)~[0-9]\+/\1/g' | sed -e 's/remotes\/origin\///g')
+cd "$TEMPDIR"
+rm -rf "$TEMPDIR/git"
+
 branch_parameter=""
 if [ $branch == "ontology_dev" ]; then
 	branch_parameter="-b"
@@ -29,11 +37,11 @@ fi
 echo "$(date +'%d.%m.%y %H:%M:%S') ---------------- POST RECEIVE ---------------------"
 echo "$(date +'%d.%m.%y %H:%M:%S') ---------------- POST RECEIVE ---------------------" >> "$LOGFILE"
 
-echo "Adding files to Fuseki Server. Branch name: $branch"
-echo "Adding files to Fuseki Server. Branch name: $branch" >> "$LOGFILE" 
-"$SCRIPTDIR/add_files_to_dataset.sh" -s -c -p "$conffile" $branch_parameter -e "$LOGFILE"
+echo "Adding files to Fuseki Server. Commit: ${newrev}. Branch name: $branch"
+echo "Adding files to Fuseki Server. Commit: ${newrev}. Branch name: $branch" >> "$LOGFILE" 
+"$SCRIPTDIR/add_files_to_dataset.sh" -s -c -p "$conffile" $branch_parameter -e "$LOGFILE" -r $newrev
 
-if [ $branch == "master" ]; then
+if [ "$branch" == "master" ]; then
 	# calc last hook call
 	from_date="2017-01-01 00:00:00"
 	shopt -s nullglob
