@@ -54,6 +54,7 @@ done
 
 source "$conffile"
 echo "Adding files to fuseki script called."
+echo "Adding files to fuseki script called." >> "$LOGFILE"
 EXITCODE=0
 
 SERVERDATA="$FUSEKILIVEDATASET/data"
@@ -63,10 +64,16 @@ if $testmode; then
 	SERVERDATA="$FUSEKITESTDATASET/data"
 	SERVERUPDATE="$FUSEKITESTDATASET/update"
 	echo "Operating on test server."
+	echo "Operating on test server." >> "$LOGFILE"
 else 
 	if $loadDevBranch; then
 		SERVERDATA="$FUSEKIDEVDATASET/data"
 		SERVERUPDATE="$FUSEKIDEVDATASET/update"
+		echo "Operating on dev server."
+		echo "Operating on dev server." >> "$LOGFILE"
+	else
+		echo "Operating on live server."
+		echo "Operating on live server." >> "$LOGFILE"
 	fi
 fi
 if $defaultdirectory; then
@@ -74,6 +81,7 @@ if $defaultdirectory; then
 		DIRECTORY="$PROVENANCEFILESDIR/output"
 		RULESFILE="$CONFDIR/provenance_derivations.ttl"
 		echo "Operating provenance."
+		echo "Operating provenance." >> "$LOGFILE"
 	else
 		DIRECTORY="$TEMPDIR/git"
 		unset GIT_DIR;
@@ -109,6 +117,7 @@ echo "Inserting rules."
 curl -X POST -s -T "$RULESFILE" -G "$SERVERUPDATE"
 
 if [[ $defaultdirectory && !$loadProvenanceFiles ]]; then
+	cd "$TEMPDIR"
 	rm -rf "$TEMPDIR/git"
 fi
 

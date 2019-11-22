@@ -31,8 +31,14 @@ done
 source "$conffile"
 
 #get all commit ids since the last check
+unset GIT_DIR;
+rm -rf "$TEMPDIR/git"
+mkdir -p "$TEMPDIR/git"
+eval "$GITBIN clone -q \"$TTLDIRECTORY\" \"$TEMPDIR/git\""
 cd "$TEMPDIR/git"
 read -r -a commitids <<< $(git log --pretty=format:"%H" --since="$from_date" --before="$until_date")
+cd "$TEMPDIR"
+rm -rf "$TEMPDIR/git"
 rdfcommitids=""
 for i in ${commitids[@]}; do
 	if [ "$rdfcommitids" == "" ]; then
