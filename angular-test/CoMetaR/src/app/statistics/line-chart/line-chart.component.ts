@@ -147,7 +147,7 @@ export class LineChartComponent implements OnInit {
       responsive: true,
       elements: {
         line: {
-          tension: 0
+          tension: 0.1
         }
       },
       scales: {

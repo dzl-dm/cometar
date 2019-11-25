@@ -52,7 +52,7 @@ export class TreeItemListComponent implements OnInit {
         this.treeItems = tis; 
         this.cd.markForCheck();
       });
-      this.expanded = true;
+      //this.expanded = true;
     }
     else this.ontologyAccessService.getSubItems$(this.conceptIri).pipe(takeUntil(this.unsubscribe)).subscribe(tis => {
       //this.animations=tis.map(t => new BehaviorSubject<boolean>(false));
