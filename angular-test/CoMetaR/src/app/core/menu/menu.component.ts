@@ -76,12 +76,11 @@ export class MenuComponent implements OnInit {
     if (s=="home") {
       this.treeDataService.reset();
       //this.treeStyleService.reset();
-      this.router.navigate(["/"]);
+      let s = this.route.queryParamMap.subscribe(data => this.router.navigate(["/"],{ queryParams: {dev: data.get('dev')}}));
+      s.unsubscribe();
     }
   }
   public toggleHelp(helpDiv:HTMLElement){
-    this.selectHelpItems();
-    this.alignHelpItems();
     let el = <HTMLElement>(<HTMLElement>this.e.nativeElement).getElementsByClassName("helpbutton")[0];
     let offsetLeft = this.getOffset(el).left;
     if (this.helpDivOpened){
@@ -109,143 +108,4 @@ export class MenuComponent implements OnInit {
       top: offsetTop
     }
   }
-
-  private selectHelpItems(){
-    this.activeModule = this.router.url.split("?")[0].substr(1);
-    this.helpItems = this.coreHelpItems;
-    if (this.activeModule=="details") this.helpItems=this.helpItems.concat(this.detailsHelpItems);
-    if (this.activeModule=="provenance") this.helpItems=this.helpItems.concat(this.provenanceHelpItems);
-    if (this.activeModule=="client-configuration") this.helpItems=this.helpItems.concat(this.clientconfigurationHelpItems);
-  }
-
-  private alignHelpItems(){
-    this.helpItems.forEach(hi => {
-      if (hi.relativeTo){
-        let el = <HTMLElement>window.document.getElementById(hi.relativeTo)
-        let offset = this.getOffset(el);
-        hi.left = Math.max(0,hi.relativeLeft && offset.left + hi.relativeLeft || offset.left);
-        hi.top = Math.max(0,hi.relativeTop && offset.top + hi.relativeTop || offset.top);
-      }
-    })
-  }
-
-  public onSectionHeadingClick(event:MouseEvent, sectionWrapper:HTMLElement){
-    console.log(sectionWrapper);
-    sectionWrapper.scrollTop=50
-  }
-
-  public helpItems:HelpItem[] = [];
-  
-  private coreHelpItems:HelpItem[]=[
-    {
-      heading:"Home Button",
-      description:["Click to return to start page."],
-      width:150,
-      relativeTo: "homebutton",
-      relativeLeft:0,
-      relativeTop: 30
-    },
-    {
-      heading:"Search Button",
-      description:["Click to open/close search panel.", "The second button indicates the amount of search matches. Clicking clears search results."],
-      relativeLeft:0,
-      relativeTop:35,
-      width:150,
-      relativeTo:"toggleSearch"
-    },
-    {
-      heading:"Help Button",
-      description:["Click to open/close help panel."],
-      relativeLeft:0,
-      relativeTop:45,
-      width:150,
-      relativeTo:"helpbutton"
-    },
-    {
-      heading:"Ontology Tree",
-      description:["Navigate through the DZL ontology.","Click an item to show details."],
-      relativeTo: "tree",
-      relativeLeft: 30,
-      relativeTop: 250
-    },
-    {
-      heading:"Loading Indicator",
-      description:["While spinning, content is loading."],
-      relativeTo: "loading",
-      relativeLeft: -50,
-      relativeTop: -120
-    },
-    {
-      heading:"Resize Bar",
-      description:["Drag left or right to resize the ontology tree."],
-      relativeTo: "treeResizeComponent",
-      relativeLeft: -125,
-      relativeTop: 350,
-      width: 150
-    }
-  ];
-  
-  private detailsHelpItems:HelpItem[]=[
-    {
-      relativeTo:"detailed_information_additional",
-      heading:"Concept Information and Relations",
-      relativeLeft: 10,
-      relativeTop: 150
-    },
-    {
-      relativeTo:"detailed_information_core",
-      heading:"Concept Core Information",
-      description:["Press the icon to copy respective text to your clipboard."],
-      relativeLeft: 10,
-      relativeTop: 150,
-      width:200
-    }
-  ];
-  private provenanceHelpItems:HelpItem[]=[
-    {
-      heading:"Date",
-      description:["Click to load all provenance data from this date."],
-      relativeTo:"provenancedata",
-      relativeLeft: 10,
-      relativeTop: 250,
-      width:150
-    },
-    {
-      heading:"Single Update",
-      description:[
-        "Click to load all provenance data from a single update.",
-        "The bar width indicates the amount of changes.",
-        "Hover to see details on the update.", 
-        "Dark stripes indicate changes on deprecated items."
-      ],
-      relativeTo:"provenancedata",
-      relativeLeft: 250,
-      relativeTop: 200,
-      width:300
-    },
-    {
-      heading:"Filter",
-      description:[
-        "Filter categories of changes that should be displayed."
-      ],
-      relativeTo:"provenanceoptions",
-      relativeLeft: 250,
-      relativeTop: 100,
-      width:300
-    }
-  ];
-  private clientconfigurationHelpItems:HelpItem[]=[];
-}
-
-interface HelpItem {
-  heading:string,
-  description?:string[],
-  left?:number,
-  top?:number,
-  bottom?:number,
-  right?:number,
-  width?:number,
-  relativeTo?: string,
-  relativeLeft?: number,
-  relativeTop?: number
 }

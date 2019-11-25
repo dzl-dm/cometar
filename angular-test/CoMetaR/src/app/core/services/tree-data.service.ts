@@ -63,7 +63,10 @@ export class TreeDataService {
     ) 
 
     this.shownElements$ = this.openedElements$;//combineLatest(this.searchElements$,this.openedElements$).pipe(map(data => data[0].concat(data[1])))
-    this.searchElements$.subscribe(data => this.addShownElements(data));
+    this.searchElements$.subscribe(data => {
+      if (data.length == 1) this.onConceptSelection(data[0]);
+      else this.addShownElements(data)
+    });
     this.selectedIri$.subscribe(data => {if (data != "") this.addShownElements([data])});
     
     let subtasks:number=0;

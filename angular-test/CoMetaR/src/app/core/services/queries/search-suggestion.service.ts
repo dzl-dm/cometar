@@ -10,6 +10,16 @@ export class SearchSuggestionService {
   constructor(private dataService: DataService) { }
   public get(pattern:string):Observable<SearchSuggestion[]> { 
     if (pattern == "") return of([]);
+    pattern = pattern
+    .replace("\\","\\\\\\")
+    .replace("(","\\\\(")
+    .replace(")","\\\\)")
+    .replace("^","\\\\^")
+    .replace("$","\\\\$")
+    .replace("-","\\\\-")
+    .replace(":","\\\\:")
+    .replace(".","\\\\.")
+    .replace("+","\\\\+");
     const queryString = this.getQueryString(pattern);
     return this.dataService.getData(queryString,"search for pattern "+pattern);
   };
@@ -21,7 +31,7 @@ WHERE {
   ?element rdf:type ?t .
   FILTER (?t IN (skos:Concept, skos:Collection)) .
   ?element ?property ?value FILTER (regex(?value, '${pattern}', 'i') && ?property !=dc:creator) .
-  BIND(str(lcase(replace(?value,'(^|.* )([a-zA-Z0-9äöüß._:()/=-]*${pattern}([a-zA-Z0-9äöüß._:()/=-]*[a-zA-Z0-9äöüß()])?( [a-zA-Z0-9äöüß._:()/=-]*[a-zA-Z0-9äöüß()]){0,2}).*', '$2', 'is'))) as ?match) .
+  BIND(str(lcase(replace(?value,'(^|.* )([a-zA-Z0-9äöüß._:()/=,-]*${pattern}([a-zA-Z0-9äöüß._:()/=,-]*[a-zA-Z0-9äöüß()])?( [a-zA-Z0-9äöüß._:()/=,-]*[a-zA-Z0-9äöüß()]){0,2}).*', '$2', 'is'))) as ?match) .
   BIND(IF(STRSTARTS( ?match, "${pattern}" ) && !regex($match,' '), 100,0) as ?weight) .
 }
 group by ?match ?weight
