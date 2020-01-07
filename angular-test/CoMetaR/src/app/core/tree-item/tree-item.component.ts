@@ -140,6 +140,7 @@ export class TreeItemComponent implements OnInit {
 
   public onSelect(){
     this.treeDataService.onConceptSelection(this.treeitem.element.value);
+    this.expandOrCollapse(true);
   }
 
   public navigate(iri){
@@ -181,8 +182,9 @@ export class TreeItemComponent implements OnInit {
     return result;
   }
 
-  public expandOrCollapse(){
-    this.expanded=!this.expanded;
+  public expandOrCollapse(expand?:boolean){
+    if (expand!= undefined) this.expanded=expand;
+    else this.expanded=!this.expanded;
     this.manualExpandOrCollapse = this.expanded;
     if (!this.expanded) this.treeDataService.onCollapse(this.treeitem.element.value)
     this.treeStyleService.onTreeDomChange("TreeItem expanded.");

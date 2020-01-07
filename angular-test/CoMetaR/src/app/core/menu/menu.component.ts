@@ -49,6 +49,7 @@ export class MenuComponent implements OnInit {
     this.searchDivOpened = this.treeDataService.getSearchPattern() && this.treeDataService.getSearchPattern() != "";
   }
 
+  public neededPlaceholderSoNgModelChangeWorks;
   options=[];
   public searchPatternChanged(pattern:string){
     this.searchSuggestionService.get(pattern).subscribe(data => {

@@ -23,9 +23,11 @@ export class DataService {
   public busyQueriesStartTimes:number[] = [];
   private busyQueries = [];
   private dataUrl$ = new BehaviorSubject<string>("");
+  //private baseUrl="https://data.dzl.de/fuseki/";
+  private baseUrl="http://localhost:3030/";
   public setServer(s:'live'|'dev'){
-    if (s == 'dev' && this.configurationService.getServer() != 'dev') this.dataUrl$.next('https://data.dzl.de/fuseki/cometar_dev/query');
-    else if (s == 'live'&& this.configurationService.getServer() != 'live') this.dataUrl$.next('https://data.dzl.de/fuseki/cometar_live/query');
+    if (s == 'dev' && this.configurationService.getServer() != 'dev') this.dataUrl$.next(this.baseUrl+'cometar_dev/query');
+    else if (s == 'live'&& this.configurationService.getServer() != 'live') this.dataUrl$.next(this.baseUrl+'cometar_live/query');
     this.configurationService.setServer(s);
   }
 
@@ -36,14 +38,14 @@ export class DataService {
         this.progressService.addTask();
         this.loading.next(true);
         this.busyQueries.push(queryName);
-        this.busyQueriesStartTimes.push(Date.now().valueOf())
+        this.busyQueriesStartTimes.push(Date.now().valueOf());
         this.loadingNames.next(this.busyQueries);
-        let s:Subscription;
+        let s: Subscription;
         s = this.getObservable(url, queryString, typerules).subscribe(data => {
 
 
           if (data instanceof HttpErrorResponse){
-            this.browserService.snackbarNotification.next([data.message,'error']);
+            this.browserService.snackbarNotification.next([data.message, 'error']);
             this.pendings[queryString] = of([]);
           }
           this.progressService.taskDone();
