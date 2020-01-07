@@ -49,9 +49,12 @@ while read line || [ -n "$line" ]; do #second expression is needed cause the las
 	checkout_id=$line
 	success=$("$PROVENANCESCRIPTDIR/create_delta_file.sh" -p "$conffile" -i $checkout_id)
 done < <(
-	cd "$TEMPDIR/git"; 
-	unset GIT_DIR; 
-	git checkout -q master; 
+	unset GIT_DIR;
+	rm -rf "$TEMPDIR/git"
+	mkdir -p "$TEMPDIR/git"
+	eval "$GITBIN clone -q \"$TTLDIRECTORY\" \"$TEMPDIR/git\""
+	cd "$TEMPDIR/git"
+	eval "$GITBIN checkout -q master"
 	if [ $until_date_is_now -eq 0 ]; then
 		git log --pretty=format:"%H" --since="$from_date" --before="$until_date"
 	else
