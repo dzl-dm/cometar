@@ -11,28 +11,28 @@ import { ConfigurationService } from './configuration.service';
 })
 export class DataService {
   constructor(
-    private http:HttpClient,
-    private browserService:BrowserService,
-    private progressService:ProgressService,
-    private configurationService:ConfigurationService
+    private http: HttpClient,
+    private browserService: BrowserService,
+    private progressService: ProgressService,
+    private configurationService: ConfigurationService
   ) { }
 
   private pendings = {};
   public loading = new BehaviorSubject<boolean>(false);
   public loadingNames = new BehaviorSubject<string[]>([]);
-  public busyQueriesStartTimes:number[] = [];
+  public busyQueriesStartTimes: number[] = [];
   private busyQueries = [];
   private dataUrl$ = new BehaviorSubject<string>("");
-  //private baseUrl="https://data.dzl.de/fuseki/";
-  private baseUrl="http://localhost:3030/";
-  public setServer(s:'live'|'dev'){
-    if (s == 'dev' && this.configurationService.getServer() != 'dev') this.dataUrl$.next(this.baseUrl+'cometar_dev/query');
-    else if (s == 'live'&& this.configurationService.getServer() != 'live') this.dataUrl$.next(this.baseUrl+'cometar_live/query');
+  private baseUrl="https://data.dzl.de/fuseki/";
+  //private baseUrl = "http://localhost:3030/";
+  public setServer(s: 'live' | 'dev') {
+    if (s == 'dev' && this.configurationService.getServer() != 'dev') { this.dataUrl$.next(this.baseUrl + 'cometar_dev/query'); }
+    else if (s == 'live' && this.configurationService.getServer() != 'live') { this.dataUrl$.next(this.baseUrl + 'cometar_live/query'); }
     this.configurationService.setServer(s);
   }
 
-  getData(queryString:string, queryName:string, typerules?:{}): Observable<any[]> {
-    if (!this.pendings[queryString]){
+  getData(queryString: string, queryName: string, typerules?: {}): Observable<any[]> {
+    if (!this.pendings[queryString]) {
       this.pendings[queryString] = new ReplaySubject<any>(1);
       this.dataUrl$.subscribe(url => {
         this.progressService.addTask();
@@ -44,53 +44,53 @@ export class DataService {
         s = this.getObservable(url, queryString, typerules).subscribe(data => {
 
 
-          if (data instanceof HttpErrorResponse){
+          if (data instanceof HttpErrorResponse) {
             this.browserService.snackbarNotification.next([data.message, 'error']);
             this.pendings[queryString] = of([]);
           }
           this.progressService.taskDone();
-  
+
           let index = this.busyQueries.indexOf(queryName);
-          this.busyQueries.splice(index,1);
-          this.busyQueriesStartTimes.splice(index,1);
+          this.busyQueries.splice(index, 1);
+          this.busyQueriesStartTimes.splice(index, 1);
           this.loadingNames.next(this.busyQueries);
-          if (this.busyQueries.length == 0) this.loading.next(false);
+          if (this.busyQueries.length == 0) { this.loading.next(false); }
 
 
           this.pendings[queryString].next(data);
-          if(s) s.unsubscribe();
+          if (s) { s.unsubscribe(); }
         });
       })
     }
     return this.pendings[queryString].pipe(
       map(data => {
-        if (data instanceof HttpErrorResponse) return [];
-        else return data;
+        if (data instanceof HttpErrorResponse) { return []; }
+        else { return data; }
       })/*,
       first()*/
     );
   }
 
-  private getObservable(url:string, queryString:string, typerules?:{}):Observable<any[]>{
-    if (url=="") return of([]);
+  private getObservable(url: string, queryString: string, typerules?: {}): Observable<any[]> {
+    if (url == "") { return of([]); }
     return this.http.get<JSONResponse>(
-      url+"?query="+encodeURIComponent(queryString),
-      { observe: 'response', headers:{'Accept': 'application/sparql-results+json; charset=utf-8'}}
+      url + "?query=" + encodeURIComponent(queryString),
+      { observe: 'response', headers: { 'Accept': 'application/sparql-results+json; charset=utf-8' } }
     ).pipe(
       map(data => data.body.results.bindings
-        .map((binding:{}) => {
+        .map((binding: {}) => {
           Object.entries(binding).forEach(
-            ([key, part]:[string,JSONResponsePart]) => {
-              if (part.datatype && part.datatype == "http://www.w3.org/2001/XMLSchema#boolean") part.value = part.value == "true";
-              if (part.datatype && part.datatype == "http://www.w3.org/2001/XMLSchema#dateTime") part.value = new Date(part.value);
-              if (typerules && typerules[key] && typerules[key] == "|array") part.value = part.value.split("|");
+            ([key, part]: [string, JSONResponsePart]) => {
+              if (part.datatype && part.datatype == "http://www.w3.org/2001/XMLSchema#boolean") { part.value = part.value == "true"; }
+              if (part.datatype && part.datatype == "http://www.w3.org/2001/XMLSchema#dateTime") { part.value = new Date(part.value); }
+              if (typerules && typerules[key] && typerules[key] == "|array") { part.value = part.value.split("|"); }
               delete part.datatype;
               delete part.type;
             }
           );
           return binding
         })),
-      catchError((err)=>{
+      catchError((err) => {
         return of(err);
       })
     )
@@ -115,58 +115,58 @@ export class DataService {
 }
 
 interface JSONResponse {
-  "head":{
-    "vars":[]
+  "head": {
+    "vars": []
   },
-  "results":{
-    "bindings":any[]
+  "results": {
+    "bindings": any[]
   }
 }
 
 interface JSONResponsePart {
-  type:string,
-  "xml:lang"?:string,
-  value:any,
-  datatype?:string
+  type: string,
+  "xml:lang"?: string,
+  value: any,
+  datatype?: string
 }
 
 export interface JSONResponsePartBoolean {
-  value:boolean,
-  name?:string
+  value: boolean,
+  name?: string
 }
 
 export interface JSONResponsePartLangString {
-  "xml:lang":string,
-  value:string,
-  name?:string
+  "xml:lang": string,
+  value: string,
+  name?: string
 }
 
 export interface JSONResponsePartUriString {
-  value:string,
-  name?:string
+  value: string,
+  name?: string
 }
 
 export interface JSONResponsePartNumber {
-  value:number,
-  name?:string
+  value: number,
+  name?: string
 }
 
 export interface JSONResponsePartString {
-  value:string,
-  name?:string
+  value: string,
+  name?: string
 }
 
 export interface JSONResponsePartDate {
-  value:Date,
-  name?:string
+  value: Date,
+  name?: string
 }
 
 export interface JSONResponsePartArray {
   value: string[],
-  name?:string
+  name?: string
 }
 
-export const prefixes:string = `
+export const prefixes: string = `
 PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX : <http://data.dzl.de/ont/dwh#>
 PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
