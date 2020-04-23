@@ -11,7 +11,7 @@ import { ProvenanceModule } from "./provenance/provenance.module";
 import { DetailedInformationComponent } from './detailed-information/detailed-information/detailed-information.component';
 import { ProvenanceComponent } from './provenance/provenance/provenance.component';
 import { AppComponent } from './app/app.component';
-import { MatSnackBarModule } from '@angular/material';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { CoreModule } from "./core/core.module";
 import { UploadClientConfigurationModule } from './upload-client-configuration/upload-client-configuration.module';
 import { UploadClientConfigurationComponent } from './upload-client-configuration/upload-client-configuration/upload-client-configuration.component';

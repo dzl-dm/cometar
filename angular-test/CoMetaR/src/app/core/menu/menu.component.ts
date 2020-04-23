@@ -2,8 +2,8 @@ import { Component, OnInit, ElementRef, Input, ViewChild, ChangeDetectionStrateg
 import { TreeDataService } from '../services/tree-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { of, Observable } from 'rxjs';
-import 'hammerjs';
-import { MatSliderChange, MatIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material/icon';
+import { MatSliderChange } from '@angular/material/slider';
 import { DataService } from 'src/app/services/data.service';
 import { combineAll, combineLatest } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';

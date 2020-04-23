@@ -4,7 +4,7 @@ import { SectionComponent } from './section.component';
 import { CoreModule } from '../core.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MatIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material/icon';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('SectionComponent', () => {

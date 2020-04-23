@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StatisticsComponent } from './statistics.component';
-import { MatTab } from '@angular/material';
+import { MatTab } from '@angular/material/tabs';
 import { StatisticsModule } from '../statistics.module';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';

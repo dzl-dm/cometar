@@ -6,7 +6,8 @@ import { ChartsModule } from 'ng2-charts';
 import { BreakdownPieComponent } from './breakdown-pie/breakdown-pie.component';
 import { LineChartComponent } from './line-chart/line-chart.component';
 import { BubbleChartComponent } from './bubble-chart/bubble-chart.component';
-import { MatTableModule, MatTabsModule } from '@angular/material';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   declarations: [

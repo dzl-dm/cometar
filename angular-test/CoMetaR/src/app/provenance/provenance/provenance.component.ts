@@ -5,7 +5,7 @@ import { ConfigurationService } from 'src/app/services/configuration.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UrlService } from 'src/app/services/url.service';
 import { map } from 'rxjs/operators';
-import { MatSliderChange } from '@angular/material';
+import { MatSliderChange } from '@angular/material/slider';
 
 @Component({
 	selector: 'app-provenance',

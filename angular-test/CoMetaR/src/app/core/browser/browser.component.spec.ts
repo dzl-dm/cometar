@@ -4,7 +4,8 @@ import { BrowserComponent } from './browser.component';
 import { CoreModule } from '../core.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MatSnackBar, MatIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('BrowserComponent', () => {
