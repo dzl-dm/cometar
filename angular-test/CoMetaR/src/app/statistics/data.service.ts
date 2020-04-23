@@ -389,7 +389,8 @@ export class DataService {
     "BREATH": 'rgba(63,144,191,1)',
     "CPCM": 'rgba(85,191,184,1)',
     "UGMLC": 'rgba(191,174,63,1)',
-    "TLRC": 'rgba(191,63,63,1)'
+    "TLRC": 'rgba(191,63,63,1)',
+    "CAPNETZ": 'rgba(136, 86, 170,1)'
   }
   private i2b2userFilter = ["mstoehr", "rmajeed", "GBN", "kaletsch"];
 }
