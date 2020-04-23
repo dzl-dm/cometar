@@ -30,6 +30,8 @@ done
 
 source "$conffile"
 
+echo "Preparing notifications..."
+
 #get all commit ids since the last check
 unset GIT_DIR;
 rm -rf "$TEMPDIR/git"
@@ -67,9 +69,11 @@ while read i; do
 	unset IFS
 done < <(curl -s -H "Accept: text/csv;charset=utf-8" -G "https://data.dzl.de/fuseki/cometar_live/query" --data-urlencode query="$query")
 
-#if [ "$notations" == "" ]; then
-	#exit 0
-#fi
+if [ "$notations" == "" ]; then
+	echo "No concept notations changed. Sending notification mail..."
+	curl -X POST https://data.dzl.de/biomaterial_request/sendform.php -H "Content-Type: application/x-www-form-urlencoded" -d "formtype=notation_changes&commit_ids=${rdfcommitids}&affected_sources_by_source=${affectedsourcesbysource}&affected_sources_by_notation=${affectedsourcesbynotation}&loose_mappings=${loosemappingstablewithoutblanks}&suggested_sql=${suggestedsql}"
+	exit 0
+fi
 echo "Removed/changed notations since last check: $notations"
 
 ### get all affected sources and loose concepts
@@ -108,6 +112,7 @@ while read i; do
 	unset IFS
 done < <(curl -s -H "Accept: text/csv;charset=utf-8" -G "https://data.dzl.de/fuseki/cometar_live/query" --data-urlencode query="$query")
 
+echo "Sending notification mail..."
 curl -X POST https://data.dzl.de/biomaterial_request/sendform.php -H "Content-Type: application/x-www-form-urlencoded" -d "formtype=notation_changes&commit_ids=${rdfcommitids}&affected_sources_by_source=${affectedsourcesbysource}&affected_sources_by_notation=${affectedsourcesbynotation}&loose_mappings=${loosemappingstablewithoutblanks}&suggested_sql=${suggestedsql}"
 
 exit 0

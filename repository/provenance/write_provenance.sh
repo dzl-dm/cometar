@@ -43,13 +43,26 @@ mkdir -p "$output_directory"
 
 echo "Writing deltas from $from_date to ${until_date}."
 echo "$(date +'%d.%m.%y %H:%M:%S') Writing deltas from $from_date to ${until_date}." >> "$LOGFILE"
-while read line || [ -n "$line" ]; do #second expression is needed cause the last git log line does not end with a newline
-	echo ""
-	echo $line
-	checkout_id=$line
-	success=$("$PROVENANCESCRIPTDIR/create_delta_file.sh" -p "$conffile" -i $checkout_id)
-done < <(
-	unset GIT_DIR;
+# while read line || [ -n "$line" ]; do #second expression is needed cause the last git log line does not end with a newline
+	# echo ""
+	# echo $line
+	# checkout_id=$line
+	# success=$("$PROVENANCESCRIPTDIR/create_delta_file.sh" -p "$conffile" -i $checkout_id)
+# done < <(
+	# unset GIT_DIR;
+	# rm -rf "$TEMPDIR/git"
+	# mkdir -p "$TEMPDIR/git"
+	# eval "$GITBIN clone -q \"$TTLDIRECTORY\" \"$TEMPDIR/git\""
+	# cd "$TEMPDIR/git"
+	# eval "$GITBIN checkout -q master"
+	# if [ $until_date_is_now -eq 0 ]; then
+		# git log --pretty=format:"%H" --since="$from_date" --before="$until_date"
+	# else
+		# git log --pretty=format:"%H" --since="$from_date"
+	# fi
+# )
+for line in $(	
+	unset GIT_DIR
 	rm -rf "$TEMPDIR/git"
 	mkdir -p "$TEMPDIR/git"
 	eval "$GITBIN clone -q \"$TTLDIRECTORY\" \"$TEMPDIR/git\""
@@ -60,7 +73,12 @@ done < <(
 	else
 		git log --pretty=format:"%H" --since="$from_date"
 	fi
-)
+); do
+	echo ""
+	echo $line
+	checkout_id=$line
+	success=$("$PROVENANCESCRIPTDIR/create_delta_file.sh" -p "$conffile" -i $checkout_id)
+done
 
 output_file="$PROVENANCEFILESDIR/output/$(echo $from_date | tr ':' '_') - $(echo $until_date | tr ':' '_').ttl"
 echo "@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> ." > "$output_file";
@@ -87,11 +105,24 @@ gawk -f "$PROVENANCESCRIPTDIR/prov_from_committers.awk" -v output="$output_file"
 echo "... commits (Activities)."
 gawk -f "$PROVENANCESCRIPTDIR/prov_from_commits.awk" -v output="$output_file" "$PROVENANCEFILESDIR/output/commits.csv"
 echo "... changes (Qualified activities)."
-while read id || [ -n "$id" ]; do
+# while read id || [ -n "$id" ]; do
+	# if [ -f "$PROVENANCEFILESDIR/deltas/$id.csv" ]; then
+		# gawk -f "$PROVENANCESCRIPTDIR/prov_from_changefile.awk" -v output="$output_file" -v concepts="$concepts_file" -v id="$id" "$PROVENANCEFILESDIR/deltas/$id.csv"
+	# fi
+# done
+for id in $(
+	cd "$TEMPDIR/git"; 
+	unset GIT_DIR; 
+	git checkout -q master; 
+	if [ -n "$recent_line" ] ; then 
+		echo "$recent_line"; 
+	fi; 
+	git log --pretty=format:"%H" --since="$from_date" --before="$until_date"
+); do
 	if [ -f "$PROVENANCEFILESDIR/deltas/$id.csv" ]; then
 		gawk -f "$PROVENANCESCRIPTDIR/prov_from_changefile.awk" -v output="$output_file" -v concepts="$concepts_file" -v id="$id" "$PROVENANCEFILESDIR/deltas/$id.csv"
 	fi
-done < <(cd "$TEMPDIR/git"; unset GIT_DIR; git checkout -q master; if [ -n "$recent_line" ] ; then echo "$recent_line"; fi; git log --pretty=format:"%H" --since="$from_date" --before="$until_date")
+done
 
 # echo "... concepts (Entities)."
 # while read concept || [ -n "$concept" ]; do 
