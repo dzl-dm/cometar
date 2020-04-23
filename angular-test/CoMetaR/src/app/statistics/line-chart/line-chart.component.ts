@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 import Chart, { ChartData, ChartOptions } from 'chart.js';
-import { MatTable } from '@angular/material';
+import { MatTable } from '@angular/material/table';
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
 import { BrowserService } from 'src/app/core/services/browser.service';
 

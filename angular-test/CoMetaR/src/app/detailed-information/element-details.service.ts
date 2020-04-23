@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TreeIconsQueryService } from './services/queries/tree-icons-query.service';
 import { TreeStyleService, TreeItemStyle } from '../core/services/tree-style.service';
-import { MatIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Injectable({
