@@ -21,31 +21,33 @@ export class OntologyDataService {
   public treeItems$ = new ReplaySubject<TreeItem[]>(1);
 
   private loadOntology(){
-    let rootQueryString = this.getRootElementsQueryString();
-    let rootQuery:Observable<RootElement[]> = this.dataService.getData(rootQueryString, "root elements");
+    const rootQueryString = this.getRootElementsQueryString();
+    const rootQuery:Observable<RootElement[]> = this.dataService.getData(rootQueryString, "root elements");
 
-    let parentsQueryString = this.getAllParentRelationsQueryString();
-    let parentsQuery:Observable<ParentChildRelation[]> = this.dataService.getData(parentsQueryString, "all parent-child relations");
+    const parentsQueryString = this.getAllParentRelationsQueryString();
+    const parentsQuery:Observable<ParentChildRelation[]> = this.dataService.getData(parentsQueryString, "all parent-child relations");
 
-    let informationQueryString = this.getItemInformationQueryString();
-    let informationQuery:Observable<TreeItemInformation[]> = this.dataService.getData(informationQueryString, "all basic concept information", {notations:"|array", units:"|array"});
+    const informationQueryString = this.getItemInformationQueryString();
+    const informationQuery:Observable<TreeItemInformation[]> = this.dataService.getData(informationQueryString, "all basic concept information", {notations:"|array", units:"|array"});
     
     //this triggers once when the page loads and afterwards when a new provenance date is entered so that this.ghostTreeItems$ changes
     //could be optimized by not fully rebuilding the concept tree
     combineLatest(rootQuery,parentsQuery,informationQuery,this.ghostTreeItems$).subscribe(([rootElements,pcs,is,gtis])=>{
-      if (rootElements.length==0 || pcs.length==0 || is.length == 0) return;
+      if (rootElements.length==0 || pcs.length==0 || is.length == 0) { return; }
       this.rootItems=[];
       this.treeItems=[];
       rootElements.forEach(re=>{
-        let info = is.filter(i => i.element.value == re.element.value)[0];
-        if (!info) return;
-        let ti = new TreeItem(info);
+        const info = is.filter(i => i.element.value == re.element.value)[0];
+        if (!info) { return; }
+        const ti = new TreeItem(info);
         this.rootItems.push(ti);
         this.treeItems.push(ti);
         this.fillOntologyRecursively(ti,pcs,is,gtis);
       });
-      this.rootItems.sort((a,b)=>{
-        if (a.label.value > b.label.value) return 1;
+      this.rootItems.sort((a,b)=> {
+        const labela = a.displayLabel.value || a.label.value;
+        const labelb = b.displayLabel.value || b.label.value;
+        if (labela > labelb) { return 1; }
         return -1;
       });
       
@@ -55,13 +57,13 @@ export class OntologyDataService {
   }
   
   private fillOntologyRecursively(ti:TreeItem,pcs:ParentChildRelation[],is:TreeItemInformation[],gtis:GhostTreeItem[]){    
-    let children = pcs.filter(pc => pc.parent.value == ti.element.value).map(pc => pc.child);
+    const children = pcs.filter(pc => pc.parent.value == ti.element.value).map(pc => pc.child);
     children.forEach(c => {
-      let checkti = this.treeItems.filter(ti => ti.element.value == c.value);
+      const checkti = this.treeItems.filter(ti => ti.element.value == c.value);
       let newti:TreeItem;
-      if (checkti.length > 0) newti = checkti[0];
+      if (checkti.length > 0) { newti = checkti[0]; }
       else {
-        let info = is.filter(i => i.element.value == c.value)[0];
+        const info = is.filter(i => i.element.value == c.value)[0];
         newti = new TreeItem(info);
         this.treeItems.push(newti);
         this.fillOntologyRecursively(newti,pcs,is,gtis);  
@@ -70,11 +72,11 @@ export class OntologyDataService {
       newti.parents.push(ti);    
     });
 
-    let ghostChildren = gtis.filter(gti => gti.parent == ti.element.value);
+    const ghostChildren = gtis.filter(gti => gti.parent == ti.element.value);
     ghostChildren.forEach(gc => {
-      let checkti = ti.children.map(c => c.element.value).includes(gc.element.value)
+      const checkti = ti.children.map(c => c.element.value).includes(gc.element.value)
       if (!checkti){
-        let newti = new TreeItem({
+        const newti = new TreeItem({
           element: gc.element,
           label: {value: gc.label.value, "xml:lang":"en"},
           notations: { value:[] },
@@ -90,8 +92,10 @@ export class OntologyDataService {
       }
     });
 
-    ti.children.sort((a,b)=>{
-      if (a.label.value > b.label.value) return 1;
+    ti.children.sort((a,b)=> {
+      const labela = a.displayLabel.value || a.label.value;
+      const labelb = b.displayLabel.value || b.label.value;
+      if (labela > labelb) { return 1; }
       return -1;
     });
   }  
