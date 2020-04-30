@@ -29,43 +29,43 @@ import { takeUntil } from 'rxjs/operators';
   ]
 })
 export class TreeItemListComponent implements OnInit {
-  @Input() conceptIri:string;
-  @Input('expanded') expanded?:boolean;
-  @Input('cascade_expand') cascade_expand?:boolean;
-  @Input('animation') animation?:BehaviorSubject<boolean>;
-  //public animations:BehaviorSubject<boolean>[];
+  @Input() conceptIri: string;
+  @Input('expanded') expanded?: boolean;
+  @Input('cascade_expand') cascade_expand?: boolean;
+  @Input('animation') animation?: BehaviorSubject<boolean>;
+  // public animations:BehaviorSubject<boolean>[];
   
   private unsubscribe: Subject<void> = new Subject();
   
   constructor(
-    private treeDataService:TreeDataService,
+    private treeDataService: TreeDataService,
     private cd: ChangeDetectorRef,
-    public treeStyleService:TreeStyleService,
+    public treeStyleService: TreeStyleService,
     private ontologyAccessService: OntologyAccessService
   ) { }
 
-  public treeItems:TreeItem[] = [];
+  public treeItems: TreeItem[] = [];
   ngOnInit() {
-    if (this.conceptIri == "root") {
+    if (this.conceptIri === 'root') {
       this.ontologyAccessService.getTopLevelItems$().pipe(takeUntil(this.unsubscribe)).subscribe(tis => {
-        //this.animations=tis.map(t => new BehaviorSubject<boolean>(false));
+        // this.animations=tis.map(t => new BehaviorSubject<boolean>(false));
         this.treeItems = tis; 
         this.cd.markForCheck();
       });
-      //this.expanded = true;
-    }
-    else this.ontologyAccessService.getSubItems$(this.conceptIri).pipe(takeUntil(this.unsubscribe)).subscribe(tis => {
-      //this.animations=tis.map(t => new BehaviorSubject<boolean>(false));
-      this.treeItems=tis;
+      // this.expanded = true;
+    } else { this.ontologyAccessService.getSubItems$(this.conceptIri).pipe(takeUntil(this.unsubscribe)).subscribe(tis => {
+      // this.animations=tis.map(t => new BehaviorSubject<boolean>(false));
+      this.treeItems = tis;
     });
+    }
     this.treeItems$.pipe(takeUntil(this.unsubscribe)).subscribe(data => { 
-      //this.cd.markForCheck();
+      // this.cd.markForCheck();
     });
   }
 
   public treeItems$ = new Observable<TreeItem[]>();
 
-  isSelected$(treeItem:TreeItem):Observable<boolean>{
+  isSelected$(treeItem: TreeItem): Observable<boolean>{
     return this.treeDataService.isSelected$(treeItem.element.value)
   }
 
