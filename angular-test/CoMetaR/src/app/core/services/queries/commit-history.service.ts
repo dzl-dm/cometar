@@ -22,7 +22,7 @@ export class CommitHistoryService {
 
   public getQueryString(from:Date, until:Date):string {
   return `#ontology changes since...
-    ${prefixes}
+    ${prefixes}  
     SELECT ?date (COUNT(DISTINCT ?add) as ?additions) (COUNT(DISTINCT ?rem) as ?removals) ?total
     WHERE { 
       {
@@ -33,16 +33,31 @@ export class CommitHistoryService {
           OPTIONAL { ?u cs:removal ?r FILTER NOT EXISTS { ?r rdf:comment "hidden" }  . }          
         }
       }
-      ?commit prov:qualifiedUsage ?usage ;
-        prov:endedAtTime ?d .
-      OPTIONAL { ?usage cs:addition ?add	FILTER NOT EXISTS { ?add rdf:comment "hidden" } . }
-      OPTIONAL { ?usage cs:removal ?rem FILTER NOT EXISTS { ?rem rdf:comment "hidden" }  . }
+      {
+        SELECT ?usage ?d
+        WHERE {
+          {
+          SELECT DISTINCT ?minlastdate
+          WHERE {
+            ?c prov:qualifiedUsage ?u ;
+              prov:endedAtTime ?minlastdate .
+          }
+          order by desc(?minlastdate)
+          limit 1
+          offset 1
+          }
+          ?commit prov:qualifiedUsage ?usage ;
+          prov:endedAtTime ?d .
+          filter ((?d >= "${from.toISOString()}"^^xsd:dateTime || ?d >= ?minlastdate) && ?d <= "${until.toISOString()}"^^xsd:dateTime)
+        }
+      }
+		  OPTIONAL { ?usage cs:addition ?add FILTER NOT EXISTS { ?add rdf:comment "hidden" } . }
+		  OPTIONAL { ?usage cs:removal ?rem FILTER NOT EXISTS { ?rem rdf:comment "hidden" }  . }
       BIND (CONCAT(STR(YEAR(?d)), 
         "-", 
         STR(MONTH(?d)), 
         "-", 
         STR(DAY(?d))) as ?date)
-      filter (?d >= "${from.toISOString()}"^^xsd:dateTime && ?d <= "${until.toISOString()}"^^xsd:dateTime)
     }
     group by ?date ?total
     order by ?date`;
