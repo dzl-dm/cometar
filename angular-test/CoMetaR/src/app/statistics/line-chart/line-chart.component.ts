@@ -11,10 +11,10 @@ import { BrowserService } from 'src/app/core/services/browser.service';
   styleUrls: ['./line-chart.component.css']
 })
 export class LineChartComponent implements OnInit {
-  @Input('') chartData$: ReplaySubject<ChartData>;
-  @Input('') chartData:ChartData = {datasets:[], labels:[]};
-  @Input('') XaxeDateFormat:string = 'YYYY-M-D HH:mm:ss';
-  @Input('') legend:boolean;
+  @Input() chartData$: ReplaySubject<ChartData>;
+  @Input() chartData:ChartData = {datasets:[], labels:[]};
+  @Input() XaxeDateFormat:string = 'YYYY-M-D HH:mm:ss';
+  @Input() legend:boolean;
 
   constructor(
     private e: ElementRef,
