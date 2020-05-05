@@ -9,9 +9,10 @@
       [shrinking]="false"
       (open)="onSectionExpand(detail.key)">
       <div class='detailContent' [ngSwitch]="detail.key">
+        <!-- buggy interaction with loading screen / elements to show
         <div *ngSwitchCase="'modifier'">
             <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true" [cascade_expand]="true"></app-tree-item>
-        </div>
+        </div>-->
         <div *ngSwitchCase="'lastchangesdate'">
             <ng-container *ngFor="let conceptInformation of changeDetails$ | async">
                 <app-concept-information 
