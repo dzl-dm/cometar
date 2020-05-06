@@ -7,7 +7,7 @@ import { TreeDataService } from '../services/tree-data.service';
   styleUrls: ['./text-with-navigation.component.css']
 })
 export class TextWithNavigationComponent implements OnInit {
-  @Input('') data:string|NavigationTextPart|NavigationTextPart[];
+  @Input() data:string|NavigationTextPart|NavigationTextPart[];
   public dataarray:NavigationTextPart[];
   constructor(
     private treeDataService:TreeDataService

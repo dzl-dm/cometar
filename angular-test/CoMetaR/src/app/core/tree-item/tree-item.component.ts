@@ -38,9 +38,9 @@ export class TreeItemComponent implements OnInit {
   @Input() conceptIri?:string;
   @Input('expanded') initialExpanded?:boolean=false;
   @Input('cascade_expand') cascade_expand?:boolean;
-  @Input('') parent?:string;
-  @Input('') style$?:Observable<TreeItemStyle>;
-  @Input('') parentAnimation$:BehaviorSubject<boolean>=new BehaviorSubject<boolean>(true);
+  @Input() parent?:string;
+  @Input() style$?:Observable<TreeItemStyle>;
+  @Input() parentAnimation$:BehaviorSubject<boolean>=new BehaviorSubject<boolean>(true);
   
   private unsubscribe: Subject<void> = new Subject();
 
