@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TreeDataService } from '../services/tree-data.service';
+import { OntologyAccessService } from '../services/ontology-access.service';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-text-with-navigation',
@@ -10,7 +12,8 @@ export class TextWithNavigationComponent implements OnInit {
   @Input() data:string|NavigationTextPart|NavigationTextPart[];
   public dataarray:NavigationTextPart[];
   constructor(
-    private treeDataService:TreeDataService
+    private treeDataService:TreeDataService,
+    private ontologyAccessService:OntologyAccessService
   ) { }
 
   ngOnInit() {
@@ -23,6 +26,16 @@ export class TextWithNavigationComponent implements OnInit {
       }
     }
     else this.dataarray = this.data;
+    this.dataarray.forEach(da => {
+      if (!da.text){
+        da.text = "";
+        if (da.navigationtype == "tree" && da.navigationlink){
+          this.ontologyAccessService.getItem$(da.navigationlink).subscribe(ti => {
+            da.text = ti.label.value;
+          });
+        }
+      }
+    });
   }
 
   public navigateTo(iri){
@@ -32,7 +45,7 @@ export class TextWithNavigationComponent implements OnInit {
 }
 
 export interface NavigationTextPart {
-  text: string,
+  text?: string,
   navigationtype?: "tree",
   navigationlink?: string,
 }
