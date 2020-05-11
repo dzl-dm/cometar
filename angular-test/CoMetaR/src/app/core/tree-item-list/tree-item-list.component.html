@@ -12,5 +12,5 @@
         [parent]="conceptIri"
         [parentAnimation$]="animation"
         [style$]="treeStyleService.getTreeItemStyle$(treeitem.element.value,conceptIri)"
-        [ngClass]="{'selected':isSelected$(treeitem) | async, 'topLevel':conceptIri == 'root'}">
+        [ngClass]="{'selected':isSelected$(treeitem) | async }">
     </app-tree-item>

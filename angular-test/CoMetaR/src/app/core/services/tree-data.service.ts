@@ -65,7 +65,7 @@ export class TreeDataService {
     this.shownElements$ = this.openedElements$;//combineLatest(this.searchElements$,this.openedElements$).pipe(map(data => data[0].concat(data[1])))
     this.searchElements$.subscribe(data => {
       if (data.length == 1) this.onConceptSelection(data[0]);
-      else this.addShownElements(data)
+      else this.ontologyAccessService.getAllAncestors(data).subscribe(iris => this.addShownElements(data.concat(iris))).unsubscribe();
     });
     this.selectedIri$.subscribe(data => {if (data != "") this.addShownElements([data])});
     
@@ -143,7 +143,7 @@ export class TreeDataService {
     this.removeShownElements(children);
   }
   public addShownElements(iris:string[]):void{
-    this.openedElements$.next(this.openedElements$.getValue().concat(iris));
+    this.openedElements$.next(this.openedElements$.getValue().concat(iris).filter((value, index, array)=>array.indexOf(value)===index));
   }
   public removeShownElements(iris:string[]):void{
     this.openedElements$.next(this.openedElements$.getValue().filter(oe => !iris.includes(oe))) 
