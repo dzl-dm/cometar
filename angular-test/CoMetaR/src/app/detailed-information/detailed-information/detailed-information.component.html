@@ -13,9 +13,11 @@
           <!-- buggy interaction with loading screen / elements to show
             <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true" [cascade_expand]="true"></app-tree-item>
           -->
-          <ng-container *ngFor="let iri of detail.value.values">
-            <app-text-with-navigation [data]="{navigationtype:'tree',navigationlink:iri}"></app-text-with-navigation><br/>
-          </ng-container>
+          <ul>
+            <ng-container *ngFor="let iri of detail.value.values">
+              <li style="margin-bottom:5px"><app-text-with-navigation [data]="{navigationtype:'tree',navigationlink:iri}"></app-text-with-navigation></li>
+            </ng-container>
+          </ul>
         </div>
         <div *ngSwitchCase="'lastchangesdate'">
             <ng-container *ngFor="let conceptInformation of changeDetails$ | async">
