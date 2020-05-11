@@ -3,7 +3,8 @@
 </ng-container>
 <ng-container *ngIf="!collapsed">
     <table class="conceptInformationTable" #conceptInformationTable
-    (mouseenter)="onInformationMouseEnter($event)"
+        (mouseenter)="onInformationMouseEnter($event)"
+        (resized)="onResized($event)"
         #table
         [ngClass]="{
             'rowHeadingTable':headingDirection == 'row', 

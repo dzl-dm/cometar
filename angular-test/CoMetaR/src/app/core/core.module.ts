@@ -20,6 +20,7 @@ import { SectionComponent } from './section/section.component';
 import { TextWithNavigationComponent } from './text-with-navigation/text-with-navigation.component';
 import { FormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete'; 
+import { AngularResizedEventModule } from 'angular-resize-event';
 //import { WebWorkerService } from 'ngx-web-worker';
 
 @NgModule({
@@ -46,7 +47,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatIconModule,
     MatTooltipModule,
     FormsModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    AngularResizedEventModule
   ],
   /*providers: [
     WebWorkerService

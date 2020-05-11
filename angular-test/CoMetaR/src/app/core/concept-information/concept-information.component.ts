@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, ElementRef } from '@angular/core';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { TreeDataService } from '../services/tree-data.service';
+import { ResizedEvent } from 'angular-resize-event';
 
 @Component({
   selector: 'app-concept-information',
@@ -12,7 +13,7 @@ export class ConceptInformationComponent implements OnInit {
   @Input() headingDirection:string;
   @Input() data:string[][];
   @Input() hiddenHeading:boolean;
-  @Input() columnWidthPercentages:number[];
+  @Input() columnWidthPercentages:number[]=[100];
   @Input() columnMinWidth?:number[];
   @Input() columnDisplayOptions?:("show"|"showAndShrink"|"hideOrGrow"|"hideOrShrink")[];
   //@Input() cellMinWidth?:number[];
@@ -22,6 +23,8 @@ export class ConceptInformationComponent implements OnInit {
   @Input() truncateText?:boolean=false;
   @Input() conceptInformation:ConceptInformation;
   @Input() stayTruncated?:boolean = true;
+
+  private offsetWidth = 0;
 
   constructor(
     private configurationService: ConfigurationService,
@@ -38,10 +41,16 @@ export class ConceptInformationComponent implements OnInit {
       this.columnDisplayOptions = this.conceptInformation.columnDisplayOptions;
       //this.cellMinWidth = this.conceptInformation.cellMinWidth;
     }
+    this.offsetWidth = (<HTMLElement>this.el.nativeElement).offsetWidth;
+  }
+
+  onResized(event: ResizedEvent) {
+    this.offsetWidth = event.newWidth;
   }
 
   private matchArray(s:string):string[]{
     if (!s) return [""];
+    if (!this.highlightTerm) return [s];
     let index = 0;
     let result:string[] = [];
     let counter = 0;
@@ -122,9 +131,8 @@ export class ConceptInformationComponent implements OnInit {
     showColumn: []
   }
   public getDisplay(i:number, width?):("none"|"table-cell"){
-
     if (!this.truncateText) return "table-cell";
-    let divWidth = width || (<HTMLElement>this.el.nativeElement).offsetWidth;
+    let divWidth = width || this.offsetWidth;
     let cdo = this.columnDisplayOptions;
     if (!cdo) return "table-cell";
     if (cdo[i]=="show"||cdo[i]=="showAndShrink") return "table-cell";
@@ -153,11 +161,11 @@ export class ConceptInformationComponent implements OnInit {
     }
     let clone = <HTMLElement>informationDiv.cloneNode(true);
     let cit = <HTMLTableElement>clone.getElementsByClassName("conceptInformationTable")[0];
-    let hiddenCells;
+    let hiddenCells = 0;
     Array.from(cit.children).forEach((tr:HTMLTableRowElement) => {
-      hiddenCells = Array.from(tr.children).filter((c:HTMLTableCellElement|HTMLTableHeaderCellElement)=>c.style.display=="none");
+      hiddenCells += Array.from(tr.children).filter((c:HTMLTableCellElement|HTMLTableHeaderCellElement)=>c.style.display=="none").length;
     })
-    if (hiddenCells.length == 0) return;
+    if (hiddenCells == 0) return;
     document.body.append(clone);
     let left = informationDiv.getBoundingClientRect().left;
     let maxWidth = Math.min(1000,window.innerWidth-left-20);
