@@ -38,7 +38,7 @@ export class ExportService {
       if (exportOptions.codes){this.exportString += "codes;";}
       if (exportOptions.units){this.exportString += "units;";}
       if (exportOptions.isModifier){this.exportString += "is modifier;";}
-      if (exportOptions.additionalInformation){this.exportString += "additional information";}
+      if (exportOptions.additionalInformation){this.exportString += "additional information;";}
       this.exportString+="\n";
       this.writeRecursive(ti,maxDepth,exportOptions);
       callback(this.exportString);
@@ -102,20 +102,20 @@ export class ExportService {
           this.exportString += newLine;
         }
         if (sms.length > 0) {
-          this.exportString += "Search: Property; Search: Value";
+          this.exportString += "Search: Property; Search: Value;";
         }
         sms.forEach(sm => {
           this.exportString += "\n";
           this.exportString+=additionalInformationIntent;
-          this.exportString+=sm.property.value+";"+"\""+sm.value.value+"\"";
+          this.exportString+=sm.property.value+";"+"\""+sm.value.value+"\";";
         });
         cis.forEach((ci,index) => {
           if (index > 0){this.exportString+=additionalInformationIntent}
-          this.exportString += ci.headings.join(";");
+          this.exportString += ci.headings.join(";")+";";
           ci.cells.forEach(row => {
             this.exportString += "\n";
             this.exportString+=additionalInformationIntent;
-            this.exportString+=row.join(";");
+            this.exportString+=row.join(";")+";";
           });
         });
         if (sms.length > 0 || cis.length > 0 || !options.additionalInformationOnly){
