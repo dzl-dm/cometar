@@ -18,25 +18,59 @@ export class ExportService {
   ) { }
 
   private exportString="";
-  public get(iri:string, callback:(exportString: string)=>void):void {
+  public get(iri:string, exportOptions:{status:boolean,isModifier:boolean,units:boolean,codes:boolean,intent:boolean}, callback:(exportString: string)=>void):void {
     
     let o = this.ontologyAccessService.getItem$(iri).pipe(first()).subscribe(ti => {
-      this.exportString = "label;status;codes;units;is modifier\n";
-      this.writeRecursive(ti);
+      let maxDepth = this.getMaxDepth(ti);
+      let intent = ";";
+      if (exportOptions.intent){for (let i = 1; i < maxDepth; i++){intent+=";"}}
+      this.exportString = "label"+intent;
+      if (exportOptions.status){this.exportString += "status;";}
+      if (exportOptions.codes){this.exportString += "codes;";}
+      if (exportOptions.units){this.exportString += "units;";}
+      if (exportOptions.isModifier){this.exportString += "is modifier";}
+      this.exportString+="\n";
+      this.writeRecursive(ti,maxDepth,exportOptions);
       callback(this.exportString);
     });
   }
 
-  private writeRecursive(ti: TreeItem, level:number=0) {
-    let intent="";
-    for(let i = 0; i < level; i++) intent+= "   ";
+  private getMaxDepth(ti:TreeItem):number{
+    let depths = [];
+    if (ti.children.length === 0){
+      return 1;
+    }
+    for (let child of ti.children){
+      depths.push(this.getMaxDepth(child));
+    }
+    return Math.max(...depths)+1;
+  }
+
+  private writeRecursive(ti: TreeItem, maxDepth:number, options:{status:boolean,isModifier:boolean,units:boolean,codes:boolean,intent:boolean}, level:number=0) {
+    let intentBefore="";
+    let intentAfter="";
+    if (options.intent){for(let i = 0; i < level; i++) intentBefore+= ";";}
+    if (options.intent){for(let i = level+1; i < maxDepth; i++) intentAfter+= ";";}
     let label = ti.label.value;
-    let status = ti.status?ti.status.value:"";
-    let isMod = ti.isModifier && ti.isModifier.value == true?"true":"false";
-    let notations = ti.notations && ti.notations.value.join(",") || "";
-    let units = ti.units && ti.units.value.join(",") || "";
-    this.exportString +=  [intent+label,status,notations,units,isMod].join(";") + "\n";
-    ti.children.forEach(c=>this.writeRecursive(c, level+1));
+    this.exportString += intentBefore+label+intentAfter+";";
+    if (options.status){
+      let status = ti.status?ti.status.value:"";
+      this.exportString += status + ";";
+    }
+    if (options.codes){
+      let notations = ti.notations && ti.notations.value.join(",") || "";
+      this.exportString += notations + ";";
+    }
+    if (options.units){
+      let units = ti.units && ti.units.value.join(",") || "";
+      this.exportString += units + ";";
+    }
+    if (options.isModifier){
+      let isMod = ti.isModifier && ti.isModifier.value == true?"true":"false";
+      this.exportString += isMod + ";"
+    }
+    this.exportString += "\n";
+    ti.children.forEach(c=>this.writeRecursive(c,maxDepth,options, level+1));
   }
 
   /*public get(iri:string, callback:(exportString: string)=>void):void {
