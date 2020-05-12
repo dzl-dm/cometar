@@ -180,7 +180,10 @@ export class TreeItemComponent implements OnInit {
   public expandOrCollapse(expand?:boolean){
     if (expand!= undefined) this.expanded=expand;
     else this.expanded=!this.expanded;
-    if (!this.expanded) this.treeDataService.onCollapse(this.treeitem.element.value)
+    if (!this.expanded) {
+      this.treeDataService.onCollapse(this.treeitem.element.value);
+      this.treeDataService.addShownElements([this.treeitem.element.value]);
+    }
     this.treeStyleService.onTreeDomChange("TreeItem expanded.");
   }
 
