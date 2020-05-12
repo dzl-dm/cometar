@@ -141,11 +141,12 @@ export class DetailedInformationComponent implements OnInit {
     isModifier: true,
     units: true,
     codes: true,
-    intent: true
+    intent: true,
+    additionalInformation: false,
+    additionalInformationOnly: false
   }
   public exportOptionToggle(event: MouseEvent, option: string){
     this.exportOptions[option]=!this.exportOptions[option];
-    console.log(this.exportOptions);
   }
   public export(){
     const iri = this.selectedIri$.getValue();
