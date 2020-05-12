@@ -93,14 +93,14 @@ export class ExportService {
       newLine += isMod + ";"
       additionalInformationIntent+=";";
     }
-    if (options.additionalInformation){
-      combineLatest(
-        this.treeDataService.getTreeItemConceptInformation(ti.element.value),
-        this.treeDataService.getSearchMatch$(ti.element.value)
-      ).subscribe(([cis,sms]) => {
-        if (sms.length > 0 || cis.length > 0 || !options.additionalInformationOnly){
-          this.exportString += newLine;
-        }
+    combineLatest(
+      this.treeDataService.getTreeItemConceptInformation(ti.element.value),
+      this.treeDataService.getSearchMatch$(ti.element.value)
+    ).subscribe(([cis,sms]) => {
+      if (sms.length > 0 || cis.length > 0 || !options.additionalInformationOnly){
+        this.exportString += newLine;
+      }
+      if (options.additionalInformation){
         if (sms.length > 0) {
           this.exportString += "Search: Property; Search: Value;";
         }
@@ -118,16 +118,12 @@ export class ExportService {
             this.exportString+=row.join(";")+";";
           });
         });
-        if (sms.length > 0 || cis.length > 0 || !options.additionalInformationOnly){
-          this.exportString += "\n";
-        }
-        ti.children.forEach(c=>this.writeRecursive(c,maxDepth,options, level+1));
-      }).unsubscribe();
-    } else {
-      this.exportString += newLine;
-      this.exportString += "\n";
+      }
+      if (sms.length > 0 || cis.length > 0 || !options.additionalInformationOnly){
+        this.exportString += "\n";
+      }
       ti.children.forEach(c=>this.writeRecursive(c,maxDepth,options, level+1));
-    }
+    }).unsubscribe();
   }
 
   /*public get(iri:string, callback:(exportString: string)=>void):void {
