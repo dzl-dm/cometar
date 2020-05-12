@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable, combineLatest, Subject, of, Subscription, BehaviorSubject } from 'rxjs';
-import { map, flatMap, single, first, combineAll } from 'rxjs/operators';
-import { InformationQueryService, OntologyElementDetails } from './queries/information-query.service';
+import { first } from 'rxjs/operators';
 import { OntologyAccessService } from 'src/app/core/services/ontology-access.service';
 import { TreeItem } from 'src/app/core/classes/tree-item';
+import { TreeDataService } from 'src/app/core/services/tree-data.service';
+import { of, from, combineLatest } from 'rxjs';
+import { OntologyElementDetails } from './queries/information-query.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +14,20 @@ export class ExportService {
   private exportItem:ExportItem;
 
   constructor(
-    private informationQueryService:InformationQueryService,
+    public treeDataService: TreeDataService,
     private ontologyAccessService: OntologyAccessService
   ) { }
 
   private exportString="";
-  public get(iri:string, exportOptions:{status:boolean,isModifier:boolean,units:boolean,codes:boolean,intent:boolean}, callback:(exportString: string)=>void):void {
+  public get(iri:string, exportOptions:{
+    status:boolean,
+    isModifier:boolean,
+    units:boolean,
+    codes:boolean,
+    intent:boolean,
+    additionalInformation:boolean,
+    additionalInformationOnly:boolean
+  }, callback:(exportString: string)=>void):void {
     
     let o = this.ontologyAccessService.getItem$(iri).pipe(first()).subscribe(ti => {
       let maxDepth = this.getMaxDepth(ti);
@@ -28,7 +37,8 @@ export class ExportService {
       if (exportOptions.status){this.exportString += "status;";}
       if (exportOptions.codes){this.exportString += "codes;";}
       if (exportOptions.units){this.exportString += "units;";}
-      if (exportOptions.isModifier){this.exportString += "is modifier";}
+      if (exportOptions.isModifier){this.exportString += "is modifier;";}
+      if (exportOptions.additionalInformation){this.exportString += "additional information";}
       this.exportString+="\n";
       this.writeRecursive(ti,maxDepth,exportOptions);
       callback(this.exportString);
@@ -46,31 +56,78 @@ export class ExportService {
     return Math.max(...depths)+1;
   }
 
-  private writeRecursive(ti: TreeItem, maxDepth:number, options:{status:boolean,isModifier:boolean,units:boolean,codes:boolean,intent:boolean}, level:number=0) {
+  private writeRecursive(ti: TreeItem, maxDepth:number, options:{
+    status:boolean,
+    isModifier:boolean,
+    units:boolean,
+    codes:boolean,
+    intent:boolean,
+    additionalInformation:boolean,
+    additionalInformationOnly:boolean
+  }, level:number=0) {
+    let newLine = "";
     let intentBefore="";
     let intentAfter="";
     if (options.intent){for(let i = 0; i < level; i++) intentBefore+= ";";}
     if (options.intent){for(let i = level+1; i < maxDepth; i++) intentAfter+= ";";}
+    let additionalInformationIntent = intentBefore+intentAfter+";";
     let label = ti.label.value;
-    this.exportString += intentBefore+label+intentAfter+";";
+    newLine += intentBefore+"\""+label+"\""+intentAfter+";";
     if (options.status){
       let status = ti.status?ti.status.value:"";
-      this.exportString += status + ";";
+      newLine += status + ";";
+      additionalInformationIntent+=";";
     }
     if (options.codes){
       let notations = ti.notations && ti.notations.value.join(",") || "";
-      this.exportString += notations + ";";
+      newLine += notations + ";";
+      additionalInformationIntent+=";";
     }
     if (options.units){
       let units = ti.units && ti.units.value.join(",") || "";
-      this.exportString += units + ";";
+      newLine += units + ";";
+      additionalInformationIntent+=";";
     }
     if (options.isModifier){
       let isMod = ti.isModifier && ti.isModifier.value == true?"true":"false";
-      this.exportString += isMod + ";"
+      newLine += isMod + ";"
+      additionalInformationIntent+=";";
     }
-    this.exportString += "\n";
-    ti.children.forEach(c=>this.writeRecursive(c,maxDepth,options, level+1));
+    if (options.additionalInformation){
+      combineLatest(
+        this.treeDataService.getTreeItemConceptInformation(ti.element.value),
+        this.treeDataService.getSearchMatch$(ti.element.value)
+      ).subscribe(([cis,sms]) => {
+        if (sms.length > 0 || cis.length > 0 || !options.additionalInformationOnly){
+          this.exportString += newLine;
+        }
+        if (sms.length > 0) {
+          this.exportString += "Search: Property; Search: Value";
+        }
+        sms.forEach(sm => {
+          this.exportString += "\n";
+          this.exportString+=additionalInformationIntent;
+          this.exportString+=sm.property.value+";"+"\""+sm.value.value+"\"";
+        });
+        cis.forEach((ci,index) => {
+          if (index > 0){this.exportString+=additionalInformationIntent}
+          this.exportString += ci.headings.join(";");
+          ci.cells.forEach(row => {
+            this.exportString += "\n";
+            this.exportString+=additionalInformationIntent;
+            this.exportString+=row.join(";");
+          });
+        });
+        if (sms.length > 0 || cis.length > 0 || !options.additionalInformationOnly){
+          this.exportString += "\n";
+        }
+        ti.children.forEach(c=>this.writeRecursive(c,maxDepth,options, level+1));
+      }).unsubscribe();
+    } else {
+      this.exportString += newLine;
+      this.exportString += "\n";
+      ti.children.forEach(c=>this.writeRecursive(c,maxDepth,options, level+1));
+    }
   }
 
   /*public get(iri:string, callback:(exportString: string)=>void):void {
