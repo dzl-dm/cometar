@@ -136,9 +136,20 @@ export class DetailedInformationComponent implements OnInit {
     }
   }*/
 
+  public exportOptions = {
+    status: true,
+    isModifier: true,
+    units: true,
+    codes: true,
+    intent: true
+  }
+  public exportOptionToggle(event: MouseEvent, option: string){
+    this.exportOptions[option]=!this.exportOptions[option];
+    console.log(this.exportOptions);
+  }
   public export(){
     const iri = this.selectedIri$.getValue();
-    this.exportService.get(iri, (exportString:string)=>{
+    this.exportService.get(iri, this.exportOptions, (exportString:string)=>{
       let thefile = new Blob([exportString], { type: "application/octet-stream" });
       let anchor = document.createElement('a');
   
