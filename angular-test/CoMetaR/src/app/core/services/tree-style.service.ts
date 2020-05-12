@@ -86,10 +86,12 @@ export class TreeStyleService {
         outlineElements.push({
           top:relativetop,
           bordercolor:"#BFE3F2",
+          color:"#BFE3F2",
           siblings:1,
           position:0,
           height:relativeheight,
-          concept: iri
+          concept: iri,
+          type:"selected"
         })
       }
       if (tiInformation.length>0){
@@ -102,7 +104,8 @@ export class TreeStyleService {
           siblings:1,
           position:0,
           height:relativeinfoheight,
-          concept: iri
+          concept: iri,
+          type: "information"
         })
       }
       this.subscriptions.push(this.getTreeItemStyle$(iri).subscribe(style => {
@@ -124,7 +127,8 @@ export class TreeStyleService {
             siblings: array.length,
             position: index,
             height:relativetitleheight,
-            concept: iri
+            concept: iri,
+            type: "icon"
           })
         })
       }));
