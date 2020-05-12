@@ -42,36 +42,38 @@
       </div>
     </app-section>
   </ng-container>
-  <app-section title="Actions"
+  <app-section title="Export"
     [foldable]="true"
     [expanded]="false">
-      <div style="margin-bottom:10px">
-        <input type="checkbox" [checked]="exportOptions.intent" id="cb_export_intent" (click)="exportOptionToggle($event,'intent')"/>
-        <label for="cb_export_intent">Intent labels for hierarchy indication</label>
-      </div>
-      <div>
-        <input type="checkbox" [checked]="exportOptions.status" id="cb_export_status" (click)="exportOptionToggle($event,'status')"/>
-        <label for="cb_export_status">Export status</label>
-      </div>
-      <div>
-        <input type="checkbox" [checked]="exportOptions.codes" id="cb_export_codes" (click)="exportOptionToggle($event,'codes')"/>
-        <label for="cb_export_codes">Export codes</label>
-      </div>
-      <div>
-        <input type="checkbox" [checked]="exportOptions.units" id="cb_export_units" (click)="exportOptionToggle($event,'units')"/>
-        <label for="cb_export_units">Export units</label>
-      </div>
-      <div style="margin-bottom:10px">
-        <input type="checkbox" [checked]="exportOptions.isModifier" id="cb_export_isModifier" (click)="exportOptionToggle($event,'isModifier')"/>
-        <label for="cb_export_isModifier">Export modifier (true/false)</label>
-      </div>
-      <div>
-        <input type="checkbox" [checked]="exportOptions.additionalInformation" id="cb_export_additionalInformation" (click)="exportOptionToggle($event,'additionalInformation')"/>
-        <label for="cb_export_additionalInformation">Export additional information (Search, Configuration)</label>
-      </div>
-      <div style="margin-bottom:10px">
-        <input type="checkbox" [checked]="exportOptions.additionalInformationOnly" id="cb_export_additionalInformationOnly" (click)="exportOptionToggle($event,'additionalInformationOnly')"/>
-        <label for="cb_export_additionalInformationOnly">Export only items with additional information</label>
+      <div style="display: inline-block;margin-right:40px;">
+        <div style="margin-bottom:10px">
+          <input type="checkbox" [checked]="exportOptions.intent" id="cb_export_intent" (click)="exportOptionToggle($event,'intent')"/>
+          <label for="cb_export_intent">Intent labels for hierarchy indication</label>
+        </div>
+        <div>
+          <input type="checkbox" [checked]="exportOptions.status" id="cb_export_status" (click)="exportOptionToggle($event,'status')"/>
+          <label for="cb_export_status">Export status</label>
+        </div>
+        <div>
+          <input type="checkbox" [checked]="exportOptions.codes" id="cb_export_codes" (click)="exportOptionToggle($event,'codes')"/>
+          <label for="cb_export_codes">Export codes</label>
+        </div>
+        <div>
+          <input type="checkbox" [checked]="exportOptions.units" id="cb_export_units" (click)="exportOptionToggle($event,'units')"/>
+          <label for="cb_export_units">Export units</label>
+        </div>
+        <div style="margin-bottom:10px">
+          <input type="checkbox" [checked]="exportOptions.isModifier" id="cb_export_isModifier" (click)="exportOptionToggle($event,'isModifier')"/>
+          <label for="cb_export_isModifier">Export modifier (true/false)</label>
+        </div>
+        <div>
+          <input type="checkbox" [checked]="exportOptions.additionalInformation" id="cb_export_additionalInformation" (click)="exportOptionToggle($event,'additionalInformation')"/>
+          <label for="cb_export_additionalInformation">Export additional information (Search, Configuration)</label>
+        </div>
+        <div style="margin-bottom:10px">
+          <input type="checkbox" [checked]="exportOptions.additionalInformationOnly" id="cb_export_additionalInformationOnly" (click)="exportOptionToggle($event,'additionalInformationOnly')"/>
+          <label for="cb_export_additionalInformationOnly">Export only items with additional information</label>
+        </div>
       </div>
       <input type="button" class="exportButton" (click)="export()" value="Export Subtree"/>
   </app-section>
