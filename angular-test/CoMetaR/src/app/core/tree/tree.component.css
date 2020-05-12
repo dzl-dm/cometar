@@ -44,6 +44,9 @@ div.treeOutlineElement {
     border-style:solid;
     box-sizing: border-box;
 }
+div.treeOutlineElement.selected {
+    z-index:2;
+}
 div#tree::-webkit-scrollbar {
     width: 35px;
 } 
