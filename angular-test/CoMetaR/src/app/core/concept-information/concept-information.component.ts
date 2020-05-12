@@ -54,7 +54,17 @@ export class ConceptInformationComponent implements OnInit {
     let index = 0;
     let result:string[] = [];
     let counter = 0;
-    let regex = new RegExp(this.highlightTerm,"ig");
+    let pattern = this.highlightTerm
+      .replace('\\', '\\\\')
+      .replace('(', '\\(')
+      .replace(')', '\\)')
+      .replace('^', '\\^')
+      .replace('$', '\\$')
+      .replace('-', '\\-')
+      .replace(':', '\\:')
+      .replace('.', '\\.')
+      .replace('+', '\\+');
+    let regex = new RegExp(pattern,"ig");
     while (index < s.length && counter < 20){
       let match = regex.exec(s);
       let newSearchIndex = match?match.index:-1;
