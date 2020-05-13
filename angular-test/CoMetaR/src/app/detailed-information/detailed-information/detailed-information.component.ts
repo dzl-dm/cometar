@@ -25,6 +25,7 @@ export class DetailedInformationComponent implements OnInit {
   public coreDetails = {};
   public additionalDetails = {};
   public label = "";
+  public validIri = true;
   private coreDetailsSelectArray = ["label", "altlabel", "notation", "unit", "status", "domain"];
   private copySelectArray = ["notation"];
   private localizedStringArray = ["label", "altlabel"];
@@ -59,7 +60,7 @@ export class DetailedInformationComponent implements OnInit {
       })
     ).pipe(takeUntil(this.unsubscribe)).subscribe(data => {
       if (data.length == 1 && Object.keys(data[0]).length == 0) {
-        this.label += " The concept is not part of the ontology.";
+        this.validIri = false;
         return;
       }
       //merging details

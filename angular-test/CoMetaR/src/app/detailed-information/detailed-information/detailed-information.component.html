@@ -1,5 +1,6 @@
 <div class="additionalDetails" id="detailed_information_additional">
   <h3>{{label}}</h3>
+  <p *ngIf="!validIri">The concept is not part of the ontology.</p>
   <ng-container *ngFor="let detail of additionalDetails | keyvalue">
     <app-section 
       [title]="detail.value.name + (detail.key=='lastchangesdate'?' ('+(detail.value.values | date:'dd.MM.yyyy')+')':'')" 
@@ -42,7 +43,9 @@
       </div>
     </app-section>
   </ng-container>
-  <app-section title="Export"
+  <app-section 
+    *ngIf="validIri"
+    title="Export"
     [foldable]="true"
     [expanded]="false">
       <div style="display: inline-block;margin-right:40px;">
