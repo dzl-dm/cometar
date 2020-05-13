@@ -84,7 +84,7 @@ INSERT
 WHERE
 {		
 	{
-		SELECT ?falseadd ?st ?derivedConcept ?oldConcept
+		SELECT ?falsecommit ?falseadd ?st ?derivedConcept ?oldConcept
 		WHERE
 		{
 			?falsecommit prov:qualifiedUsage [ cs:addition ?st ] .
@@ -106,6 +106,8 @@ WHERE
 		rdf:subject ?oldConcept;
 		rdf:predicate rdf:type;
 		rdf:object ?object .
+		
+	FILTER (?falsecommit != ?rightcommit)
 };
 
 #all statements previously targeting the old concept and now targeting the derived concept in exact the same relation are marked as derived
@@ -120,7 +122,7 @@ WHERE
 		SELECT ?derivedConcept ?oldConcept
 		WHERE
 		{
-			?derivedConcept prov:wasDerivedFrom ?oldConcept .	
+			?derivedConcept prov:wasDerivedFrom+ ?oldConcept .	
 		}
 	}
 
@@ -210,6 +212,7 @@ INSERT
 			rdf:object ?o
 		]
 	] .
+	?oldstatement rdf:comment "hidden" .
 }
 WHERE
 {
@@ -230,12 +233,12 @@ WHERE
 
 	?commit prov:qualifiedUsage ?usage ;
 		prov:endedAtTime ?changedate .
-	?usage ?addorremove [
+	?usage ?addorremove ?oldstatement .
+	?oldstatement
 		a rdf:Statement;
 		rdf:subject ?oldConcept;
 		rdf:predicate ?p;
-		rdf:object ?o
-	]
+		rdf:object ?o .
 	
 	FILTER (!bound(?derivedate) || ?changedate <= ?derivedate)
 	
