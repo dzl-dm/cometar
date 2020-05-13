@@ -67,7 +67,13 @@ export class TreeDataService {
       if (data.length == 1) this.onConceptSelection(data[0]);
       else this.ontologyAccessService.getAllAncestors(data).subscribe(iris => this.addShownElements(data.concat(iris))).unsubscribe();
     });
-    this.selectedIri$.subscribe(data => {if (data != "") this.addShownElements([data])});
+    this.selectedIri$.subscribe(data => {
+      if (data != "") {
+        this.ontologyAccessService.getTreeItem$(data).subscribe(ti => { 
+          if (ti) {this.addShownElements([data])}
+        }).unsubscribe();
+      }
+    });
     
     let subtasks:number=0;
     /*this.allOpenedTreeItems$.subscribe(next => console.log("allOpenedTreeItems"));

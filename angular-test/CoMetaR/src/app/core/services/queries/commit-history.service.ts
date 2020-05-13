@@ -14,7 +14,7 @@ export class CommitHistoryService {
   public get(from?:Date, until:Date=new Date(Date.now())):Observable<CommitHistoryData[]> {
     if (!from) {
       from = new Date(until);
-      from.setHours(from.getHours()-(10*7*24));
+      from.setFullYear(from.getFullYear()-1);
     }
     const queryString = this.getQueryString(from, until);
     return this.dataService.getData(queryString, "ontology changes from "+from.toISOString()+" until "+until.toISOString()).pipe(map(data=> { return <CommitHistoryData[]> data }))
@@ -44,7 +44,7 @@ export class CommitHistoryService {
           }
           order by desc(?minlastdate)
           limit 1
-          offset 1
+          offset 3
           }
           ?commit prov:qualifiedUsage ?usage ;
           prov:endedAtTime ?d .

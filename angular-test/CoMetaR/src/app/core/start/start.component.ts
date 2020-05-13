@@ -38,10 +38,10 @@ export class StartComponent implements OnInit {
             day: 'D.M.YY',
             week: 'D.M.YY',
             month: 'D.M.YY'
-          },
-          max: Date.now()
+          }
         },
-        barThickness: 5
+        barThickness: 5,
+        offset: true
       }]
     }
   };  
