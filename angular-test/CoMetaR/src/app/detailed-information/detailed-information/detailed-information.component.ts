@@ -63,6 +63,7 @@ export class DetailedInformationComponent implements OnInit {
         this.validIri = false;
         return;
       }
+      this.validIri = true;
       //merging details
       data.forEach((detail:OntologyElementDetails) => {
         detail = this.configuration.getHumanReadableElementDetails(detail);
