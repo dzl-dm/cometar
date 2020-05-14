@@ -11,16 +11,7 @@ export class SearchtreeitemService {
 
   public get(pattern: string): Observable<SearchResultAttributes[]> {
       if (pattern === '') { return of([]); }
-      pattern = pattern
-        .replace('\\', '\\\\\\')
-        .replace('(', '\\\\(')
-        .replace(')', '\\\\)')
-        .replace('^', '\\\\^')
-        .replace('$', '\\\\$')
-        .replace('-', '\\\\-')
-        .replace(':', '\\\\:')
-        .replace('.', '\\\\.')
-        .replace('+', '\\\\+');
+      pattern = pattern.replace(/([\\'"])/g,"\\$1").replace(/([{}])/g,"\\\\$1");
       const queryString = this.getQueryString(pattern);
       return this.dataService.getData(queryString, 'search for pattern ' + pattern);
   }
