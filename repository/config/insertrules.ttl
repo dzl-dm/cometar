@@ -56,3 +56,11 @@ WHERE
         ?b rdf:hasPart ?a
 };
 
+INSERT
+{
+        ?a skos:related ?b
+}
+WHERE
+{
+        ?b skos:related ?a
+};
