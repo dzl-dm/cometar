@@ -10,16 +10,7 @@ export class SearchSuggestionService {
   constructor(private dataService: DataService) { }
   public get(pattern:string):Observable<SearchSuggestion[]> { 
     if (pattern == "") return of([]);
-    pattern = pattern
-    .replace("\\","\\\\\\")
-    .replace("(","\\\\(")
-    .replace(")","\\\\)")
-    .replace("^","\\\\^")
-    .replace("$","\\\\$")
-    .replace("-","\\\\-")
-    .replace(":","\\\\:")
-    .replace(".","\\\\.")
-    .replace("+","\\\\+");
+    pattern = pattern.replace(/([\\'"])/g,"\\$1").replace(/([{}])/g,"\\\\$1");
     const queryString = this.getQueryString(pattern);
     return this.dataService.getData(queryString,"search for pattern "+pattern);
   };

@@ -54,16 +54,7 @@ export class ConceptInformationComponent implements OnInit {
     let index = 0;
     let result:string[] = [];
     let counter = 0;
-    let pattern = this.highlightTerm
-      .replace('\\', '\\\\')
-      .replace('(', '\\(')
-      .replace(')', '\\)')
-      .replace('^', '\\^')
-      .replace('$', '\\$')
-      .replace('-', '\\-')
-      .replace(':', '\\:')
-      .replace('.', '\\.')
-      .replace('+', '\\+');
+    let pattern = this.highlightTerm.replace(/[\\()^$:.+-]/g, '\\$1');
     let regex = new RegExp(pattern,"ig");
     while (index < s.length && counter < 20){
       let match = regex.exec(s);
