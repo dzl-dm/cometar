@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { CommitHistoryService } from '../services/queries/commit-history.service';
 import Chart, { ChartData, ChartOptions, ChartDataSets } from 'chart.js';
-import { HelpVideosService, HelpVideo, HelpSection } from '../services/help-videos.service';
+import { HelpVideosService, HelpMedia, HelpSection } from '../services/help-videos.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 
 @Component({
@@ -81,14 +81,15 @@ export class StartComponent implements OnInit {
     private e: ElementRef
   ) { }
 
-  public randomVideo: HelpVideo = {
+  public randomVideo: HelpMedia = {
     heading: "",
     description: "",
-    url: ""
+    url: "",
+    type: "video"
   };
   public randomSection: HelpSection = {
     heading: "",
-    videos:[]
+    media:[]
   }
   ngOnInit() {
     let n: HTMLElement = this.e.nativeElement;
@@ -164,8 +165,8 @@ export class StartComponent implements OnInit {
 
     let random1 = Math.floor(Math.random()*this.helpVideosService.helpSections.length);
     this.randomSection = this.helpVideosService.helpSections[random1];
-    let random2 = Math.floor(Math.random()*this.randomSection.videos.length);
-    this.randomVideo = this.randomSection.videos[random2];
+    let random2 = Math.floor(Math.random()*this.randomSection.media.length);
+    this.randomVideo = this.randomSection.media[random2];
   }
   public toggleHelp(){
     document.getElementById('helpbutton').click()
