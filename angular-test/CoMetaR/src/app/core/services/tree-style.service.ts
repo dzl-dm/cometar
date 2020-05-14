@@ -54,7 +54,6 @@ export class TreeStyleService {
 
 
   public outlineElements$ = new BehaviorSubject<OutlineElement[]>([]);
-  private observer:MutationObserver;
   private domChangeTimeout;
   public onTreeDomChange(caller:string){
     //console.log(caller);

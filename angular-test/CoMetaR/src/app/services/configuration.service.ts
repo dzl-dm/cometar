@@ -56,7 +56,7 @@ export class ConfigurationService {
       type: { name: "Type" },
       unit: { name: "Unit" },
       notation: { name: "Code" },
-      related: { name: "Related Concepts" },
+      related: { name: "Related" },
     });
   }
 
