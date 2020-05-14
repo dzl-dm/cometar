@@ -39,6 +39,13 @@ export class MenuComponent implements OnInit {
     iconRegistry.addSvgIcon('home', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-home-24px.svg'));
     iconRegistry.addSvgIcon('search', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-search-24px.svg'));
     iconRegistry.addSvgIcon('help', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-help_outline-24px.svg'));
+    helpVideosService.helpSections
+      .map(hs => hs.media.filter(m => m.type==="icon").map(m => m.url)).reduce((curr,prev)=>curr = curr.concat(prev),[])
+      .filter((value,index,array)=>array.indexOf(value)===index)
+      .forEach(iconUrl => {
+        console.log(iconUrl);
+        iconRegistry.addSvgIcon(iconUrl, sanitizer.bypassSecurityTrustResourceUrl(iconUrl));
+      });
   }
 
   ngOnInit() {
@@ -81,6 +88,7 @@ export class MenuComponent implements OnInit {
       s.unsubscribe();
     }
   }
+
   public toggleHelp(helpDiv:HTMLElement){
     let el = <HTMLElement>(<HTMLElement>this.e.nativeElement).getElementsByClassName("helpbutton")[0];
     let offsetLeft = this.getOffset(el).left;
