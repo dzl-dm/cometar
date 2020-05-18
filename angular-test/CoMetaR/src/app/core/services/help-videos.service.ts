@@ -18,7 +18,7 @@ export class HelpVideosService {
         }
       ]
     },
-    {
+    /*{
       heading: "Tree Legend",
       media: [
         {
@@ -36,7 +36,7 @@ export class HelpVideosService {
           border: false
         }
       ]
-    },
+    },*/
     {
       heading: "Navigation",
       media: [
@@ -120,6 +120,6 @@ export interface HelpMedia {
   description?:string,
   border?:boolean,
   url:string,
-  type:"video"|"image"|"icon",
+  type:"video"|"image"|"icon"|"html",
   width?:number
 }

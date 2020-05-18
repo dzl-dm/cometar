@@ -34,7 +34,7 @@ export class MenuComponent implements OnInit {
     private e: ElementRef,
     private cd: ChangeDetectorRef,
     iconRegistry: MatIconRegistry, 
-    sanitizer: DomSanitizer
+    public sanitizer: DomSanitizer
   ) { 
     iconRegistry.addSvgIcon('home', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-home-24px.svg'));
     iconRegistry.addSvgIcon('search', sanitizer.bypassSecurityTrustResourceUrl('assets/img/icons/baseline-search-24px.svg'));
