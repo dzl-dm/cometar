@@ -65,6 +65,7 @@
                                     <div *ngIf="medium.type=='icon'" [style]="'width:'+(medium.width?medium.width+'px':'auto')+';float:right;margin-right:20px'">
                                         <mat-icon aria-hidden="false" aria-label="Icon" svgIcon="{{medium.url}}"></mat-icon>
                                     </div>
+                                    <!--<div *ngIf="medium.type=='html'" [innerHTML]="sanitizer.bypassSecurityTrustHtml(medium.url)"></div>-->
                                 </div>
                             </div>
                         </div>
