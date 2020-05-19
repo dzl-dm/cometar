@@ -23,6 +23,8 @@ export class UploadClientConfigurationComponent implements OnInit {
 	public replacedFileContent="";
 	public csc_new_content="";
 	public version_date:Date;
+	public total_mappings:number;
+	public total_rules:number;
 	private version_date_string:string;
 	public showUpdatedConfigurationFileDownloadButton=false;
 
@@ -88,10 +90,6 @@ export class UploadClientConfigurationComponent implements OnInit {
 	exampleConfiguration.subscribe(data => {this.xmlFileContent = data; this.cd.markForCheck()});
   }
 
-  public navigateTo(iri:string){
-	console.log(iri);
-  }
-
   public analyze(){
 		this.replacedFileContent = this.xmlFileContent;
 		this.csc_new_content = this.csc_content;
@@ -99,6 +97,7 @@ export class UploadClientConfigurationComponent implements OnInit {
 		let replacements=[];
 		this.feedback = [];
 		this.version_date=undefined;
+		this.total_mappings=undefined;
 		let mappings:Mapping[] = [];
 		if (this.inputtype=="xml") parseString( this.xmlFileContent, ((err, result:IClientConfiguration) => {
 			if (result.datasource.meta[0]["version-date"]) {
@@ -110,6 +109,8 @@ export class UploadClientConfigurationComponent implements OnInit {
 				return;
 			}
 			mappings = this.clientConfigurationService.getMappings(result);
+			this.total_mappings = mappings.length;
+			this.total_rules = mappings.map(m => m.occurances.length).reduce((prev,curr)=>prev=prev+curr,0);
 		}));
 		else mappings = this.csc_content.split(",").map(code => {
 			return <Mapping>{
