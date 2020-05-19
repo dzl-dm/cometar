@@ -39,12 +39,22 @@
         <ng-container *ngIf="helpDivOpened">
             <div id="helpContainer" (click)="$event.stopPropagation()">
                 <div class="helpMenu">
-                    <div *ngFor="let section of helpVideosService.helpSections; let i = index">
+                    <div *ngFor="let section of [{heading:'Layout'}].concat(helpVideosService.helpSections); let i = index">
                         <div class="helpMenuItem" (click)="sectionWrapper.scrollTop=sectionWrapper.children[i].offsetTop-sectionWrapper.offsetTop">{{section.heading}}</div>
                     </div>
                 </div>
                 <div class="sectionWrapper" #sectionWrapper>
-                    <div *ngFor="let section of helpVideosService.helpSections; let i = index">
+                    <div>
+                        <h1>Layout</h1>
+                        <div class="section">
+                            <div class="part">
+                                <div class="mediaContainer">
+                                    <img width="925" src="assets/img/Help/Basic Layout.png"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngFor="let section of helpVideosService.helpSections">
                         <h1>{{section.heading}}</h1>
                         <div class="section">
                             <div *ngFor="let medium of section.media" [ngClass]="{part:true,withVideo:medium.type=='video'}">
