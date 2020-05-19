@@ -69,9 +69,9 @@ export class TreeDataService {
     });
     this.selectedIri$.subscribe(data => {
       if (data != "") {
-        this.ontologyAccessService.getTreeItem$(data).subscribe(ti => { 
+        this.ontologyAccessService.getTreeItem$(data).pipe(first()).subscribe(ti => { 
           if (ti) {this.addShownElements([data])}
-        }).unsubscribe();
+        });
       }
     });
     
