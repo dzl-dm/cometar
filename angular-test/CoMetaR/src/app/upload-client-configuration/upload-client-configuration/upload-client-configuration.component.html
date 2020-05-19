@@ -32,6 +32,7 @@
 </app-section>
 <app-section title="Feedback" min_height="100">
   <div *ngIf="version_date">Configuration file version: {{ version_date | date :'yyyy-MM-dd' }}</div>
+  <div *ngIf="total_mappings">In total, {{ total_mappings }} concepts are mapped with {{ total_rules }} rules.</div>
   <br>
   <div id='feedback'>
     <table *ngIf="feedback.length > 0">

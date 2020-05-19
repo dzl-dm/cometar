@@ -3,7 +3,7 @@ import { ReplaySubject } from 'rxjs';
 import { ConceptInformation } from 'src/app/core/concept-information/concept-information.component';
 import { TreeDataService } from 'src/app/core/services/tree-data.service';
 import { TreeStyleService, TreeItemStyle } from 'src/app/core/services/tree-style.service';
-import { map } from 'rxjs/operators';
+import { map as map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -78,13 +78,19 @@ class ClientConfiguration {
 			if (et.virtual && et.virtual[0].value) et.virtual[0].value.forEach(v => {
 				let column = v.$.column;
 				if (v.map[0]) {
-					this.readMapIntoMappings(v.map[0], file, column, "", 
-					  v.$ && v.$.na || mdat.value && mdat.value[0].$ && mdat.value[0].$.na,
-						v.$ && v.$["na-action"]=="drop-fact" || mdat.value && mdat.value[0].$ && mdat.value[0].$["na-action"]=="drop-fact" || false,
-						v.$ && v.$["constant-value"] || mdat.value && mdat.value[0].$ && mdat.value[0].$["constant-value"],
-						mdat.unit && mdat.unit[0].$ && ( mdat.unit[0].$.column || mdat.unit[0].$["constant-value"] ),
-						v.$ && v.$["xsi:type"],
-						[]);
+					this.readMapIntoMappings({
+						map: v.map[0], 
+						file, 
+						column, 
+						concept: "", 
+					  	navalue: v.$ && v.$.na || mdat.value && mdat.value[0].$ && mdat.value[0].$.na,
+						nadrop: v.$ && v.$["na-action"]=="drop-fact" || mdat.value && mdat.value[0].$ && mdat.value[0].$["na-action"]=="drop-fact" || false,
+						constantvalue: v.$ && v.$["constant-value"] || mdat.value && mdat.value[0].$ && mdat.value[0].$["constant-value"],
+						unit: mdat.unit && mdat.unit[0].$ && ( mdat.unit[0].$.column || mdat.unit[0].$["constant-value"] ),
+						type: v.$ && v.$["xsi:type"],
+						modifiers: [],
+						eavTable: true
+					});
 				}
 			});
 		});
@@ -107,10 +113,13 @@ class ClientConfiguration {
 				let modifiers = c.modifier || [];
 				let modifiercolumns = modifiers.map(m => m.value && m.value[0] && (m.value[0].$.column || m.value[0].$["constant-value"]!=undefined && column)).filter(m => m!=undefined);
 				if (value && value.map) {
-					this.readMapIntoMappings(value.map[0],
+					this.readMapIntoMappings({
+						map: value.map[0],
 						file,column,concept,
 						navalue,nadrop,constantvalue, 
-						unit,type,modifiercolumns);
+						unit,type,
+						modifiers: modifiercolumns
+					});
 				}
 				else {
 					this.pushMapping({
@@ -134,10 +143,15 @@ class ClientConfiguration {
 					nadrop = value && value.$ && value.$["na-action"] == "drop-fact" || false;
 					type = value && value.$["xsi:type"];
 					if (value && value.map) {
-						this.readMapIntoMappings(value.map[0],
-							file,mcolumn,concept,
+						this.readMapIntoMappings({
+							map: value.map[0],
+							file,
+							column: mcolumn,concept,
 							navalue,nadrop,constantvalue, 
-							unit,type,[],column);
+							unit,type,
+							modifiers: [],
+							modifying: column
+						});
 					}
 					else {
 						this.pushMapping({
@@ -170,81 +184,119 @@ class ClientConfiguration {
 	 * @param column 
 	 * @param concept 
 	 */
-	private readMapIntoMappings(map:Map, file:string, column:string, 
+	private readMapIntoMappings(params:{map:Map, file:string, column:string, 
 		concept:string, navalue?:string, nadrop?:boolean, 
 		constantvalue?:string, unit?:string, type?:string,
-		modifiers?:string[], modifying?:string)
+		modifiers?:string[], modifying?:string, eavTable?:boolean })
 	{
-		let mapconcept = map.$ && map.$["set-concept"] || concept;
-		let cases = map.case && map.otherwise && map.case.concat(map.otherwise) || map.case || map.otherwise;
-		//na-value exists, na-value is not mapped in <map>, no other value is set to na-value, no <otherwise action='drop-fact'/>
-		// => na-value maps to "true"
-		if (navalue != undefined 
-			&& nadrop == false 
-			&& cases
-			&& !cases.map(c => c.$.value).includes(navalue) 
-			&& cases.filter(c => c.$["set-value"] != navalue && (!map.otherwise || map.otherwise[0] && map.otherwise[0].$.action != "drop-fact")).length > 0)
-		{
-			this.pushMapping({
-				concept:concept, 
-				nadrop, navalue, unit, constantvalue, type, 
-				occurances:[{
-					column: column,
-					file: file,
-					value: "",
-					drop: false,
-					modifiers,
-					modifying
-				}]
-			});			
-		}
-		if (!map.otherwise){
+		let mapconcept = params.map.$ && params.map.$["set-concept"] || params.concept;
+		if (params.eavTable === true){
 			this.pushMapping({
 				concept:mapconcept, 
-				nadrop, navalue, unit, constantvalue, type, 
+				nadrop: params.nadrop, 
+				navalue: params.navalue, 
+				unit: params.unit, 
+				constantvalue: params.constantvalue, 
+				type: params.type, 
 				occurances:[{
-					column: column,
-					file: file,
-					value: constantvalue,
-					drop: false,
-					modifiers,
-					modifying
+					column: params.column,
+					file: params.file,
+					drop:false,
+					modifiers: params.modifiers,
+					modifying: params.modifying
 				}]
-			});
-		}
-		if (cases) {
-			let excludedvalues = []; // for <otherwise set-concept='x'/>
-			cases.forEach(c => {
-				let caseconcept = c.$ && c.$["set-concept"] || mapconcept;
-				if (map.otherwise && c != map.otherwise[0] && c.$ && c.$.value) excludedvalues.push(c.$.value);
-				this.pushMapping({
-					concept:caseconcept, 
-					nadrop, navalue, unit, constantvalue, type, 
-					occurances:[{
-						column: column,
-						file: file,
-						value: constantvalue || c.$ && c.$.value,
-						drop: c.$ && c.$.action == "drop-fact" || false,
-						setvalue: c.$ && c.$["set-value"],
-						excludedvalues: map.otherwise && c == map.otherwise[0] && excludedvalues || [],
-						modifiers,
-						modifying
-					}]
-				});
 			});
 		}
 		else {
-			this.pushMapping({
-				concept:mapconcept, 
-				nadrop, navalue, unit, constantvalue, type, 
-				occurances:[{
-					column, 
-					file, 
-					drop:false,
-					modifiers,
-					modifying
-				}]
-			});
+			let cases = params.map.case && params.map.otherwise && params.map.case.concat(params.map.otherwise) || params.map.case || params.map.otherwise;
+			//na-value exists, na-value is not mapped in <map>, no other value is set to na-value, no <otherwise action='drop-fact'/>
+			// => na-value maps to "true"
+			if (params.navalue != undefined 
+				&& params.nadrop == false 
+				&& cases
+				&& !cases.map(c => c.$.value).includes(params.navalue) 
+				&& cases.filter(c => c.$["set-value"] != params.navalue && (!params.map.otherwise || params.map.otherwise[0] && params.map.otherwise[0].$.action != "drop-fact")).length > 0)
+			{
+				this.pushMapping({
+					concept:params.concept, 
+					nadrop: params.nadrop, 
+					navalue: params.navalue, 
+					unit: params.unit, 
+					constantvalue: params.constantvalue, 
+					type: params.type, 
+					occurances:[{
+						column: params.column,
+						file: params.file,
+						value: "",
+						drop: false,
+						modifiers: params.modifiers,
+						modifying: params.modifying
+					}]
+				});			
+			}
+			//the NOTs from <value na="" na-action="drop-fact" ../>
+			//TODO: should only appear in wide, not eav
+			if (!params.map.otherwise){
+				this.pushMapping({
+					concept:mapconcept, 
+					nadrop: params.nadrop, 
+					navalue: params.navalue, 
+					unit: params.unit, 
+					constantvalue: params.constantvalue, 
+					type: params.type, 
+					occurances:[{
+						column: params.column,
+						file: params.file,
+						value: params.constantvalue,
+						drop: false,
+						modifiers: params.modifiers,
+						modifying: params.modifying
+					}]
+				});
+			}
+			//gatheres exludedvalues, until the last case (the otherwise) will consume them
+			if (cases) {
+				let excludedvalues = []; // for <otherwise set-concept='x'/>
+				cases.forEach(c => {
+					let caseconcept = c.$ && c.$["set-concept"] || mapconcept;
+					if (params.map.otherwise && c != params.map.otherwise[0] && c.$ && c.$.value) excludedvalues.push(c.$.value);
+					this.pushMapping({
+						concept:caseconcept, 
+						nadrop: params.nadrop, 
+						navalue: params.navalue, 
+						unit: params.unit, 
+						constantvalue: params.constantvalue, 
+						type: params.type, 
+						occurances:[{
+							column: params.column,
+							file: params.file,
+							value: params.constantvalue || c.$ && c.$.value,
+							drop: c.$ && c.$.action == "drop-fact" || false,
+							setvalue: c.$ && c.$["set-value"],
+							excludedvalues: params.map.otherwise && c == params.map.otherwise[0] && excludedvalues || [],
+							modifiers: params.modifiers,
+							modifying: params.modifying
+						}]
+					});
+				});
+			}
+			else {
+				this.pushMapping({
+					concept:mapconcept, 
+					nadrop: params.nadrop, 
+					navalue: params.navalue, 
+					unit: params.unit, 
+					constantvalue: params.constantvalue, 
+					type: params.type, 
+					occurances:[{
+						column: params.column,
+						file: params.file,
+						drop:false,
+						modifiers: params.modifiers,
+						modifying: params.modifying
+					}]
+				});
+			}
 		}
 	}
 
@@ -260,65 +312,64 @@ class ClientConfiguration {
 
   public getTreeLines(m:Mapping):string[][]{
     let result = [];
-
     let s = m.concept + ": ";
     m.occurances.forEach(o => {
-			let dropvalues=m.occurances.filter(occ => occ.file == o.file && occ.column == o.column && occ.drop).map(occ => occ.value);
-			let column = "";
-			if (o.column && o.column != "constant-value") column = `"${o.file}" / "${o.column}"`;
-			else if (o.column && o.column == "constant-value") column = "constant";
-			else if (!o.column && m.constantvalue != undefined && m.constantvalue == m.navalue) column = "constant";
+		let dropvalues=m.occurances.filter(occ => occ.file == o.file && occ.column == o.column && occ.drop).map(occ => occ.value);
+		let column = "";
+		if (o.column && o.column != "constant-value") column = `"${o.file}" / "${o.column}"`;
+		else if (o.column && o.column == "constant-value") column = "constant";
+		else if (!o.column && m.constantvalue != undefined && m.constantvalue == m.navalue) column = "constant";
 
-			if (o.modifiers && o.modifiers.length > 0) column+= " modified by " + o.modifiers.map(m => "\""+m+"\"").join(",");
-			if (o.modifying) column+= " modifying \"" + o.modifying + "\"";
-      let value = "";
-      let mappedvalue = "";
-      let unit = "";
-			let isBoolean = m.navalue != undefined && m.nadrop == false;
-      if (o.value != undefined) {
-        if (o.setvalue != undefined) {
-          if (m.navalue != undefined && m.navalue == o.setvalue) {
-            if (m.nadrop == true) {
-              value = "\""+o.value+"\"";
-              mappedvalue = "drop";
-            }
-            else { 
-              value = "\""+o.value+"\"";
-              mappedvalue = "true";
-            }
-          }
-          else {
-            value = "\""+o.value+"\"";
-            mappedvalue = "\""+o.setvalue+"\"";
-          }
-        }
-        else if (o.value == m.navalue){
-					value = "\""+o.value+"\"";
-					if (o.drop)	mappedvalue = "drop";
-          else mappedvalue = "true";
+		if (o.modifiers && o.modifiers.length > 0) column+= " modified by " + o.modifiers.map(m => "\""+m+"\"").join(",");
+		if (o.modifying) column+= " modifying \"" + o.modifying + "\"";
+		let value = "";
+		let mappedvalue = "";
+		let unit = "";
+				let isBoolean = m.navalue != undefined && m.nadrop == false;
+		if (o.value != undefined) {
+			if (o.setvalue != undefined) {
+				if (m.navalue != undefined && m.navalue == o.setvalue) {
+					if (m.nadrop == true) {
+						value = "\""+o.value+"\"";
+						mappedvalue = "drop";
+					}
+					else { 
+						value = "\""+o.value+"\"";
+						mappedvalue = "true";
+					}
 				}
-        else {
-					if (o.drop)	mappedvalue = "drop";
+				else {
 					value = "\""+o.value+"\"";
+					mappedvalue = "\""+o.setvalue+"\"";
 				}
-      }
-      else if (o.excludedvalues && o.excludedvalues.length > 0){
-				value = "NOT(\""+o.excludedvalues.join("\",\"")+"\")";
+			}
+			else if (o.value == m.navalue){
+				value = "\""+o.value+"\"";
 				if (o.drop)	mappedvalue = "drop";
-        else mappedvalue = "true";
-      }
-      else if (m.constantvalue == m.navalue) {
-        mappedvalue = "true";
+				else mappedvalue = "true";
 			}
 			else {
-				value = "NOT(\""+dropvalues.join("\",\"")+"\")";
-				mappedvalue = "source "+m.type;
+				if (o.drop)	mappedvalue = "drop";
+				value = "\""+o.value+"\"";
 			}
+		}
+		else if (o.excludedvalues && o.excludedvalues.length > 0){
+			value = "NOT(\""+o.excludedvalues.join("\",\"")+"\")";
+			if (o.drop)	mappedvalue = "drop";
+			else mappedvalue = "true";
+		}
+		else if (m.constantvalue == m.navalue) {
+			mappedvalue = "true";
+		}
+		else {
+			value = "NOT(\""+dropvalues.join("\",\"")+"\")";
+			mappedvalue = "source "+m.type;
+		}
 
-      if (m.unit && mappedvalue != "drop") unit = ""+m.unit+"";
-      else if (!isBoolean) unit = "";
+		if (m.unit && mappedvalue != "drop") unit = ""+m.unit+"";
+		else if (!isBoolean) unit = "";
 
-      result.push([column, value, mappedvalue, unit]);
+		result.push([column, value, mappedvalue, unit]);
     });
 
     return result;
