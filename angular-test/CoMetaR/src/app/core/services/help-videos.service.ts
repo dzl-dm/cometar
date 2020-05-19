@@ -8,16 +8,6 @@ export class HelpVideosService {
   constructor() { }
 
   public helpSections: HelpSection[] =  [
-    {
-      heading: "Layout",
-      media: [
-        {
-          url: "assets/img/Help/Basic Layout.png",
-          type: "image",
-          border: false
-        }
-      ]
-    },
     /*{
       heading: "Tree Legend",
       media: [
