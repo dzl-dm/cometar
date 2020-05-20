@@ -8,6 +8,7 @@ import { ConceptInformation } from 'src/app/core/concept-information/concept-inf
 import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { ComponentStateService } from 'src/app/services/component-state.service';
 import { NavigationTextPart } from 'src/app/core/text-with-navigation/text-with-navigation.component';
+import { BrowserService } from '../../core/services/browser.service';
 
 @Component({
   selector: 'app-upload-client-configuration',
@@ -32,6 +33,7 @@ export class UploadClientConfigurationComponent implements OnInit {
 		private clientConfigurationService:ClientConfigurationService,
 		private conceptByNotationService:ConceptByNotationService,
 		private http:HttpClient,
+		private browserService: BrowserService,
 		private componentStateService:ComponentStateService,
 		private cd: ChangeDetectorRef
 	) { }
@@ -100,6 +102,11 @@ export class UploadClientConfigurationComponent implements OnInit {
 		this.total_mappings=undefined;
 		let mappings:Mapping[] = [];
 		if (this.inputtype=="xml") parseString( this.xmlFileContent, ((err, result:IClientConfiguration) => {
+			if (err){
+				this.browserService.snackbarNotification.next([err, 'error']);
+				this.feedback.push(["","",'Parsing '+err]);
+				return;
+			}
 			if (result.datasource.meta[0]["version-date"]) {
 				this.version_date_string=result.datasource.meta[0]["version-date"];
 				this.version_date=new Date(this.version_date_string);
