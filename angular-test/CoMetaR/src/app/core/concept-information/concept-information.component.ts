@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { TreeDataService } from '../services/tree-data.service';
-import { ResizedEvent } from 'angular-resize-event';
+import { BrowserService } from '../services/browser.service';
 
 @Component({
   selector: 'app-concept-information',
@@ -25,12 +25,21 @@ export class ConceptInformationComponent implements OnInit {
   @Input() stayTruncated?:boolean = true;
 
   private offsetWidth = 0;
+  public tableDisplayOptions:{
+    width:string,
+    minWidth:string,
+    display:string
+  }[]=[];
 
   constructor(
     private configurationService: ConfigurationService,
     private treeDataService: TreeDataService,
-    private el: ElementRef
-  ) { }
+    private browserService: BrowserService,
+    private el: ElementRef,
+    private cd: ChangeDetectorRef
+  ) {
+    this.setTableDisplayOptions();
+  }
 
   ngOnInit() {
     if (this.conceptInformation && !this.data) {
@@ -42,10 +51,11 @@ export class ConceptInformationComponent implements OnInit {
       //this.cellMinWidth = this.conceptInformation.cellMinWidth;
     }
     this.offsetWidth = (<HTMLElement>this.el.nativeElement).offsetWidth;
-  }
-
-  onResized(event: ResizedEvent) {
-    this.offsetWidth = event.newWidth;
+    this.browserService.resizeSubject.subscribe(()=>{
+      this.offsetWidth = (<HTMLElement>this.el.nativeElement).offsetWidth;
+      this.setTableDisplayOptions();
+    });
+    this.setTableDisplayOptions();
   }
 
   private matchArray(s:string):string[]{
@@ -108,15 +118,39 @@ export class ConceptInformationComponent implements OnInit {
   public navigateToConcept(iri:string){
     this.treeDataService.onConceptSelection(iri);
   }
+
+  private setTableDisplayOptions(){
+    if (!this.data || !this.data[0]){return;}
+    for (let i = 0; i < this.data[0].length; i++){
+      this.tableDisplayOptions[i]={
+        width: this.calcWidth(i),
+        minWidth: this.calcMinWidth(i),
+        display: this.calcDisplay(i)
+      }
+    }
+    this.cd.markForCheck();
+  }
+
+  public getWidth(i:number){
+    return this.tableDisplayOptions[i] && this.tableDisplayOptions[i].width ||"0px";
+  }
+
+  public getMinWidth(i:number){
+    return this.tableDisplayOptions[i] && this.tableDisplayOptions[i].minWidth ||"0px";
+  }
+
+  public getDisplay(i:number){
+    return this.tableDisplayOptions[i] && this.tableDisplayOptions[i].display ||"none";
+  }
   
-  public getMinWidth(i:number, width?):string{
+  private calcMinWidth(i:number, width?):string{
     if (!this.columnMinWidth) return this.columnWidthPercentages[i]+"%"; 
     /*let divWidth = width || (<HTMLElement>this.el.nativeElement).offsetWidth;
     if (this.columnWidthPercentages[i]*divWidth/100 < this.columnMinWidth[i]) return this.columnWidthPercentages[i]+"%";*/
     return this.columnMinWidth[i]+"px";
   }
 
-  public getWidth(i:number, width?):string{
+  private calcWidth(i:number, width?):string{
     return "auto";
 
     if (this.columnDisplayOptions && this.columnDisplayOptions[i]=="hideOrGrow") return "auto";
@@ -131,7 +165,7 @@ export class ConceptInformationComponent implements OnInit {
     divWidth: 0,
     showColumn: []
   }
-  public getDisplay(i:number, width?):("none"|"table-cell"){
+  private calcDisplay(i:number, width?):("none"|"table-cell"){
     if (!this.truncateText) return "table-cell";
     let divWidth = width || this.offsetWidth;
     let cdo = this.columnDisplayOptions;
@@ -178,9 +212,9 @@ export class ConceptInformationComponent implements OnInit {
     cit.classList.remove("truncateText");
     Array.from(cit.children).forEach((tr:HTMLTableRowElement) => {
       Array.from(tr.children).forEach((c:HTMLTableCellElement|HTMLTableHeaderCellElement,index)=>{
-        c.style.width = this.getWidth(index,maxWidth);
-        c.style.display = this.getDisplay(index,maxWidth);
-        c.style.minWidth = this.getMinWidth(index,maxWidth);
+        c.style.width = this.calcWidth(index,maxWidth);
+        c.style.display = this.calcDisplay(index,maxWidth);
+        c.style.minWidth = this.calcMinWidth(index,maxWidth);
       })
     })
     setTimeout(()=>{
