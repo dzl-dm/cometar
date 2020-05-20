@@ -4,7 +4,6 @@
 <ng-container *ngIf="!collapsed">
     <table class="conceptInformationTable" #conceptInformationTable
         (mouseenter)="onInformationMouseEnter($event)"
-        (resized)="onResized($event)"
         #table
         [ngClass]="{
             'rowHeadingTable':headingDirection == 'row', 
@@ -14,12 +13,18 @@
             'stayTruncated':stayTruncated
         }">
         <tr *ngIf="conceptInformation">
-            <td *ngFor="let cell of conceptInformation.headings; let i = index" [style.minWidth]="getMinWidth(i)" [style.width]="getWidth(i)" [style.display]="getDisplay(i)">
+            <td *ngFor="let cell of conceptInformation.headings; let i = index" 
+                [style.minWidth]="getMinWidth(i)" 
+                [style.width]="getWidth(i)"
+                [style.display]="getDisplay(i)">
                 {{cell}}
             </td>
         </tr>
         <tr *ngFor="let row of data; let isFirst = first">
-            <td *ngFor="let cell of row; let i = index" [style.minWidth]="getMinWidth(i)" [style.width]="getWidth(i)" [style.display]="getDisplay(i)">
+            <td *ngFor="let cell of row; let i = index" 
+                [style.minWidth]="getMinWidth(i)" 
+                [style.width]="getWidth(i)"
+                [style.display]="getDisplay(i)">
                 <ng-container *ngFor="let match of matchArray(cell)">
                     <span *ngIf="isConceptIri(match)" (click)="navigateToConcept(cell)" class="conceptLink">{{match}}</span>
                     <span *ngIf="!isConceptIri(match)"
