@@ -3,7 +3,7 @@ import { Observable, of, combineLatest, from, BehaviorSubject, Subject } from 'r
 import { TreeDataService } from '../services/tree-data.service';
 import { TreeStyleService, TreeItemStyle, TreeItemIcon } from "../services/tree-style.service";
 import { SearchResultAttributes } from '../services/queries/searchtreeitem.service';
-import { withLatestFrom, map, combineAll, takeUntil } from 'rxjs/operators';
+import { withLatestFrom, map, combineAll, takeUntil, pairwise, skip } from 'rxjs/operators';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { ConceptInformation } from '../concept-information/concept-information.component';
 import { TreeItem } from '../classes/tree-item';
@@ -23,6 +23,13 @@ import { trigger, state, transition, animate, style } from '@angular/animations'
       })),
       transition('void <=> *', animate(100))
     ]),
+    trigger('highlight', [
+      transition(':enter', []),
+      transition('* => *', [
+        style({backgroundColor: "var(--first-color)"}),
+        animate('0.5s ease-in-out', style({backgroundColor: 'inherit'}))
+      ]),
+    ])
   ]
 })
 export class TreeItemComponent implements OnInit {
@@ -76,13 +83,48 @@ export class TreeItemComponent implements OnInit {
         this.load();
     });
     else this.load();
-    if (this.style$)this.style$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(()=> { this.treeStyleService.onTreeDomChange("TreeItem Style added.") });
-  }  
+    if (this.style$)
+    {
+      this.style$
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(()=> { 
+          this.treeStyleService.onTreeDomChange("TreeItem Style added.");
+        });
+      this.style$
+        .pipe(
+          takeUntil(this.unsubscribe),
+          skip(1),
+          pairwise())
+        .subscribe(([oldStyle,newStyle])=> { 
+          if (!this.compareStyles(oldStyle,newStyle)) {
+            this.highlight();
+          }
+        });
+    }
+  } 
+  
+  private compareStyles(a:TreeItemStyle,b:TreeItemStyle){
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+    let comparetosame = a.concept == b.concept
+      && a.icons.map(icon => icon.id).join(",") == b.icons.map(icon => icon.id).join(",")
+      && a.opacity == b.opacity
+      && a.parent == b.parent
+      && a["text-decoration"] == b["text-decoration"]
+      && a["background-color"] == b["background-color"]
+      && a["border-color"] == b["border-color"]
+      && a.bubbleicons.map(icon => icon.id).join(",") == b.bubbleicons.map(icon => icon.id).join(",")
+      && a.color == b.color;
+    return comparetosame;
+  }
 
   ngAfterViewInit() {
     this.treeDataService.treeItemViewCreated(this.treeitem.element.value);
+  }
+
+  public highlightValue=0;
+  private highlight(){
+    this.highlightValue++;
   }
 
   private load(){
@@ -130,7 +172,11 @@ export class TreeItemComponent implements OnInit {
     ).pipe(map(data => data[0].length > 0 || data[1] ));
     this.showInformationDiv$
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe((show)=> { if (show) this.treeStyleService.onTreeDomChange("TreeItem Information added.") });
+      .subscribe((show)=> { 
+        if (show) {
+          this.treeStyleService.onTreeDomChange("TreeItem Information added.");
+        }
+      });
   }
 
   public onSelect(){
