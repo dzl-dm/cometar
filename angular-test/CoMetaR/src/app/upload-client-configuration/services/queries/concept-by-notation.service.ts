@@ -35,7 +35,7 @@ export class ConceptByNotationService {
               prov:endedAtTime ?removedate .
             FILTER (?removedate > "${version_date.toISOString()}"^^xsd:dateTime)
             ?concept skos:notation ?newnotation .
-            ?concept prov:wasDerivedFrom+ ?oldconcept .
+            ?concept prov:wasDerivedFrom* ?oldconcept .
             FILTER NOT EXISTS { ?concept skos:notation "${notation}" }
             OPTIONAL {
               ?new_concept_with_code skos:notation "${notation}";
@@ -43,7 +43,8 @@ export class ConceptByNotationService {
             }
           }
           OPTIONAL { ?concept skos:notation "${notation}". }
-      }`;
+      }
+      ORDER BY ?newnotation`;
   }
 }
 
