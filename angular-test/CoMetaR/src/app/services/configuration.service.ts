@@ -47,7 +47,7 @@ export class ConfigurationService {
       altlabel: { name: "Alternative Label" },
       author: { name: "Author" },
       description: { name: "Description" },
-      domain: { name: "Domain", value: ed.domain?this.getHumanReadableValueDomain(ed.domain.value):null },
+      domain: { name: "Data Type", value: ed.domain?this.getHumanReadableValueDomain(ed.domain.value):null },
       editnote: { name: "Editorial Notes" },
       label: { name: "Label" },
       modifier: { name: "Specifications" },
