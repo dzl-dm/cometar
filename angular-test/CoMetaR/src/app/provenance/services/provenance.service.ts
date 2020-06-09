@@ -273,7 +273,7 @@ export class ProvenanceService {
 		}));
 	}
 
-	private updateTimeout:NodeJS.Timer;
+	private updateTimeout;
 	private updateTreeData(){
 		if (this.updateTimeout){
 			clearTimeout(this.updateTimeout);
