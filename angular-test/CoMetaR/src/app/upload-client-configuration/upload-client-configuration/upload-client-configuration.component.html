@@ -6,6 +6,7 @@
     <tr>
       <td class='clickable' (click)="inputtype='csc'"><input type="radio" name="inputtype" [checked]="inputtype=='csc'"/> Comma Delimited Codes</td>
       <td>
+        since <input type="text" id="codes_version_date" [(ngModel)]="csc_date" [attr.disabled]="inputtype!='csc' ? '' : null"/>
         <input type="text" id="codes" [(ngModel)]="csc_content" [attr.disabled]="inputtype!='csc' ? '' : null" placeholder="Enter codes here."/>
         <input type="text" id="newcodes" [(ngModel)]="csc_new_content" [attr.disabled]="inputtype!='csc' ? '' : null" placeholder="Updated codes will be shown here."/>
       </td>

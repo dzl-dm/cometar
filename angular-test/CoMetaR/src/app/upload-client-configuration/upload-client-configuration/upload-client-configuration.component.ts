@@ -18,6 +18,7 @@ import { BrowserService } from '../../core/services/browser.service';
 export class UploadClientConfigurationComponent implements OnInit {
 	public inputtype="xml";
 	public csc_content="";
+	public csc_date="2016-01-01";
   	public xmlFileContent="";
 	public feedback:Array<Array<string|NavigationTextPart|NavigationTextPart[]>>=[];
 	public warnings_occured=false;
@@ -123,11 +124,18 @@ export class UploadClientConfigurationComponent implements OnInit {
 			this.total_mappings = mappings.length;
 			this.total_rules = mappings.map(m => m.occurances.length).reduce((prev,curr)=>prev=prev+curr,0);
 		}));
-		else mappings = this.csc_content.split(",").map(code => {
-			return <Mapping>{
-				concept: code,
+		else {
+			this.version_date = new Date(this.csc_date);
+			if (!(this.version_date instanceof Date && !isNaN(this.version_date.getTime()))){
+				this.feedback.push(["","",'Please type a valid date instead of "'+this.csc_date+'".']);
+				return;
 			}
-		});
+			mappings = this.csc_content.split(",").map(code => {
+				return <Mapping>{
+					concept: code,
+				}
+			});
+		}
 		combineLatest(mappings.map(m=>{
 			return this.conceptByNotationService.get(m.concept,this.version_date).pipe(
 				map(result => {
