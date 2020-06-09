@@ -55,7 +55,7 @@ export class TreeItemComponent implements OnInit {
   private showSearchResult$:Observable<boolean>;
   public searchResults$:Observable<string[][]>;
   public intent$:Observable<number>;
-  public expanded:boolean;
+  public expanded$:Observable<boolean>;
   private conceptInformation$:Observable<ConceptInformation[]>;
   public showInformationDiv$:Observable<boolean>;
   public style:TreeItemStyle = this.treeStyleService.getEmptyStyle(this.treeitem.element.value);
@@ -133,11 +133,17 @@ export class TreeItemComponent implements OnInit {
       .subscribe(style => {
         this.style = style;
     });
-    if (this.initialExpanded) this.treeDataService.addShownElements(this.treeitem.children.map(c => c.element.value));
+    if (this.initialExpanded) this.treeDataService.onExpand(this.treeitem.element.value);
     combineLatest(this.treeDataService.shownElements$,this.treeDataService.selectedIri$).subscribe(([se,iri]) => {
       let children;
       this.ontologyAccessService.getAllChildren([this.treeitem.element.value]).subscribe(data => children = data);
-      this.expanded=this.treeitem.element.value==iri || children.map(c => se.includes(c)).includes(true);
+      this.expanded$ = this.treeDataService.expandedElements$.pipe(
+        map(ees => 
+          ees.includes(this.treeitem.element.value)
+          || this.treeitem.element.value==iri
+          || children.map(c => se.includes(c)).includes(true)
+        )
+      );
     });
     /*this.treeDataService.isAnyPathPart$(this.treeitem.element.value).pipe(
       withLatestFrom(
@@ -224,12 +230,7 @@ export class TreeItemComponent implements OnInit {
   }
 
   public expandOrCollapse(expand?:boolean){
-    if (expand!= undefined) this.expanded=expand;
-    else this.expanded=!this.expanded;
-    if (!this.expanded) {
-      this.treeDataService.onCollapse(this.treeitem.element.value);
-      this.treeDataService.addShownElements([this.treeitem.element.value]);
-    }
+    this.treeDataService.onExpandOrCollapse(this.treeitem.element.value);
     this.treeStyleService.onTreeDomChange("TreeItem expanded.");
   }
 

@@ -29,6 +29,7 @@ export class TreeDataService {
   public searchActivated$:Observable<boolean>;
   public reset$ = new Subject();
   public shownElements$:Observable<string[]>;
+  public expandedElements$:BehaviorSubject<string[]> = new BehaviorSubject([]);
 
   private openElementsTask:Task;
   private allOpenedTreeItems$:Subject<string[]>=new BehaviorSubject<string[]>([]);
@@ -63,6 +64,7 @@ export class TreeDataService {
     ) 
 
     this.shownElements$ = this.openedElements$;//combineLatest(this.searchElements$,this.openedElements$).pipe(map(data => data[0].concat(data[1])))
+    this.openedElements$.subscribe(x => console.log(x));
     this.searchElements$.subscribe(data => {
       if (data.length == 1) this.onConceptSelection(data[0]);
       else this.ontologyAccessService.getAllAncestors(data).subscribe(iris => this.addShownElements(data.concat(iris))).unsubscribe();
@@ -138,15 +140,28 @@ export class TreeDataService {
       map(selectedIri => selectedIri == iri)
     )
   }
+  public onExpandOrCollapse(iri:string):void{
+    let expanded = this.expandedElements$.getValue().includes(iri);
+    if (expanded) {
+      this.onCollapse(iri);
+    }
+    else {
+      this.onExpand(iri);
+    }
+  }
   public onExpand(iri:string):void{
-    /*let children;
+    this.addExpandedElements([iri]);
+    /*
+    problem: when Laboratory values opens, Blood gas analysis opens too because of pO2
+    let children;
     this.ontologyAccessService.getFirstLevelChildren([iri]).subscribe(data => children = data);
     this.addShownElements(children);*/
   }
   public onCollapse(iri:string):void{
-    let children;
+    let children:string[];
     this.ontologyAccessService.getAllChildren([iri]).subscribe(data => children = data);
     this.removeShownElements(children);
+    this.removeExpandedElements(children.concat(iri));
   }
   public addShownElements(iris:string[]):void{
     this.openedElements$.next(this.openedElements$.getValue().concat(iris).filter((value, index, array)=>array.indexOf(value)===index));
@@ -154,6 +169,12 @@ export class TreeDataService {
   public removeShownElements(iris:string[]):void{
     this.openedElements$.next(this.openedElements$.getValue().filter(oe => !iris.includes(oe))) 
     //this.searchElements$.next(this.searchElements$.getValue().filter(se => !iris.includes(se)))     
+  }
+  public addExpandedElements(iris:string[]):void{
+    this.expandedElements$.next(this.expandedElements$.getValue().concat(iris).filter((value, index, array)=>array.indexOf(value)===index));
+  }
+  public removeExpandedElements(iris:string[]):void{
+    this.expandedElements$.next(this.expandedElements$.getValue().filter(oe => !iris.includes(oe)))   
   }
 
   //item offering

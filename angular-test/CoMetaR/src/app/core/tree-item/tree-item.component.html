@@ -7,8 +7,8 @@
   <div 
     [ngClass]="{
       'treeItemExpand':true,
-      'expanded':treeitem.hasChildren() && expanded,
-      'collapsed':treeitem.hasChildren() && !expanded
+      'expanded':treeitem.hasChildren() && (expanded$ | async),
+      'collapsed':treeitem.hasChildren() && !(expanded$ | async)
     }" >
   </div>
   <div 
@@ -81,8 +81,8 @@
   @openClose
   (@openClose.start)="openCloseStart($event)"
   (@openClose.done)="openCloseDone($event)"
-  *ngIf="expanded && (parentAnimation$ | async)" 
-  [expanded]="expanded && cascade_expand" 
+  *ngIf="(expanded$ | async) && (parentAnimation$ | async)" 
+  [expanded]="(expanded$ | async) && cascade_expand" 
   [animation]="animation"
   [cascade_expand]="cascade_expand" 
   [conceptIri]="treeitem.element.value"></app-tree-item-list>
