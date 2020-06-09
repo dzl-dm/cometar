@@ -273,10 +273,15 @@ export class ProvenanceService {
 		}));
 	}
 
+	private updateTimeout:NodeJS.Timer;
 	private updateTreeData(){
-		this.combinedCommitDetails$.pipe(
-			flatMap(cds => this.getConceptTableInformation(cds))
-		).subscribe(data => this.treeData$.next(data)).unsubscribe();
-
+		if (this.updateTimeout){
+			clearTimeout(this.updateTimeout);
+		}
+		this.updateTimeout = setTimeout(() => {
+			this.combinedCommitDetails$.pipe(
+				flatMap(cds => this.getConceptTableInformation(cds))
+			).subscribe(data => this.treeData$.next(data)).unsubscribe();
+		}, 200);
 	}
 }
