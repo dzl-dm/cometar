@@ -312,9 +312,10 @@ class ClientConfiguration {
 
   public getTreeLines(m:Mapping):string[][]{
     let result = [];
-    let s = m.concept + ": ";
+	let s = m.concept + ": ";		
     m.occurances.forEach(o => {
 		let dropvalues=m.occurances.filter(occ => occ.file == o.file && occ.column == o.column && occ.drop).map(occ => occ.value);
+		if (!o.value && m.nadrop){dropvalues.push(m.navalue);}
 		let column = "";
 		if (o.column && o.column != "constant-value") column = `"${o.file}" / "${o.column}"`;
 		else if (o.column && o.column == "constant-value") column = "constant";
