@@ -64,7 +64,6 @@ export class TreeDataService {
     ) 
 
     this.shownElements$ = this.openedElements$;//combineLatest(this.searchElements$,this.openedElements$).pipe(map(data => data[0].concat(data[1])))
-    this.openedElements$.subscribe(x => console.log(x));
     this.searchElements$.subscribe(data => {
       if (data.length == 1) this.onConceptSelection(data[0]);
       else this.ontologyAccessService.getAllAncestors(data).subscribe(iris => this.addShownElements(data.concat(iris))).unsubscribe();

@@ -46,18 +46,27 @@ export class TreeItemListComponent implements OnInit {
 
   public treeItems: TreeItem[] = [];
   ngOnInit() {
+    let ontologyItems: Observable<TreeItem[]>;
     if (this.conceptIri === 'root') {
-      this.ontologyAccessService.getTopLevelItems$().pipe(takeUntil(this.unsubscribe)).subscribe(tis => {
-        // this.animations=tis.map(t => new BehaviorSubject<boolean>(false));
-        this.treeItems = tis; 
-        this.cd.markForCheck();
-      });
-      // this.expanded = true;
-    } else { this.ontologyAccessService.getSubItems$(this.conceptIri).pipe(takeUntil(this.unsubscribe)).subscribe(tis => {
-      // this.animations=tis.map(t => new BehaviorSubject<boolean>(false));
-      this.treeItems = tis;
-    });
+      ontologyItems = this.ontologyAccessService.getTopLevelItems$();
+    } else { 
+      ontologyItems = this.ontologyAccessService.getSubItems$(this.conceptIri);
     }
+    ontologyItems.pipe(takeUntil(this.unsubscribe)).subscribe(tis => {
+      for (let i = this.treeItems.length; i >= 0; i--){
+        if (!tis.includes(this.treeItems[i])){
+          this.treeItems.splice(i,1);
+        }
+      }
+      tis.forEach(ti => {
+        if (!this.treeItems.includes(ti)){
+          this.treeItems.push(ti);
+        }
+      })
+      this.treeItems = tis; 
+      this.cd.markForCheck();
+    });
+    
     this.treeItems$.pipe(takeUntil(this.unsubscribe)).subscribe(data => { 
       // this.cd.markForCheck();
     });

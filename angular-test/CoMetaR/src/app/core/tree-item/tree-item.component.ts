@@ -83,6 +83,7 @@ export class TreeItemComponent implements OnInit {
         this.load();
     });
     else this.load();
+
     if (this.style$)
     {
       this.style$
@@ -95,11 +96,12 @@ export class TreeItemComponent implements OnInit {
           takeUntil(this.unsubscribe),
           skip(1),
           pairwise())
-        .subscribe(([oldStyle,newStyle])=> { 
-          if (!this.compareStyles(oldStyle,newStyle)) {
-            this.highlight();
+        .subscribe(([oldStyle,newStyle])=> {
+            if (!this.compareStyles(oldStyle,newStyle)) {
+              this.highlight();
+            }
           }
-        });
+        );
     }
   } 
   
@@ -137,12 +139,11 @@ export class TreeItemComponent implements OnInit {
     combineLatest(this.treeDataService.shownElements$,this.treeDataService.selectedIri$).subscribe(([se,iri]) => {
       let children;
       this.ontologyAccessService.getAllChildren([this.treeitem.element.value]).subscribe(data => children = data);
+      if (this.treeitem.element.value==iri || children.map(c => se.includes(c)).includes(true)) {
+        this.treeDataService.onExpand(this.treeitem.element.value);
+      }
       this.expanded$ = this.treeDataService.expandedElements$.pipe(
-        map(ees => 
-          ees.includes(this.treeitem.element.value)
-          || this.treeitem.element.value==iri
-          || children.map(c => se.includes(c)).includes(true)
-        )
+        map(ees =>  ees.includes(this.treeitem.element.value))
       );
     });
     /*this.treeDataService.isAnyPathPart$(this.treeitem.element.value).pipe(
