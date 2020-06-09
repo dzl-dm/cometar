@@ -49,6 +49,8 @@ export class UploadClientConfigurationComponent implements OnInit {
 		  this.replacedFileContent=state.replacedFileContent;
 		  this.csc_new_content=state.csc_new_content;
 		  this.version_date=state.version_date;
+		  this.total_mappings=state.total_mappings;
+		  this.total_rules=state.total_rules;
 		  this.version_date_string=state.version_date_string;
 		  this.showUpdatedConfigurationFileDownloadButton=state.showUpdatedConfigurationFileDownloadButton
 	  }
@@ -65,7 +67,9 @@ export class UploadClientConfigurationComponent implements OnInit {
 		csc_new_content:this.csc_new_content,
 		version_date:this.version_date,
 		version_date_string:this.version_date_string,
-		showUpdatedConfigurationFileDownloadButton:this.showUpdatedConfigurationFileDownloadButton
+		showUpdatedConfigurationFileDownloadButton:this.showUpdatedConfigurationFileDownloadButton,
+		total_mappings:this.total_mappings,
+		total_rules:this.total_rules
 	})
   }
 
