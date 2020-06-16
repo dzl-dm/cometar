@@ -106,6 +106,7 @@ export class TreeDataService {
   public reset(){
     this.allTreeItemConceptInformation$.next([]);
     this.openedElements$.next([]);
+    this.expandedElements$.next([]);
     this.reset$.next();
   }
 
