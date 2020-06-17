@@ -63,7 +63,13 @@ export class TreeItemListComponent implements OnInit {
           this.treeItems.push(ti);
         }
       })
-      this.treeItems = tis; 
+      //this.treeItems = tis; 
+      this.treeItems.sort((a:TreeItem,b:TreeItem)=>{
+        const labela = (a.displayLabel.value || a.label.value).toLowerCase();
+        const labelb = (b.displayLabel.value || b.label.value).toLowerCase();
+        if (labela > labelb) { return 1; }
+        return -1;
+      });
       this.cd.markForCheck();
     });
     
