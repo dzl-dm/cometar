@@ -193,6 +193,10 @@ export class ConfigurationService {
 		"http://sekmi.de/histream/dwh#restriction": true,
   }
 
+  public lastChangesExcludedPredicates=[
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+  ]
+
   private mergeDeep(target, source) {
     let output = Object.assign({}, target);
     if (isObject(target) && isObject(source)) {
