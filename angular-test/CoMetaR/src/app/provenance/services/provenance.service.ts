@@ -158,8 +158,7 @@ export class ProvenanceService {
             let date:Date;
             //afterwards, results contains one entry for each affected concept. unique predicates like labels will appear only once
 			commitDetails.forEach(cd => {
-                if (!displayOptions[cd.predicate.value]) return;
-
+                if (this.configuration.lastChangesExcludedPredicates.includes(cd.predicate.value)) return;
                 let overwritePreviousAddition = false;
                 if (subject == cd.subject.value
 					&& predicate == cd.predicate.value
@@ -188,7 +187,7 @@ export class ProvenanceService {
 					sourceId: "Provenance",
 					cells:[]
 				};
-				let objectlabel = cd.ol?cd.ol.value:cd.object?cd.object.value:"";
+				let objectlabel = /*cd.ol?cd.ol.value:*/cd.object?cd.object.value:"";
 				if (overwritePreviousAddition)console.log("joooo");
                 if (overwritePreviousAddition){
                     ci.cells[ci.cells.length -1][3]=objectlabel;
