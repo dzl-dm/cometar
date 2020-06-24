@@ -7,7 +7,7 @@ import { ConceptInformation } from 'src/app/core/concept-information/concept-inf
 import { ProvTreeItemsService } from './prov-tree-items.service';
 import { TreeDataService } from 'src/app/core/services/tree-data.service';
 import { TreeStyleService, TreeItemStyle } from 'src/app/core/services/tree-style.service';
-import { map, flatMap } from 'rxjs/operators';
+import { map, flatMap, filter } from 'rxjs/operators';
 import { ProgressService, Task } from 'src/app/services/progress.service';
 
 @Injectable({
@@ -279,7 +279,9 @@ export class ProvenanceService {
 		}
 		this.updateTimeout = setTimeout(() => {
 			this.combinedCommitDetails$.pipe(
-				flatMap(cds => this.getConceptTableInformation(cds))
+				flatMap(cds => this.getConceptTableInformation(cds.filter(cd => {
+					return this.displayOptions$.getValue()[cd.predicate.value];
+				})))
 			).subscribe(data => this.treeData$.next(data)).unsubscribe();
 		}, 200);
 	}
