@@ -120,24 +120,6 @@ export class DetailedInformationComponent implements OnInit {
     this.browserService.snackbarNotification.next([`Text "${item}" copied to clipboard.`, `info`]);
   }
 
-  /*public showChangeDetails=false;
-  public showMoreChangesToggle(){
-    this.showChangeDetails = !this.showChangeDetails;
-    if (this.showChangeDetails) {
-      let displayOptions = this.configuration.changeCategories;
-      Object.keys(displayOptions).forEach(key => {
-        displayOptions[key]=displayOptions[key] != undefined;
-      });
-      this.changeDetails$ = this.selectedIri$.pipe(
-        flatMap(subject => this.commitDetailsService.getBySubject(subject)),
-        flatMap(cds => this.provenanceService.getConceptTableInformation(cds, new BehaviorSubject(displayOptions)))
-      );
-    }
-    else {
-      this.changeDetails$ = of([]);
-    }
-  }*/
-
   public exportOptions = {
     status: true,
     isModifier: true,
