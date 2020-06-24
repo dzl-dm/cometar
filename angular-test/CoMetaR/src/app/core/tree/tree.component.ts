@@ -31,7 +31,7 @@ export class TreeComponent implements OnInit {
     this.runningTask$.subscribe(running => {
       if (running) this.taskRefreshInterval = setInterval(()=>{this.cd.markForCheck()},500);
       else clearInterval(this.taskRefreshInterval);
-    })
+    });
   }
 
   ngOnInit() {    
@@ -52,5 +52,10 @@ export class TreeComponent implements OnInit {
 
   public getOfTrue(){
     return of(true);
+  }
+
+  public getTreePanelHeight(treeHeight:number):number{
+    let rootTreeItemList = (<HTMLElement>(<HTMLElement>this.el.nativeElement).getElementsByClassName("topLevel")[0]).offsetHeight || 0;
+    return Math.min(rootTreeItemList, treeHeight);
   }
 }
