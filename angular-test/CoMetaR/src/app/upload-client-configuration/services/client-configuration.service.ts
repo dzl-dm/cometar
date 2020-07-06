@@ -190,7 +190,79 @@ class ClientConfiguration {
 		modifiers?:string[], modifying?:string, eavTable?:boolean })
 	{
 		let mapconcept = params.map.$ && params.map.$["set-concept"] || params.concept;
-		if (params.eavTable === true){
+		let cases = params.map.case && params.map.otherwise && params.map.case.concat(params.map.otherwise) || params.map.case || params.map.otherwise;
+		//na-value exists, na-value is not mapped in <map>, no other value is set to na-value, no <otherwise action='drop-fact'/>
+		// => na-value maps to "true"
+		if (params.navalue != undefined 
+			&& params.nadrop == false 
+			&& cases
+			&& !cases.map(c => c.$.value).includes(params.navalue) 
+			&& cases.filter(c => c.$["set-value"] != params.navalue && (!params.map.otherwise || params.map.otherwise[0] && params.map.otherwise[0].$.action != "drop-fact")).length > 0)
+		{
+			this.pushMapping({
+				concept:params.concept, 
+				nadrop: params.nadrop, 
+				navalue: params.navalue, 
+				unit: params.unit, 
+				constantvalue: params.constantvalue, 
+				type: params.type, 
+				occurances:[{
+					column: params.column,
+					file: params.file,
+					value: params.eavTable === true ? undefined : "",
+					drop: false,
+					modifiers: params.modifiers,
+					modifying: params.modifying
+				}]
+			});			
+		}
+		//the NOTs from <value na="" na-action="drop-fact" ../>
+		//TODO: should only appear in wide, not eav
+		if (!params.map.otherwise && params.eavTable!==true){
+			this.pushMapping({
+				concept:mapconcept, 
+				nadrop: params.nadrop, 
+				navalue: params.navalue, 
+				unit: params.unit, 
+				constantvalue: params.constantvalue, 
+				type: params.type, 
+				occurances:[{
+					column: params.column,
+					file: params.file,
+					value: params.constantvalue,
+					drop: false,
+					modifiers: params.modifiers,
+					modifying: params.modifying
+				}]
+			});
+		}
+		//gatheres exludedvalues, until the last case (the otherwise) will consume them
+		if (cases) {
+			let excludedvalues = []; // for <otherwise set-concept='x'/>
+			cases.forEach(c => {
+				let caseconcept = c.$ && c.$["set-concept"] || mapconcept;
+				if (params.map.otherwise && c != params.map.otherwise[0] && c.$ && c.$.value) excludedvalues.push(c.$.value);
+				this.pushMapping({
+					concept:caseconcept, 
+					nadrop: params.nadrop, 
+					navalue: params.navalue, 
+					unit: params.unit, 
+					constantvalue: params.constantvalue, 
+					type: params.type, 
+					occurances:[{
+						column: params.column,
+						file: params.file,
+						value: params.constantvalue || c.$ && c.$.value,
+						drop: c.$ && c.$.action == "drop-fact" || false,
+						setvalue: c.$ && c.$["set-value"],
+						excludedvalues: params.map.otherwise && c == params.map.otherwise[0] && excludedvalues || [],
+						modifiers: params.modifiers,
+						modifying: params.modifying
+					}]
+				});
+			});
+		}
+		else {
 			this.pushMapping({
 				concept:mapconcept, 
 				nadrop: params.nadrop, 
@@ -206,97 +278,6 @@ class ClientConfiguration {
 					modifying: params.modifying
 				}]
 			});
-		}
-		else {
-			let cases = params.map.case && params.map.otherwise && params.map.case.concat(params.map.otherwise) || params.map.case || params.map.otherwise;
-			//na-value exists, na-value is not mapped in <map>, no other value is set to na-value, no <otherwise action='drop-fact'/>
-			// => na-value maps to "true"
-			if (params.navalue != undefined 
-				&& params.nadrop == false 
-				&& cases
-				&& !cases.map(c => c.$.value).includes(params.navalue) 
-				&& cases.filter(c => c.$["set-value"] != params.navalue && (!params.map.otherwise || params.map.otherwise[0] && params.map.otherwise[0].$.action != "drop-fact")).length > 0)
-			{
-				this.pushMapping({
-					concept:params.concept, 
-					nadrop: params.nadrop, 
-					navalue: params.navalue, 
-					unit: params.unit, 
-					constantvalue: params.constantvalue, 
-					type: params.type, 
-					occurances:[{
-						column: params.column,
-						file: params.file,
-						value: "",
-						drop: false,
-						modifiers: params.modifiers,
-						modifying: params.modifying
-					}]
-				});			
-			}
-			//the NOTs from <value na="" na-action="drop-fact" ../>
-			//TODO: should only appear in wide, not eav
-			if (!params.map.otherwise){
-				this.pushMapping({
-					concept:mapconcept, 
-					nadrop: params.nadrop, 
-					navalue: params.navalue, 
-					unit: params.unit, 
-					constantvalue: params.constantvalue, 
-					type: params.type, 
-					occurances:[{
-						column: params.column,
-						file: params.file,
-						value: params.constantvalue,
-						drop: false,
-						modifiers: params.modifiers,
-						modifying: params.modifying
-					}]
-				});
-			}
-			//gatheres exludedvalues, until the last case (the otherwise) will consume them
-			if (cases) {
-				let excludedvalues = []; // for <otherwise set-concept='x'/>
-				cases.forEach(c => {
-					let caseconcept = c.$ && c.$["set-concept"] || mapconcept;
-					if (params.map.otherwise && c != params.map.otherwise[0] && c.$ && c.$.value) excludedvalues.push(c.$.value);
-					this.pushMapping({
-						concept:caseconcept, 
-						nadrop: params.nadrop, 
-						navalue: params.navalue, 
-						unit: params.unit, 
-						constantvalue: params.constantvalue, 
-						type: params.type, 
-						occurances:[{
-							column: params.column,
-							file: params.file,
-							value: params.constantvalue || c.$ && c.$.value,
-							drop: c.$ && c.$.action == "drop-fact" || false,
-							setvalue: c.$ && c.$["set-value"],
-							excludedvalues: params.map.otherwise && c == params.map.otherwise[0] && excludedvalues || [],
-							modifiers: params.modifiers,
-							modifying: params.modifying
-						}]
-					});
-				});
-			}
-			else {
-				this.pushMapping({
-					concept:mapconcept, 
-					nadrop: params.nadrop, 
-					navalue: params.navalue, 
-					unit: params.unit, 
-					constantvalue: params.constantvalue, 
-					type: params.type, 
-					occurances:[{
-						column: params.column,
-						file: params.file,
-						drop:false,
-						modifiers: params.modifiers,
-						modifying: params.modifying
-					}]
-				});
-			}
 		}
 	}
 
