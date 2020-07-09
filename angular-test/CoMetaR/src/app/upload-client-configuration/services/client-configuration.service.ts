@@ -217,7 +217,6 @@ class ClientConfiguration {
 			});			
 		}
 		//the NOTs from <value na="" na-action="drop-fact" ../>
-		//TODO: should only appear in wide, not eav
 		if (!params.map.otherwise && params.eavTable!==true){
 			this.pushMapping({
 				concept:mapconcept, 

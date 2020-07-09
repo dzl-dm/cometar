@@ -232,7 +232,9 @@ export class TreeStyleService {
         let children = this.getMatchingTreeItemChildren(treeitem);
         let bubbleIcons:TreeItemIcon[] = children.map(childiri => sa.filter(tis => tis.concept == childiri)) //array of child style arrays
           .reduce((result,next)=>result = result.concat(next),[]) //array of child styles
-          .map(tis => tis.icons.filter(icon => icon["bubble-up"]).map(icon => icon["bubble-up"])) //array of bubble icons of child style array
+          .map(tis => tis.icons.filter(icon => icon["bubble-up"] 
+            && !icon["bubble-up-concept-filter"] || icon["bubble-up-concept-filter"].includes(iri) || children.filter(c => icon["bubble-up-concept-filter"].includes(c)).length>0
+          ).map(icon => icon["bubble-up"])) //array of bubble icons of child style array
           .reduce((result,next)=>result = result.concat(next),[]);
         style.bubbleicons=bubbleIcons;
         return style;
@@ -302,6 +304,7 @@ export interface TreeItemIcon {
   "background-stripes"?: boolean,
   "type"?: "dot" | "chip" | "imgIcon" | "smallImgIcon",
   "bubble-up"?: TreeItemIcon,
+  "bubble-up-concept-filter"?: string[],
   "description"?: string
 }
 
