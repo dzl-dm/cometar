@@ -178,6 +178,7 @@ export class ProvTreeItemsService {
                     "background-color": "#FFBFBF",
                     description: "There were COUNTER sub-elements removed."
                 },
+                "bubble-up-concept-filter": [ r.oldparent ],
                 description: "This item has been removed on "+r.date+"."
             }]
             return style;
