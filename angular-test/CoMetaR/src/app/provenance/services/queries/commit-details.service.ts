@@ -39,10 +39,10 @@ WHERE
     rdf:object ?object .
   FILTER NOT EXISTS { ?statement rdf:comment "hidden" } 
   
-  #case of re-introduced concepts like "Sepsis"
+  #case of re-introduced concepts like "Sepsis" or in general concepts which's 'old versions' are modified for some reason
   OPTIONAL {
-  ?commit2 prov:qualifiedUsage ?usage2 ;
-    prov:endedAtTime ?date2 .
+    ?commit2 prov:qualifiedUsage ?usage2 ;
+      prov:endedAtTime ?date2 .
     ?usage2 cs:addition [
       a rdf:Statement; 
       rdf:subject ?newsubject;

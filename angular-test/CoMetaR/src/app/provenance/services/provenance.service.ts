@@ -188,7 +188,6 @@ export class ProvenanceService {
 					cells:[]
 				};
 				let objectlabel = /*cd.ol?cd.ol.value:*/cd.object?cd.object.value:"";
-				if (overwritePreviousAddition)console.log("joooo");
                 if (overwritePreviousAddition){
                     ci.cells[ci.cells.length -1][3]=objectlabel;
                 }
@@ -199,10 +198,10 @@ export class ProvenanceService {
 					cd.addition.value?objectlabel:""
 				]);
 				if (cia.length == 0 && ci.cells.length>0) result.push(ci);
-            });
+			});
             //merge lines
             result.forEach(ci => {
-                for (let i = 0; i < ci.cells.length; i++){
+                for (let i = ci.cells.length-1; i >= 0 ; i--){
                     let mergeParts = ci.cells.filter(c => c[0]==ci.cells[i][0] && c[1]==ci.cells[i][1]);
                     if (mergeParts.length == 2) {
                         if (mergeParts[0][2] != "" && mergeParts[1][3] != "") mergeParts[0][3] = mergeParts[1][3];
@@ -211,7 +210,7 @@ export class ProvenanceService {
 					}
 					if (mergeParts[0][2]==mergeParts[0][3])	ci.cells.splice(ci.cells.indexOf(mergeParts[0]),1)
                 }
-            })
+			});
 			cis.next(result.filter(ci => ci.cells.length>0));
 		});
 		return cis;
