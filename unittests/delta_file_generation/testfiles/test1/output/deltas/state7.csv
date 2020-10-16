@@ -1,7 +1,0 @@
-removed,http://purl.bioontology.org/ontology/SNOMEDCT/260413007,http://www.w3.org/2004/02/skos/core#prefLabel,en,Severe
-added,http://data.dzl.de/ont/dwh#severitiesGrade,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/24484000
-added,http://purl.bioontology.org/ontology/SNOMEDCT/24484000,http://data.dzl.de/ont/dwh#status,"",draft
-added,http://purl.bioontology.org/ontology/SNOMEDCT/24484000,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,,http://www.w3.org/2004/02/skos/core#Concept
-added,http://purl.bioontology.org/ontology/SNOMEDCT/24484000,http://www.w3.org/2004/02/skos/core#broader,,http://data.dzl.de/ont/dwh#severitiesGrade
-added,http://purl.bioontology.org/ontology/SNOMEDCT/24484000,http://www.w3.org/2004/02/skos/core#notation,"",S:24484000
-added,http://purl.bioontology.org/ontology/SNOMEDCT/24484000,http://www.w3.org/2004/02/skos/core#prefLabel,en,Severe

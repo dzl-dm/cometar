@@ -1,6 +1,0 @@
-removed,http://loinc.org/owl#79378-6,http://www.w3.org/2004/02/skos/core#narrower,,http://purl.bioontology.org/ontology/SNOMEDCT/70995007
-removed,http://purl.bioontology.org/ontology/SNOMEDCT/70995007,http://data.dzl.de/ont/dwh#status,"",draft
-removed,http://purl.bioontology.org/ontology/SNOMEDCT/70995007,http://purl.org/dc/elements/1.1/creator,"",GH
-removed,http://purl.bioontology.org/ontology/SNOMEDCT/70995007,http://www.w3.org/2004/02/skos/core#broader,,http://loinc.org/owl#79378-6
-removed,http://purl.bioontology.org/ontology/SNOMEDCT/70995007,http://www.w3.org/2004/02/skos/core#prefLabel,de,Pulmonare Hypertonie
-removed,http://purl.bioontology.org/ontology/SNOMEDCT/70995007,http://www.w3.org/2004/02/skos/core#prefLabel,en,Pulmonary hypertension

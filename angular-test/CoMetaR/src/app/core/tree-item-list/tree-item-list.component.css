@@ -1,8 +1,0 @@
-:host:not(.topLevel) {
-    margin-left:21px;
-    width:calc(100% - 21px);
-}
-
-#noResults{
-    margin:20px;
-}

@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  fuseki:
+    build: ./fuseki
+    ports:
+      - repository:3030:3030
+    container_name:
+      fuseki  
+  repository:
+    build: ./repository
+    ports:
+      - 8080:80
+    stdin_open: 
+      true
+    container_name:
+      repository   
+    environment: 
+      - FUSEKI_TEST_SERVER=http://fuseki:3030/cometar_test
+      - FUSEKI_LIVE_SERVER=http://fuseki:3030/cometar_live
+    volumes:
+#      - .\repository\data\git_scripts:/cometar/git_scripts
+#      - .\repository\data\flask:/cometar/flask
+#      - .\repository\data\rdf_verification:/cometar/rdf_verification
+#      - .\repository\data\rdf_loading:/cometar/rdf_loading
+      - repository:/usr/share/nginx/html/git
+      - auth:/etc/nginx/auth
+
+volumes: 
+  repository:
+  auth:
