@@ -19,17 +19,20 @@ def apply_verification_tests():
     return [p.communicate()[0], p.returncode]
 
 def rdf_verification_steps(commit_id):
-    x = git_checkout(commit_id)
-    response = x[0]
-    if x[1] > 0:
+    if os.path.exists("/update-hook-repository"):
+        x = git_checkout(commit_id)
+        response = x[0]
+        if x[1] > 0:
+            return [response, x[1]]
+        x = load_into_fuseki()
+        response += x[0]
+        if x[1] > 0:
+            return [response, x[1]]
+        x = apply_verification_tests()
+        response += x[0]
         return [response, x[1]]
-    x = load_into_fuseki()
-    response += x[0]
-    if x[1] > 0:
-        return [response, x[1]]
-    x = apply_verification_tests()
-    response += x[0]
-    return [response, x[1]]
+    else:
+        return ["No repository for update checks available.", 0]
 
 @app.route('/')
 def index():

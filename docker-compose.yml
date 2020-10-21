@@ -3,29 +3,47 @@ version: "3.8"
 services:
   fuseki:
     build: ./fuseki
-    ports:
-      - repository:3030:3030
+    expose:
+      - 3030
     container_name:
       fuseki  
-  repository:
-    build: ./repository
+  git_and_nginx:
+    build: ./git_and_nginx
     ports:
       - 8080:80
-    stdin_open: 
-      true
     container_name:
-      repository   
-    environment: 
-      - FUSEKI_TEST_SERVER=http://fuseki:3030/cometar_test
-      - FUSEKI_LIVE_SERVER=http://fuseki:3030/cometar_live
+      git_and_nginx   
+    environment:
+      - REST_SERVER=http://git_and_nginx/rest
+      - NGINX_REST_SERVER=http://rest:5000
+      - NGINX_FUSEKI_SERVER=http://fuseki:3030
+      # will be resolved only once at startup and written into nginx.conf
+      - NGINX_LOCATION_FUSEKI_ADMIN_ALLOW_HOSTNAMES=rest
+      - NGINX_LOCATION_REST_ALLOW_HOSTNAMES=rest,git_and_nginx
     volumes:
-#      - .\repository\data\git_scripts:/cometar/git_scripts
-#      - .\repository\data\flask:/cometar/flask
-#      - .\repository\data\rdf_verification:/cometar/rdf_verification
-#      - .\repository\data\rdf_loading:/cometar/rdf_loading
       - repository:/usr/share/nginx/html/git
       - auth:/etc/nginx/auth
+    networks:
+      - default
+      - rest_network
+  rest:
+    build: ./rest
+    expose:
+      - 5000
+    container_name:
+      rest   
+    volumes:
+      - repository:/update-hook-repository:ro
+    environment: 
+      - FUSEKI_TEST_SERVER=http://git_and_nginx/fuseki/cometar_test
+      - FUSEKI_LIVE_SERVER=http://git_and_nginx/fuseki/cometar_live
+      - GIT_SERVER=http://git_and_nginx/git
+    networks: 
+      - rest_network
 
 volumes: 
   repository:
   auth:
+
+networks: 
+  rest_network:

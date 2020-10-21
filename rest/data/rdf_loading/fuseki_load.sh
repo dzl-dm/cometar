@@ -48,7 +48,7 @@ do
 done
 
 echo "Inserting rules."
-STATUSCODE=$(curl -X POST -s -w "%{http_code}" -o /dev/null -T "$COMETAR_PROD_DIR/rdf_loading/insertrules.ttl" -G "$FUSEKI_SERVER/update")
+STATUSCODE=$(curl -X POST -H "Content-Type: application/sparql-update;charset=utf-8" -s -w "%{http_code}" -o /dev/null -T "$COMETAR_PROD_DIR/rdf_loading/insertrules.ttl" -G "$FUSEKI_SERVER/update")
 if ! [ $STATUSCODE -ge 200 -a $STATUSCODE -lt 300 ]
 then
 	echo "ERROR: Error adding inserting rules." >&2

@@ -24,9 +24,9 @@ unset GIT_DIR;
 if [ -e "$COMETAR_TEMP_DIR/checkout" ]; then
 	rm -rf "$COMETAR_TEMP_DIR/checkout"
 fi
-mkdir -p "$COMETAR_TEMP_DIR/checkout"
-git clone -q "$COMETAR_REPOSITORY_DIR" "$COMETAR_TEMP_DIR/checkout"
-cd "$COMETAR_TEMP_DIR/checkout"
-git checkout -q $revision
+mkdir -p "$COMETAR_TEMP_DIR"
+git clone -q "/update-hook-repository" "$COMETAR_TEMP_DIR/checkout" && \
+	cd "$COMETAR_TEMP_DIR/checkout" && \
+	git checkout -q $revision
 
 exit $?
