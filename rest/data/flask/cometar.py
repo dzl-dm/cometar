@@ -1,9 +1,13 @@
 from flask import Flask, url_for, request
 from flask_accept import accept
 from markupsafe import escape
+from pathlib import Path
+from string import Template
+import requests
 import subprocess
 import os
 import sys
+import urllib.parse
 app = Flask(__name__)
 
 def git_checkout(commit_id):
@@ -55,3 +59,14 @@ def rdf_verification_json(commit_id):
 @app.route('/fuseki_load')
 def fuseki_load():
     return load_into_fuseki()
+
+@app.route('/search/<pattern>')
+def search(pattern):
+    url=os.environ["FUSEKI_TEST_SERVER"]+'/query'
+    query = Path(os.environ["COMETAR_PROD_DIR"]+'/information_retrieval/search.sparql').read_text()
+    query = Template(query)
+    query = query.substitute(pattern=pattern)
+    query = urllib.parse.quote(query)
+    headers = {'Content': 'application/json'}
+    r = requests.get(url+"?query="+query,headers=headers)
+    return r.json()

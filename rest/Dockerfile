@@ -43,6 +43,7 @@ RUN apt-get install -y python3=3.8.2-0ubuntu2 && \
     pip3 install ItsDangerous && \
     pip3 install Click && \
     pip3 install Flask && \
+    pip3 install requests && \
     pip3 install flask-accept
 
 RUN apt-get remove -y wget build-essential libssl-dev libcurl4-gnutls-dev gettext expat libexpat1-dev zlib1g-dev && \
@@ -53,6 +54,7 @@ RUN mkdir -p $COMETAR_PROD_DIR && \
     cp -R "$COMETAR_BASE_DIR/flask" "$COMETAR_PROD_DIR" && \
     cp -R "$COMETAR_BASE_DIR/rdf_verification" "$COMETAR_PROD_DIR" && \
     cp -R "$COMETAR_BASE_DIR/git_scripts" "$COMETAR_PROD_DIR" && \
+    cp -R "$COMETAR_BASE_DIR/information_retrieval" "$COMETAR_PROD_DIR" && \
     cp -R "$COMETAR_BASE_DIR/hooks" "$COMETAR_PROD_DIR"
 
 CMD export FLASK_APP="$COMETAR_PROD_DIR/flask/cometar.py" && \
