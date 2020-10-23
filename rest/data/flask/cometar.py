@@ -14,9 +14,20 @@ def git_checkout(commit_id):
     p = subprocess.Popen([os.environ["COMETAR_PROD_DIR"]+"/git_scripts/git_checkout.sh", "-r", commit_id] ,stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
     return [p.communicate()[0], p.returncode]
 
-def load_into_fuseki():
-    p = subprocess.Popen([os.environ["COMETAR_PROD_DIR"]+"/rdf_loading/fuseki_load.sh", "-s", os.environ["FUSEKI_TEST_SERVER"]] ,stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-    return [p.communicate()[0], p.returncode]
+def load_into_fuseki(server = "FUSEKI_TEST_SERVER", commit_id = "master"):
+    if (server == "test"):
+        server = os.environ["FUSEKI_TEST_SERVER"]
+    if (server == "live"):
+        server = os.environ["FUSEKI_LIVE_SERVER"]
+
+    x = git_checkout(commit_id)
+    response = x[0]
+    if x[1] > 0:
+        return [response, x[1]]
+    p = subprocess.Popen([os.environ["COMETAR_PROD_DIR"]+"/rdf_loading/fuseki_load.sh", "-s", server] , stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+    x = [p.communicate()[0], p.returncode]
+    response += x[0]
+    return [response, x[1]]
 
 def apply_verification_tests():
     p = subprocess.Popen([os.environ["COMETAR_PROD_DIR"]+"/rdf_verification/exec_tests.sh"] ,stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
@@ -24,12 +35,8 @@ def apply_verification_tests():
 
 def rdf_verification_steps(commit_id):
     if os.path.exists("/update-hook-repository"):
-        x = git_checkout(commit_id)
+        x = load_into_fuseki("test", commit_id)
         response = x[0]
-        if x[1] > 0:
-            return [response, x[1]]
-        x = load_into_fuseki()
-        response += x[0]
         if x[1] > 0:
             return [response, x[1]]
         x = apply_verification_tests()
@@ -56,9 +63,20 @@ def rdf_verification_json(commit_id):
         "exitcode": result[1]
     }
 
-@app.route('/fuseki_load')
-def fuseki_load():
-    return load_into_fuseki()
+@app.route('/fuseki_load_test')
+def fuseki_load_test():
+    result = load_into_fuseki("test")
+    return {
+        "response": result[0],
+        "exitcode": result[1]
+    }
+@app.route('/fuseki_load_live')
+def fuseki_load_live():
+    result = load_into_fuseki("live")
+    return {
+        "response": result[0],
+        "exitcode": result[1]
+    }
 
 @app.route('/search/<pattern>')
 def search(pattern):

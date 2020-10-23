@@ -1,0 +1,24 @@
+<div class="row">
+  <div class="col breakdownSiteChart">
+    <div class="breakdownChart"></div>
+  </div> 
+  <div class="col">
+    <table mat-table [dataSource]="chartData[0].labels" class="breakdownTable" *ngIf="chartData[0].labels.length > 0">
+        <ng-container matColumnDef="rowname" sticky>
+          <th mat-header-cell *matHeaderCellDef>  </th>
+          <td mat-cell *matCellDef="let rowindex = index" [ngStyle]="{'color':chartData[0].datasets[0].backgroundColor[rowindex]=='rgba(255,255,255,1)'?'rgba(50,50,50,1)':chartData[0].datasets[0].backgroundColor[rowindex]}" > {{chartData[0].labels[rowindex]}} </td>
+        </ng-container>
+        <ng-container matColumnDef="sum">
+          <th mat-header-cell *matHeaderCellDef> Total Patients </th>
+          <td mat-cell *matCellDef="let rowindex = index" [ngStyle]="{'color':chartData[0].datasets[0].backgroundColor[rowindex]=='rgba(255,255,255,1)'?'rgba(50,50,50,1)':chartData[0].datasets[0].backgroundColor[rowindex]}" (mouseenter)="tableBreakdownElementHovered(rowindex)" (mouseleave)="dehover()"> {{chartData[0].datasets[0].data[rowindex]}} </td>
+        </ng-container>
+        <ng-container *ngFor="let site of sites; let columnindex = index" [matColumnDef]="site">
+          <th mat-header-cell *matHeaderCellDef> {{ site }} </th>
+          <td mat-cell *matCellDef="let rowindex = index" [ngClass]="{'chartElement': true}" [ngStyle]="{'color':chartData[1].datasets[0].backgroundColor[rowindex*5+columnindex]}" (mouseenter)="tableBreakdownSiteElementHovered(rowindex*5+columnindex)" (mouseleave)="dehover()"> {{chartData[1].datasets[0].data[rowindex*5+columnindex]}} </td>
+        </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['rowname','sum'].concat(sites); sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['rowname','sum'].concat(sites)"></tr>
+    </table>
+  </div>
+</div>

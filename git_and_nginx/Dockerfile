@@ -1,6 +1,7 @@
 FROM nginx
 
 COPY data /cometar
+COPY browser/dist/CoMetaR /usr/share/nginx/html/cometar_browser
 
 ENV GIT_URL=https://www.kernel.org/pub/software/scm/git
 ENV GIT_VERSION=2.9.5
@@ -10,7 +11,7 @@ ENV GIT_MANPAGES=git-manpages-${GIT_VERSION}.tar.gz
 
 RUN apt-get update && \
     apt-get install -y wget build-essential libssl-dev libcurl4-gnutls-dev gettext expat libexpat1-dev zlib1g-dev man python && \
-    apt-get install -y git-core fcgiwrap spawn-fcgi apache2-utils jq dnsutils && \
+    apt-get install -y git-core fcgiwrap spawn-fcgi apache2-utils jq dnsutils screen && \
     cd /tmp && \
     wget ${GIT_URL}/${GIT_ARCHIVE} && \
     wget ${GIT_URL}/${GIT_MANPAGES} && \

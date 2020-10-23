@@ -1,0 +1,53 @@
+<mat-tab-group [selectedIndex]="statisticsPage">
+  <mat-tab>
+    <ng-template mat-tab-label>Data Sources Progress</ng-template>
+    <h2>Imported Data Sources</h2>
+    <app-line-chart  [chartData]="dataSourcesData"></app-line-chart>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>Data Volume Progress</ng-template>
+    <mat-tab-group (selectedTabChange)="changeGranularity($event)" [selectedIndex]="granularityIndex" animationDuration="0ms">
+      <mat-tab>
+        <ng-template mat-tab-label>Total</ng-template>          
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>Site</ng-template>          
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>Source</ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>Location</ng-template>
+      </mat-tab>
+    </mat-tab-group>
+    <mat-tab-group *ngIf="[2,3].includes(granularityIndex)" (selectedTabChange)="changeSite($event)" [selectedIndex]="siteIndex" animationDuration="0ms">
+      <mat-tab><ng-template mat-tab-label>All</ng-template></mat-tab>
+      <mat-tab *ngFor="let group of dataService.qpfddSites">
+        <ng-template mat-tab-label>{{group}}</ng-template>
+      </mat-tab>
+    </mat-tab-group>
+    <div id="processWrapper">
+      <h2>Total Patient Count</h2>
+      <app-line-chart  [chartData$]="totalPatientCountData$"></app-line-chart>
+      <h2>Distinct Facts</h2>
+      <app-line-chart  [chartData$]="distinctFactsCountData$"></app-line-chart>
+      <h2>Total Facts</h2>
+      <app-line-chart  [chartData$]="totalFactsCountData$"></app-line-chart>
+    </div>
+  </mat-tab>
+  <mat-tab label="Current Breakdowns">
+    <div>
+      <h2>Phenotype Breakdown</h2>
+      <app-breakdown-pie [chartData]="phenotypeBreakdownData" [sites]="dataService.qpfddSites"></app-breakdown-pie>
+      <h2>Specimen Breakdown</h2>
+      <app-breakdown-pie [chartData]="specimenBreakdownData" [sites]="dataService.qpfddSites"></app-breakdown-pie>
+      <!--<h2>Patients With Multiple Phenotypes</h2>
+      <app-bubble-chart [chartData]="multiPhenotypeData" [phenotypes]="dataService.phenotypes"></app-bubble-chart>-->
+    </div>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>I2b2 Usage</ng-template>
+    <h2>I2b2 Usage</h2>
+    <app-line-chart [chartData]="i2b2usageData" [XaxeDateFormat]="'DD.MM.YYYY'" [legend]="true"></app-line-chart>
+  </mat-tab>
+</mat-tab-group>

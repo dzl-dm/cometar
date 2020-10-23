@@ -1,0 +1,157 @@
+/* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
+body, html {
+    height:100%;
+    width:100%;
+}
+body {
+    padding:0px;
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    font-family: Roboto,"Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
+}
+div {
+    box-sizing: border-box;
+    scrollbar-color: var(--first-color) white;
+}slider {
+    min-width: 30px;
+    } 
+
+::-webkit-scrollbar {
+    width: 15px;
+    background-color: white;
+    border-radius: 3px;
+} 
+::-webkit-scrollbar-thumb {
+    background-color: var(--first-color);
+    border-radius: 3px;
+    padding:3px;
+    border:2px solid white;
+    cursor:pointer;
+}
+:root {
+    --first-color: #0492D0;
+    --second-color: #BFE3F2;
+    --second-color-transparent: rgba(103, 174, 204, 0.5);
+}
+input, textarea, select {
+    border:1px solid var(--first-color);
+    flex-shrink:1;
+    border-radius: 3px;
+}
+input[type='submit'], input[type='button'], input[type='file'] {
+    background-color:var(--first-color);
+    color:white;
+    cursor:pointer;
+}
+input[type='submit']:hover, input[type='button']:hover {
+    background-color:var(--second-color);
+    color:var(--first-color);
+}
+
+th.mat-header-cell {
+    font-weight:bold;
+    font-size:14px;
+}
+th.mat-header-cell, td.mat-cell {
+    background-color:white;
+    color:#333;
+}
+.mat-tab-label .mat-tab-label-content {
+    color:#333;
+}
+.mat-tab-label.mat-ripple {    
+    min-width:50px;
+}
+.mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+    background-color: var(--first-color);
+    height:3px;
+}
+.mat-tab-header-pagination-chevron {
+    border-color: #999
+}
+.mat-tab-header {
+    border-bottom: 1px solid #999;
+}
+.mat-tab-group,.mat-tab-group .mat-tab-body-wrapper {
+    flex-grow: 1;
+}
+.mat-slider-wrapper {
+    background-color: #999;
+}
+.mat-slider-wrapper .mat-slider-track-wrapper .mat-slider-track-fill, .mat-accent .mat-slider-thumb {
+    background-color: var(--first-color);
+    color: var(--first-color);
+}
+mat-slider.mat-slider-horizontal .mat-slider-wrapper {
+    top: 40px;
+}
+.mat-accent .mat-slider-thumb-label {
+    background-color:inherit;
+}
+.mat-slider-min-value .mat-slider-thumb {
+    background-color: var(--first-color) !important;
+}
+.mat-slider-vertical .mat-slider-thumb-label {
+    left:5px !important;
+}
+.mat-slider-thumb-label span.mat-slider-thumb-label-text {
+    background-color:var(--first-color);
+    color: white;
+    font-size:16px;
+    padding:10px;
+    border-radius: 10px;
+}
+.mat-slider-horizontal .mat-slider-ticks-container {
+    height:6px !important;
+    margin-top:-2px;
+}
+.mat-slider-vertical .mat-slider-ticks-container {
+    width:6px !important;
+    margin-left:-2px;  
+}
+.mat-slider-horizontal .mat-slider-ticks {
+    height:6px !important;
+    background-image: repeating-linear-gradient(to right,var(--first-color),var(--first-color) 4px,transparent 0,transparent)
+}
+.mat-slider-vertical .mat-slider-ticks {
+    width:6px !important;
+    background-image: repeating-linear-gradient(to bottom,var(--first-color),var(--first-color) 4px,transparent 0,transparent)
+}
+.mat-progress-bar-fill::after {
+    background-color:var(--first-color);
+}
+.mat-progress-bar-buffer {
+    background-color:#fff;
+}
+.mat-icon svg {
+    fill:var(--first-color);
+}
+.mat-icon.mat-accent svg {
+    fill:white
+}
+.mat-tooltip.ng-trigger.ng-trigger-state {
+    background-color: white;
+    border:1px solid var(--first-color);
+    color: var(--first-color);
+    font-size:14px;
+    white-space: pre-wrap;
+}
+.mat-autocomplete-panel {
+    background:white;
+}
+.mat-option {
+    color:var(--first-color)
+}
+.mat-option.mat-active {
+    background:var(--second-color);
+    color:var(--first-color)
+}
+.mat-option:hover:not(.mat-option-disabled) {
+    background: #DDD;
+}
+/*.cdk-overlay-pane.mat-tooltip-panel{
+    word-break: break-all !important;
+    white-space: normal !important;
+}*/

@@ -1,0 +1,146 @@
+:host{
+    display:flex;
+    flex-grow:1;
+    margin:10px;
+    flex-direction: column;
+    width:calc(100% - 20px);
+    position: relative;
+}
+div.heading{
+    padding:5px;
+    display: block;
+    font-size:20px;
+    width:100%;
+    background-color:#EEE;
+    padding-top:10px;
+    padding-left:10px;
+}
+app-section.diagram {
+    flex-grow: 1;
+}
+div.diagram {
+    display:flex;
+    height:100%;
+    flex-direction: row;
+    align-items: stretch;
+    width:100%;
+    background-color:#EEE;
+    min-height: 150px; 
+}
+.diagramDescription {
+    display:flex;
+    flex-shrink: 0;
+    flex-direction: row;
+    width:100%;
+    background-color:#EEE;
+}
+.container {
+    flex-direction: column;
+    overflow:auto;
+    width: calc(100% - 50px);
+    padding:5px;
+    height:100%;
+    margin-left:10px;
+}
+.rangeselect {
+    display: flex;
+    width:50px;
+    position: relative;
+    flex-direction: column;
+    text-align: center;
+    background-color:#DDD;
+    border-radius: 5px;
+    padding:5px;
+}
+.rangeselect mat-slider { 
+    height:100%;
+    margin-left:-5px;
+}
+.day{
+    display: flex;
+    align-items: flex-start;
+    flex-direction: row;
+    flex-shrink:0;
+    height:5px;
+}
+.day:first-child {
+    margin-top:5px;
+}
+.day.filled {
+    min-height:35px;
+}
+.day.selected .selectButton {
+    border:3px solid rgb(3, 102, 145);
+    margin: -3px -3px -3px 0px;
+    width: 96px;
+}
+.selectButton.selected {
+    border:3px solid rgb(3, 102, 145);
+    margin: 0px 0px 0px 3px;
+    padding-top:2px;
+}
+.selectButton {
+    background-color: #DDD;
+    width:90px;
+    padding:5px;
+    border-radius: 3px;
+    cursor:pointer;
+    margin-left:3px;
+    box-shadow: 4px 4px 2px -2px #777;
+    flex-shrink:0;
+}
+.day .selectButton {
+    display:none;
+}
+.day.filled .selectButton {
+    display: inline-block;
+}
+.actions {
+    background-color:#EEE;
+    margin-bottom:10px;
+}
+.actions .selectButton {
+    height:30px;
+    width:270px;
+    position: relative;
+    text-align: center;
+    background-color:var(--first-color);
+    color:white;
+}
+app-commit {
+    flex-shrink: 0;
+    margin-top:5px;
+}
+.options {
+    display:flex;
+    flex-direction: row;
+    flex-shrink: 0;
+    align-items: stretch;
+    overflow-x:auto;
+    background-color:#EEE;
+}
+.category {
+    display:flex;
+    flex-direction: column;
+    flex-grow:1;
+    padding:10px;
+    border-radius: 3px;
+    margin:10px;
+    min-width:150px;
+}
+.category_heading{
+    border-bottom:1px solid var(--first-color);
+    margin-bottom:10px;
+}
+.category.structure{
+    background-color:rgb(49, 165, 214);
+}
+.category.progress{
+    background-color:rgb(77, 173, 214);;
+}
+.category.literal{
+    background-color:rgb(115, 182, 211);
+}
+.category.semantic{
+    background-color:rgb(154, 197, 216);
+}

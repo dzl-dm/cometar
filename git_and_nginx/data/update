@@ -2,7 +2,7 @@
 
 echo "UPDATE HOOK called for ref $3"
 
-upload_verification=$(curl -s -w "%{http_code}" -H "Accept: application/json" "$REST_SERVER/rdf_verification/$3" 2>/dev/stderr)
+upload_verification=$(curl -s -H "Accept: application/json" "$REST_SERVER/rdf_verification/$3")
 
 if [[ "$upload_verification" == *"403 Forbidden"* ]]; then
   echo "Access to REST Server forbidden!"
@@ -14,7 +14,9 @@ echo "$upload_verification" | jq -r '.response'
 exitcode=$(echo "$upload_verification" | jq -r '.exitcode')
 if [ "$exitcode" == "0" ]; then
     echo "VERIFICATION SUCCESS"
-    #echo "$3" > "$COMETAR_PIPES_DIR/git_update_hook"
+    screen -S postpush -d -m bash -c 'sleep 5; && \
+      curl -s -H "Accept: application/json" -o /dev/null "$REST_SERVER/fuseki_load_live"
+    '
     exit 1
 else
     echo "VERIFICATION FAILED"

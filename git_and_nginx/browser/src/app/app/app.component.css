@@ -1,0 +1,19 @@
+#browserCheck {
+    width:250px;
+    height:100%;
+    background-color:red;
+    color:white;
+    font-size:20px;
+    padding:20px;
+}
+
+
+:host{
+    flex-grow:1;
+    padding:0px;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    color: #0A3769;
+    height:100%;
+}

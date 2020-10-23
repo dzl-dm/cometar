@@ -1,0 +1,14 @@
+@startuml
+participant gc as "Git Client"
+participant gs as "Git Server"
+participant rs as "REST Server"
+participant fs as "Fuseki Server"
+
+gc -> gs: Push
+gs -> rs: rdf_verification/<commit_id>
+rs -> rs: git checkout
+rs -> fs: put data into cometar_test
+rs -> fs: test queries
+rs --> gs: test result
+gs --> gc: success/no success
+@enduml

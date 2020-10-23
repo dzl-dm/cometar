@@ -22,3 +22,4 @@ if [ "$NGINX_LOCATION_REST_ALLOW_HOSTNAMES" != "" ]; then
     done
 fi
 /bin/bash -c "envsubst '\$NGINX_REST_SERVER \$NGINX_FUSEKI_SERVER \$NGINX_LOCATION_FUSEKI_ADMIN_ALLOW \$NGINX_LOCATION_REST_ALLOW' < '/cometar/nginx.conf' > /etc/nginx/nginx.conf"
+/bin/bash -c "envsubst '\$BROWSER_FUSEKI_SERVER' < '/cometar/browser_conf.json' > /usr/share/nginx/html/cometar_browser/assets/config.json"

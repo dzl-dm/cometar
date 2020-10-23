@@ -1,0 +1,27 @@
+<div class="container" [style.margin.px]="margin">
+<div class="modal-category" *ngIf="category == 'bulb'" #category>
+  <mat-icon aria-hidden="false" aria-label="Bulb" svgIcon="lightbulb" color="accent"></mat-icon>
+</div>
+<div
+  [ngClass]="{
+    'modal-content':true,
+    'solid':backgroundstyle=='solid', 
+    'shadow':backgroundstyle=='shadow'
+  }"
+  [style.width]="category?'calc(100% - 50px - '+(margin*2)+'px)':'100%'" 
+  [style.flexShrink]="shrinking?1:0"
+  [style.padding.px]="padding"
+  [style.height]="shrinking?'100%':'fit-content'"
+  [style.minHeight.px]="min_height?min_height:0">
+  <div class="modal-header" (click)="expandOrCollapse($event)" [ngClass]="{'foldable':foldable}">
+    {{title}}
+    <ng-container *ngIf="foldable">
+      <ng-container *ngIf="expanded"><mat-icon aria-hidden="false" aria-label="Collapse" svgIcon="expand_less"></mat-icon></ng-container>
+      <ng-container *ngIf="!expanded"><mat-icon aria-hidden="false" aria-label="Expand" svgIcon="expand_more"></mat-icon></ng-container>
+    </ng-container>
+  </div>
+  <div class="modal-body" [ngClass]="{'expanded':expanded}" [@openClose]="expanded ? 'open' : 'closed'" [style.flexShrink]="shrinking?1:0">
+     <ng-content></ng-content>
+  </div>
+</div>
+</div>

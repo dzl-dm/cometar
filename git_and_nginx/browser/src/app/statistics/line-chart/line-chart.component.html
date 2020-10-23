@@ -1,0 +1,20 @@
+
+<div class="row">
+  <div class="col lineChart">
+  </div>
+  <div class="col">
+    <table mat-table [dataSource]="chartData.datasets">
+        <ng-container matColumnDef="rowname" sticky>
+          <th mat-header-cell *matHeaderCellDef>  </th>
+          <td mat-cell *matCellDef="let rowindex = index" [ngStyle]="{color:chartData.datasets[rowindex].borderColor || '#333'}"> {{chartData.datasets[rowindex].label}} </td>
+        </ng-container>
+        <ng-container *ngFor="let column of chartData.labels; let columnindex = index" [matColumnDef]="column">
+          <th mat-header-cell *matHeaderCellDef> {{ XaxeDateFormat=="YYYY-M-D HH:mm:ss"?(column | date:'dd.MM.yyyy'):column }} </th>
+          <td mat-cell *matCellDef="let rowindex = index" [ngStyle]="{color:chartData.datasets[rowindex].borderColor || '#333'}"> {{chartData.datasets[rowindex].data[columnindex]}} </td>
+        </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['rowname'].concat(chartData.labels); sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['rowname'].concat(chartData.labels)"></tr>
+    </table>
+  </div>
+</div>

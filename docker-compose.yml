@@ -15,6 +15,7 @@ services:
       git_and_nginx   
     environment:
       - REST_SERVER=http://git_and_nginx/rest
+      - BROWSER_FUSEKI_SERVER=http://localhost:8080/fuseki
       - NGINX_REST_SERVER=http://rest:5000
       - NGINX_FUSEKI_SERVER=http://fuseki:3030
       # will be resolved only once at startup and written into nginx.conf

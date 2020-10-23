@@ -54,8 +54,7 @@ RUN mkdir -p $COMETAR_PROD_DIR && \
     cp -R "$COMETAR_BASE_DIR/flask" "$COMETAR_PROD_DIR" && \
     cp -R "$COMETAR_BASE_DIR/rdf_verification" "$COMETAR_PROD_DIR" && \
     cp -R "$COMETAR_BASE_DIR/git_scripts" "$COMETAR_PROD_DIR" && \
-    cp -R "$COMETAR_BASE_DIR/information_retrieval" "$COMETAR_PROD_DIR" && \
-    cp -R "$COMETAR_BASE_DIR/hooks" "$COMETAR_PROD_DIR"
+    cp -R "$COMETAR_BASE_DIR/information_retrieval" "$COMETAR_PROD_DIR"
 
 CMD export FLASK_APP="$COMETAR_PROD_DIR/flask/cometar.py" && \
     flask run -h 0.0.0.0 --reload

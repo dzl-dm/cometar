@@ -1,0 +1,60 @@
+<div id="browser" (mouseup)='onTreeResizeEnd($event)'>
+    <div id="treeResizeContainer" 
+        [style.width.px]="width" 
+        [style.left.px]="left"
+        [@changeWidth]="{ value:resizeToogle?'random1':'random2', params: { startWidth: this.width, newWidth: this.newWidth }}"
+        [ngClass]="{overlayed:treeAsOverlay}">
+        <div id="treeContainer">
+            <app-menu></app-menu>
+            <app-tree [width]="width" (claimWidth)="onClaimWidth($event)"></app-tree>
+            <app-logos></app-logos>
+        </div>
+        <div id="treeResizeComponent"  
+            (mousedown)='onTreeResizeStart($event)'>
+            <div class="treeResizeExpandCollapseDiv" (mousedown)="expandOrCollapseTreeContainer($event)">
+                <div id="treeExpandCollapseButton">
+                    <mat-icon aria-hidden="false" aria-label="Help" 
+                        [svgIcon]="!treeExpanded || treeAsOverlay && !treeScrolledIn?'expandTree':'collapseTree'"
+                        [style.marginLeft.px]="!treeExpanded || treeAsOverlay && !treeScrolledIn?'0':'5'"></mat-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modules" [style.marginLeft.px]="treeAsOverlay?20:0" (click)="treeAsOverlay && treeScrolledIn?expandOrCollapseTreeContainer($event):null">
+        <div id="moduleMenu">
+            <div *ngIf="!devServer()" [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'provenance'}" (click)="navigateModule('provenance')">
+                <mat-icon aria-hidden="false" aria-label="Provenance" svgIcon="history" color="accent"></mat-icon><div class="moduleMenuItemLabel">Provenance</div>
+            </div>
+            <div *ngIf="!devServer()" [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'client-configuration'}" (click)="navigateModule('client-configuration')">
+                <mat-icon aria-hidden="false" aria-label="Provenance" svgIcon="client-configuration" color="accent"></mat-icon><div class="moduleMenuItemLabel">Client Configuration</div>
+            </div>
+            <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'sparql'}" (click)="navigateModule('sparql')">
+                <mat-icon aria-hidden="false" aria-label="Provenance" svgIcon="sparql" color="accent"></mat-icon><div class="moduleMenuItemLabel">SPARQL</div>
+            </div>
+            <!-- <div [ngClass]="{moduleMenuItem: true, active: activatedRoute == 'statistics'}" (click)="navigateModule('statistics')">
+                <mat-icon aria-hidden="false" aria-label="Provenance" svgIcon="statistics" color="accent"></mat-icon><div class="moduleMenuItemLabel">Statistics</div>
+            </div> -->
+        </div>
+        <div id="moduleContent" [@routeAnimations]="prepareRoute(outlet)" #moduleContent>
+            <router-outlet #outlet="outlet" (activate)="onRouterOutletActivate(outlet)"></router-outlet>
+        </div>
+        <div id="runningTaskOverlay" 
+            [ngClass]="{'visible':runningTask}"
+            [style.width]="'100%'" 
+            [style.top.px]="moduleContent.offsetTop" 
+            [style.height.px]="moduleContent.offsetHeight">
+        </div>
+        <div id="runningTaskContent" 
+            [ngClass]="{'visible':runningTask}"
+            [style.width]="'100%'" 
+            [style.top.px]="moduleContent.offsetTop" 
+            [style.height.px]="moduleContent.offsetHeight">
+            <div id="runningTaskContentCenter">
+                <img 
+                    class="runningTaskLogo" 
+                    src="assets/img/cometar_c_small_transparent.png"/>
+                    {{taskProgress+'%'}}
+            </div>
+        </div>
+    </div>
+</div>

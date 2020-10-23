@@ -1,0 +1,12 @@
+<div id="logos">
+    <div class='logo' (click)="navigateModule()">
+        <img 
+            id="loading" 
+            src="assets/img/cometar_c_small.png"
+            [matTooltip]="(loadingStatus$ | async)?tooltip:'CoMetaR - a Collaborative Metadata Repository'"
+            [ngClass]="{'active':(loadingStatus$ | async)}" 
+            (click)="navigateModule()"/>
+        <img src="assets/img/CoMetaR_Logo_small.png"/>
+    </div>
+    <div class='logo' (click)="navigateModule('https://www.dzl.de/forschung/plattformen/plattform-biobanking-datenmanagement')"><img src="assets/img/DZL_Logo_small.png"/></div>
+</div>

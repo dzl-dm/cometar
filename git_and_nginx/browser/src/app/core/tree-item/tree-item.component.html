@@ -1,0 +1,89 @@
+<div class="treeItemHeading"
+    [@highlight]="highlightValue"
+    (click)="expandOrCollapse()"
+    [ngClass]="{
+      'hidden':!(displayItem()|async),
+      'highlighted':(onlyHighlightTerms()|async)
+    }">
+  <div 
+    [ngClass]="{
+      'treeItemExpand':true,
+      'expanded':treeitem.hasChildren() && (expanded$ | async),
+      'collapsed':treeitem.hasChildren() && !(expanded$ | async)
+    }" >
+  </div>
+  <div 
+      [ngClass]="{
+        'treeItemTitle':true,
+        'isModifier':treeitem.isModifier.value
+      }" 
+      (click)="onSelect();$event.stopPropagation();">
+    <div 
+        class="treeItemTitleLabel"
+        [ngStyle]="{
+          'text-decoration':style['text-decoration'] || 'none'
+        }">{{treeitem.displayLabel.value}}</div>
+    <ng-container *ngFor="let icon of getIcons()">
+      <div 
+        [ngClass]="{
+          'icon': true,
+          'iconDot': icon.type == 'dot',
+          'imgIcon': icon.type == 'imgIcon',
+          'smallImgIcon': icon.type == 'smallImgIcon',
+          'chip': icon.type == 'chip'
+        }"
+        [matTooltip]="icon.description?icon.description.replace('COUNTER',getBubbleIconCounter(icon)?getBubbleIconCounter(icon):''):undefined"
+        [ngStyle]="{ 
+          'background-color': icon['background-color'],
+          'border-color': icon['border-color'], 
+          'color': icon['color'], 
+          'cursor': getBubbleIconCounter(icon)?'zoom-in':'pointer' }"
+        (click)="onIconClick($event,icon)">
+          <div class="counter">{{getBubbleIconCounter(icon)?getBubbleIconCounter(icon):""}}</div>
+          <div class="text">{{icon.text}}</div>
+          <mat-icon *ngIf="icon.type == 'imgIcon' || icon.type =='smallImgIcon'" 
+            aria-hidden="false" 
+            aria-label="Help" 
+            [svgIcon]="icon.iconName"></mat-icon>
+      </div>
+    </ng-container>
+  </div>
+</div>
+<div 
+  class="treeItemInformation" 
+  [ngStyle]="{
+    'opacity':isGhostItem()?0.5:1.0
+  }"
+  *ngIf="showInformationDiv$ | async"
+  #treeItemInformation> 
+  <app-concept-information 
+    [stayTruncated]="true"
+    *ngIf="showSearchResult$ | async"
+    [data]="searchResults$ | async" 
+    [headingDirection]="'column'"
+    [truncateText]="true"
+    [maxWidth]="treeItemInformation.offsetWidth"
+    [highlightTerm]="treeDataService.getSearchPattern()"
+    [collapsed]="isGhostItem()"
+    [columnDisplayOptions]="['show','hideOrGrow']"
+    [columnMinWidth]="[150,250]"
+    [columnWidthPercentages]="[35,65]"></app-concept-information>
+  <ng-container *ngFor="let conceptInformation of conceptInformation$ | async">
+      <app-concept-information 
+        [stayTruncated]="true"
+        [conceptInformation]="conceptInformation" 
+        [hiddenHeading]="false"
+        [maxWidth]="treeItemInformation.clientWidth"
+        [truncateText]="true"
+        [collapsed]="isGhostItem()"></app-concept-information>
+  </ng-container>
+</div>
+<app-tree-item-list
+  @openClose
+  (@openClose.start)="openCloseStart($event)"
+  (@openClose.done)="openCloseDone($event)"
+  *ngIf="(expanded$ | async) && (parentAnimation$ | async)" 
+  [expanded]="(expanded$ | async) && cascade_expand" 
+  [animation]="animation"
+  [cascade_expand]="cascade_expand" 
+  [conceptIri]="treeitem.element.value"></app-tree-item-list>

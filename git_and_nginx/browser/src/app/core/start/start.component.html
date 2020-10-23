@@ -1,0 +1,48 @@
+<div class="header">
+  <div class="logo"><img src="assets/img/CoMetaR_Logo.png"/></div>
+  <div class="heading">CoMetaR - a Collaborative Metadata Repository</div>
+</div>
+<app-section [style.visibility]="devServer()?'hidden':'visible'" [style.height]="devServer()?'0px':'auto'" backgroundstyle="solid" [margin]="20" title="Latest Activities">
+<!--<app-section [style.visibility]="devServer()?'hidden':'visible'" [style.display]="'none'" [style.height]="devServer()?'0px':'auto'" backgroundstyle="solid" [margin]="20" title="Latest Activities">-->
+  <br>
+  <div class="statistics">
+    <div class="statistic">
+    </div>
+    <div class="statistic">
+    </div> 
+  </div>
+  <br>
+</app-section>
+<!--<div class="functions">
+  <p>This platform provides:</p>
+  <ul>
+    <li>DZL Metadata Tree Visualization</li>
+    <li>DZL Metadata Search Function</li>
+    <li>Provenance Data Visualization</li>
+    <li>Upload Client Configuration User Feedback</li>
+  </ul>
+  <p>For first steps:</p>
+  <ul>
+    <li>Explore items in the concept tree to the left.</li>
+    <li>Click items to see more details about them.</li>
+    <li>Click provenance menu tab to see more about latest changes to the DZL ontology.</li>
+    <li>Click help button in the upper left corner to learn more about the CoMetaR Browser.</li>
+  </ul>
+</div>-->
+<app-section backgroundstyle="solid" margin="20" padding="20" title="Did you know?">
+    <br>
+  <div id="startVideo">
+      <div class="text">
+          <h2>{{randomSection.heading}}</h2>
+          <h5>{{randomVideo.heading}}</h5>
+          <p>{{randomVideo.description}}</p>
+          <a (click)="toggleHelp()">show me more</a>
+      </div>
+      <div class="videoContainer" style="height:294px">
+          <video width="480" height="320" autoplay loop style="margin-top:-12px">
+              <source src="{{randomVideo.url}}" type="video/mp4">
+              Your browser does not support the video tag.
+          </video>
+      </div>
+  </div>
+</app-section>

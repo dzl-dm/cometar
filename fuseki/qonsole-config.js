@@ -26,6 +26,7 @@ define( [], function() {
       { "name": "All Concepts",
         "query": "SELECT DISTINCT ?concept\nWHERE {\n" +
                  "  ?concept a skos:Concept.\n" +
+                 "}" +
                  "LIMIT 25",
         "prefixes": ["skos", "rdfs"]
       }

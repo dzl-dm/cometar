@@ -1,0 +1,121 @@
+:host{
+    border-radius:5px;
+    margin-left:10px;
+    min-width:10px;
+    min-height:20px;
+    position: relative;
+}
+:host.selected .categorycontainer{
+    border:3px solid rgb(3, 102, 145);
+    background-color:rgb(3, 102, 145);
+    box-sizing: content-box;
+    border-radius: 3px;
+    margin-left:-3px;
+    margin-top:-3px;
+    margin-right:-3px;
+}
+p {    
+    /*overflow: hidden;
+    white-space: nowrap; 
+    text-overflow: ellipsis;*/
+    margin:15px;
+    display:none;
+}
+:host:hover .commitDetails:not(.demo) p{
+    display: block;
+}
+:host:hover{    
+    z-index:10;
+}
+
+.commitDetails{
+    position: absolute;
+}
+.commitDetails:not(.demo){
+    background-color:#DDD;
+    /*display:none;*/
+    box-shadow: 10px 10px 6px -6px #777;
+    transition: min-width 0.2s, height 0.2s, top 0.2s, left 0.2s;
+    width:10px;
+    min-width:10px;
+    height:0px;
+    padding-top:20px;
+    border-radius: 3px;
+    top:0px;
+    left:0px;
+}
+.commitDetails div {
+    width:calc(100% - 10px);
+    height:calc(100% - 10px);
+    overflow:hidden;
+    margin:5px;
+}
+:host:hover .commitDetails:not(.demo){
+    display: block;
+    overflow:auto;
+    min-width: 400px;
+    height:200px;
+}
+:host:hover .commitDetails.openLeft{
+    left:-380px;
+}
+:host:hover .commitDetails.openUp{
+    top:-180px;
+    padding-top:10px;
+    padding-bottom:30px;
+}
+:host:hover .commitDetails div{
+    overflow:auto;
+}
+
+.categorycontainer{
+    cursor:pointer;
+    display:flex;
+    flex-direction: row;
+    border-radius: 3px;
+    box-shadow: 4px 4px 2px -2px #777;
+    height:20px;
+    min-width:10px;
+}
+.category{
+    position: relative;
+    height:20px;
+}
+.category:first-child{
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+.category:last-child{
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+.category.structure{
+    background-color:rgb(49, 165, 214);
+}
+.category.progress{
+    background-color:rgb(77, 173, 214);;
+}
+.category.literal{
+    background-color:rgb(115, 182, 211);
+}
+.category.semantic{
+    background-color:rgb(154, 197, 216);
+}
+
+.deprecatedElements {
+    margin-top:3px;
+    position:absolute;
+    height:2px;
+    background-color: black;
+    opacity: 0.3;
+}
+
+.label {
+    position: absolute;
+    width:100%;
+    text-align: center;
+    padding:2px;
+    top:0px;
+    white-space: nowrap;
+    overflow:hidden;
+}
