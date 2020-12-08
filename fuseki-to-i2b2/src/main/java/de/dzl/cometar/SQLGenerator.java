@@ -43,6 +43,7 @@ public abstract class SQLGenerator {
 	String query_display_label = "";
 	String query_description = "";	
 	String query_display = "";
+	String query_unit = "";
 	
 	protected void initializeQueries()
 	{
@@ -52,6 +53,7 @@ public abstract class SQLGenerator {
     	InputStream query_label_input = getClass().getResourceAsStream("/query_label.txt");
     	InputStream query_display_label_input = getClass().getResourceAsStream("/query_display_label.txt");
     	InputStream query_datatype_input = getClass().getResourceAsStream("/query_datatype.txt");
+    	InputStream query_unit_input = getClass().getResourceAsStream("/query_unit.txt");
     	InputStream query_description_input = getClass().getResourceAsStream("/query_description.txt");
     	InputStream query_display_input = getClass().getResourceAsStream("/query_display.txt");
     	
@@ -62,6 +64,7 @@ public abstract class SQLGenerator {
 			query_label = readFile(query_label_input);
 			query_display_label = readFile(query_display_label_input);
 			query_datatype = readFile(query_datatype_input);
+			query_unit = readFile(query_unit_input);
 			query_description = readFile(query_description_input);
 			query_display = readFile(query_display_input);
 		} catch (IOException e) {
@@ -438,7 +441,41 @@ public abstract class SQLGenerator {
 				default:
 					datatypexml += "String";
 			}
-			datatypexml += "</DataType><Oktousevalues>Y</Oktousevalues></ValueMetadata>'";
+			if (datatype.equals("integer") || datatype.equals("float")) {
+			datatypexml += "</DataType><Oktousevalues>Y</Oktousevalues>";
+				datatypexml += "<UnitValues>";
+				
+				String unitQueryString = query_unit.replace("<CONCEPT>", "<"+concept+">");
+				Query unitQuery = QueryFactory.create(unitQueryString);
+				QueryEngineHTTP unitHttpQuery = new QueryEngineHTTP(sparqlEndpoint, unitQuery);
+				ResultSet unitResults = unitHttpQuery.execSelect();
+				String normalunit = "";
+				if( unitResults.hasNext() ){
+					QuerySolution unitSolution = unitResults.next();			
+					normalunit = unitSolution.getLiteral("unit").getString();
+					datatypexml += "<NormalUnits>"+normalunit+"</NormalUnits>";			
+					
+					String equalunit = "";
+					while (unitResults.hasNext()) {
+						unitSolution = unitResults.next();		
+						equalunit = unitSolution.getLiteral("unit").getString();
+						datatypexml += "<EqualUnits>"+equalunit+"</EqualUnits>";
+						datatypexml += "<ConvertingUnits><Units>"+equalunit+"</Units><MultiplyingFactor>";
+						double factor = 1.0;
+						if (normalunit.toLowerCase().equals("cm") && equalunit.toLowerCase().equals("m")) {
+							factor = 100.0;
+						}
+						else if (normalunit.toLowerCase().equals("mg/dl") && equalunit.toLowerCase().equals("mmol/l")) {
+							factor = 18.02;
+						}
+						datatypexml += factor + "</MultiplyingFactor></ConvertingUnits>";
+					}
+				}
+				unitHttpQuery.close();
+							
+				datatypexml += "</UnitValues>";
+			}
+			datatypexml += "</ValueMetadata>'";
 		}
 		return datatypexml;
 	}
