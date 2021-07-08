@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ProgressbarComponent } from './progressbar.component';
 import { CoreModule } from '../core.module';
@@ -9,7 +9,7 @@ describe('ProgressbarComponent', () => {
   let component: ProgressbarComponent;
   let fixture: ComponentFixture<ProgressbarComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [  ],
       imports: [ CoreModule, RouterTestingModule, HttpClientTestingModule ]

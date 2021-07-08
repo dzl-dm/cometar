@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SparqlComponent } from './sparql.component';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +9,7 @@ describe('SparqlComponent', () => {
   let component: SparqlComponent;
   let fixture: ComponentFixture<SparqlComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SparqlComponent ],
       imports: [ FormsModule, HttpClientTestingModule, RouterTestingModule ]

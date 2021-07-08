@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { TextWithNavigationComponent } from './text-with-navigation.component';
 import { CoreModule } from '../core.module';
@@ -9,7 +9,7 @@ describe('TextWithNavigationComponent', () => {
   let component: TextWithNavigationComponent;
   let fixture: ComponentFixture<TextWithNavigationComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [  ],
       imports: [ CoreModule, RouterTestingModule, HttpClientTestingModule ]
