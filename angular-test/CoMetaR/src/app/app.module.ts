@@ -12,6 +12,7 @@ import { DetailedInformationComponent } from './detailed-information/detailed-in
 import { ProvenanceComponent } from './provenance/provenance/provenance.component';
 import { AppComponent } from './app/app.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSliderModule } from '@angular/material/slider';
 import { CoreModule } from "./core/core.module";
 import { UploadClientConfigurationModule } from './upload-client-configuration/upload-client-configuration.module';
 import { UploadClientConfigurationComponent } from './upload-client-configuration/upload-client-configuration/upload-client-configuration.component';
@@ -19,8 +20,6 @@ import { BrowserComponent } from './core/browser/browser.component';
 import { StartComponent } from './core/start/start.component';
 import { SparqlModule } from './sparql/sparql.module';
 import { SparqlComponent } from './sparql/sparql/sparql.component';
-import { StatisticsComponent } from './statistics/statistics/statistics.component';
-import { StatisticsModule } from './statistics/statistics.module';
 
 @NgModule({
   declarations: [
@@ -36,8 +35,8 @@ import { StatisticsModule } from './statistics/statistics.module';
     ProvenanceModule,
     UploadClientConfigurationModule,
     MatSnackBarModule,
+    MatSliderModule,
     SparqlModule,
-    StatisticsModule,
     RouterModule.forRoot(
       [
         /*{ path: ':prefix/:concept', redirectTo: '/details?concept=:prefix:concept', pathMatch: 'full' },*/
@@ -48,7 +47,6 @@ import { StatisticsModule } from './statistics/statistics.module';
             { path: 'provenance', component: ProvenanceComponent, data: {animation: 'Provenance'} },    
             { path: 'client-configuration', component: UploadClientConfigurationComponent, data: {animation: 'UploadClientConfiguration'} },    
             { path: 'sparql', component: SparqlComponent, data: {animation: 'SPARQL'} },   
-            { path: 'statistics', component: StatisticsComponent, data: {animation: 'Statistics'} },   
             { path: '**', component: StartComponent },
           ]      
         }

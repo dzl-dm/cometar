@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { isObject } from 'util';
 import { CommitMetaData } from '../provenance/services/queries/commit-meta-data.service';
 import { CommitDetails } from '../provenance/services/queries/commit-details.service';
 import { OntologyElementDetails } from '../detailed-information/services/queries/information-query.service';
@@ -199,9 +198,9 @@ export class ConfigurationService {
 
   private mergeDeep(target, source) {
     let output = Object.assign({}, target);
-    if (isObject(target) && isObject(source)) {
+    if (target!== null && typeof target === 'object' && source!== null && typeof source === 'object') {
       Object.keys(source).forEach(key => {
-        if (isObject(source[key])) {
+        if (source[key] !== null && typeof source[key] === 'object') {
           if (!(key in target))
             Object.assign(output, { [key]: source[key] });
           else
