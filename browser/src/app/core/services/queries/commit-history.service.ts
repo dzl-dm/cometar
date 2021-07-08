@@ -14,7 +14,8 @@ export class CommitHistoryService {
   public get(from?:Date, until:Date=new Date(Date.now())):Observable<CommitHistoryData[]> {
     if (!from) {
       from = new Date(until);
-      from.setFullYear(from.getFullYear()-1);
+      //from.setFullYear(from.getFullYear()-1);
+      from.setMonth(from.getMonth()-3);
     }
     const queryString = this.getQueryString(from, until);
     return this.dataService.getData(queryString, "ontology changes from "+from.toISOString()+" until "+until.toISOString()).pipe(map(data=> { return <CommitHistoryData[]> data }))
