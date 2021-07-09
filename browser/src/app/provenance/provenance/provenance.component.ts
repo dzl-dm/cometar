@@ -72,10 +72,10 @@ export class ProvenanceComponent implements OnInit {
 			democommitdata.push({predicate: { value: "http://www.w3.org/2004/02/skos/core#prefLabel"},deprecatedsubject: { value: false }});
 		}
 		for (let i = 0; i < n3; i++){
-			democommitdata.push({predicate: { value: "http://data.dzl.de/ont/dwh#unit"},deprecatedsubject: { value: false }});
+			democommitdata.push({predicate: { value: this.configuration.settings.rdf.base_prefix+"unit"},deprecatedsubject: { value: false }});
 		}
 		for (let i = 0; i < n2; i++){
-			democommitdata.push({predicate: { value: "http://data.dzl.de/ont/dwh#status"},deprecatedsubject: { value: false }});
+			democommitdata.push({predicate: { value: this.configuration.settings.rdf.base_prefix+"status"},deprecatedsubject: { value: false }});
 		}
 		return democommitdata;
 	}

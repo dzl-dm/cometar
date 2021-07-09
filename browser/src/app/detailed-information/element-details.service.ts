@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import { DataService, JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartString, prefixes, JSONResponsePartNumber, JSONResponsePartDate } from '../services/data.service';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TreeIconsQueryService } from './services/queries/tree-icons-query.service';
 import { TreeStyleService, TreeItemStyle } from '../core/services/tree-style.service';

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { OntologyDataService } from './ontology-data.service';
 import { TreeItem } from '../classes/tree-item';
-import { Observable, of } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { JSONResponsePartUriString, JSONResponsePartString } from 'src/app/services/data.service';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'

@@ -1,6 +1,6 @@
-import { Injectable, ChangeDetectorRef } from '@angular/core';
-import { Subject, Observable, BehaviorSubject, combineLatest, of, ReplaySubject, Subscription } from 'rxjs';
-import { map, filter, flatMap, first, startWith } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { Subject, Observable, BehaviorSubject, combineLatest,Subscription } from 'rxjs';
+import { map, flatMap, startWith } from 'rxjs/operators';
 //import html2canvas from 'html2canvas';
 //import { WebWorkerService } from 'ngx-web-worker';
 import { BrowserService } from './browser.service';

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { prefixes, DataService, JSONResponsePartUriString, JSONResponsePartDate, JSONResponsePartString } from 'src/app/services/data.service';
+import { DataService, JSONResponsePartUriString, JSONResponsePartDate, JSONResponsePartString } from 'src/app/services/data.service';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { flatMap, mergeMap } from 'rxjs/operators';
+import { ConfigurationService } from 'src/app/services/configuration.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,13 +10,16 @@ import { flatMap } from 'rxjs/operators';
 export class ProvTreeItemsQueryService {
 
   constructor(
-    private dataService: DataService
+    private dataService: DataService,
+    private configurationService: ConfigurationService
   ) { }
 
   public busy$ = new BehaviorSubject<boolean>(false);
   private busyQueries=0;
   private fromDate$ = new BehaviorSubject<Date>(new Date(Date.now()));
-  private result$ = this.fromDate$.pipe(flatMap(from => {
+  private result$ = this.configurationService.configurationLoaded$.pipe(
+    mergeMap(()=>this.fromDate$),
+    mergeMap(from => {
     this.busyQueries++;
     this.busy$.next(true);
     const provItemsQueryString = this.getProvTreeItemsQueryString(from.toISOString(), new Date(Date.now()).toISOString());
@@ -37,7 +41,7 @@ export class ProvTreeItemsQueryService {
   }
   
   private getProvTreeItemsQueryString(from:string,until:string):string{
-    return `${prefixes}
+    return `${this.dataService.prefixes}
 SELECT (?lastelement as ?element) ?date (?lastparent as ?parent) ?addorremove ?label ?parentlabel (GROUP_CONCAT(?lastpreflabel;separator=",") as ?lastlabel)
 WHERE {	          
 ?commit prov:qualifiedUsage ?cs ;

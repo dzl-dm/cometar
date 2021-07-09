@@ -2,13 +2,51 @@ import { Injectable } from '@angular/core';
 import { CommitMetaData } from '../provenance/services/queries/commit-meta-data.service';
 import { CommitDetails } from '../provenance/services/queries/commit-details.service';
 import { OntologyElementDetails } from '../detailed-information/services/queries/information-query.service';
+import { HttpClient } from '@angular/common/http';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConfigurationService {
-  constructor() { }
+  public settings: IConfiguration;
+  public configurationLoaded$=new Subject()
+  constructor(
+    private http: HttpClient
+  ) {}
+  load() {
+    const jsonFile = `assets/config/config.json`;
+    return new Promise<void>((resolve, reject) => {
+        this.http.get(jsonFile).toPromise().then((response : IConfiguration) => {
+          this.settings = <IConfiguration>response;
+          
+          this.uniquePredicates=[
+            "http://www.w3.org/2004/02/skos/core#prefLabel", 
+            "http://www.w3.org/2004/02/skos/core#altLabel",
+            this.settings.rdf.base_prefix+"status",
+            "http://sekmi.de/histream/dwh#restriction",
+            this.settings.rdf.base_prefix+"displayLabel"
+          ]
+          this.rdfUrlMap[this.settings.rdf.base_prefix+"status"]="Status"
+          this.rdfUrlMap[this.settings.rdf.base_prefix+"displayLabel"]="Display Label"
+          this.rdfUrlMap[this.settings.rdf.base_prefix+"topLevelNode"]="Is Top Level Node"
+          this.rdfUrlMap[this.settings.rdf.base_prefix+"unit"]="Unit"
 
+          this.changeCategories[this.settings.rdf.base_prefix+"displayLabel"]="literal"
+          this.changeCategories[this.settings.rdf.base_prefix+"topLevelNode"]="structure"
+          this.changeCategories[this.settings.rdf.base_prefix+"unit"]="semantic"
+          this.changeCategories[this.settings.rdf.base_prefix+"status"]="progress"
+
+          this.initialCheckedPredicates[this.settings.rdf.base_prefix+"displayLabel"]=true
+          this.initialCheckedPredicates[this.settings.rdf.base_prefix+"unit"]=true
+          this.initialCheckedPredicates[this.settings.rdf.base_prefix+"status"]=true
+          resolve();
+          this.configurationLoaded$.next()
+        }).catch((response: any) => {
+          reject(`Could not load file '${jsonFile}': ${JSON.stringify(response)}`);
+        });
+    });
+  }
   private server:'live'|'dev';
   public setServer(s:'live'|'dev'){
     this.server = s;
@@ -17,11 +55,13 @@ export class ConfigurationService {
     return this.server;
   }
   public getRdfPrefixMap():{}{
-    return {
-      "http://data.dzl.de/ont/dwh#": "dzl",
+    this.settings.rdf.base_prefix
+    let result = {
       "http://purl.bioontology.org/ontology/SNOMEDCT/": "snomed",
       "http://loinc.org/owl#": "loinc"
     }
+    result[this.settings.rdf.base_prefix]="org"
+    return result
   }
   
   public shortenRdfPrefix(s:string):string{
@@ -89,43 +129,33 @@ export class ConfigurationService {
   private decodeHTML(s:string):string{
     return s.replace(/&quot;/g,"\"");
   }
-  public uniquePredicates = [
-    "http://www.w3.org/2004/02/skos/core#prefLabel", 
-    "http://www.w3.org/2004/02/skos/core#altLabel",
-    "http://data.dzl.de/ont/dwh#status",
-    "http://sekmi.de/histream/dwh#restriction",
-    "http://data.dzl.de/ont/dwh#displayLabel"
-  ]
+  public uniquePredicates = []
 
   public rdfUrlMap = {
-    "http://data.dzl.de/ont/dwh#status":"Status",    
-		"http://purl.org/dc/elements/1.1/description": "Description",
-		"http://www.w3.org/2004/02/skos/core#prefLabel": "Label",
-		"http://www.w3.org/2004/02/skos/core#altLabel": "Alternative Label",
-		"http://www.w3.org/2004/02/skos/core#notation": "Code",
-		"http://www.w3.org/2004/02/skos/core#broader": "Parent Element",
-		"http://www.w3.org/2004/02/skos/core#narrower": "Child Element",
-		"http://www.w3.org/2004/02/skos/core#Concept": "Concept",
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#hasPart": "Modifier",
-		"http://sekmi.de/histream/dwh#restriction": "Datatype",
-		"http://data.dzl.de/ont/dwh#displayLabel": "Display Label",
-		"http://purl.org/dc/elements/1.1/creator": "Author",
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#about": "Concept Identifier",
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "Classification",
-		"http://sekmi.de/histream/dwh#integerRestriction": "Integer",
-		"http://sekmi.de/histream/dwh#stringRestriction": "String",
-		"http://sekmi.de/histream/dwh#floatRestriction": "Float",
-		"http://sekmi.de/histream/dwh#partialDateRestriction": "Partial Date",
-		"http://www.w3.org/2004/02/skos/core#member": "Collection Member",
-		"http://www.w3.org/2004/02/skos/core#editorialNote": "Editorial Note",
-		"http://www.w3.org/ns/prov#wasDerivedFrom": "Previous Concept Identifier",
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf": "Specification Of Concept",
-		"http://www.w3.org/2004/02/skos/core#topConceptOf": "Top Concept Of",
-		"http://www.w3.org/2004/02/skos/core#Collection": "Collection",
+    "http://purl.org/dc/elements/1.1/description": "Description",
+    "http://www.w3.org/2004/02/skos/core#prefLabel": "Label",
+    "http://www.w3.org/2004/02/skos/core#altLabel": "Alternative Label",
+    "http://www.w3.org/2004/02/skos/core#notation": "Code",
+    "http://www.w3.org/2004/02/skos/core#broader": "Parent Element",
+    "http://www.w3.org/2004/02/skos/core#narrower": "Child Element",
+    "http://www.w3.org/2004/02/skos/core#Concept": "Concept",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#hasPart": "Modifier",
+    "http://sekmi.de/histream/dwh#restriction": "Datatype",
+    "http://purl.org/dc/elements/1.1/creator": "Author",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#about": "Concept Identifier",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "Classification",
+    "http://sekmi.de/histream/dwh#integerRestriction": "Integer",
+    "http://sekmi.de/histream/dwh#stringRestriction": "String",
+    "http://sekmi.de/histream/dwh#floatRestriction": "Float",
+    "http://sekmi.de/histream/dwh#partialDateRestriction": "Partial Date",
+    "http://www.w3.org/2004/02/skos/core#member": "Collection Member",
+    "http://www.w3.org/2004/02/skos/core#editorialNote": "Editorial Note",
+    "http://www.w3.org/ns/prov#wasDerivedFrom": "Previous Concept Identifier",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf": "Specification Of Concept",
+    "http://www.w3.org/2004/02/skos/core#topConceptOf": "Top Concept Of",
+    "http://www.w3.org/2004/02/skos/core#Collection": "Collection",
     "http://sekmi.de/histream/dwh#dateRestriction": "Date",
     "http://www.w3.org/2004/02/skos/core#hasTopConcept": "Has Top Concept",
-    "http://data.dzl.de/ont/dwh#topLevelNode": "Is Top Level Node",
-    "http://data.dzl.de/ont/dwh#unit": "Unit",
     "http://www.w3.org/2004/02/skos/core#related": "Related Concepts"
   }
   public getHumanReadableRDFPredicate(p:string):string{
@@ -142,54 +172,47 @@ export class ConfigurationService {
   }
 
   public changeCategories = {
-		"http://www.w3.org/2004/02/skos/core#prefLabel": "literal",
-		"http://www.w3.org/2004/02/skos/core#altLabel": "literal",
-		"http://purl.org/dc/elements/1.1/description": "literal",
-		"http://data.dzl.de/ont/dwh#displayLabel": "literal",
-		
-		"http://www.w3.org/2004/02/skos/core#narrower": "structure",
-		"http://www.w3.org/2004/02/skos/core#broader": "structure",
-		"http://www.w3.org/2004/02/skos/core#hasTopConcept": "structure",
-		"http://www.w3.org/2004/02/skos/core#topConceptOf": "structure",
-		"http://www.w3.org/2004/02/skos/core#member": "structure",
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#hasPart": "structure",
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf": "structure",
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "structure",
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#about": "structure",
-		"http://data.dzl.de/ont/dwh#topLevelNode": "structure",
-		"http://www.w3.org/ns/prov#wasDerivedFrom": "structure",
-		"http://www.w3.org/2004/02/skos/core#related": "structure",
-		
-		"http://data.dzl.de/ont/dwh#unit": "semantic",
-		"http://www.w3.org/2004/02/skos/core#notation": "semantic",
-		
-		"http://www.w3.org/2004/02/skos/core#editorialNote": "progress",
-		"http://data.dzl.de/ont/dwh#status": "progress",
-		"http://sekmi.de/histream/dwh#restriction": "progress",
-		
-		"http://purl.org/dc/elements/1.1/creator": undefined,
-		"http://www.w3.org/2004/02/skos/core#description": undefined,
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#isPartOf": undefined,
-		"http://www.w3.org/2004/02/skos/core#inScheme": undefined,
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#broader": undefined,
-		"http://www.w3.org/2004/02/skos/core#prefLAbel": undefined,
-		"http://purl.org/dc/elements/1.1/descriptions": undefined,
-		"http://www.w3.org/2002/07/owl#onProperty": undefined,
-		"http://www.w3.org/2002/07/owl#allValuesFrom": undefined
-	}
+    "http://www.w3.org/2004/02/skos/core#prefLabel": "literal",
+    "http://www.w3.org/2004/02/skos/core#altLabel": "literal",
+    "http://purl.org/dc/elements/1.1/description": "literal",
+    
+    "http://www.w3.org/2004/02/skos/core#narrower": "structure",
+    "http://www.w3.org/2004/02/skos/core#broader": "structure",
+    "http://www.w3.org/2004/02/skos/core#hasTopConcept": "structure",
+    "http://www.w3.org/2004/02/skos/core#topConceptOf": "structure",
+    "http://www.w3.org/2004/02/skos/core#member": "structure",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#hasPart": "structure",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#partOf": "structure",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": "structure",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#about": "structure",
+    "http://www.w3.org/ns/prov#wasDerivedFrom": "structure",
+    "http://www.w3.org/2004/02/skos/core#related": "structure",
+    
+    "http://www.w3.org/2004/02/skos/core#notation": "semantic",
+    
+    "http://www.w3.org/2004/02/skos/core#editorialNote": "progress",
+    "http://sekmi.de/histream/dwh#restriction": "progress",
+    
+    "http://purl.org/dc/elements/1.1/creator": undefined,
+    "http://www.w3.org/2004/02/skos/core#description": undefined,
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#isPartOf": undefined,
+    "http://www.w3.org/2004/02/skos/core#inScheme": undefined,
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#broader": undefined,
+    "http://www.w3.org/2004/02/skos/core#prefLAbel": undefined,
+    "http://purl.org/dc/elements/1.1/descriptions": undefined,
+    "http://www.w3.org/2002/07/owl#onProperty": undefined,
+    "http://www.w3.org/2002/07/owl#allValuesFrom": undefined
+  }
   public getCategory(cd:CommitDetails):string{
     return this.changeCategories[cd.predicate.value];
   }
   public initialCheckedPredicates={    
-		"http://www.w3.org/2004/02/skos/core#prefLabel": true,
-		"http://www.w3.org/2004/02/skos/core#altLabel": true,
-		"http://data.dzl.de/ont/dwh#displayLabel": true,
+    "http://www.w3.org/2004/02/skos/core#prefLabel": true,
+    "http://www.w3.org/2004/02/skos/core#altLabel": true,
     "http://purl.org/dc/elements/1.1/description": true,
-    "http://data.dzl.de/ont/dwh#unit": true,
-		"http://www.w3.org/2004/02/skos/core#notation": true,		
-		"http://www.w3.org/2004/02/skos/core#editorialNote": true,
-		"http://data.dzl.de/ont/dwh#status": true,
-		"http://sekmi.de/histream/dwh#restriction": true,
+    "http://www.w3.org/2004/02/skos/core#notation": true,		
+    "http://www.w3.org/2004/02/skos/core#editorialNote": true,
+    "http://sekmi.de/histream/dwh#restriction": true,
   }
 
   public lastChangesExcludedPredicates=[
@@ -211,5 +234,30 @@ export class ConfigurationService {
       });
     }
     return output;
+  }
+}
+
+export interface IConfiguration{
+  "logos": {
+    "src_cometar_small":string,
+    "src_brand_small":string,
+    "href_brand":string
+  },
+  "rdf": {
+      "base_prefix":string
+  },
+  "sparql": {
+    "endpoint_base":string
+  },
+  "modules": {
+      "provenance": {
+          "active": boolean
+      },
+      "sparql": {
+          "active": boolean
+      },
+      "client-configuration": {
+          "active": boolean
+      }
   }
 }

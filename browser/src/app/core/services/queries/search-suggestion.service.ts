@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { DataService, prefixes, JSONResponsePartString, JSONResponsePartNumber, JSONResponsePartUriString } from 'src/app/services/data.service';
+import { DataService, JSONResponsePartString, JSONResponsePartNumber } from 'src/app/services/data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ export class SearchSuggestionService {
   };
   public getQueryString(pattern:string):string {
     return `#search suggestions...
-${prefixes}
+${this.dataService.prefixes}
 SELECT ?match (count(?match) as ?count) ?weight
 WHERE { 
   ?element rdf:type ?t .

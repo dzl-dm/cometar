@@ -67,7 +67,9 @@ export class StartComponent implements OnInit {
             day: 'D.M.YY',
             week: 'D.M.YY',
             month: 'D.M.YY'
-          },
+          }
+        },
+        ticks: {
           max: Date.now()
         },
         barThickness: 1

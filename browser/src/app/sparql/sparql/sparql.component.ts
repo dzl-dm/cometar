@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService, prefixes } from 'src/app/services/data.service';
+import { DataService } from 'src/app/services/data.service';
 import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { SearchtreeitemService } from 'src/app/core/services/queries/searchtreeitem.service';
@@ -10,6 +10,7 @@ import { InformationQueryService } from 'src/app/detailed-information/services/q
 import { CommitDetailsService } from 'src/app/provenance/services/queries/commit-details.service';
 import { CommitMetaDataService } from 'src/app/provenance/services/queries/commit-meta-data.service';
 import { ConceptByNotationService } from 'src/app/upload-client-configuration/services/queries/concept-by-notation.service';
+import { ConfigurationService } from 'src/app/services/configuration.service';
 
 @Component({
   selector: 'app-sparql',
@@ -17,7 +18,7 @@ import { ConceptByNotationService } from 'src/app/upload-client-configuration/se
   styleUrls: ['./sparql.component.css']
 })
 export class SparqlComponent implements OnInit {
-  public prefixes = prefixes;
+  public prefixes;
   public queries: string[][] = [];
   private concept: string;
   public queryText="";
@@ -33,8 +34,11 @@ export class SparqlComponent implements OnInit {
     private informationQueryService:InformationQueryService,
     private commitDetailsService:CommitDetailsService,
     private commitMetaDataService:CommitMetaDataService,
-    private conceptByNotationService:ConceptByNotationService
-  ) { }
+    private conceptByNotationService:ConceptByNotationService,
+    private configurationService: ConfigurationService
+  ) { 
+    this.prefixes=dataService.prefixes
+  }
 
   ngOnInit() {
     this.route.queryParamMap.pipe(
@@ -94,5 +98,9 @@ export class SparqlComponent implements OnInit {
     anchor.href = window.URL.createObjectURL(thefile);
     anchor.dataset.downloadurl = ['text/plain', anchor.download, anchor.href].join(':');
     anchor.click();
+  }
+
+  public getConfig(){
+    return this.configurationService.settings
   }
 }

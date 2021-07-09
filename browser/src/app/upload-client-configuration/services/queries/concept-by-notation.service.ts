@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataService, prefixes, JSONResponsePartString, JSONResponsePartUriString, JSONResponsePartDate, JSONResponsePartLangString } from 'src/app/services/data.service';
+import { DataService, JSONResponsePartString, JSONResponsePartUriString, JSONResponsePartDate, JSONResponsePartLangString } from 'src/app/services/data.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -21,7 +21,7 @@ export class ConceptByNotationService {
 
   public getQueryString(notation:string,version_date:Date):string {
       return `#concept by notation
-      ${prefixes}
+      ${this.dataService.prefixes}
       SELECT DISTINCT ?concept ?newnotation ?removedate ?new_concept_with_code ?new_concept_label
       WHERE
       {

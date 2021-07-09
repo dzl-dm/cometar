@@ -43,7 +43,6 @@ export class MenuComponent implements OnInit {
       .map(hs => hs.media.filter(m => m.type==="icon").map(m => m.url)).reduce((curr,prev)=>curr = curr.concat(prev),[])
       .filter((value,index,array)=>array.indexOf(value)===index)
       .forEach(iconUrl => {
-        console.log(iconUrl);
         iconRegistry.addSvgIcon(iconUrl, sanitizer.bypassSecurityTrustResourceUrl(iconUrl));
       });
   }

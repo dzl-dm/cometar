@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { HttpClientModule }    from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Location, LocationStrategy, HashLocationStrategy } from '@angular/common';
@@ -20,7 +20,12 @@ import { BrowserComponent } from './core/browser/browser.component';
 import { StartComponent } from './core/start/start.component';
 import { SparqlModule } from './sparql/sparql.module';
 import { SparqlComponent } from './sparql/sparql/sparql.component';
+import { ConfigurationService } from './services/configuration.service';
+import { DataService } from './services/data.service';
 
+export function initializeApp(appConfig: ConfigurationService) {
+  return () => appConfig.load();
+}
 @NgModule({
   declarations: [
     AppComponent
@@ -52,12 +57,25 @@ import { SparqlComponent } from './sparql/sparql/sparql.component';
         }
       ],
       {
-    enableTracing: false,
-    relativeLinkResolution: 'legacy'
-}
+        enableTracing: false,
+        relativeLinkResolution: 'legacy',
+      }
     )
   ],
-  providers: [ Location, {provide: LocationStrategy, useClass: HashLocationStrategy} ],
+  providers: [ 
+    Location, 
+    {
+      provide: LocationStrategy, 
+      useClass: HashLocationStrategy
+    },
+    ConfigurationService,
+    { 
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp,
+      deps: [ConfigurationService], 
+      multi: true 
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, combineLatest } from 'rxjs';
 import { DataService } from 'src/app/services/data.service';
 import { Router } from '@angular/router';
+import { ConfigurationService } from 'src/app/services/configuration.service';
 
 @Component({
   selector: 'app-logos',
@@ -18,6 +19,7 @@ export class LogosComponent implements OnInit {
     private dataService:DataService,
     private router:Router,
     private cd: ChangeDetectorRef,
+    private configurationService: ConfigurationService
   ) { }
 
   ngOnInit() {
@@ -39,5 +41,9 @@ export class LogosComponent implements OnInit {
   public navigateModule(url?:string){   
     if (url) window.open(url);
     else this.router.navigate(["/"]);
+  }
+
+  public getConfig(){
+    return this.configurationService.settings
   }
 }

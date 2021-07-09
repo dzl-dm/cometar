@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataService, prefixes, JSONResponsePartUriString,  JSONResponsePartLangString } from '../../../services/data.service';
+import { DataService, JSONResponsePartUriString,  JSONResponsePartLangString } from '../../../services/data.service';
 import { Observable, of } from 'rxjs';
 
 @Injectable({
@@ -18,7 +18,7 @@ export class SearchtreeitemService {
 
   public getQueryString(pattern: string): string {
       return `#search for pattern...
-${prefixes}
+${this.dataService.prefixes}
 SELECT ?element ?property ?value
 WHERE {
   ?element rdf:type ?t .

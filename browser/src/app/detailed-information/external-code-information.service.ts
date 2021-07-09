@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import json from "src/assets/data/DZLLoincCodes.json";
+import json from "src/assets/data/LoincCodes.json";
 
 @Injectable({
   providedIn: 'root'

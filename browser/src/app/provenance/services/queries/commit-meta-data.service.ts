@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DataService, JSONResponsePartNumber, JSONResponsePartString, JSONResponsePartDate, prefixes } from 'src/app/services/data.service';
+import { DataService, JSONResponsePartNumber, JSONResponsePartString, JSONResponsePartDate } from 'src/app/services/data.service';
 import { map, first } from 'rxjs/operators';
 
 @Injectable({
@@ -20,7 +20,7 @@ export class CommitMetaDataService {
 
   public getQueryString(from:Date, until:Date):string {
   return `#commit metadata
-    ${prefixes}
+    ${this.dataService.prefixes}
     SELECT ?commitid ?author ?message ?enddate
     WHERE
     {

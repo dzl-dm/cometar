@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { prefixes, DataService, JSONResponsePartUriString, JSONResponsePartString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartDate } from 'src/app/services/data.service';
+import { DataService, JSONResponsePartUriString, JSONResponsePartString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartDate } from 'src/app/services/data.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -24,7 +24,7 @@ export class CommitDetailsService {
 
   public getQueryString(commit:string, subject?:string):string{
     return `#commit details
-    ${prefixes}
+    ${this.dataService.prefixes}
 SELECT DISTINCT ?subject ?sl ?predicate ?object ?ol ?addition (!bound(?p) as ?deprecatedsubject) ?date ?author
 WHERE	
 {

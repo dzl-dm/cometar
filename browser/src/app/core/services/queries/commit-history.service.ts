@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataService, JSONResponsePartDate, JSONResponsePartNumber, prefixes } from 'src/app/services/data.service';
+import { DataService, JSONResponsePartDate, JSONResponsePartNumber } from 'src/app/services/data.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -23,7 +23,7 @@ export class CommitHistoryService {
 
   public getQueryString(from:Date, until:Date):string {
   return `#ontology changes since...
-    ${prefixes}  
+    ${this.dataService.prefixes}  
     SELECT ?date (COUNT(DISTINCT ?add) as ?additions) (COUNT(DISTINCT ?rem) as ?removals) ?total
     WHERE { 
       {

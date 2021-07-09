@@ -3,7 +3,7 @@ import { first } from 'rxjs/operators';
 import { OntologyAccessService } from 'src/app/core/services/ontology-access.service';
 import { TreeItem } from 'src/app/core/classes/tree-item';
 import { TreeDataService } from 'src/app/core/services/tree-data.service';
-import { of, from, combineLatest } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { OntologyElementDetails } from './queries/information-query.service';
 
 @Injectable({

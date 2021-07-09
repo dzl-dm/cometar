@@ -1,0 +1,24 @@
+{
+    "logos": {
+        "src_cometar_small":"assets/img/CoMetaR_Logo_small.png",
+        "src_brand_small":"assets/img/DZL_Logo_small.png",
+        "href_brand":"https://www.dzl.de/forschung/plattformen/plattform-biobanking-datenmanagement"
+    },
+    "rdf": {
+        "base_prefix":"http://data.dzl.de/ont/dwh#"
+    },
+    "sparql": {
+        "endpoint_base":"https://data.dzl.de/fuseki/"
+    },
+    "modules": {
+        "provenance": {
+            "active": true
+        },
+        "sparql": {
+            "active": true
+        },
+        "client-configuration": {
+            "active": true
+        }
+    }
+}

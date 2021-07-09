@@ -1,23 +1,29 @@
 import { Injectable } from '@angular/core';
-import { DataService, prefixes, JSONResponsePartUriString, JSONResponsePartString, JSONResponsePartBoolean, JSONResponsePartNumber } from 'src/app/services/data.service';
+import { DataService, JSONResponsePartUriString, JSONResponsePartBoolean, JSONResponsePartNumber } from 'src/app/services/data.service';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
+import { ConfigurationService } from 'src/app/services/configuration.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TreeIconsQueryService {
 
-  constructor(private dataService: DataService) { }
+  constructor(
+    private dataService: DataService,
+    private configurationService: ConfigurationService
+  ) { }
 
   public get():Observable<TreeIconsQueryData[]> {
     const queryString = this.getQueryString();
-    return this.dataService.getData(queryString, "draft and editorialnote elements").pipe(map(data => { return <TreeIconsQueryData[]>data }));
+    return this.configurationService.configurationLoaded$.pipe(
+      mergeMap(()=>this.dataService.getData(queryString, "draft and editorialnote elements").pipe(map(data => { return <TreeIconsQueryData[]>data })))
+    )
   };
 
   private getQueryString(iri?):string {
       return `#draft and editorialnote elements
-      ${prefixes}
+      ${this.dataService.prefixes}
       SELECT DISTINCT ?element (COUNT(?status) = 1 as ?draft) (COUNT(?editnote) as ?editnotes)
       WHERE {	      
         ?element rdf:type ?type .    

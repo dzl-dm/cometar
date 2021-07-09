@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartString, JSONResponsePartDate, DataService, prefixes } from 'src/app/services/data.service';
+import { JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartString, JSONResponsePartDate, DataService, } from 'src/app/services/data.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -17,7 +17,7 @@ export class InformationQueryService {
 
   public getQueryString(iri?):string {
       return `#concept information
-      ${prefixes}
+      ${this.dataService.prefixes}
       SELECT ?element ?type ?label ?status ?description ?unit ?altlabel ?author ?domain ?editnote ?modifier ?modifierlabel ?notation ?related (MAX(?changesdate) AS ?lastchangesdate)
       WHERE {	          
           OPTIONAL { <${iri}> skos:prefLabel ?label. }

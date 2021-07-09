@@ -1,17 +1,23 @@
 import { Injectable } from '@angular/core';
 import { TreeItem } from '../classes/tree-item';
-import { prefixes, DataService, JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartString, JSONResponsePartArray } from 'src/app/services/data.service';
+import { DataService, JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartBoolean, JSONResponsePartString, JSONResponsePartArray } from 'src/app/services/data.service';
 import { combineLatest, Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { GhostTreeItem } from './ontology-access.service';
+import { ConfigurationService } from 'src/app/services/configuration.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OntologyDataService {
 
-  constructor(private dataService: DataService) { 
-    this.ghostTreeItems$.next([]);
-    this.loadOntology();
+  constructor(
+    private dataService: DataService,
+    private configuration: ConfigurationService
+  ) { 
+    this.configuration.configurationLoaded$.subscribe(()=>{
+      this.ghostTreeItems$.next([]);
+      this.loadOntology();
+    })
   }
 
   private ghostTreeItems$ = new ReplaySubject<GhostTreeItem[]>(1);
@@ -135,13 +141,13 @@ export class OntologyDataService {
 
   public getRootElementsQueryString():string{
     return `#root elements
-${prefixes}
+${this.dataService.prefixes}
 SELECT ?element
 WHERE
 {
   {
       SELECT ?element
-      WHERE { ?dzl :topLevelNode ?element . }
+      WHERE { ?org :topLevelNode ?element . }
   }
   UNION
   {
@@ -153,7 +159,7 @@ WHERE
 
   private getAllParentRelationsQueryString():string {
     return `#parent-child relations
-${prefixes}
+${this.dataService.prefixes}
 SELECT ?parent ?child
 WHERE
 {
@@ -164,7 +170,7 @@ WHERE
 
   private getItemInformationQueryString(){
     return `#basic information for all concepts
-${prefixes}
+${this.dataService.prefixes}
 SELECT ?element ?type ?label (COUNT(?top)>0 as ?isModifier) ?status ?displaylabel (GROUP_CONCAT(?notation;separator="|") as ?notations) (GROUP_CONCAT(?unit;separator="|") as ?units)
 WHERE {	    
   FILTER (bound(?element))

@@ -1,15 +1,12 @@
-import { Injectable, ElementRef } from '@angular/core';
-import { map, flatMap, filter, distinct, distinctUntilChanged, switchMap, startWith, last, first } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { map, flatMap, distinctUntilChanged, startWith, first } from 'rxjs/operators';
 import { Observable, combineLatest, ReplaySubject, BehaviorSubject, Subject } from 'rxjs';
 import { SearchResultAttributes, SearchtreeitemService } from './queries/searchtreeitem.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UrlService } from '../../services/url.service'
-import { Component } from '@angular/compiler/src/core';
 import { ConceptInformation } from '../concept-information/concept-information.component';
 import { TreeStyleService } from './tree-style.service';
-import { OntologyDataService } from './ontology-data.service';
 import { OntologyAccessService } from './ontology-access.service';
-import { TreeItem } from '../classes/tree-item';
 import { ProgressService, Task } from 'src/app/services/progress.service';
 
 @Injectable({

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError, Subject, BehaviorSubject, ReplaySubject, of, combineLatest, Subscription, from } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { map, catchError, startWith, shareReplay, retry, first, flatMap, last } from 'rxjs/operators';
+import { map, catchError, startWith, shareReplay, retry, first, flatMap, last, mergeMap } from 'rxjs/operators';
 import { BrowserService } from '../core/services/browser.service';
 import { ProgressService } from './progress.service';
 import { ConfigurationService } from './configuration.service';
@@ -15,7 +15,13 @@ export class DataService {
     private browserService: BrowserService,
     private progressService: ProgressService,
     private configurationService: ConfigurationService
-  ) { }
+  ) { 
+    this.configurationService.configurationLoaded$.subscribe(()=>{
+      this.baseUrl=this.configurationService.settings.sparql.endpoint_base
+      this.prefixes+=`
+PREFIX : <${this.configurationService.settings.rdf.base_prefix}>`
+    })
+  }
 
   private pendings = {};
   public loading = new BehaviorSubject<boolean>(false);
@@ -23,11 +29,16 @@ export class DataService {
   public busyQueriesStartTimes: number[] = [];
   private busyQueries = [];
   private dataUrl$ = new BehaviorSubject<string>("");
-  private baseUrl="https://data.dzl.de/fuseki/";
-  //private baseUrl = "http://localhost:3030/";
+  private baseUrl:string;
+  private server:'live'|'dev';
   public setServer(s: 'live' | 'dev') {
-    if (s == 'dev' && this.configurationService.getServer() != 'dev') { this.dataUrl$.next(this.baseUrl + 'cometar_dev/query'); }
-    else if (s == 'live' && this.configurationService.getServer() != 'live') { this.dataUrl$.next(this.baseUrl + 'cometar_live/query'); }
+    this.server=s
+    if (this.server == 'dev' && this.configurationService.getServer() != 'dev') { 
+      this.dataUrl$.next(this.baseUrl + 'cometar_dev/query')
+    }
+    else if (this.server == 'live' && this.configurationService.getServer() != 'live') { 
+      this.dataUrl$.next(this.baseUrl + 'cometar_live/query');
+    }
     this.configurationService.setServer(s);
   }
 
@@ -112,6 +123,23 @@ export class DataService {
     return throwError(
       'Something bad happened; please try again later.');
   };*/
+
+  
+
+  public prefixes: string = `
+  PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+  PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+  PREFIX dc: <http://purl.org/dc/elements/1.1/>  
+  PREFIX snomed:    <http://purl.bioontology.org/ontology/SNOMEDCT/>
+  PREFIX xsd:	<http://www.w3.org/2001/XMLSchema#>
+  PREFIX dwh:    <http://sekmi.de/histream/dwh#>
+  PREFIX loinc: <http://loinc.org/owl#>
+  PREFIX rdfs:	<http://www.w3.org/2000/01/rdf-schema#> 
+  PREFIX prov: 	<http://www.w3.org/ns/prov#>
+  PREFIX cs:		<http://purl.org/vocab/changeset/schema#>
+  `;
 }
 
 interface JSONResponse {
@@ -165,19 +193,3 @@ export interface JSONResponsePartArray {
   value: string[],
   name?: string
 }
-
-export const prefixes: string = `
-PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
-PREFIX : <http://data.dzl.de/ont/dwh#>
-PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX dc: <http://purl.org/dc/elements/1.1/>  
-PREFIX snomed:    <http://purl.bioontology.org/ontology/SNOMEDCT/>
-PREFIX xsd:	<http://www.w3.org/2001/XMLSchema#>
-PREFIX dwh:    <http://sekmi.de/histream/dwh#>
-PREFIX loinc: <http://loinc.org/owl#>
-PREFIX rdfs:	<http://www.w3.org/2000/01/rdf-schema#> 
-PREFIX prov: 	<http://www.w3.org/ns/prov#>
-PREFIX cs:		<http://purl.org/vocab/changeset/schema#>
-`;

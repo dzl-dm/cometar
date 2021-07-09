@@ -21,7 +21,6 @@ import { TextWithNavigationComponent } from './text-with-navigation/text-with-na
 import { FormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete'; 
 import { AngularResizedEventModule } from 'angular-resize-event';
-//import { WebWorkerService } from 'ngx-web-worker';
 
 @NgModule({
   declarations: [
@@ -50,9 +49,6 @@ import { AngularResizedEventModule } from 'angular-resize-event';
     MatAutocompleteModule,
     AngularResizedEventModule
   ],
-  /*providers: [
-    WebWorkerService
-  ],*/
   exports: [
     TreeComponent,
     TreeItemComponent,

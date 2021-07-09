@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataService, prefixes } from 'src/app/services/data.service';
+import { DataService } from 'src/app/services/data.service';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
@@ -19,7 +19,7 @@ export class GetRemovedConceptService {
 
   private getQueryString(iri:string):string {
   return `#removed concept
-    ${prefixes}
+    ${this.dataService.prefixes}
 SELECT DISTINCT ?date
 WHERE { 
   ?commit prov:qualifiedUsage ?cs ;

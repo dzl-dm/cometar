@@ -6,7 +6,7 @@
             [matTooltip]="(loadingStatus$ | async)?tooltip:'CoMetaR - a Collaborative Metadata Repository'"
             [ngClass]="{'active':(loadingStatus$ | async)}" 
             (click)="navigateModule()"/>
-        <img src="assets/img/CoMetaR_Logo_small.png"/>
+        <img src="{{getConfig().logos.src_cometar_small}}"/>
     </div>
-    <div class='logo' (click)="navigateModule('https://www.dzl.de/forschung/plattformen/plattform-biobanking-datenmanagement')"><img src="assets/img/DZL_Logo_small.png"/></div>
+    <div class='logo' (click)="navigateModule(getConfig().logos.href_brand)"><img src="{{getConfig().logos.src_brand_small}}"/></div>
 </div>

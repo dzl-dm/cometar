@@ -263,4 +263,16 @@ export class BrowserComponent implements OnInit {
       this.treeAsOverlay=false;
     }
   }
+
+  provenanceModuleActivated(){
+    return this.configurationService.settings.modules.provenance.active
+  }
+
+  sparqlModuleActivated(){
+    return this.configurationService.settings.modules.sparql.active
+  }
+
+  clientConfigurationModuleActivated(){
+    return this.configurationService.settings.modules['client-configuration'].active
+  }
 }
