@@ -40,10 +40,9 @@ export class StartComponent implements OnInit {
             month: 'D.M.YY'
           }
         },
-        barThickness: 5,
         offset: true
       }]
-    }
+    },
   };  
   public lineChartOptions: any = {
     responsive: true,
@@ -71,8 +70,7 @@ export class StartComponent implements OnInit {
         },
         ticks: {
           max: Date.now()
-        },
-        barThickness: 1
+        }
       }]
     }
   };
@@ -125,6 +123,7 @@ export class StartComponent implements OnInit {
         backgroundColor: 'rgba(89,179,0,0.5)',
         borderColor: 'rgba(89,179,0,1)',
         borderWidth: 2,
+        barThickness: 5,
         label: "Additions"
       };
       this.commitsDataset[1]={
@@ -132,6 +131,7 @@ export class StartComponent implements OnInit {
         backgroundColor: 'rgba(255,64,25,0.5)',
         borderColor: 'rgba(255,64,25,1)',
         borderWidth: 2,
+        barThickness: 5,
         label: "Removals"
       };
       this.barChart.data={
@@ -175,5 +175,8 @@ export class StartComponent implements OnInit {
   }
   public devServer():boolean{
     return this.configurationService.getServer()=='dev'
+  }
+  public getConfig(){
+    return this.configurationService.settings
   }
 }

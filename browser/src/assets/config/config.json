@@ -1,5 +1,6 @@
 {
     "logos": {
+        "src_cometar":"assets/img/CoMetaR_Logo.png",
         "src_cometar_small":"assets/img/CoMetaR_Logo_small.png",
         "src_brand_small":"assets/img/DZL_Logo_small.png",
         "href_brand":"https://www.dzl.de/forschung/plattformen/plattform-biobanking-datenmanagement"
