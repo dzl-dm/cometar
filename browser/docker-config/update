@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo "UPDATE HOOK called for ref $3"
+echo -e "Verifying upload, using rest service at: ${REST_SERVER}"
+
+upload_verification=$(curl -s -H "Accept: application/json" "${REST_SERVER}/rdf_verification/$3")
+
+if [[ "$upload_verification" == *"403 Forbidden"* ]]; then
+  echo "Access to REST Server forbidden!"
+  exit 1
+fi
+
+echo "$upload_verification" | jq -r '.response'
+
+exitcode=$(echo "$upload_verification" | jq -r '.exitcode')
+if [ "$exitcode" == "0" ]; then
+    echo "VERIFICATION SUCCESS"
+    bash -c '\
+      sleep 5; \
+      curl -s -H "Accept: application/json" -o /dev/null "${REST_SERVER}/fuseki_load_live" \
+    ' 2>&1 &
+    exit 0
+else
+    echo "VERIFICATION FAILED"
+    exit 1
+fi

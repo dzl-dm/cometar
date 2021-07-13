@@ -19,9 +19,9 @@ export class ConfigurationService {
     return new Promise<void>((resolve, reject) => {
         this.http.get(jsonFile).toPromise().then((response : IConfiguration) => {
           this.settings = <IConfiguration>response;
-          
+
           this.uniquePredicates=[
-            "http://www.w3.org/2004/02/skos/core#prefLabel", 
+            "http://www.w3.org/2004/02/skos/core#prefLabel",
             "http://www.w3.org/2004/02/skos/core#altLabel",
             this.settings.rdf.base_prefix+"status",
             "http://sekmi.de/histream/dwh#restriction",
@@ -63,7 +63,7 @@ export class ConfigurationService {
     result[this.settings.rdf.base_prefix]="org"
     return result
   }
-  
+
   public shortenRdfPrefix(s:string):string{
     Object.entries(this.getRdfPrefixMap()).forEach(
       ([key, value]:[string,string]) => {
@@ -79,7 +79,7 @@ export class ConfigurationService {
         s = s.replace(new RegExp(key, "g"), value)
     });
     return s.substring(0,s.length-c.length-1) + c;
-  } 
+  }
   public getHumanReadableElementDetails(ed:OntologyElementDetails):OntologyElementDetails{
     return this.mergeDeep(ed, {
       element: { name: "RDF IRI" },
@@ -175,7 +175,7 @@ export class ConfigurationService {
     "http://www.w3.org/2004/02/skos/core#prefLabel": "literal",
     "http://www.w3.org/2004/02/skos/core#altLabel": "literal",
     "http://purl.org/dc/elements/1.1/description": "literal",
-    
+
     "http://www.w3.org/2004/02/skos/core#narrower": "structure",
     "http://www.w3.org/2004/02/skos/core#broader": "structure",
     "http://www.w3.org/2004/02/skos/core#hasTopConcept": "structure",
@@ -187,12 +187,12 @@ export class ConfigurationService {
     "http://www.w3.org/1999/02/22-rdf-syntax-ns#about": "structure",
     "http://www.w3.org/ns/prov#wasDerivedFrom": "structure",
     "http://www.w3.org/2004/02/skos/core#related": "structure",
-    
+
     "http://www.w3.org/2004/02/skos/core#notation": "semantic",
-    
+
     "http://www.w3.org/2004/02/skos/core#editorialNote": "progress",
     "http://sekmi.de/histream/dwh#restriction": "progress",
-    
+
     "http://purl.org/dc/elements/1.1/creator": undefined,
     "http://www.w3.org/2004/02/skos/core#description": undefined,
     "http://www.w3.org/1999/02/22-rdf-syntax-ns#isPartOf": undefined,
@@ -206,11 +206,11 @@ export class ConfigurationService {
   public getCategory(cd:CommitDetails):string{
     return this.changeCategories[cd.predicate.value];
   }
-  public initialCheckedPredicates={    
+  public initialCheckedPredicates={
     "http://www.w3.org/2004/02/skos/core#prefLabel": true,
     "http://www.w3.org/2004/02/skos/core#altLabel": true,
     "http://purl.org/dc/elements/1.1/description": true,
-    "http://www.w3.org/2004/02/skos/core#notation": true,		
+    "http://www.w3.org/2004/02/skos/core#notation": true,
     "http://www.w3.org/2004/02/skos/core#editorialNote": true,
     "http://sekmi.de/histream/dwh#restriction": true,
   }
@@ -239,6 +239,7 @@ export class ConfigurationService {
 
 export interface IConfiguration{
   "logos": {
+    "src_cometar":string,
     "src_cometar_small":string,
     "src_brand_small":string,
     "href_brand":string
