@@ -7,9 +7,10 @@ volumes:
 
 services:
   git-web:
-    build:
-      context: ./browser
-      dockerfile: Dockerfile
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-browser
+    # build:
+    #   context: ./browser
+    #   dockerfile: Dockerfile
     ports:
       - 80:80
     container_name:
@@ -28,9 +29,10 @@ services:
     depends_on:
       - "rest"
   rest:
-    build:
-      context: ./rest
-      dockerfile: Dockerfile
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-rest
+    # build:
+    #   context: ./rest
+    #   dockerfile: Dockerfile
     container_name:
       cometar_rest
     volumes:
@@ -38,9 +40,10 @@ services:
     depends_on:
       - "fuseki"
   fuseki:
-    build:
-      context: ./fuseki
-      dockerfile: Dockerfile
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-fuseki
+    # build:
+    #   context: ./fuseki
+    #   dockerfile: Dockerfile
     container_name:
       cometar_fuseki
     volumes:

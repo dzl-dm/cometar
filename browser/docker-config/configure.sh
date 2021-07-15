@@ -26,6 +26,7 @@ fi
 /bin/bash -c "envsubst '\$REST_SERVER \$FUSEKI_SERVER \$FUSEKI_ADMIN_ALLOW_RANGE \$REST_ALLOW_RANGE \$BROWSER_FQDN' < '/cometar/nginx.conf' > /etc/nginx/conf.d/cometar.conf"
 
 if [[ ! -e /etc/nginx/auth/.htpasswd_git ]] ; then
+  mkdir -p /etc/nginx/auth/
   touch /etc/nginx/auth/.htpasswd_git
 fi
 

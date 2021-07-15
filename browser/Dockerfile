@@ -45,7 +45,8 @@ COPY docker-config/update /usr/share/nginx/html/git/hooks/update
 
 RUN git init --bare "/usr/share/nginx/html/git" && \
     chown -R nginx:nginx "/usr/share/nginx/html/git" && \
-    mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf_OFF
+    mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf_OFF && \
+    chmod +x /cometar/configure.sh
 
 ## Setup env vars. These could be overriden, but in standard docker deployments will always be the same
 ENV REST_SERVER=${REST_SERVER:-http://cometar_rest:5000}
