@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "UPDATE HOOK called for ref $3"
 echo -e "Verifying upload, using rest service at: ${REST_SERVER}"
@@ -15,12 +15,13 @@ echo "$upload_verification" | jq -r '.response'
 exitcode=$(echo "$upload_verification" | jq -r '.exitcode')
 if [ "$exitcode" == "0" ]; then
     echo "VERIFICATION SUCCESS"
-    bash -c '\
+    ##TODO: Move to post-receive hook
+    nohup sh -c '\
       sleep 5; \
       curl -s -H "Accept: application/json" -o /dev/null "${REST_SERVER}/fuseki_load_live" \
-    ' 2>&1 &
+    ' > /dev/null 2>&1 &
     exit 0
 else
     echo "VERIFICATION FAILED"
-    exit 1
+    exit ${exitcode}
 fi

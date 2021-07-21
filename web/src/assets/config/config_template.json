@@ -1,0 +1,25 @@
+{
+    "logos": {
+        "src_cometar":"assets/img/CoMetaR_Logo.png",
+        "src_cometar_small":"assets/img/CoMetaR_Logo_small.png",
+        "src_brand_small":"assets/img/DZL_Logo_small.png",
+        "href_brand":"${HREF_BRAND}"
+    },
+    "rdf": {
+        "base_prefix":"${BASE_PREFIX}"
+    },
+    "sparql": {
+        "endpoint_base":"${ENDPOINT_BASE}"
+    },
+    "modules": {
+        "provenance": {
+            "active": true
+        },
+        "sparql": {
+            "active": true
+        },
+        "client-configuration": {
+            "active": true
+        }
+    }
+}

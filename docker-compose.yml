@@ -6,15 +6,15 @@ volumes:
   fuseki-default:
 
 services:
-  git-web:
-    image: ${IMAGE_NAMESPACE}/cometar/cometar-browser
+  web:
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-web
     # build:
-    #   context: ./browser
+    #   context: ./web
     #   dockerfile: Dockerfile
     ports:
       - 80:80
     container_name:
-      cometar_git-web
+      cometar_web
     environment:
       - BROWSER_FQDN=localhost
       - BROWSER_PORT=80
@@ -24,7 +24,21 @@ services:
       - FUSEKI_ADMIN_ALLOW_RANGE=127.0.0.0/8,192.168.0.0/16,10.0.0.0/8
       - REST_ALLOW_RANGE=127.0.0.0/8,192.168.0.0/16,10.0.0.0/8
     volumes:
-      - repository:/usr/share/nginx/html/git
+      - auth:/etc/nginx/auth
+    depends_on:
+      - "rest"
+      - "git"
+  git:
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-git
+    # build:
+    #   context: ./git
+    #   dockerfile: Dockerfile
+    container_name:
+      cometar_git
+    environment:
+      - BROWSER_FQDN=localhost
+    volumes:
+      - repository:/git
       - auth:/etc/nginx/auth
     depends_on:
       - "rest"
