@@ -78,7 +78,7 @@ OPTIONAL {
   ]
 }
     
-FILTER (?addorremove IN (cs:addition,cs:removal) && ?narrower IN (skos:narrower, rdf:hasPart, skos:member, :topLevelNode, skos:hasTopConcept)) .
+FILTER (?addorremove IN (cs:addition,cs:removal) && ?narrower IN (skos:narrower, rdf:hasPart, skos:member, <${this.configurationService.settings.rdf.topLevelNode_iri}>, skos:hasTopConcept)) .
 }
 GROUP BY ?lastelement ?date ?lastparent ?addorremove ?label ?parentlabel
 HAVING (bound(?element) || ?label != "")

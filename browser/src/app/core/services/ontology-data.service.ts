@@ -147,7 +147,7 @@ WHERE
 {
   {
       SELECT ?element
-      WHERE { ?org :topLevelNode ?element . }
+      WHERE { ?org <${this.configuration.settings.rdf.topLevelNode_iri}> ?element . }
   }
   UNION
   {
@@ -177,10 +177,10 @@ WHERE {
   ?element skos:prefLabel ?label FILTER (lang(?label)='en') .
   OPTIONAL { ?element skos:broader* [ rdf:partOf ?top ] . }
   OPTIONAL { ?element skos:notation ?notation }
-  OPTIONAL { ?element :unit ?unit }
-  OPTIONAL { ?element :displayLabel ?displaylabel FILTER (lang(?displaylabel)='en') }
+  OPTIONAL { ?element <${this.configuration.settings.rdf.unit_iri}> ?unit }
+  OPTIONAL { ?element <${this.configuration.settings.rdf.displayLabel_iri}> ?displaylabel FILTER (lang(?displaylabel)='en') }
   OPTIONAL { ?element rdf:type ?type . }
-  OPTIONAL { ?element :status ?status . }
+  OPTIONAL { ?element <${this.configuration.settings.rdf.status_iri}> ?status . }
 } 
 GROUP BY ?element ?label ?type ?status ?displaylabel
 HAVING bound(?element)

@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { JSONResponsePartUriString, JSONResponsePartLangString, JSONResponsePartString, JSONResponsePartDate, DataService, } from 'src/app/services/data.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ConfigurationService } from 'src/app/services/configuration.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InformationQueryService {
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private configurationService:ConfigurationService) { }
 
   public get(iri:string):Observable<OntologyElementDetails[]> {
       const queryString = this.getQueryString(iri);
@@ -23,9 +24,9 @@ export class InformationQueryService {
           OPTIONAL { <${iri}> skos:prefLabel ?label. }
           OPTIONAL { <${iri}> rdf:type ?type . }
           OPTIONAL { <${iri}> skos:altLabel ?altlabel . }
-          OPTIONAL { <${iri}> :status ?status . }
+          OPTIONAL { <${iri}> <${this.configurationService.settings.rdf.status_iri}> ?status . }
           OPTIONAL { <${iri}> dc:description ?description . }
-          OPTIONAL { <${iri}> :unit ?unit . }
+          OPTIONAL { <${iri}> <${this.configurationService.settings.rdf.unit_iri}> ?unit . }
           OPTIONAL { <${iri}> dc:creator ?author . }
           OPTIONAL { <${iri}> dwh:restriction ?domain . }
           OPTIONAL { <${iri}> skos:editorialNote ?editnote . }

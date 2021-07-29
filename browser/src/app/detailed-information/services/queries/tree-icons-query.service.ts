@@ -15,9 +15,17 @@ export class TreeIconsQueryService {
   ) { }
 
   public get():Observable<TreeIconsQueryData[]> {
-    const queryString = this.getQueryString();
     return this.configurationService.configurationLoaded$.pipe(
-      mergeMap(()=>this.dataService.getData(queryString, "draft and editorialnote elements").pipe(map(data => { return <TreeIconsQueryData[]>data })))
+      mergeMap(()=>{
+        const queryString = this.getQueryString();
+        return this.dataService.getData(queryString, "draft and editorialnote elements")
+          .pipe(
+            map(data => { 
+              return <TreeIconsQueryData[]>data 
+            })
+          )
+      })
+      
     )
   };
 
@@ -27,7 +35,7 @@ export class TreeIconsQueryService {
       SELECT DISTINCT ?element (COUNT(?status) = 1 as ?draft) (COUNT(?editnote) as ?editnotes)
       WHERE {	      
         ?element rdf:type ?type .    
-        OPTIONAL { ?element :status ?status FILTER (?status = 'draft'). }
+        OPTIONAL { ?element <${this.configurationService.settings.rdf.status_iri}> ?status FILTER (?status = 'draft'). }
         OPTIONAL { ?element skos:editorialNote ?editnote . }
         FILTER(bound(?status) || bound(?editnote))
       } 

@@ -6,7 +6,11 @@
         "href_brand":"https://www.dzl.de/forschung/plattformen/plattform-biobanking-datenmanagement"
     },
     "rdf": {
-        "base_prefix":"http://data.dzl.de/ont/dwh#"
+        "base_prefix":"http://data.custom.de/ont/dwh#",
+        "unit_iri":"http://data.dzl.de/ont/dwh#unit",
+        "topLevelNode_iri":"http://data.dzl.de/ont/dwh#topLevelNode",
+        "status_iri":"http://data.dzl.de/ont/dwh#status",
+        "displayLabel_iri":"http://data.dzl.de/ont/dwh#displayLabel"
     },
     "sparql": {
         "endpoint_base":"https://data.dzl.de/fuseki/"

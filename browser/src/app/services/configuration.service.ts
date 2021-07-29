@@ -23,23 +23,23 @@ export class ConfigurationService {
           this.uniquePredicates=[
             "http://www.w3.org/2004/02/skos/core#prefLabel", 
             "http://www.w3.org/2004/02/skos/core#altLabel",
-            this.settings.rdf.base_prefix+"status",
+            this.settings.rdf.status_iri,
             "http://sekmi.de/histream/dwh#restriction",
-            this.settings.rdf.base_prefix+"displayLabel"
+            this.settings.rdf.displayLabel_iri
           ]
-          this.rdfUrlMap[this.settings.rdf.base_prefix+"status"]="Status"
-          this.rdfUrlMap[this.settings.rdf.base_prefix+"displayLabel"]="Display Label"
-          this.rdfUrlMap[this.settings.rdf.base_prefix+"topLevelNode"]="Is Top Level Node"
-          this.rdfUrlMap[this.settings.rdf.base_prefix+"unit"]="Unit"
+          this.rdfUrlMap[this.settings.rdf.status_iri]="Status"
+          this.rdfUrlMap[this.settings.rdf.displayLabel_iri]="Display Label"
+          this.rdfUrlMap[this.settings.rdf.topLevelNode_iri]="Is Top Level Node"
+          this.rdfUrlMap[this.settings.rdf.unit_iri]="Unit"
 
-          this.changeCategories[this.settings.rdf.base_prefix+"displayLabel"]="literal"
-          this.changeCategories[this.settings.rdf.base_prefix+"topLevelNode"]="structure"
-          this.changeCategories[this.settings.rdf.base_prefix+"unit"]="semantic"
-          this.changeCategories[this.settings.rdf.base_prefix+"status"]="progress"
+          this.changeCategories[this.settings.rdf.displayLabel_iri]="literal"
+          this.changeCategories[this.settings.rdf.topLevelNode_iri]="structure"
+          this.changeCategories[this.settings.rdf.unit_iri]="semantic"
+          this.changeCategories[this.settings.rdf.status_iri]="progress"
 
-          this.initialCheckedPredicates[this.settings.rdf.base_prefix+"displayLabel"]=true
-          this.initialCheckedPredicates[this.settings.rdf.base_prefix+"unit"]=true
-          this.initialCheckedPredicates[this.settings.rdf.base_prefix+"status"]=true
+          this.initialCheckedPredicates[this.settings.rdf.displayLabel_iri]=true
+          this.initialCheckedPredicates[this.settings.rdf.unit_iri]=true
+          this.initialCheckedPredicates[this.settings.rdf.status_iri]=true
           resolve();
           this.configurationLoaded$.next()
         }).catch((response: any) => {
@@ -55,7 +55,6 @@ export class ConfigurationService {
     return this.server;
   }
   public getRdfPrefixMap():{}{
-    this.settings.rdf.base_prefix
     let result = {
       "http://purl.bioontology.org/ontology/SNOMEDCT/": "snomed",
       "http://loinc.org/owl#": "loinc"
@@ -244,7 +243,11 @@ export interface IConfiguration{
     "href_brand":string
   },
   "rdf": {
-      "base_prefix":string
+      "base_prefix":string,
+      "unit_iri":string,
+      "topLevelNode_iri":string,
+      "status_iri":string,
+      "displayLabel_iri":string
   },
   "sparql": {
     "endpoint_base":string

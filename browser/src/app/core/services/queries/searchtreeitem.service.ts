@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { DataService, JSONResponsePartUriString,  JSONResponsePartLangString } from '../../../services/data.service';
 import { Observable, of } from 'rxjs';
+import { ConfigurationService } from 'src/app/services/configuration.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SearchtreeitemService {
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private configurationService:ConfigurationService) { }
 
   public get(pattern: string): Observable<SearchResultAttributes[]> {
       if (pattern === '') { return of([]); }
@@ -23,7 +24,7 @@ SELECT ?element ?property ?value
 WHERE {
   ?element rdf:type ?t .
   FILTER (?t IN (skos:Concept, skos:Collection)) .
-  FILTER EXISTS { ?root :topLevelNode [ skos:member* [ skos:narrower* [ rdf:hasPart? [ skos:narrower* ?element ] ] ] ] }
+  FILTER EXISTS { ?root <${this.configurationService.settings.rdf.topLevelNode_iri}> [ skos:member* [ skos:narrower* [ rdf:hasPart? [ skos:narrower* ?element ] ] ] ] }
   {
     SELECT ?element ?property ?value
     WHERE {
