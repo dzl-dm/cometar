@@ -6,7 +6,7 @@
         "href_brand":"${HREF_BRAND}"
     },
     "rdf": {
-        "base_prefix":"${BASE_PREFIX}"
+        "base_prefix":"http://data.dzl.de/ont/dwh#"
     },
     "sparql": {
         "endpoint_base":"${ENDPOINT_BASE}"
