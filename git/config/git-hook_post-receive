@@ -1,0 +1,4 @@
+#!/bin/sh
+## Description: Tell fuseki server to reload data from git
+
+curl -s -H "Accept: application/json" -o /dev/null "${REST_SERVER}/fuseki_load_live"

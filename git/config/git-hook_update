@@ -15,12 +15,6 @@ echo "$upload_verification" | jq -r '.response'
 exitcode=$(echo "$upload_verification" | jq -r '.exitcode')
 if [ "$exitcode" == "0" ]; then
     echo "VERIFICATION SUCCESS"
-    ##TODO: Move to post-receive hook
-    nohup sh -c '\
-      sleep 5; \
-      curl -s -H "Accept: application/json" -o /dev/null "${REST_SERVER}/fuseki_load_live" \
-    ' > /dev/null 2>&1 &
-    exit 0
 else
     echo "VERIFICATION FAILED"
     exit ${exitcode}

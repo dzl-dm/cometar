@@ -13,7 +13,9 @@ fi
 
 ## Configuration for git hook
 envsubst "\$REST_SERVER" < /config/git-hook_update > /git/hooks/update
+envsubst "\$REST_SERVER" < /config/git-hook_post-receive > /git/hooks/post-receive
 chmod +x /git/hooks/update
+chmod +x /git/hooks/post-receive
 chown -R nginx:nginx "${GIT_BASE}"
 
 ## Configuration for nginx
