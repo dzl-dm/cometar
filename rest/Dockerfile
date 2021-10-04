@@ -8,7 +8,7 @@ ENV COMETAR_PROD_DIR=${COMETAR_PROD_DIR:-/cometar}
 ENV TZ="Europe/Berlin"
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
-    apt-get install -y git=1:2.25.1-1ubuntu3.1 git-core curl python3=3.8.2-0ubuntu2 python3-pip && \
+    apt-get install -y git=1:2.25.1-* git-core curl python3=3.8.2-* python3-pip && \
     pip3 install --upgrade setuptools && \
     pip3 install Werkzeug Jinja2 MarkupSafe ItsDangerous Click Flask requests flask-accept && \
     apt-get autoremove -y

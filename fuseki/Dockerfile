@@ -1,5 +1,5 @@
 ## See: https://github.com/stain/jena-docker/blob/master/jena-fuseki/Dockerfile
-FROM stain/jena-fuseki
+FROM stain/jena-fuseki:4.0.0
 
 ## Tools for debugging
 # RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
