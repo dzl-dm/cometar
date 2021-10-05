@@ -1,4 +1,7 @@
 #!/bin/sh
 ## Description: Tell fuseki server to reload data from git
 
-curl -s -H "Accept: application/json" -o /dev/null "${REST_SERVER}/fuseki_load_live"
+## Call the rest api to load newly committed data
+curl -s -H "Accept: application/json" "${REST_SERVER}/fuseki_load_live" >&2
+## Call the rest api to update provenance data
+curl -s -H "Accept: application/json" "${REST_SERVER}/update_provenance" >&2

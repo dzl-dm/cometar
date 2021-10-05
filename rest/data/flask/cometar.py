@@ -45,6 +45,22 @@ def rdf_verification_steps(commit_id):
     else:
         return ["No repository for update checks available.", 0]
 
+def update_provenance_data():
+    """Call the shell scripts which search the git history and generate a file for the provenance module to read"""
+    ## Get most recent date already captured and write the updates to a provenance data file
+    print("os.environ[COMETAR_PROD_DIR]: {}".format(os.environ["COMETAR_PROD_DIR"]))
+    p = subprocess.Popen(["bash", os.environ["COMETAR_PROD_DIR"]+"/rdf_provenance/update_provenance.sh"] ,stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+    # load_into_fuseki("live")
+    return [p.communicate()[0], p.returncode]
+
+def fuseki_load_provenance_data():
+    """Call the shell scripts which push provenance data to fuseki live"""
+    ## Get most recent date already captured and write the updates to a provenance data file
+    print("os.environ[COMETAR_PROD_DIR]: {}".format(os.environ["COMETAR_PROD_DIR"]))
+    p = subprocess.Popen(["bash", os.environ["COMETAR_PROD_DIR"]+"/rdf_loading/add_files_to_dataset.sh", "-h"] ,stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+    # load_into_fuseki("live")
+    return [p.communicate()[0], p.returncode]
+
 @app.route('/')
 def index():
     return 'Index Page'
@@ -74,8 +90,28 @@ def fuseki_load_test():
 def fuseki_load_live():
     result = load_into_fuseki("live")
     return {
-        "response": result[0],
-        "exitcode": result[1]
+        # "fuseki_load_live (response)": result[0],
+        "fuseki_load_live (exitcode)": result[1]
+    }
+
+@app.route('/update_provenance')
+def update_provenance():
+    result = update_provenance_data()
+    if result[1] == 0:
+        result2 = fuseki_load_provenance_data()
+    return {
+        # "update_provenance (response)": result[0],
+        "update_provenance (exitcode)": result[1],
+        # "fuseki_load_provenance (response)": result2[0],
+        "fuseki_load_provenance (exitcode)": result2[1]
+    }
+
+@app.route('/fuseki_load_provenance')
+def fuseki_load_provenance():
+    result = fuseki_load_provenance_data()
+    return {
+        "fuseki_load_provenance (response)": result[0],
+        "fuseki_load_provenance (exitcode)": result[1]
     }
 
 @app.route('/search/<pattern>')
