@@ -66,27 +66,39 @@ Then create or add some data saved as *.ttl file.
 
 Here we provide a basic example to get you up and running:
 ```
-@prefix skos:     <http://www.w3.org/2004/02/skos/core#> .
-@prefix DZL:    <http://data.dzl.de/ont/dwh#> .
-@prefix :    <http://data.custom.de/ont/dwh#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix DZL: <http://data.dzl.de/ont/dwh#> .
+@prefix : <http://data.custom.de/ont/dwh#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
 
 [
-    DZL:topLevelNode :DemoData ;
+  DZL:topLevelNode :DemoData ;
 ] .
 
 :DemoData a skos:Concept ;
-    skos:prefLabel "Demodaten"@de ;
-    skos:prefLabel "Demo Data"@en ;
-    DZL:displayLabel "Demo"@en ;
+  skos:prefLabel "Demodaten"@de ;
+  skos:prefLabel "Demo Data"@en ;
+  DZL:displayLabel "Demo"@en ;
+  dc:description "This is the root node of the demo metadata."@en ;
+  skos:altLabel "Demonstration" ;
 .
-
 :SubCategory a skos:Concept ;
-    skos:broader :DemoData ;
-    skos:prefLabel "Sub Category"@en ;
+  skos:broader :DemoData ;
+  skos:prefLabel "Sub Category 1"@en ;
+  skos:prefLabel "Subkategorie 1"@de ;
+  dc:description "This is the first sub category of the demo metadata."@en ;
+  skos:notation "CODESYS:CAT1" ;
+  skos:altLabel "First Category" ;
+  DZL:unit "L" ;
 .
 :SubCategory2 a skos:Concept ;
-    skos:broader :DemoData ;
-    skos:prefLabel "Sub Category2"@en ;
+  skos:broader :DemoData ;
+  skos:prefLabel "Sub Category 2"@en ;
+  skos:prefLabel "Subkategorie 2"@de ;
+  dc:description "This is the second sub category of the demo metadata."@en ;
+  skos:notation "CODESYS:CAT2" ;
+  skos:altLabel "Second Category" ;
+  DZL:unit "years" ;
 .
 ```
 
