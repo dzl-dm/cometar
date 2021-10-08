@@ -20,7 +20,8 @@ Use docker compose to build and run the components
 docker compose up -d
 ```
 
-This provides a running system available at \${BROWSER_SCHEME}://\${BROWSER_FQDN}:\${BROWSER_PORT} eg. [http://localhost](http://localhost)
+This provides a running system available at `${BROWSER_SCHEME}://${BROWSER_FQDN}:${BROWSER_PORT}` eg. [http://localhost](http://localhost)
+
 You may want to edit some settings in `docker-compose.yml` before deploying, and for production deployments more substantial changes could be desired including running behind an https terminating proxy
 
 ### Building
@@ -54,15 +55,15 @@ htpasswd .htpasswd_git username
 ```
 
 ## First steps
-Choose a location for the git repository
+Choose a location for the git repository which is to hold the CoMetaR thesaurus data
 
-Then clone the repo from CoMetaR:
+Then clone the repo from CoMetaR (You can manage git credentials in multiple ways, you can optionally specify them within the url when cloning - shown below):
 ```sh
-git clone ${BROWSER_SCHEME}://${BROWSER_FQDN}:${BROWSER_PORT}/git
+git clone ${BROWSER_SCHEME}://[${user}:${password}@]${BROWSER_FQDN}:[${BROWSER_PORT}]/git
 ```
-eg `http://localhost/git`
+eg `git clone http://user:password@localhost/git`
 
-Then create or add some data saved as *.ttl file.
+Then create or add some data saved as `*.ttl` file. The extension __must__ be `.ttl` otherwise it will be ignored.
 
 Here we provide a basic example to get you up and running:
 ```
