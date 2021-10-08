@@ -45,3 +45,4 @@ Thumbs.db
 # Statistic Files
 src/assets/data/*
 !src/assets/data/LoincCodes.json
+!src/assets/data/datasource.xml
