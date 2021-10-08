@@ -114,7 +114,7 @@ def fuseki_load_provenance():
         "fuseki_load_provenance (exitcode)": result[1]
     }
 
-@app.route('/search/<pattern>')
+@app.route('/query/search/<pattern>')
 def search(pattern):
     url=os.environ["FUSEKI_TEST_SERVER"]+'/query'
     query = Path(os.environ["COMETAR_PROD_DIR"]+'/information_retrieval/search.sparql').read_text()
