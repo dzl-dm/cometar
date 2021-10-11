@@ -1,4 +1,4 @@
 [core]
-	eol lf
-	autocrlf input
+	eol = lf
+	autocrlf = input
 	
