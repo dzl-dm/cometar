@@ -10,7 +10,7 @@ BEGIN {
 	label=$5
 	for (i = 6; i <= FN; i++)
 		label=label";"$i
-	print "\tprov:label \"" gensub(/\"/,"\\&quot;","g",label) "\";" >> output;
+	print "\tprov:label \"" gensub(/["]/,"\\&quot;","g",label) "\";" >> output;
 	#print "\tprov:generated [ a prov:Entity; prov:specializationOf :ontology ];" >> output;
 	
 	split($2, a, " ");
