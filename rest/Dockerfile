@@ -26,6 +26,6 @@ ENV FUSEKI_TEST_SERVER=${FUSEKI_TEST_SERVER:-http://fuseki:3030/cometar_test}
 ENV FUSEKI_LIVE_SERVER=${FUSEKI_LIVE_SERVER:-http://fuseki:3030/cometar_live}
 
 ## Shortly after restart, ensure fuseki reloads the thesaurus and provenance data
-CMD /bin/bash -c "sleep 5; curl -s -H 'Accept: application/json' 'http://localhost:5000/fuseki_load_live' && curl -s -H 'Accept: application/json' 'http://localhost:5000/fuseki_load_provenance" & \
+CMD /bin/bash -c "sleep 5; curl -s -H 'Accept: application/json' 'http://localhost:5000/fuseki_load_live' && curl -s -H 'Accept: application/json' 'http://localhost:5000/fuseki_load_provenance'" & \
     export FLASK_APP="$COMETAR_PROD_DIR/flask/cometar.py" && \
     flask run -h 0.0.0.0 --reload
