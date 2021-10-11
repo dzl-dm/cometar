@@ -10,7 +10,7 @@ if [[ "$upload_verification" == *"403 Forbidden"* ]]; then
   exit 1
 fi
 
-echo "$upload_verification" | jq -r '.response'
+echo "$upload_verification" | jq -r '.rdf_verification_steps_response'
 
 exitcode=$(echo "$upload_verification" | jq -r '.exitcode')
 if [ "$exitcode" == "0" ]; then

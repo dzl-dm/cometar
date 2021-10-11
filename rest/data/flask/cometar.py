@@ -75,23 +75,29 @@ def rdf_verification(commit_id):
 def rdf_verification_json(commit_id):
     result = rdf_verification_steps(commit_id)
     return {
-        "response": result[0],
+        "rdf_verification_steps_response": result[0],
         "exitcode": result[1]
     }
 
 @app.route('/fuseki_load_test')
 def fuseki_load_test():
     result = load_into_fuseki("test")
+    response = "SUCCESS"
+    if result[1] == 1:
+        response = result[0]
     return {
-        "response": result[0],
+        "load_into_fuseki_test_response": response,
         "exitcode": result[1]
     }
 @app.route('/fuseki_load_live')
 def fuseki_load_live():
     result = load_into_fuseki("live")
+    response = "SUCCESS"
+    if result[1] == 1:
+        response = result[0]
     return {
-        # "fuseki_load_live (response)": result[0],
-        "fuseki_load_live (exitcode)": result[1]
+        "load_into_fuseki_live_response": response,
+        "exitcode": result[1]
     }
 
 @app.route('/update_provenance')
@@ -99,11 +105,19 @@ def update_provenance():
     result = update_provenance_data()
     if result[1] == 0:
         result2 = fuseki_load_provenance_data()
+    else:
+        return {
+            "error": "update_provenance_data failed",
+            "output": result[0]
+        }
+    if result2[1] == 1:
+        return {
+            "error": "fuseki_load_provenance_data failed",
+            "output": result2[0]
+        }
     return {
-        # "update_provenance (response)": result[0],
-        "update_provenance (exitcode)": result[1],
-        # "fuseki_load_provenance (response)": result2[0],
-        "fuseki_load_provenance (exitcode)": result2[1]
+        "update_provenance": "SUCCESS",
+        "exitcode": result2[1]
     }
 
 @app.route('/fuseki_load_provenance')

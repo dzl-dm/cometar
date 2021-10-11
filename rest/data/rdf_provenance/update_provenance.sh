@@ -71,6 +71,6 @@ if [[ "$branch" == "master" ]] ; then
 	if [[ "$newrev" != "" ]] ; then
 		newrevargument="-n $newrev"
 	fi
-	echo "Conf: $conffile\nfrom date: $from_date\nnew rev arg: $newrevargument"
+	
 	"${PROVENANCESCRIPTDIR}/write_provenance.sh" -p "$conffile" -f "$from_date" "$newrevargument"
 fi
