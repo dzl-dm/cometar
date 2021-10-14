@@ -14,6 +14,7 @@ RUN git init --bare "${GIT_BASE}" && \
     rm /etc/nginx/conf.d/default.conf
 
 ## Setup env vars. These could be overriden, but in standard docker deployments will always be the same
+ENV TZ="Europe/Berlin"
 ENV BROWSER_FQDN=${BROWSER_FQDN:-localhost}
 ENV REST_SERVER=${REST_SERVER:-http://cometar_rest:5000}
 ENV FUSEKI_SERVER=${FUSEKI_SERVER:-http://cometar_fuseki:3030}

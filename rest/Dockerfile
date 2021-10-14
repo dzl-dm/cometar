@@ -8,6 +8,7 @@ ENV COMETAR_PROD_DIR=${COMETAR_PROD_DIR:-/cometar}
 ENV TZ="Europe/Berlin"
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
+    apt-get -y install tzdata && \
     apt-get install -y git=1:2.25.1-* git-core curl python3=3.8.2-* python3-pip gawk && \
     pip3 install --no-cache-dir --upgrade setuptools && \
     pip3 install --no-cache-dir Werkzeug Jinja2 MarkupSafe ItsDangerous Click Flask requests flask-accept && \

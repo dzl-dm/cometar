@@ -38,6 +38,7 @@ COPY src/assets/config/config_template.json /config/cometar_config_template.json
 RUN rm /etc/nginx/conf.d/default.conf
 
 ## Setup env vars. These could be overriden, but in standard docker deployments will always be the same
+ENV TZ="Europe/Berlin"
 ENV BROWSER_FQDN=${BROWSER_FQDN:-localhost}
 ENV GIT_SERVER=${GIT_SERVER:-http://cometar_git}
 ENV BROWSER_GIT_PATH=${BROWSER_GIT_PATH:-/git}

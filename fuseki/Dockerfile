@@ -1,6 +1,8 @@
 ## See: https://github.com/stain/jena-docker/blob/master/jena-fuseki/Dockerfile
 FROM stain/jena-fuseki:4.0.0
 
+ENV TZ="Europe/Berlin"
+
 ## Tools for debugging
 # RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
 #     apt-get install -y --no-install-recommends procps less vim
