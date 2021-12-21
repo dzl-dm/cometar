@@ -3,7 +3,7 @@ version: "3"
 volumes:
   repository:
   auth:
-  fuseki-default:
+  fuseki-data:
 
 services:
   web:
@@ -54,5 +54,5 @@ services:
     #   dockerfile: Dockerfile
     container_name:
       cometar_fuseki
-    volumes:
-      - fuseki-default:/fuseki
+    # volumes:
+    #   - fuseki-data:/fuseki/databases

@@ -26,7 +26,9 @@ docker compose up -d
 
 This provides a running system available at `${BROWSER_SCHEME}://${BROWSER_FQDN}:${BROWSER_PORT}` eg. [http://localhost](http://localhost)
 
-You may want to edit some settings in `.env` or `docker-compose.yml` before deploying, and for production deployments more substantial changes could be desired including running behind an https terminating proxy
+This provides a running system available at `${BROWSER_SCHEME}://${BROWSER_FQDN}:${BROWSER_PORT}` eg. [http://localhost](http://localhost)
+
+You may want to edit some settings in `docker-compose.yml` before deploying, and for production deployments more substantial changes could be desired including running behind an https terminating proxy
 
 ### _Optional: Building_
 If you would like to build the docker images yourself (allowing you to modify them), this section outlines how the services work together. The `Dockerfile`s are in the repo and the `docker-compose.yml` can be edited to use them instead of the published images (see the comments)
