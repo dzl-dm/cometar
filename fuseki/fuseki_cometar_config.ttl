@@ -14,34 +14,111 @@
 
 <#cometar_live> rdf:type fuseki:Service ;
     fuseki:name                        "cometar_live" ;
-    fuseki:serviceQuery                "sparql" ;
-    fuseki:serviceQuery                "query" ;
-    fuseki:serviceUpdate               "update" ;
-    fuseki:serviceUpload               "upload" ;
-    fuseki:serviceReadWriteGraphStore  "data" ;
-    fuseki:serviceReadGraphStore       "get" ;
-    fuseki:dataset                     <#emptyDataset> ;
+    fuseki:endpoint [
+         # SPARQL query service
+        fuseki:operation fuseki:query ;
+        fuseki:name "sparql"
+    ] ;
+    fuseki:endpoint [
+         # SPARQL query service (alt name)
+        fuseki:operation fuseki:query ;
+        fuseki:name "query"
+    ] ;
+    fuseki:endpoint [
+         # SPARQL update service
+        fuseki:operation fuseki:update ;
+        fuseki:name "update"
+    ] ;
+    fuseki:endpoint [
+         # HTML file upload service
+        fuseki:operation fuseki:upload ;
+        fuseki:name "upload"
+    ] ;
+    fuseki:endpoint [
+         # SPARQL Graph Store Protocol (read)
+        fuseki:operation fuseki:gsp_r ;
+        fuseki:name "get"
+    ] ;
+    fuseki:endpoint [
+        # SPARQL Graph Store Protcol (read and write)
+        fuseki:operation fuseki:gsp_rw ;
+        fuseki:name "data"
+    ] ;
+    fuseki:dataset                     <#emptyDatasetLive> ;
     .
 
-<#emptyDataset> rdf:type ja:RDFDataset .
+<#emptyDatasetLive> rdf:type ja:RDFDataset .
 
 <#cometar_test> rdf:type fuseki:Service ;
     fuseki:name                        "cometar_test" ;
-    fuseki:serviceQuery                "sparql" ;
-    fuseki:serviceQuery                "query" ;
-    fuseki:serviceUpdate               "update" ;
-    fuseki:serviceUpload               "upload" ;
-    fuseki:serviceReadWriteGraphStore  "data" ;
-    fuseki:serviceReadGraphStore       "get" ;
-    fuseki:dataset                     <#emptyDataset> ;
+    fuseki:endpoint [
+         # SPARQL query service
+        fuseki:operation fuseki:query ;
+        fuseki:name "sparql"
+    ] ;
+    fuseki:endpoint [
+         # SPARQL query service (alt name)
+        fuseki:operation fuseki:query ;
+        fuseki:name "query"
+    ] ;
+    fuseki:endpoint [
+         # SPARQL update service
+        fuseki:operation fuseki:update ;
+        fuseki:name "update"
+    ] ;
+    fuseki:endpoint [
+         # HTML file upload service
+        fuseki:operation fuseki:update ;
+        fuseki:name "update"
+    ] ;
+    fuseki:endpoint [
+         # SPARQL Graph Store Protocol (read)
+        fuseki:operation fuseki:gsp_r ;
+        fuseki:name "get"
+    ] ;
+    fuseki:endpoint [
+        # SPARQL Graph Store Protcol (read and write)
+        fuseki:operation fuseki:gsp_rw ;
+        fuseki:name "data"
+    ] ;
+    fuseki:dataset                     <#emptyDatasetTest> ;
     .
+
+<#emptyDatasetTest> rdf:type ja:RDFDataset .
 
 <#cometar_dev> rdf:type fuseki:Service ;
     fuseki:name                        "cometar_dev" ;
-    fuseki:serviceQuery                "sparql" ;
-    fuseki:serviceQuery                "query" ;
-    fuseki:serviceUpdate               "update" ;
-    fuseki:serviceUpload               "upload" ;
-    fuseki:serviceReadWriteGraphStore  "data" ;
-    fuseki:serviceReadGraphStore       "get" ;
-    fuseki:dataset                     <#emptyDataset> ;
+    fuseki:endpoint [
+         # SPARQL query service
+        fuseki:operation fuseki:query ;
+        fuseki:name "sparql"
+    ] ;
+    fuseki:endpoint [
+         # SPARQL query service (alt name)
+        fuseki:operation fuseki:query ;
+        fuseki:name "query"
+    ] ;
+    fuseki:endpoint [
+         # SPARQL update service
+        fuseki:operation fuseki:update ;
+        fuseki:name "update"
+    ] ;
+    fuseki:endpoint [
+         # HTML file upload service
+        fuseki:operation fuseki:update ;
+        fuseki:name "update"
+    ] ;
+    fuseki:endpoint [
+         # SPARQL Graph Store Protocol (read)
+        fuseki:operation fuseki:gsp_r ;
+        fuseki:name "get"
+    ] ;
+    fuseki:endpoint [
+        # SPARQL Graph Store Protcol (read and write)
+        fuseki:operation fuseki:gsp_rw ;
+        fuseki:name "data"
+    ] ;
+    fuseki:dataset                     <#emptyDatasetDev> ;
+    .
+
+<#emptyDatasetDev> rdf:type ja:RDFDataset .

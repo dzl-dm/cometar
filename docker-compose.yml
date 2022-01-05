@@ -1,16 +1,16 @@
-version: "3.9"
+version: "3"
 
 volumes:
   repository:
   auth:
-  fuseki-default:
+  fuseki-data:
 
 services:
   web:
-    # image: ${IMAGE_NAMESPACE}/cometar/cometar-web
-    build:
-      context: ./web
-      dockerfile: Dockerfile
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-web
+    # build:
+    #   context: ./web
+    #   dockerfile: Dockerfile
     ports:
       - 80:80
     container_name:
@@ -23,10 +23,10 @@ services:
       - "rest"
       - "git"
   git:
-    # image: ${IMAGE_NAMESPACE}/cometar/cometar-git
-    build:
-      context: ./git
-      dockerfile: Dockerfile
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-git
+    # build:
+    #   context: ./git
+    #   dockerfile: Dockerfile
     container_name:
       cometar_git
     env_file:
@@ -37,10 +37,10 @@ services:
     depends_on:
       - "rest"
   rest:
-    # image: ${IMAGE_NAMESPACE}/cometar/cometar-rest
-    build:
-      context: ./rest
-      dockerfile: Dockerfile
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-rest
+    # build:
+    #   context: ./rest
+    #   dockerfile: Dockerfile
     container_name:
       cometar_rest
     volumes:
@@ -48,11 +48,11 @@ services:
     depends_on:
       - "fuseki"
   fuseki:
-    # image: ${IMAGE_NAMESPACE}/cometar/cometar-fuseki
-    build:
-      context: ./fuseki
-      dockerfile: Dockerfile
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-fuseki
+    # build:
+    #   context: ./fuseki
+    #   dockerfile: Dockerfile
     container_name:
       cometar_fuseki
-    volumes:
-      - fuseki-default:/fuseki
+    # volumes:
+    #   - fuseki-data:/fuseki/databases

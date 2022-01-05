@@ -1,6 +1,15 @@
 # CoMetaR - Colaborative Metadata Repository
 
+## Pre-requisites
+We are assuming a clean, linux based (git-bash and other windows based mechanisms should also work) environment with docker already installed and available to the user you are logged in as.
+
 ## Deployment
+The first step is to copy the essential files from our repo as templates, these will then be edited for you environment (you may prefer to prepare everything on your desktop then copy over to the deployment system)
+```sh
+wget https://raw.githubusercontent.com/dzl-dm/cometar/master/docker-compose.yml
+wget https://raw.githubusercontent.com/dzl-dm/cometar/master/.env
+```
+> _NOTE:_ If you prefer to build the images yourself (or edit the way they are built), you shoud clone our whole repo: `git clone https://github.com/dzl-dm/cometar.git`
 
 ### Configuration
 Environment variables are set in the .env file. You may reference another environment file by editing the `docker-compose.yml` file.
@@ -9,22 +18,19 @@ We provide a commented reference of all environment variables available for this
 Environment variables are used during deployment of containers to apply various configurations, so you should make these changes before deployment. They can also affect the build stage, however we limit the cases where this applies as the images should be neutral and re-usable for anyone.
 
 ### Docker based deployment guide
-Clone this repo and cd into the new dir:
-```sh
-git clone https://github.com/dzl-dm/cometar.git .
-cd cometar
-```
-
-Use docker compose to build and run the components
+Use docker compose to build and run the components:
 ```sh
 docker compose up -d
 ```
+> _NOTE:_ Older versions of docker do not include `compose` as a sub-command, you may need to install docker-compose separately and use the hyphenated command `docker-compose` in place of `docker compose`
+
+This provides a running system available at `${BROWSER_SCHEME}://${BROWSER_FQDN}:${BROWSER_PORT}` eg. [http://localhost](http://localhost)
 
 This provides a running system available at `${BROWSER_SCHEME}://${BROWSER_FQDN}:${BROWSER_PORT}` eg. [http://localhost](http://localhost)
 
 You may want to edit some settings in `docker-compose.yml` before deploying, and for production deployments more substantial changes could be desired including running behind an https terminating proxy
 
-### Building
+### _Optional: Building_
 If you would like to build the docker images yourself (allowing you to modify them), this section outlines how the services work together. The `Dockerfile`s are in the repo and the `docker-compose.yml` can be edited to use them instead of the published images (see the comments)
 
 #### web
