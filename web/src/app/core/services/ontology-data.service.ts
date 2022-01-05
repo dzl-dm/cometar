@@ -70,6 +70,9 @@ export class OntologyDataService {
       if (checkti.length > 0) { newti = checkti[0]; }
       else {
         const info = is.filter(i => i.element.value == c.value)[0];
+        if (info == undefined){
+          return
+        }
         newti = new TreeItem(info);
         this.treeItems.push(newti);
         this.fillOntologyRecursively(newti,pcs,is,gtis);  
