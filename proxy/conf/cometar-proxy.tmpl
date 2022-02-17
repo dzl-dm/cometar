@@ -1,16 +1,33 @@
+## Introduce connection and request rate limiting to protect against DOS attacks (10m cache size ~160,000 IPs)
+## $proxy_protocol_addr vs $binary_remote_addr (OR $remote_addr) ??
+limit_req_zone $remote_addr zone=dm-req-prod:36m rate=30r/s;
+limit_conn_zone $remote_addr zone=dm-conn-prod:36m;
 server {
     listen       80;
     listen  [::]:80;
+    listen       443 ssl;
+    listen  [::]:443 ssl;
     server_name  $BROWSER_FQDN;
 
-    location / {
-        root   /usr/share/nginx/html/cometar_browser;
-        index  index.html index.htm;
-    }
+    ssl_certificate /etc/letsencrypt/live/${BROWSER_FQDN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${BROWSER_FQDN}/privkey.pem;
+    include /etc/nginx/conf.d/ssl-settings.inc;
 
     error_page   500 502 503 504  /50x.html;
     location = /50x.html {
         root   /usr/share/nginx/html;
+    }
+
+    ## Burst rate limit settings (delay after delay=X no. of requests)
+    limit_req zone=dm-req-prod burst=5000 delay=500;
+    limit_conn dm-conn-prod 60;
+
+    location / {
+        proxy_pass         $WEB_SERVER/;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Host $server_name;
     }
 
     location /git/ {
@@ -18,7 +35,6 @@ server {
         proxy_set_header   Host $host;
         proxy_set_header   X-Real-IP $remote_addr;
         proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-#        proxy_set_header   X-Forwarded-For "$http_x_forwarded_for, $realip_remote_addr";
         proxy_set_header   X-Forwarded-Host $server_name;
 
         satisfy any;
@@ -43,7 +59,7 @@ server {
         deny all;
     }
 
-    ## Allow browser access to simple query services
+    ## Allow browser access to read-only query services
     location /rest/query/ {
         proxy_pass $REST_SERVER/query/;
         proxy_set_header   Host $host;

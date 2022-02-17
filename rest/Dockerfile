@@ -5,7 +5,7 @@ ARG COMETAR_BASE_DIR=${COMETAR_BASE_DIR:-/cometar_base}
 ENV COMETAR_TEMP_DIR=${COMETAR_TEMP_DIR:-/tmp/cometar}
 ENV COMETAR_PROD_DIR=${COMETAR_PROD_DIR:-/cometar}
 
-ENV TZ="Europe/Berlin"
+ENV TZ=${TZ:-'Europe/Berlin'}
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get update && \
     apt-get -y install tzdata && \
@@ -19,12 +19,13 @@ COPY config config
 
 RUN mkdir -p $COMETAR_PROD_DIR && \
     cp -R "${COMETAR_BASE_DIR}/." "${COMETAR_PROD_DIR}/" && \
-    find "${COMETAR_PROD_DIR}/" -type f -iname "*.sh" -execdir chmod u+x {} +
+    find "${COMETAR_PROD_DIR}/" -type f -iname "*.sh" -execdir chmod +x {} +
 
 EXPOSE 5000
 
-ENV FUSEKI_TEST_SERVER=${FUSEKI_TEST_SERVER:-http://fuseki:3030/cometar_test}
-ENV FUSEKI_LIVE_SERVER=${FUSEKI_LIVE_SERVER:-http://fuseki:3030/cometar_live}
+ENV FUSEKI_TEST_SERVER=${FUSEKI_TEST_SERVER:-http://cometar.fuseki:3030/cometar_test}
+ENV FUSEKI_LIVE_SERVER=${FUSEKI_LIVE_SERVER:-http://cometar.fuseki:3030/cometar_live}
+ENV FUSEKI_DEV_SERVER=${FUSEKI_DEV_SERVER:-http://cometar.fuseki:3030/cometar_dev}
 
 ## Shortly after restart, ensure fuseki reloads the thesaurus and provenance data
 CMD /bin/bash -c "sleep 5; curl -s -H 'Accept: application/json' 'http://localhost:5000/fuseki_load_live' && curl -s -H 'Accept: application/json' 'http://localhost:5000/fuseki_load_provenance'" & \

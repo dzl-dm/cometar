@@ -5,6 +5,7 @@ def get_last_provenance_date():
     prov_files_dir="/var/lib/cometar/provenance/output"
     filenames=os.listdir(prov_files_dir)
     if len(filenames) == 0:
+        ## TOOD: Define this as a variable?
         return "2017-01-01 00:00:00"
     filenames.sort
     last_filename=filenames[-1]

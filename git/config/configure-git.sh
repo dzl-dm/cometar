@@ -1,7 +1,6 @@
 #!/bin/sh
 echo "---- BEGIN GIT CONFIGURATION ----"
 
-GIT_BASE=${GIT_BASE:-/git}
 ## Check git repo exists, if not init
 if [[ cd ${GIT_BASE} && git rev-parse --git-dir > /dev/null 2>&1 ]] ; then
   echo "Git repo exists..."

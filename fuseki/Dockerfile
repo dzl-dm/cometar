@@ -89,7 +89,7 @@ ARG FUSEKI_CONFIG
 ARG FUSEKI_DIR
 ARG FUSEKI_JAR
 
-ENV TZ=${TZ:-"Europe/Berlin"}
+ENV TZ=${TZ:-'Europe/Berlin'}
 
 COPY --from=base /opt/java-minimal /opt/java-minimal
 COPY --from=base /fuseki /fuseki
@@ -111,7 +111,7 @@ RUN \
 ## Default environment variables.
 ENV \
     JAVA_HOME=${JAVA_MINIMAL}           \
-    JAVA_OPTIONS="-Xmx2048m -Xms2048m"  \
+    JAVA_OPTIONS="-Xmx2048m -Xms1024m"  \
     JENA_VERSION=${JENA_VERSION}        \
     FUSEKI_CONFIG="${FUSEKI_CONFIG}"    \
     FUSEKI_JAR="${FUSEKI_JAR}"          \
