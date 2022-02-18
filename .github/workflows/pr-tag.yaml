@@ -12,11 +12,23 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  proxy:
+  tag_check:
     runs-on: ubuntu-latest
-    if: |
-      github.ref == 'refs/heads/master' &&
-      startsWith(github.event.head_commit.message, 'Merge pull request')
+    if: $(git branch -r -a --contains "${{ github.sha }}" | grep -v detached | tr -d "*" | tr -s " " | grep "master")))
+    outputs:
+      tag_package_status: ${{ steps.status.outputs.tag_packages }}
+      package_names: ${{ steps.status.outputs.package_names }}
+    steps:
+      - name: Pre-requisites
+        id: status
+        if: startsWith(github.event.head_commit.message, 'Merge pull request')
+        run: |
+          echo ::set-output name=tag_packages::'true'
+          echo ::set-output name=package_names::'proxy web git rest fuseki'
+          echo "Tagging of packages should happen as we are receiving a tag on master branch..."
+
+  tag_packages:
+    runs-on: ubuntu-latest
     steps:
       - name: Prepare Version
         id: prep
@@ -24,95 +36,48 @@ jobs:
           echo ::set-output name=commit_sha::$(git show --format="%P" "${{ github.sha }}" | cut -d" " -f2)
           echo ::set-output name=repository::$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
-      - name: Add git Version tag to Docker Image
+
+      - name: Add git Version tag to proxy Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-proxy'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
             'latest'
-  web:
-    runs-on: ubuntu-latest
-    if: |
-      github.ref == 'refs/heads/master' &&
-      startsWith(github.event.head_commit.message, 'Merge pull request')
-    steps:
-      - name: Prepare Version
-        id: prep
-        run: |
-          echo ::set-output name=commit_sha::$(git show --format="%P" "${{ github.sha }}" | cut -d" " -f2)
-          echo ::set-output name=repository::$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
-      - name: Add git Version tag to Docker Image
+      - name: Add git Version tag to web Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-web'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
             'latest'
-  git:
-    runs-on: ubuntu-latest
-    if: |
-      github.ref == 'refs/heads/master' &&
-      startsWith(github.event.head_commit.message, 'Merge pull request')
-    steps:
-      - name: Prepare Version
-        id: prep
-        run: |
-          echo ::set-output name=commit_sha::$(git show --format="%P" "${{ github.sha }}" | cut -d" " -f2)
-          echo ::set-output name=repository::$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
-      - name: Add git Version tag to Docker Image
+      - name: Add git Version tag to git Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-git'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
             'latest'
-  fuseki:
-    runs-on: ubuntu-latest
-    if: |
-      github.ref == 'refs/heads/master' &&
-      startsWith(github.event.head_commit.message, 'Merge pull request')
-    steps:
-      - name: Prepare Version
-        id: prep
-        run: |
-          echo ::set-output name=commit_sha::$(git show --format="%P" "${{ github.sha }}" | cut -d" " -f2)
-          echo ::set-output name=repository::$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
-      - name: Add git Version tag to Docker Image
+      - name: Add git Version tag to rest Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-rest'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
             'latest'
-  rest:
-    runs-on: ubuntu-latest
-    if: |
-      github.ref == 'refs/heads/master' &&
-      startsWith(github.event.head_commit.message, 'Merge pull request')
-    steps:
-      - name: Prepare Version
-        id: prep
-        run: |
-          echo ::set-output name=commit_sha::$(git show --format="%P" "${{ github.sha }}" | cut -d" " -f2)
-          echo ::set-output name=repository::$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
-      - name: Add git Version tag to Docker Image
+      - name: Add git Version tag to fuseki Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-fuseki'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
