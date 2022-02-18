@@ -32,7 +32,7 @@ jobs:
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
-            '${{ latest }}'
+            'latest'
   web:
     runs-on: ubuntu-latest
     if: |
@@ -53,7 +53,7 @@ jobs:
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
-            '${{ latest }}'
+            'latest'
   git:
     runs-on: ubuntu-latest
     if: |
@@ -74,7 +74,7 @@ jobs:
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
-            '${{ latest }}'
+            'latest'
   fuseki:
     runs-on: ubuntu-latest
     if: |
@@ -95,7 +95,7 @@ jobs:
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
-            '${{ latest }}'
+            'latest'
   rest:
     runs-on: ubuntu-latest
     if: |
@@ -116,4 +116,4 @@ jobs:
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
-            '${{ latest }}'
+            'latest'
