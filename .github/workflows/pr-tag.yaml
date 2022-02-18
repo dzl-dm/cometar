@@ -27,7 +27,7 @@ jobs:
       - name: Add git Version tag to Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
-          registry: '${{ REGISTRY }}'
+          registry: '${{ env.REGISTRY }}'
           repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
@@ -48,7 +48,7 @@ jobs:
       - name: Add git Version tag to Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
-          registry: '${{ REGISTRY }}'
+          registry: '${{ env.REGISTRY }}'
           repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
@@ -69,7 +69,7 @@ jobs:
       - name: Add git Version tag to Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
-          registry: '${{ REGISTRY }}'
+          registry: '${{ env.REGISTRY }}'
           repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
@@ -90,7 +90,7 @@ jobs:
       - name: Add git Version tag to Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
-          registry: '${{ REGISTRY }}'
+          registry: '${{ env.REGISTRY }}'
           repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
@@ -111,7 +111,7 @@ jobs:
       - name: Add git Version tag to Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
-          registry: '${{ REGISTRY }}'
+          registry: '${{ env.REGISTRY }}'
           repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
