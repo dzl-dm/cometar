@@ -29,6 +29,8 @@ jobs:
 
   tag_packages:
     runs-on: ubuntu-latest
+    needs: [tag_check]
+    if: needs.tag_check.outputs.tag_package_status == 'true'
     steps:
       - name: Prepare Version
         id: prep
@@ -40,7 +42,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-proxy'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}/${{ github.repository }}-proxy'
           target: 'sha-${{ github.sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
@@ -49,7 +51,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-web'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}/${{ github.repository }}-web'
           target: 'sha-${{ github.sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
@@ -58,7 +60,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-git'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}/${{ github.repository }}-git'
           target: 'sha-${{ github.sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
@@ -67,7 +69,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-rest'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}/${{ github.repository }}-rest'
           target: 'sha-${{ github.sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
@@ -76,7 +78,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-fuseki'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}/${{ github.repository }}-fuseki'
           target: 'sha-${{ github.sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
