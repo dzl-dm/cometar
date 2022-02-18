@@ -1,0 +1,122 @@
+name: Tag accepted CoMetaR Docker Images with version (exact commit - eg ff merge)
+## Update the docker image/package tags - image must be tagged with this commit's sha
+## Adapted from: https://github.com/marketplace/actions/docker-registry-tag
+## You must tag the commit where the package was built, so best to squash commit the branch (or a candidate branch of the branch) for the actual build, which can then be fast forward merged into master
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+**
+    ## This is an OR condition, not AND - see if: per job
+    # branches:    
+    #   - master
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  proxy:
+    runs-on: ubuntu-latest
+    ## Only against a regular commit (probably previously merged from a branch) to master
+    if: |
+      github.ref == 'refs/heads/master' &&
+      !startsWith(github.event.head_commit.message, 'Merge pull request')
+    steps:
+      - name: Prepare Version
+        id: prep
+        run: |
+          echo ::set-output name=repository::$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
+      - name: Add git Version tag to Docker Image
+        uses: shrink/actions-docker-registry-tag@v1
+        with:
+          registry: '${{ REGISTRY }}'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
+          target: 'sha-${{ github.sha }}'
+          tags: |
+            'v${{ steps.prep.outputs.version }}'
+            '${{ latest }}'
+  web:
+    runs-on: ubuntu-latest
+    ## Only against a regular commit (probably previously merged from a branch) to master
+    if: |
+      github.ref == 'refs/heads/master' &&
+      !startsWith(github.event.head_commit.message, 'Merge pull request')
+    steps:
+      - name: Prepare Version
+        id: prep
+        run: |
+          echo ::set-output name=repository::$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
+      - name: Add git Version tag to Docker Image
+        uses: shrink/actions-docker-registry-tag@v1
+        with:
+          registry: '${{ REGISTRY }}'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
+          target: 'sha-${{ github.sha }}'
+          tags: |
+            'v${{ steps.prep.outputs.version }}'
+            '${{ latest }}'
+  git:
+    runs-on: ubuntu-latest
+    ## Only against a regular commit (probably previously merged from a branch) to master
+    if: |
+      github.ref == 'refs/heads/master' &&
+      !startsWith(github.event.head_commit.message, 'Merge pull request')
+    steps:
+      - name: Prepare Version
+        id: prep
+        run: |
+          echo ::set-output name=repository::$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
+      - name: Add git Version tag to Docker Image
+        uses: shrink/actions-docker-registry-tag@v1
+        with:
+          registry: '${{ REGISTRY }}'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
+          target: 'sha-${{ github.sha }}'
+          tags: |
+            'v${{ steps.prep.outputs.version }}'
+            '${{ latest }}'
+  fuseki:
+    runs-on: ubuntu-latest
+    ## Only against a regular commit (probably previously merged from a branch) to master
+    if: |
+      github.ref == 'refs/heads/master' &&
+      !startsWith(github.event.head_commit.message, 'Merge pull request')
+    steps:
+      - name: Prepare Version
+        id: prep
+        run: |
+          echo ::set-output name=repository::$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
+      - name: Add git Version tag to Docker Image
+        uses: shrink/actions-docker-registry-tag@v1
+        with:
+          registry: '${{ REGISTRY }}'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
+          target: 'sha-${{ github.sha }}'
+          tags: |
+            'v${{ steps.prep.outputs.version }}'
+            '${{ latest }}'
+  rest:
+    runs-on: ubuntu-latest
+    ## Only against a regular commit (probably previously merged from a branch) to master
+    if: |
+      github.ref == 'refs/heads/master' &&
+      !startsWith(github.event.head_commit.message, 'Merge pull request')
+    steps:
+      - name: Prepare Version
+        id: prep
+        run: |
+          echo ::set-output name=repository::$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
+      - name: Add git Version tag to Docker Image
+        uses: shrink/actions-docker-registry-tag@v1
+        with:
+          registry: '${{ REGISTRY }}'
+          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}-${{ github.job }}'
+          target: 'sha-${{ github.sha }}'
+          tags: |
+            'v${{ steps.prep.outputs.version }}'
+            '${{ latest }}'

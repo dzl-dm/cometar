@@ -12,10 +12,11 @@ env:
 jobs:
   proxy:
     runs-on: ubuntu-latest
-    ## Only run job if commit message doesn't contain "WIP:" or "ci skip"
+    ## Only run job if commit message doesn't contain "WIP:" or "ci skip" is not triggered by dependabot
     if: |
-      !startsWith(github.event.head_commit.message, 'WIP:') ||
-      !contains(github.event.head_commit.message, 'ci skip')
+      !startsWith(github.event.head_commit.message, 'WIP:') &&
+      !contains(github.event.head_commit.message, 'ci skip') &&
+      !contains(github.ref, 'dependabot')
     steps:
       - uses: actions/checkout@v2
 
@@ -42,10 +43,11 @@ jobs:
           push: true
   web:
     runs-on: ubuntu-latest
-    ## Only run job if commit message doesn't contain "WIP:" or "ci skip"
+    ## Only run job if commit message doesn't contain "WIP:" or "ci skip" is not triggered by dependabot
     if: |
-      !startsWith(github.event.head_commit.message, 'WIP:') ||
-      !contains(github.event.head_commit.message, 'ci skip')
+      !startsWith(github.event.head_commit.message, 'WIP:') &&
+      !contains(github.event.head_commit.message, 'ci skip') &&
+      !contains(github.ref, 'dependabot')
     steps:
       - uses: actions/checkout@v2
 
@@ -72,10 +74,11 @@ jobs:
           push: true
   git:
     runs-on: ubuntu-latest
-    ## Only run job if commit message doesn't contain "WIP:" or "ci skip"
+    ## Only run job if commit message doesn't contain "WIP:" or "ci skip" is not triggered by dependabot
     if: |
-      !startsWith(github.event.head_commit.message, 'WIP:') ||
-      !contains(github.event.head_commit.message, 'ci skip')
+      !startsWith(github.event.head_commit.message, 'WIP:') &&
+      !contains(github.event.head_commit.message, 'ci skip') &&
+      !contains(github.ref, 'dependabot')
     steps:
       - uses: actions/checkout@v2
 
@@ -102,10 +105,11 @@ jobs:
           push: true
   fuseki:
     runs-on: ubuntu-latest
-    ## Only run job if commit message doesn't contain "WIP:" or "ci skip"
+    ## Only run job if commit message doesn't contain "WIP:" or "ci skip" is not triggered by dependabot
     if: |
-      !startsWith(github.event.head_commit.message, 'WIP:') ||
-      !contains(github.event.head_commit.message, 'ci skip')
+      !startsWith(github.event.head_commit.message, 'WIP:') &&
+      !contains(github.event.head_commit.message, 'ci skip') &&
+      !contains(github.ref, 'dependabot')
     steps:
       - uses: actions/checkout@v2
 
@@ -132,10 +136,11 @@ jobs:
           push: true
   rest:
     runs-on: ubuntu-latest
-    ## Only run job if commit message doesn't contain "WIP:" or "ci skip"
+    ## Only run job if commit message doesn't contain "WIP:" or "ci skip" is not triggered by dependabot
     if: |
-      !startsWith(github.event.head_commit.message, 'WIP:') ||
-      !contains(github.event.head_commit.message, 'ci skip')
+      !startsWith(github.event.head_commit.message, 'WIP:') &&
+      !contains(github.event.head_commit.message, 'ci skip') &&
+      !contains(github.ref, 'dependabot')
     steps:
       - uses: actions/checkout@v2
 
