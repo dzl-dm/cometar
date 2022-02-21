@@ -53,8 +53,8 @@ jobs:
           repository: '${{ github.repository }}/${{ github.event.repository.name }}-proxy'
           target: 'sha-${{ github.sha }}'
           tags: |
-            'v${{ steps.prep.outputs.version }}'
-            'latest'
+            v${{ steps.prep.outputs.version }}
+            latest
       - name: Add git Version tag to web Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
@@ -63,8 +63,8 @@ jobs:
           repository: '${{ github.repository }}/${{ github.event.repository.name }}-web'
           target: 'sha-${{ github.sha }}'
           tags: |
-            'v${{ steps.prep.outputs.version }}'
-            'latest'
+            v${{ steps.prep.outputs.version }}
+            latest
       - name: Add git Version tag to git Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
@@ -73,8 +73,8 @@ jobs:
           repository: '${{ github.repository }}/${{ github.event.repository.name }}-git'
           target: 'sha-${{ github.sha }}'
           tags: |
-            'v${{ steps.prep.outputs.version }}'
-            'latest'
+            v${{ steps.prep.outputs.version }}
+            latest
       - name: Add git Version tag to rest Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
@@ -83,8 +83,8 @@ jobs:
           repository: '${{ github.repository }}/${{ github.event.repository.name }}-rest'
           target: 'sha-${{ github.sha }}'
           tags: |
-            'v${{ steps.prep.outputs.version }}'
-            'latest'
+            v${{ steps.prep.outputs.version }}
+            latest
       - name: Add git Version tag to fuseki Docker Image
         uses: shrink/actions-docker-registry-tag@v1
         with:
@@ -93,5 +93,5 @@ jobs:
           repository: '${{ github.repository }}/${{ github.event.repository.name }}-fuseki'
           target: 'sha-${{ github.sha }}'
           tags: |
-            'v${{ steps.prep.outputs.version }}'
-            'latest'
+            v${{ steps.prep.outputs.version }}
+            latest
