@@ -43,7 +43,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}/${{ github.repository }}-proxy'
+          repository: '${{ github.repository }}/${{ github.event.repository.name }}-proxy'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
@@ -52,7 +52,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}/${{ github.repository }}-web'
+          repository: '${{ github.repository }}/${{ github.event.repository.name }}-web'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
@@ -61,7 +61,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}/${{ github.repository }}-git'
+          repository: '${{ github.repository }}/${{ github.event.repository.name }}-git'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
@@ -70,7 +70,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}/${{ github.repository }}-rest'
+          repository: '${{ github.repository }}/${{ github.event.repository.name }}-rest'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
@@ -79,7 +79,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
-          repository: '${{ env.OWNER_APPLICATION_NAME }}/${{ github.repository }}/${{ github.repository }}-fuseki'
+          repository: '${{ github.repository }}/${{ github.event.repository.name }}-fuseki'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             'v${{ steps.prep.outputs.version }}'
