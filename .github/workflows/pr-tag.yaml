@@ -10,6 +10,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  token: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   tag_check:
@@ -49,6 +50,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
+          token: "${{ env.token }}"
           repository: '${{ github.repository }}/${{ github.event.repository.name }}-proxy'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
@@ -58,6 +60,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
+          token: "${{ env.token }}"
           repository: '${{ github.repository }}/${{ github.event.repository.name }}-web'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
@@ -67,6 +70,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
+          token: "${{ env.token }}"
           repository: '${{ github.repository }}/${{ github.event.repository.name }}-git'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
@@ -76,6 +80,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
+          token: "${{ env.token }}"
           repository: '${{ github.repository }}/${{ github.event.repository.name }}-rest'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
@@ -85,6 +90,7 @@ jobs:
         uses: shrink/actions-docker-registry-tag@v1
         with:
           registry: '${{ env.REGISTRY }}'
+          token: "${{ env.token }}"
           repository: '${{ github.repository }}/${{ github.event.repository.name }}-fuseki'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
