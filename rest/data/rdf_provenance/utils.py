@@ -1,5 +1,13 @@
-import subprocess
+""" utils.py
+provenance module related functions
+"""
+
+## Load logger for this file
+import logging
+logger = logging.getLogger(__name__)
+
 import os
+import subprocess
 
 def get_last_provenance_date():
     prov_files_dir="/var/lib/cometar/provenance/output"
@@ -15,16 +23,16 @@ def get_last_provenance_date():
 def update_provenance_data():
     """Call the shell scripts which search the git history and generate a file for the provenance module to read"""
     ## Get most recent date already captured and write the updates to a provenance data file
-    print("os.environ[COMETAR_PROD_DIR]: {}".format(os.environ["COMETAR_PROD_DIR"]))
+    logger.info("os.environ[COMETAR_PROD_DIR]: {}".format(os.environ["COMETAR_PROD_DIR"]))
     p = subprocess.Popen(["bash", os.environ["COMETAR_PROD_DIR"]+"/rdf_provenance/update_provenance.sh"] ,stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
     # load_into_fuseki("live")
-    return [get_last_provenance_date(),1]
-    #return [p.communicate()[0], p.returncode]
+    # return [get_last_provenance_date(),1]
+    return [p.communicate()[0], p.returncode]
 
 def fuseki_load_provenance_data():
     """Call the shell scripts which push provenance data to fuseki live"""
     ## Get most recent date already captured and write the updates to a provenance data file
-    print("os.environ[COMETAR_PROD_DIR]: {}".format(os.environ["COMETAR_PROD_DIR"]))
+    logger.info("os.environ[COMETAR_PROD_DIR]: {}".format(os.environ["COMETAR_PROD_DIR"]))
     p = subprocess.Popen(["bash", os.environ["COMETAR_PROD_DIR"]+"/rdf_loading/add_files_to_dataset.sh", "-h"] ,stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
     # load_into_fuseki("live")
     return [p.communicate()[0], p.returncode]

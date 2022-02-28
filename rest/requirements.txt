@@ -1,0 +1,9 @@
+Flask
+flask-accept
+# Flask-Migrate
+# Flask-SQLAlchemy
+MarkupSafe
+# psycopg2-binary
+pyyaml
+requests
+# SQLAlchemy

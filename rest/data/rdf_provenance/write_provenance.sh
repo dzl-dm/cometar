@@ -41,6 +41,26 @@ source "$conffile"
 output_directory="${PROVENANCEFILESDIR}/output"
 mkdir -p "$output_directory"
 
+## Check we have a git repo with data to use
+git clone -q "$TTLDIRECTORY" "$TEMPDIR/git"
+clone_exit=$?
+if [[ $clone_exit != 0 ]]; then
+	rm -rf "$TEMPDIR/git"
+	echo -e "Repo invalid (clone: $clone_exit), aborting..."
+	exit 1
+else
+	cd "$TEMPDIR/git"
+	git checkout -q master
+	checkout_exit=$?
+	if [[ $checkout_exit != 0 ]]; then
+		rm -rf "$TEMPDIR/git"
+		echo -e "Repo invalid (checkout: $checkout_exit), aborting..."
+		exit 1
+	fi
+	rm -rf "$TEMPDIR/git"
+	echo -e "Repo is ok, proceeding..."
+fi
+
 echo "Writing deltas from ${from_date} to ${until_date}."
 echo "$(date +'%d.%m.%y %H:%M:%S') Writing deltas from ${from_date} to ${until_date}." >> "$LOGFILE"
 # while read line || [ -n "$line" ]; do #second expression is needed cause the last git log line does not end with a newline
@@ -61,6 +81,7 @@ echo "$(date +'%d.%m.%y %H:%M:%S') Writing deltas from ${from_date} to ${until_d
 		# git log --pretty=format:"%H" --since="$from_date"
 	# fi
 # )
+
 for line in $(
 	unset GIT_DIR
 	rm -rf "$TEMPDIR/git"
