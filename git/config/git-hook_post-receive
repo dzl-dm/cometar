@@ -6,3 +6,9 @@ curl -s -H "Accept: application/json" "${REST_SERVER}/fuseki_load_live" >&2
 sleep 1 ## Give the api a little time to write files to disk and ensure its ready for the next request
 ## Call the rest api to update provenance data
 curl -s -H "Accept: application/json" "${REST_SERVER}/update_provenance" >&2
+## Conditionally notify i2b2
+if [ -n ${COMETAR_I2B2API_SERVER} ] ; then
+    echo "Notifying i2b2 of updates... '${COMETAR_I2B2API_SERVER}${I2B2_UPDATEMETA_PATH}'"
+    curl -s -H "Accept: application/json" "${COMETAR_I2B2API_SERVER}${I2B2_UPDATEMETA_PATH}" >&2
+    echo "Complete"
+fi

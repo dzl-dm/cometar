@@ -21,7 +21,7 @@
 ARG OPENJDK_VERSION=${FUSEKI_OPENJDK_VERSION:-"18"}
 ARG ALPINE_VERSION=${FUSEKI_ALPINE_VERSION:-"3.15.0"}
 ARG JENA_VERSION=${FUSEKI_JENA_VERSION:-"4.3.2"}
-ARG FUSEKI_CONFIG=${FUSEKI_CONFIG:-"/etc/fuseki/cometar_config.ttl"}
+ARG FUSEKI_CONFIG=${FUSEKI_CONFIG:-"/fuseki/cometar_config.ttl"}
 
 # Internal, passed between stages.
 ARG FUSEKI_DIR=/fuseki

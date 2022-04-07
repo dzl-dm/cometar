@@ -6,7 +6,6 @@ RUN apk add --update --no-cache git-daemon fcgiwrap spawn-fcgi jq curl
 
 COPY config/ /config
 VOLUME ["${GIT_BASE}"]
-VOLUME ["/etc/nginx/auth"]
 
 ## git init during build is only in container (not mounted volume). Has (system dependant) effect if/when a new vol is created
 RUN git init --bare "${GIT_BASE}" && \
@@ -19,6 +18,7 @@ ENV BROWSER_FQDN=${BROWSER_FQDN:-localhost}
 ENV REST_SERVER=${REST_SERVER:-http://cometar.rest:5000}
 ENV FUSEKI_SERVER=${FUSEKI_SERVER:-http://cometar.fuseki:3030}
 ENV GIT_BASE=${GIT_BASE:-/git}
+ENV I2B2_UPDATEMETA_PATH=${I2B2_UPDATEMETA_PATH:-/i2b2-api/updatemeta}
 
 # CMD /etc/init.d/spawn-fcgi.git && \
 CMD spawn-fcgi -s /run/fcgi.sock -u nginx -g nginx /usr/bin/fcgiwrap && \
