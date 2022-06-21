@@ -11,6 +11,7 @@ loadProvenanceFiles=false
 loadDevBranch=false
 emf="/dev/stderr"
 revision="master"
+df="[%Y-%m-%d %H:%M:%S]"
 
 while [ ! $# -eq 0 ]
 do
@@ -53,8 +54,8 @@ do
 done
 
 source "$conffile"
-echo "Adding files to fuseki script called."
-echo "Adding files to fuseki script called." >> "$LOGFILE"
+echo "$(date +"$df") Adding files to fuseki script called."
+echo "$(date +"$df") Adding files to fuseki script called." >> "$LOGFILE"
 EXITCODE=0
 
 SERVERDATA="$FUSEKILIVEDATASET/data"
@@ -80,8 +81,8 @@ if $defaultdirectory; then
 	if $loadProvenanceFiles; then
 		DIRECTORY="$PROVENANCEFILESDIR/output"
 		RULESFILE="$CONFDIR/provenance_derivations.ttl"
-		echo "Operating provenance."
-		echo "Operating provenance." >> "$LOGFILE"
+		echo "$(date +"$df") Operating provenance."
+		echo "$(date +"$df") Operating provenance." >> "$LOGFILE"
 	else
 		DIRECTORY="$TEMPDIR/git"
 		unset GIT_DIR;
@@ -96,11 +97,11 @@ fi
 rm -rf "$TEMPDIR/out.txt"
 touch "$TEMPDIR/out.txt"
 if $cleardata; then
-	echo "Clearing data."
+	echo "$(date +"$df") Clearing data."
 	curl -X PUT -H "Content-Type: text/turtle;charset=utf-8" $silentmode -G "$SERVERDATA" -d default --data ""
 fi
 
-echo "Adding files."
+echo "$(date +"$df") Adding files."
 for line in "$DIRECTORY"/*.ttl
 do
 	filename="$line"
@@ -113,7 +114,7 @@ do
 		EXITCODE=1
 	fi
 done
-echo "Inserting rules."
+echo "$(date +"$df") Inserting rules."
 curl -X POST -s -T "$RULESFILE" -G "$SERVERUPDATE"
 
 if [[ $defaultdirectory && !$loadProvenanceFiles ]]; then

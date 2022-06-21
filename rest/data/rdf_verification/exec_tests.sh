@@ -2,8 +2,9 @@
 echo "$0 $@"
 
 EXITCODE=0
+df="[%Y-%m-%d %H:%M:%S]"
 
-echo "Verifying dataset."
+echo "$(date +"$df") Verifying dataset."
 
 summary=""
 while read line
@@ -13,7 +14,7 @@ do
 	filename="$COMETAR_PROD_DIR/rdf_verification/tests/${params[0]}"
 	description="${params[1]}"
 	severity="${params[2]}"
-	echo "---- $(basename "$filename") - $description"
+	echo "---- Running test: $(basename "$filename") - $description"
 
     invalid_findings=$(curl -s --data-urlencode query="$(< """$filename""")" -G "$FUSEKI_TEST_SERVER/query" -H 'Accept: text/csv' | tail -n +2)
 
@@ -27,12 +28,12 @@ do
         fi
         summary="$summary\n$severity: $filename"
     else
-        echo "OK"
+        echo "Test '$filename' OK"
         summary="$summary\nOK: $filename"
     fi
 done < "$COMETAR_PROD_DIR/rdf_verification/test.conf"
 
-echo "---- Test summary ----"
+echo "----$(date +"$df") Test summary ----"
 printf "$summary\n\n"
 echo "----------------------"
 

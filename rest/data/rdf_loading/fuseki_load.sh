@@ -1,6 +1,7 @@
 #!/bin/bash
 echo "$0 $@"
 
+df="[%Y-%m-%d %H:%M:%S]"
 FUSEKI_SERVER=$FUSEKI_TEST_SERVER
 
 while [ ! $# -eq 0 ]
@@ -24,9 +25,9 @@ if [ "$FUSEKI_SERVER" == "" ]; then
 	exit 1
 fi
 
-echo "Loading files into fuseki server: ${FUSEKI_SERVER}"
+echo "$(date +"$df") Loading files into fuseki server: ${FUSEKI_SERVER}"
 
-echo "Clearing data."
+echo "$(date +"$df") Clearing data."
 STATUSCODE=$(curl -X PUT -H "Content-Type: text/turtle;charset=utf-8" -s -w "%{http_code}" -o /dev/null -G "$FUSEKI_SERVER/data" -d default --data "")
 if ! [ $STATUSCODE -ge 200 -a $STATUSCODE -lt 300 ]
 then
@@ -34,7 +35,7 @@ then
 	exit 1
 fi
 
-echo "Adding files."
+echo "$(date +"$df") Adding files."
 for line in $COMETAR_TEMP_DIR/checkout/*.ttl
 do
 	filename="$line"
@@ -47,11 +48,11 @@ do
 	fi
 done
 
-echo "Inserting rules."
+echo "$(date +"$df") Inserting rules."
 STATUSCODE=$(curl -X POST -H "Content-Type: application/sparql-update;charset=utf-8" -s -w "%{http_code}" -o /dev/null -T "$COMETAR_PROD_DIR/rdf_loading/insertrules.ttl" -G "$FUSEKI_SERVER/update")
 if ! [ $STATUSCODE -ge 200 -a $STATUSCODE -lt 300 ]
 then
-	echo "ERROR: Error adding inserting rules." >&2
+	echo "ERROR: Error adding inserting rules ($STATUSCODE)." >&2
 	EXITCODE=1
 fi
 

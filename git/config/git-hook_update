@@ -1,6 +1,8 @@
 #!/bin/sh
 
-echo "UPDATE HOOK called for ref $3"
+df="[%Y-%m-%d %H:%M:%S]"
+
+echo "$(date +"$df") UPDATE HOOK called for ref $3"
 echo -e "Verifying upload, using rest service at: ${REST_SERVER}"
 
 upload_verification=$(curl -s -H "Accept: application/json" "${REST_SERVER}/rdf_verification/$3")
@@ -14,8 +16,8 @@ echo "$upload_verification" | jq -r '.rdf_verification_steps_response'
 
 exitcode=$(echo "$upload_verification" | jq -r '.exitcode')
 if [ "$exitcode" == "0" ]; then
-    echo "VERIFICATION SUCCESS"
+    echo "$(date +"$df") VERIFICATION SUCCESS"
 else
-    echo "VERIFICATION FAILED"
+    echo "$(date +"$df") VERIFICATION FAILED"
     exit ${exitcode}
 fi
