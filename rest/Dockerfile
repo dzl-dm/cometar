@@ -4,6 +4,7 @@ ARG COMETAR_BASE_DIR=${COMETAR_BASE_DIR:-/cometar_base}
 ## Used in build and run
 ENV COMETAR_TEMP_DIR=${COMETAR_TEMP_DIR:-/tmp/cometar}
 ENV COMETAR_PROD_DIR=${COMETAR_PROD_DIR:-/cometar}
+ENV PROVENANCEFILESDIR=${PROVENANCEFILESDIR:-/var/lib/cometar/provenance}
 
 ENV TZ=${TZ:-'Europe/Berlin'}
 
@@ -22,6 +23,8 @@ COPY config /config
 
 RUN mkdir -p $COMETAR_PROD_DIR && \
     mkdir -p /var/lib/cometar/provenance/output && \
+    mkdir -p /var/lib/cometar/provenance/checkouts && \
+    mkdir -p /var/lib/cometar/provenance/deltas && \
     mkdir -p /var/tmp/cometar && \
     cp -R "${COMETAR_BASE_DIR}/." "${COMETAR_PROD_DIR}/" && \
     find "${COMETAR_PROD_DIR}/" -type f -iname "*.sh" -execdir chmod +x {} +
