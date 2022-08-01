@@ -7,3 +7,4 @@ MarkupSafe
 pyyaml
 requests
 # SQLAlchemy
+GitPython
