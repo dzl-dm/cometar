@@ -20,6 +20,7 @@ export class UrlService {
   }
   public extendRdfPrefix(s:string):string{
     if (!s) return "";
+    if (s.startsWith("https:") || s.startsWith("http")) return s
     let c = s.substr(s.indexOf(":")+1);
     Object.entries(this.configuration.getRdfPrefixMap()).forEach(
       ([value, key]:[string,string]) => {
