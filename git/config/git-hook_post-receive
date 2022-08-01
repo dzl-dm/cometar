@@ -5,11 +5,15 @@ df="[%Y-%m-%d %H:%M:%S]"
 
 ## Call the rest api to load newly committed data
 echo "$(date +"$df") Loading data to live fuseki..."
-curl -s -H "Accept: application/json" "${REST_SERVER}/fuseki_load_live" >&2
+load_live_response=$(curl -s -H "Accept: application/json" "${REST_SERVER}/fuseki_load_live")
+exitcode=$(echo "$load_live_response" | jq -r '.exitcode')
+echo "$(date +"$df") Exit Code $exitcode"
 sleep 1 ## Give the api a little time to write files to disk and ensure its ready for the next request
 ## Call the rest api to update provenance data
 echo "$(date +"$df") Updating provenance data..."
-curl -s -H "Accept: application/json" "${REST_SERVER}/update_provenance" >&2
+update_provenance_response=$(curl -s -H "Accept: application/json" "${REST_SERVER}/update_provenance")
+exitcode=$(echo "$update_provenance_response" | jq -r '.exitcode')
+echo "$(date +"$df") Exit Code $exitcode"
 ## Conditionally notify i2b2
 if [ -n ${COMETAR_I2B2API_SERVER} ] ; then
     echo "$(date +"$df") Notifying i2b2 of updates... '${COMETAR_I2B2API_SERVER}${I2B2_UPDATEMETA_PATH}/${I2B2_META_SOURCE_NAME:-all}'"
