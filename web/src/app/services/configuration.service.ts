@@ -108,6 +108,10 @@ export class ConfigurationService {
         return "Date";
       case "http://sekmi.de/histream/dwh#partialDateRestriction":
         return "Partial Date";
+      case "http://sekmi.de/histream/dwh#stringRestriction":
+        return "String";
+      case "http://sekmi.de/histream/dwh#largeStringRestriction":
+        return "Large String";
       default:
         return domain;
     }
