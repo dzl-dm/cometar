@@ -20,6 +20,7 @@ from .html_templates import console as html_console
 from .html_templates import search as html_search
 from .html_templates import history as html_history
 from .html_templates import text_only as html_text
+from .html_templates import provenance as html_provenance
 from .queries import fuseki as fuseki_query
 from .mylog import mylog,reset_mylog,get_mylog
 
@@ -74,38 +75,57 @@ def fuseki_load_live():
 
 @app.route('/update_provenance')
 def update_provenance():
+    reset_mylog()
     result = prov_utils.update_provenance_data()
     logger.debug("update provenance data; exit({}): {}".format(result[1], result[0]))
     if result[1] == 0:
-        result2 = prov_utils.fuseki_load_provenance_data()
+        exit_code = rdf_load_utils.load_provenance_into_fuseki(server = os.environ["FUSEKI_LIVE_SERVER"])
     else:
         return {
             "error": "update_provenance_data failed",
-            "output": result[0]
+            "log": "\n".join(get_mylog())
         }
-    if result2[1] == 1:
+    if exit_code == 1:
         return {
             "error": "fuseki_load_provenance_data failed",
-            "output": result2[0]
+            "log": "\n".join(get_mylog())
         }
     return {
-        "update_provenance": "SUCCESS",
-        "exitcode": result2[1]
+        "log": "\n".join(get_mylog()),
+        "exitcode": exit_code
     }
 
 
 @app.route('/fuseki_load_provenance')
 def fuseki_load_provenance():
-    result = prov_utils.fuseki_load_provenance_data()
-    logger.debug("load provenance data; exit({}): {}".format(result[1], result[0]))
+    reset_mylog()
+    exit_code = rdf_load_utils.load_provenance_into_fuseki(server = os.environ["FUSEKI_LIVE_SERVER"])
     return {
-        "fuseki_load_provenance (response)": result[0],
-        "fuseki_load_provenance (exitcode)": result[1]
+        "log": "\n".join(get_mylog()),
+        "exitcode": exit_code
     }
 
 @app.route('/query/console')
 def get_console():
+    reset_mylog()
     return html_console.get_console_html()
+
+@app.route('/admin/provenance')
+def get_admin_provenance():
+    reset_mylog()
+    return html_provenance.get_provenance_html()
+
+@app.route('/admin/update_provenance')
+def get_admin_update_provenance():
+    reset_mylog()
+    temp = update_provenance()
+    return html_text.get_html(temp["log"])
+
+@app.route('/admin/fuseki_load_provenance')
+def get_admin_load_provenance():
+    reset_mylog()
+    temp = fuseki_load_provenance()
+    return html_text.get_html(temp["log"])
 
 @app.route('/query/commits')
 def get_commits_options():
