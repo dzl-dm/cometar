@@ -40,7 +40,6 @@ ENV TZ=${TZ:-'Europe/Berlin'}
 
 ## Application config
 ENV HREF_BRAND=${HREF_BRAND:-https://www.dzl.de/forschung/plattformen/plattform-biobanking-datenmanagement}
-ENV BASE_PREFIX=${BASE_PREFIX:-http://data.dzl.de/ont/dwh#}
 ENV ENDPOINT_BASE=${ENDPOINT_BASE:-/fuseki/}
 
 CMD /bootstrap.sh && \

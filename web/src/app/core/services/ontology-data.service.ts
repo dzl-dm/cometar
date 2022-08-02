@@ -155,7 +155,7 @@ WHERE
   UNION
   {
       SELECT ?element
-      WHERE { ?element skos:topConceptOf :Scheme . }
+      WHERE { ?element skos:topConceptOf ?scheme . }
   }
 } ` 
   }

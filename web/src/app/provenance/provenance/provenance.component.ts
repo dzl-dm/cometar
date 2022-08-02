@@ -84,10 +84,9 @@ export class ProvenanceComponent implements OnInit {
 		this.route.queryParamMap.pipe(
 			map(data => data.get('commit'))
 		).subscribe(commitids => {
-			let commitidsarr = commitids && commitids.split(",").filter(c => c != undefined && c != "").map(c => this.urlService.extendRdfPrefix(c)) || [];
+			let commitidsarr = commitids && commitids.split(",").filter(c => c != undefined && c != "") || [];
 			if (!commitidsarr.includes(commitid)) commitidsarr = commitidsarr.concat(commitid);
 			else commitidsarr.splice(commitidsarr.indexOf(commitid),1);
-			commitidsarr = commitidsarr.map(c => this.urlService.shortenRdfPrefix(c));
 			this.router.navigate(["provenance"],{ queryParams: {date: null, commit: commitidsarr.join(","), wholetimespan: null}, queryParamsHandling: "merge" });
 		}).unsubscribe();
 	}

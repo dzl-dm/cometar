@@ -12,7 +12,7 @@ envsubst "\$BROWSER_FQDN" < /config/cometar-web.tmpl > /etc/nginx/conf.d/cometar
 # fi
 # export BASE_URL="${BASE_URL}"
 # export BROWSER_FUSEKI_SERVER=$(echo -e "${BASE_URL}${BROWSER_FUSEKI_PATH}")
-envsubst "\$HREF_BRAND \$BASE_PREFIX \$ENDPOINT_BASE" < /config/cometar_config_template.json > /usr/share/nginx/html/cometar_browser/assets/config.json
+envsubst "\$HREF_BRAND \$ENDPOINT_BASE" < /config/cometar_config_template.json > /usr/share/nginx/html/cometar_browser/assets/config.json
 
 chown -R nginx:nginx /usr/share/nginx/html/cometar_browser
 echo "---- END WEB CONFIGURATION ----"

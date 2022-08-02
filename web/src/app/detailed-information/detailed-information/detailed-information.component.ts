@@ -48,7 +48,7 @@ export class DetailedInformationComponent implements OnInit {
   ngOnInit() {
     this.route.queryParamMap.pipe(
       map(data => {
-        return this.urlService.extendRdfPrefix(data.get('concept'))
+        return data.get('concept')
       })
     ).pipe(takeUntil(this.unsubscribe)).subscribe(this.selectedIri$);
     this.selectedIri$.pipe(

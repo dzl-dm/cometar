@@ -26,8 +26,7 @@
                 [style.width]="getWidth(i)"
                 [style.display]="getDisplay(i)">
                 <ng-container *ngFor="let match of matchArray(cell)">
-                    <span *ngIf="isConceptIri(match)" (click)="navigateToConcept(cell)" class="conceptLink">{{match}}</span>
-                    <span *ngIf="!isConceptIri(match)"
+                    <span 
                         [ngClass]="{'highlightText':highlightTerm != undefined && match.toUpperCase()==highlightTerm.toUpperCase()}"
                     >{{match}}</span>
                 </ng-container>

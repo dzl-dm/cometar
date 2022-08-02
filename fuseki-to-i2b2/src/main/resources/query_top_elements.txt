@@ -23,7 +23,7 @@ WHERE {
 		SELECT ?element ('concept' as ?type)
 		WHERE {
 			?element a skos:Concept .
-			?element skos:topConceptOf :Scheme .
+			?element skos:topConceptOf ?scheme .
 		}
 	}
 }

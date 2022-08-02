@@ -114,7 +114,7 @@ export class TreeDataService {
   //init (through tree component)
   public init(route:ActivatedRoute, claimWidth:(number)=>void){
     route.queryParamMap.pipe(
-      map(data => this.urlService.extendRdfPrefix(data.get('concept')))
+      map(data => data.get('concept'))
     ).subscribe(this.selectedIri$);
     route.queryParamMap.pipe(
       map(data => data.get('searchpattern') ? data.get('searchpattern') : "")
@@ -130,7 +130,7 @@ export class TreeDataService {
   //selection
   public onConceptSelection(iri:string):void{
     this.onExpand(iri);
-    this.router.navigate(["details"],{ queryParams: {concept: this.urlService.shortenRdfPrefix(iri)}, queryParamsHandling: "merge" });
+    this.router.navigate(["details"],{ queryParams: {concept: iri}, queryParamsHandling: "merge" });
   }
   public isSelected$(iri:string):Observable<boolean>{
     return this.selectedIri$.pipe(

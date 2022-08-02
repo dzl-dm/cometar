@@ -43,7 +43,7 @@ export class SparqlComponent implements OnInit {
   ngOnInit() {
     this.route.queryParamMap.pipe(
       map(data => data.get('concept'))
-    ).subscribe(data => this.concept = data && this.urlService.extendRdfPrefix(data) || "ELEMENT_ID");
+    ).subscribe(data => this.concept = data && data || "ELEMENT_ID");
     this.queries.push(["Search Items", this.searchTreeItemService.getQueryString("Test")]);
     this.queries.push(["Root Items", this.ontologyDataService.getRootElementsQueryString()]);
     this.queries.push(["Commit History", this.commitHistoryService.getQueryString(new Date("2019-05-01"),new Date("2019-07-01"))]);

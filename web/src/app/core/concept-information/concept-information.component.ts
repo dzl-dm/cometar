@@ -110,11 +110,6 @@ export class ConceptInformationComponent implements OnInit {
     return result;
   }
 
-  public isConceptIri(s:string):boolean{
-    if (this.configurationService.cutPrefix(s) != s) return true;
-    return false;
-  }
-
   public navigateToConcept(iri:string){
     this.treeDataService.onConceptSelection(iri);
   }

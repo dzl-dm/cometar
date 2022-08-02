@@ -54,31 +54,7 @@ export class ConfigurationService {
   public getServer():'live'|'dev'{
     return this.server;
   }
-  public getRdfPrefixMap():{}{
-    let result = {
-      "http://purl.bioontology.org/ontology/SNOMEDCT/": "snomed",
-      "http://loinc.org/owl#": "loinc"
-    }
-    result[this.settings.rdf.base_prefix]="org"
-    return result
-  }
-
-  public shortenRdfPrefix(s:string):string{
-    Object.entries(this.getRdfPrefixMap()).forEach(
-      ([key, value]:[string,string]) => {
-        s = s.replace(new RegExp(key, "g"), value + ":")
-    });
-    return s;
-  }
-  public extendRdfPrefix(s:string):string{
-    if (!s) return undefined;
-    let c = s.substr(s.indexOf(":")+1);
-    Object.entries(this.getRdfPrefixMap()).forEach(
-      ([value, key]:[string,string]) => {
-        s = s.replace(new RegExp(key, "g"), value)
-    });
-    return s.substring(0,s.length-c.length-1) + c;
-  }
+ 
   public getHumanReadableElementDetails(ed:OntologyElementDetails):OntologyElementDetails{
     return this.mergeDeep(ed, {
       element: { name: "RDF IRI" },
@@ -120,7 +96,7 @@ export class ConfigurationService {
   public getHumanReadableCommitMetaData(data:CommitMetaData):CommitMetaData{
     return this.mergeDeep(data,{
       commitid: { value: data.commitid.value.substr(data.commitid.value.length-40) },
-      author: { value: this.cutPrefix(data.author.value) }
+      author: { value: data.author.value }
     });
   }
   public getHumanReadableCommitDetailData(data:CommitDetails):CommitDetails{
@@ -166,12 +142,6 @@ export class ConfigurationService {
   }
   public getRDFPredicateByHumanReadableString(p:string):string[]{
     return Object.keys(this.rdfUrlMap).filter(key=>this.rdfUrlMap[key] == p);
-  }
-  public cutPrefix(s:string):string{
-    Object.keys(this.getRdfPrefixMap()).forEach((key,value) => {
-      s = s.replace(key, "");
-    });
-    return s;
   }
 
   public changeCategories = {
@@ -248,7 +218,6 @@ export interface IConfiguration{
     "href_brand":string
   },
   "rdf": {
-      "base_prefix":string,
       "unit_iri":string,
       "topLevelNode_iri":string,
       "status_iri":string,

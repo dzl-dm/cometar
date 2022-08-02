@@ -41,19 +41,18 @@ export class ProvenanceModule {
     private route:ActivatedRoute
   ) {
     this.route.queryParamMap.pipe(
-      map(data => this.configurationService.extendRdfPrefix(data.get('concept')))
+      map(data => data.get('concept'))
     ).pipe(
       filter(iri => iri != undefined && iri != null),
       flatMap(iri => this.getDerivedConceptService.get(iri)),
       filter(derivediri => derivediri.length > 0)
     ).subscribe(data => {
       let iri = data[0]["derived_concept"].value;
-      iri = this.configurationService.shortenRdfPrefix(iri);
       this.browserService.snackbarNotification.next([`You got redirected from "${location.href}".`, `info`]);
       this.router.navigate([],{queryParams: {concept: iri}, queryParamsHandling: "merge", replaceUrl: true });
     });
     this.route.queryParamMap.pipe(
-      map(data => this.configurationService.extendRdfPrefix(data.get('concept')))
+      map(data => data.get('concept'))
     ).pipe(
       filter(iri => iri != undefined && iri != null),
       flatMap(iri => this.getRemovedConceptService.get(iri)),
@@ -81,7 +80,7 @@ export class ProvenanceModule {
           this.provenanceService.clearTree();
           let waitingFor:Observable<any>[]=[];
           if (commitids != this.savedProvQueryData[0]) {
-            let commitidsarr = commitids && commitids.split(",").map(c => this.urlService.extendRdfPrefix(c)) || [];
+            let commitidsarr = commitids && commitids.split(",") || [];
             this.provenanceService.selectedCommits$.next(commitidsarr.length>0?commitidsarr:null);
             waitingFor.push(this.provenanceService.selectedCommits$);
           }

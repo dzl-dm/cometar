@@ -127,7 +127,7 @@ export class ProvenanceService {
 			this.getCommitMetaDataByDay$(day).subscribe(cmd => {
 				this.elementsToLoad+=cmd.length;
 				//if (cmd.length > 0) this.getOverViewSubtaskRunning$.next(true);
-				cmd.map(c => this.configuration.cutPrefix(c.commitid.value)).forEach(c=>{
+				cmd.map(c => c.commitid.value).forEach(c=>{
 					if (this.commitsLeft.indexOf(c)==-1) this.commitsLeft.push(c)
 				});
 				this.loadedElements++;
@@ -139,7 +139,7 @@ export class ProvenanceService {
 	}
 	public onCommitFinishedLoading(commitid:string){
 		this.loadedElements++;
-		this.commitsLeft.splice(this.commitsLeft.indexOf(this.configuration.cutPrefix(commitid)),1);
+		this.commitsLeft.splice(this.commitsLeft.indexOf(commitid),1);
 		//if (this.loadedElements >= this.elementsToLoad) this.getOverViewSubtaskRunning$.next(false);
 		this.getOverViewSubtaskPercentage$.next(Math.round(this.loadedElements/this.elementsToLoad));
 	}
@@ -174,7 +174,7 @@ export class ProvenanceService {
 				lang = cd.object["xml:lang"] || "";
 				date = cd.date.value;
 				let author = cd.author.value;
-				author=this.configuration.cutPrefix(author);
+				author=author;
 
 				cd = this.configuration.getHumanReadableCommitDetailData(cd);
 				let cia = result.filter(r => r.concept == cd.subject.value);
