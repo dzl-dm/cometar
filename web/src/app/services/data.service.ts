@@ -18,8 +18,6 @@ export class DataService {
   ) { 
     this.configurationService.configurationLoaded$.subscribe(()=>{
       this.baseUrl=this.configurationService.settings.sparql.endpoint_base
-      this.prefixes+=`
-PREFIX : <${this.configurationService.settings.rdf.base_prefix}>`
     })
   }
 
