@@ -5,7 +5,7 @@ df="[%Y-%m-%d %H:%M:%S]"
 
 ## Call the rest api to load newly committed data
 echo "$(date +"$df") Loading data to live fuseki..."
-load_live_response=$(curl -s -H "Accept: application/json" "${REST_SERVER}/load_latest_commit")
+load_live_response=$(curl -s -H "Accept: application/json" "${REST_SERVER}/admin/load_latest_commit")
 sleep 1 ## Give the api a little time to write files to disk and ensure its ready for the next request
 ## Call the rest api to update provenance data
 echo "$(date +"$df") Updating provenance data..."
