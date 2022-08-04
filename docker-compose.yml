@@ -4,6 +4,7 @@ volumes:
   repository:
   auth:
   letsencrypt:
+  provenance:
 
 services:
   proxy:
@@ -58,6 +59,7 @@ services:
     #   dockerfile: Dockerfile
     volumes:
       - repository:/update-hook-repository:ro
+      - provenance:/var/lib/cometar/provenance
     depends_on:
       - "fuseki"
   fuseki:
