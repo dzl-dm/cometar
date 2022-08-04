@@ -35,14 +35,14 @@ def load_checkout_into_fuseki(server = os.environ["FUSEKI_TEST_SERVER"], commit_
             r = requests.post(server+"/data", data=data.encode('utf-8'), headers=headers)
             if not (200 <= r.status_code <300):
                 mylog("Error loading "+file+": "+r.text)
-                get_line_re = re.compile(r".*\[line: ([^,]+), col: [^ ]+ \].*")
+                get_line_re = re.compile(r".*\[line: ([^,]+), col: [^\]]+\].*")
                 line_number = int(re.sub(get_line_re, r'\1',r.text))
                 with open(checkout_dir+"/"+file) as errordata:
                     reader=errordata.readlines()
                     rows = list(reader)
                     mylog("Context:")
-                    for index in range(line_number-10,line_number+11):
-                        mylog("Line "+str(index)+": "+rows[index][:-1])
+                    for index in range(max(line_number-10,0),min(line_number+11,len(rows)-1)):
+                        mylog("Line "+str(index+1)+": "+rows[index][:-1])
                 return 1
     #insert rules
     logger.debug("Inserting rules.")
@@ -77,18 +77,18 @@ def load_provenance_into_fuseki(server = os.environ["FUSEKI_TEST_SERVER"]):
                     reader=errordata.readlines()
                     rows = list(reader)
                     mylog("Context:")
-                    for index in range(line_number-10,line_number+11):
-                        mylog("Line "+str(index)+": "+rows[index][:-1])
+                    for index in range(max(line_number-10,0),min(line_number+11,len(rows)-1)):
+                        mylog("Line "+str(index+1)+": "+rows[index][:-1])
                 return 1
     #insert rules
-    logger.debug("Inserting rules.")
-    rules_file = '/config/provenance_derivations.ttl'
-    data = open(rules_file).read()
-    headers = {'Content-Type': 'application/sparql-update;charset=utf-8'}
-    r = requests.post(server+"/update", data=data.encode('utf-8'), headers=headers)
-    if not (200 <= r.status_code <300):
-        mylog("Error inserting rules: "+r.text)
-        return 1
+    # logger.debug("Inserting rules.")
+    # rules_file = '/config/provenance_derivations.ttl'
+    # data = open(rules_file).read()
+    # headers = {'Content-Type': 'application/sparql-update;charset=utf-8'}
+    # r = requests.post(server+"/update", data=data.encode('utf-8'), headers=headers)
+    # if not (200 <= r.status_code <300):
+    #     mylog("Error inserting rules: "+r.text)
+    #     return 1
     return 0
 
 def load_ttl_string_into_fuseki(server=os.environ["FUSEKI_TEST_SERVER"],s=""):

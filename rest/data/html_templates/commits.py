@@ -34,7 +34,6 @@ def get_commits_options():
                 To: <input type="date" id="date_to" name="to" min="2016-01-01" value="{today}" onchange="daterangechange(event);"/>
             </div>
             <a id="show_commits_list_link" href="/rest/query/commits/list" target="commits_list_iframe">Show commits</a>
-            <a id="show_commits_diff_ttl_link" href="/rest/query/commits/diff_ttl" target="commits_list_iframe">Show TTL</a>
         </div>
         <iframe src="/rest/query/commits/list?date_from={one_month_ago}&date_to={today}" id="commits_list_iframe" name="commits_list_iframe"></iframe>
         '''.format(
@@ -55,7 +54,7 @@ def get_commits_list(commits_list):
                     <div class="commit_message">Message: {cm}</div>
                 </div>
                 <div class="menu">
-                    <a href="/rest/rdf_verification/{ci}" target="commit_details_iframe">Verify</a>
+                    <a href="/rest/query/commits/rdf_verification/{ci}" target="commit_details_iframe">Verify</a>
                     <a href="/rest/query/commits/diff_text/{ci}" target="commit_details_iframe">Text Diff</a>
                     <a href="/rest/query/commits/diff_rdf/{ci}" target="commit_details_iframe">RDF Diff</a>
                     <a href="/rest/query/commits/diff_ttl/{ci}" target="commit_details_iframe">TTL</a>

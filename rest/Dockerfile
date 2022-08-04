@@ -35,6 +35,6 @@ ENV FUSEKI_DEV_SERVER=${FUSEKI_DEV_SERVER:-http://cometar.fuseki:3030/cometar_de
 ENV LOG_CONF_PATH=${LOG_CONF_PATH:-'/config/logging.yaml'}
 
 ## Shortly after restart, ensure fuseki reloads the thesaurus and provenance data
-CMD /bin/bash -c "sleep 5; curl -s -H 'Accept: application/json' 'http://localhost:5000/fuseki_load_live' && sleep 1 && curl -s -H 'Accept: application/json' 'http://localhost:5000/update_provenance' && sleep 1 && curl -s -H 'Accept: application/json' 'http://localhost:5000/fuseki_load_provenance'" & \
+CMD /bin/bash -c "sleep 5; curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/load_latest_commit' && sleep 1 && curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/update_provenance' && sleep 1 && curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/load_provenance'" & \
     export FLASK_APP="$COMETAR_PROD_DIR/cometar_flask.py" && \
     flask run -h 0.0.0.0 --reload

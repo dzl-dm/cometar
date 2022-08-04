@@ -64,33 +64,29 @@ ORDER BY ?element ?property'''
     r = requests.post(url, data={'query': sparql_query}, headers=headers)
     return r.json()
 
-def get_history_data(concept):
-    sparql_query='''
-PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
-PREFIX snomed:    <http://purl.bioontology.org/ontology/SNOMEDCT/>
-PREFIX : <http://data.dzl.de/ont/dwh#>
+def get_history_data(iri):
+	sparql_query='''
 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX loinc: <http://loinc.org/owl#>
-PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX prov:   <http://www.w3.org/ns/prov#>
 PREFIX cs:     <http://purl.org/vocab/changeset/schema#>
 SELECT DISTINCT ?commit ?date ?addorremove ?subject ?predicate ?object 
 WHERE {
-    {
-        ?commit prov:qualifiedUsage ?usage ;
-            prov:endedAtTime ?date .
-        ?usage a prov:Usage, cs:ChangeSet .
-        ?usage ?addorremove ?statement .
-        ?statement a rdf:Statement;
-            rdf:subject ?subject;
-            rdf:predicate ?predicate;
-            rdf:object ?object .'''+'''
-        FILTER (?subject = {concept} || ?object = {concept})'''.format(concept = concept)+'''
-    }
+	{
+		?concept prov:wasDerivedFrom* <'''+iri+'''> .
+		?commit prov:qualifiedUsage ?usage ;
+			prov:endedAtTime ?date .
+		?usage a prov:Usage, cs:ChangeSet .
+		?usage ?addorremove ?statement FILTER (?addorremove IN (cs:addition,cs:removal)) .
+		?statement a rdf:Statement;
+			rdf:subject ?subject;
+			rdf:predicate ?predicate;
+			rdf:object ?object .
+		FILTER (?subject = ?concept || ?object = ?concept)
+	}
 }
 ORDER BY DESC(?date) ?subject ?predicate DESC(?addorremove)
 '''
-    url = os.environ['FUSEKI_TEST_SERVER']+'/query'
-    headers = {'Accept-Charset': 'UTF-8'}
-    r = requests.post(url, data={'query': sparql_query}, headers=headers)
-    return r.json()
+	url = os.environ['FUSEKI_LIVE_SERVER']+'/query'
+	headers = {'Accept-Charset': 'UTF-8'}
+	r = requests.post(url, data={'query': sparql_query}, headers=headers)
+	return r.json()

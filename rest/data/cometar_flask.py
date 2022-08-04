@@ -4,6 +4,7 @@ The flask listener for CoMetaR's REST api
 print("Begin cometar_flask.py")
 
 ## Setup logging (before importing other modules)
+from datetime import datetime
 import logging
 import logging.config
 import os
@@ -41,69 +42,34 @@ app = Flask(__name__)
 def index():
     return 'Index Page'
 
-@app.route('/rdf_verification/<commit_id>')
+@app.route('/query/commits/rdf_verification/<commit_id>')
 @accept('text/html')
 def rdf_verification(commit_id):
     reset_mylog()
-    exit_code = rdf_verification_utils.rdf_verification_steps(commit_id)
-    return html_text.get_html("Exitcode:"+str(exit_code)+"\n"+"\n".join(get_mylog()))
+    rdf_verification_utils.rdf_verification_steps(commit_id)
+    return html_text.get_html("\n".join(get_mylog()))
 
 @rdf_verification.support('application/json')
 def rdf_verification_json(commit_id):
     reset_mylog()
-    exit_code = rdf_verification_utils.rdf_verification_steps(commit_id)
+    #exit_code = rdf_verification_utils.rdf_verification_steps(commit_id)
+    mylog("asdf")
     return {
         "rdf_verification_steps_response": "\n".join(get_mylog()),
-        "exitcode": exit_code
+        "exitcode": 0
     }
 
-@app.route('/fuseki_load_test')
-def fuseki_load_test():
-    reset_mylog()
-    exit_code = rdf_load_utils.load_checkout_into_fuseki()
-    return {
-        "load_into_fuseki_test_response": get_mylog(),
-        "exitcode": exit_code
-    }
-@app.route('/fuseki_load_live')
+@app.route('/admin/load_latest_commit')
 def fuseki_load_live():
-    exit_code = rdf_load_utils.load_checkout_into_fuseki(server = os.environ["FUSEKI_LIVE_SERVER"])
-    return {
-        "load_into_fuseki_test_response": get_mylog(),
-        "exitcode": exit_code
-    }
-
-@app.route('/update_provenance')
-def update_provenance():
     reset_mylog()
-    result = prov_utils.update_provenance_data()
-    logger.debug("update provenance data; exit({}): {}".format(result[1], result[0]))
-    if result[1] == 0:
-        exit_code = rdf_load_utils.load_provenance_into_fuseki(server = os.environ["FUSEKI_LIVE_SERVER"])
-    else:
-        return {
-            "error": "update_provenance_data failed",
-            "log": "\n".join(get_mylog())
-        }
-    if exit_code == 1:
-        return {
-            "error": "fuseki_load_provenance_data failed",
-            "log": "\n".join(get_mylog())
-        }
-    return {
-        "log": "\n".join(get_mylog()),
-        "exitcode": exit_code
-    }
+    rdf_load_utils.load_checkout_into_fuseki(server = os.environ["FUSEKI_LIVE_SERVER"])
+    return html_text.get_html("\n".join(get_mylog()))
 
-
-@app.route('/fuseki_load_provenance')
-def fuseki_load_provenance():
+@app.route('/admin/load_provenance')
+def admin_load_provenance():
     reset_mylog()
-    exit_code = rdf_load_utils.load_provenance_into_fuseki(server = os.environ["FUSEKI_LIVE_SERVER"])
-    return {
-        "log": "\n".join(get_mylog()),
-        "exitcode": exit_code
-    }
+    rdf_load_utils.load_provenance_into_fuseki(server = os.environ["FUSEKI_LIVE_SERVER"])
+    return html_text.get_html("\n".join(get_mylog()))
 
 @app.route('/query/console')
 def get_console():
@@ -111,21 +77,18 @@ def get_console():
     return html_console.get_console_html()
 
 @app.route('/admin/provenance')
-def get_admin_provenance():
+def admin_provenance():
     reset_mylog()
-    return html_provenance.get_provenance_html()
+    missing_commits = prov_utils.get_missing_provenance_data()
+    return html_provenance.get_provenance_html(missing_commits,git_commits.get_commits_list())
 
 @app.route('/admin/update_provenance')
-def get_admin_update_provenance():
+def admin_update_provenance():
     reset_mylog()
-    temp = update_provenance()
-    return html_text.get_html(temp["log"])
-
-@app.route('/admin/fuseki_load_provenance')
-def get_admin_load_provenance():
-    reset_mylog()
-    temp = fuseki_load_provenance()
-    return html_text.get_html(temp["log"])
+    date_from = request.args.get('date_from', default = datetime.now().strftime("%Y-%m-%d"), type = str)
+    date_to = request.args.get('date_to', default = datetime.now().strftime("%Y-%m-%d"), type = str)
+    prov_utils.update_provenance_data(date_from,date_to)
+    return html_text.get_html("\n".join(get_mylog()))
 
 @app.route('/query/commits')
 def get_commits_options():
@@ -133,29 +96,22 @@ def get_commits_options():
 
 @app.route('/query/commits/list')
 def get_commits_list():
+    reset_mylog()
     date_from = request.args.get('date_from', default = '2016-01-01', type = str)
-    date_to = request.args.get('date_to', default = '2050-01-01', type = str)
+    date_to = request.args.get('date_to', default = datetime.now().strftime("%Y-%m-%d"), type = str)
     git_log_list = git_commits.get_commits_list(date_from,date_to)
     git_log_html = html_commits.get_commits_list(git_log_list)
     return git_log_html
 
-@app.route('/query/commits/diff_ttl')
-def get_ttl_diff():
-    reset_mylog()
-    date_from = request.args.get('date_from', default = '2016-01-01', type = str)
-    date_to = request.args.get('date_to', default = '2050-01-01', type = str)
-    diff_ttl = git_commits.get_diff_ttl_interval(date_from,date_to)
-    #TODO remove automatic loading
-    rdf_load_utils.load_ttl_string_into_fuseki(s=diff_ttl)
-    return html_commits.get_rdf_ttl_html(diff_ttl,"RDF ttl from "+date_from+" until "+date_to)
-
 @app.route('/query/commits/diff_ttl/<commit_id>')
 def query_ttl_diff(commit_id):
+    reset_mylog()
     diff = git_commits.get_diff_ttl(commit_id)
     return html_commits.get_text_diff_html(diff,"TTL diff for "+commit_id)
 
 @app.route('/query/commits/diff_text/<commit_id>')
 def query_text_diff(commit_id):
+    reset_mylog()
     diff = git_commits.get_diff_text(commit_id)
     return html_commits.get_text_diff_html(diff,"Text diff for "+commit_id)
 
@@ -167,18 +123,23 @@ def query_rdf_diff(commit_id):
 
 @app.route('/query/history')
 def history():
+    reset_mylog()
     return html_history.get_history_html()
 
-@app.route('/query/history/<concept>')
-def history_concept(concept):
-    history_data = fuseki_query.get_history_data(concept)
+@app.route('/query/history/concept')
+def history_concept():
+    reset_mylog()
+    iri=request.args.get('iri', default = "", type = str)
+    history_data = fuseki_query.get_history_data(iri)
     return html_history.get_history_concept_html(history_data)
 
 @app.route('/query/search')
 def search():
+    reset_mylog()
     return html_search.get_search_html()
 
 @app.route('/query/search/<pattern>')
 def search_pattern(pattern):
+    reset_mylog()
     search_data = fuseki_query.get_search_data(pattern)
     return html_search.get_search_pattern_html(search_data,pattern)

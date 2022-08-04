@@ -1,20 +1,20 @@
-
-import logging
-import re
-import html
+import urllib.parse
 from datetime import date, timedelta
 
 from .snippets import get_html
+
+history_default_value="http://data.dzl.de/ont/dwh#Administration"
 
 def get_history_html():
     return get_html('''<style>
             .container {width:100%;height:100%;display:flex;flex-direction:column}
             .container iframe {height:500px}
             .input_container {width:100%;display:flex;flex-direction:row;align-items: center}
+            #history_pattern_input {min-width:500px}
         </style><script>
             function historypatternchange(event) {
-                var pattern = document.getElementById("history_pattern_input").value;
-                document.getElementById("history_link").href="/rest/query/history/"+pattern;
+                var pattern = encodeURIComponent(document.getElementById("history_pattern_input").value);
+                document.getElementById("history_link").href="/rest/query/history/concept?iri="+pattern;
             }
             window.addEventListener("load", function(event) {
                 historypatternchange()
@@ -22,10 +22,10 @@ def get_history_html():
         </script>''','''
         <div class="input_container">
             <div>History of concept </div>
-            <input type="text" value=":Administration" id="history_pattern_input" onchange="historypatternchange(event);"/>
+            <input type="text" value="{input_default}" id="history_pattern_input" onchange="historypatternchange(event);"/>
             <a href="" target="history_iframe" id="history_link">Search</a>
         </div>
-        <iframe src="" name="history_iframe"></iframe>''')
+        <iframe src="" name="history_iframe"></iframe>'''.format(input_default=history_default_value))
 
 def get_history_concept_html(history_data):
     result_rows=""

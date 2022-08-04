@@ -1,5 +1,7 @@
+from datetime import datetime
 import os
 import json
+import re
 from typing import Any, List, TypedDict
 from ..rdf_loading import utils as rdf_load_utils
 from ..queries import fuseki as fuseki_query
@@ -29,11 +31,11 @@ def get_commit_details(commit_id):
     if not git_log_string=='':
         for line in git_log_string.split('\n'):
             items = line.split('::::')
-            result.update({"id":items[0],"author":items[1],"author_mail":items[2],"date":items[3],"message":json.dumps(items[4]),"parents":items[5].split(" ")})
+            result.update({"id":items[0],"author":items[1],"author_mail":items[2],"date":items[3],"message":json.dumps(items[4])[1:-1],"parents":items[5].split(" ")})
     return result
 
 
-def get_commits_list(date_from,date_to):
+def get_commits_list(date_from="2016-01-01",date_to=datetime.now().strftime("%Y-%m-%d")):
     g = git.cmd.Git(repo_dir)  # type: ignore
     g.checkout('master')
     result = []
@@ -42,7 +44,7 @@ def get_commits_list(date_from,date_to):
     if not git_log_string=='':
         for line in git_log_string.split('\n'):
             items = line.split('::::')
-            result.append({"id":items[0],"author":items[1],"author_mail":items[2],"date":items[3],"message":json.dumps(items[4]),"parents":items[5].split(" ")})
+            result.append({"id":items[0],"author":items[1],"author_mail":items[2],"date":items[3],"message":json.dumps(items[4])[1:-1],"parents":items[5].split(" ")})
     return result
 
 def get_parent_commits(commit_id):
@@ -157,17 +159,29 @@ def get_change_set_ttl(commit_id):
     result = ""
     dr = get_diff_rdf(commit_id)
     for row in dr:
+        add_or_remove="removal" if row["add_or_remove"]["value"] == 'removed' else "addition"
+        subject="<"+row["subject"]["value"]+">" if row["subject"]["type"] == "uri" else "'''"+row["subject"]["value"]+"'''"
+        predicate="<"+row["predicate"]["value"]+">" if row["predicate"]["type"] == "uri" else "'''"+row["predicate"]["value"]+"'''"
+        if row["object"]["type"] == "uri":
+            object = "<"+row["object"]["value"]+">"
+        else:
+            o_val = row["object"]["value"]
+            o_val=o_val.replace("'","\\'")
+            object = "'''"+o_val+"'''"
+            if "xml:lang" in row["object"].keys():
+                object += "@"+row["object"]["xml:lang"]
+          
         result += '''
         cs:{add_or_remove} [
-            a rdf:Statement;
-            rdf:subject {subject};
-            rdf:predicate {predicate};
+            a rdf:Statement ;
+            rdf:subject {subject} ;
+            rdf:predicate {predicate} ;
             rdf:object {object}
         ];'''.format(
-                add_or_remove="removal" if row["add_or_remove"]["value"] == 'removed' else "addition",
-                subject="<"+row["subject"]["value"]+">" if row["subject"]["type"] == "uri" else "'''"+row["subject"]["value"]+"'''",
-                predicate="<"+row["predicate"]["value"]+">" if row["predicate"]["type"] == "uri" else "'''"+row["predicate"]["value"]+"'''",
-                object=("<"+row["object"]["value"]+">" if row["object"]["type"] == "uri" else "'''"+row["object"]["value"]+"'''")+("@"+row["object"]["xml:lang"] if "xml:lang" in row["object"].keys() else "")
+                add_or_remove=add_or_remove,
+                subject=subject,
+                predicate=predicate,
+                object=object
             )
     return result
 
@@ -191,28 +205,34 @@ def get_ttl_string(commits_list):
     '''
     for commit in commits_list:
         result += '''
-:{an}
-    a prov:Agent, foaf:Person;
-    foaf:mbox "{ae}";
+:{anf}
+    a prov:Agent, foaf:Person ;
+    rdfs:label "{an}" ;
+    foaf:mbox "{ae}" ;
 .
 
 :commit_{commit_id}
-    a prov:Activity;
-    prov:wasAssociatedWith :{an};
+    a prov:Activity ;
+    prov:wasAssociatedWith :{anf} ;
     prov:endedAtTime "{cd}"^^xsd:dateTime ;
-    prov:label {cm};
-    prov:wasInfluencedBy {cp};        
+    prov:label \'\'\'{cm}\'\'\' ;
+    prov:wasInfluencedBy {cp} ;        
     prov:qualifiedUsage [
-        a prov:Usage, cs:ChangeSet;
+        a prov:Usage, cs:ChangeSet ;
         {cs}
     ]
 .
 '''.format(
         an=commit["author"],
+        anf="Author_"+re.sub(
+           r"[\u0080-\uFFFF :]", 
+           "_", 
+           commit["author"]
+       ),
         ae=commit["author_mail"],
         commit_id=commit["id"],
         cd=commit["date"],
-        cm=commit["message"],
+        cm=commit["message"].replace("'","\\'"),
         cp=", ".join(list(map(lambda x: ":commit_"+x, commit["parents"]))),
         cs=get_change_set_ttl(commit["id"])
     )
