@@ -52,11 +52,10 @@ def rdf_verification(commit_id):
 @rdf_verification.support('application/json')
 def rdf_verification_json(commit_id):
     reset_mylog()
-    #exit_code = rdf_verification_utils.rdf_verification_steps(commit_id)
-    mylog("asdf")
+    exit_code = rdf_verification_utils.rdf_verification_steps(commit_id)
     return {
         "rdf_verification_steps_response": "\n".join(get_mylog()),
-        "exitcode": 0
+        "exitcode": exit_code
     }
 
 @app.route('/admin/load_latest_commit')
