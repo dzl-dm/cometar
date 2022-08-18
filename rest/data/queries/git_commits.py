@@ -56,6 +56,7 @@ def get_parent_commits(commit_id):
         return []
     return git_log_list
 
+## Get all triples defined in the commit
 def get_commit_data(commit_id):
     mylog("Getting commit data for "+commit_id)
     r = fuseki_query.get_whole_commit_data(commit_id)
@@ -204,6 +205,12 @@ def get_ttl_string(commits_list):
 :ontology a prov:Entity .
     '''
     for commit in commits_list:
+        start_date = datetime.strptime("2016-01-01", "%Y-%m-%d")
+        for parent in commit["parents"]:
+            parent_commit = get_commit_details(parent)
+            temp_date = datetime.strptime(parent_commit["date"][:19], "%Y-%m-%dT%H:%M:%S")
+            if temp_date > start_date:
+                start_date = temp_date
         result += '''
 :{anf}
     a prov:Agent, foaf:Person ;
@@ -214,6 +221,7 @@ def get_ttl_string(commits_list):
 :commit_{commit_id}
     a prov:Activity ;
     prov:wasAssociatedWith :{anf} ;
+    prov:startedAtTime "{sd}"^^xsd:dateTime
     prov:endedAtTime "{cd}"^^xsd:dateTime ;
     prov:label \'\'\'{cm}\'\'\' ;
     prov:wasInfluencedBy {cp} ;        
@@ -231,7 +239,8 @@ def get_ttl_string(commits_list):
        ),
         ae=commit["author_mail"],
         commit_id=commit["id"],
-        cd=commit["date"],
+        sd=start_date.strftime("%Y-%m-%d %H:%M:%S"),
+        cd=commit["date"][:10]+" "+commit["date"][11:19],
         cm=commit["message"].replace("'","\\'"),
         cp=", ".join(list(map(lambda x: ":commit_"+x, commit["parents"]))),
         cs=get_change_set_ttl(commit["id"])
