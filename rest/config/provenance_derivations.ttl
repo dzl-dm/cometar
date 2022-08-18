@@ -15,32 +15,6 @@ PREFIX prov: 	<http://www.w3.org/ns/prov#>
 PREFIX cs:		<http://purl.org/vocab/changeset/schema#>
 
 
-INSERT
-{
-	?concept a prov:Entity .
-	?commit prov:used ?concept . 
-	?commit prov:generated [ a prov:Entity; prov:specializationOf :ontology ] .
-}
-WHERE
-{
-	{
-		SELECT ?commit ?concept
-		WHERE
-		{
-			?commit prov:qualifiedUsage [ ?action [ rdf:Statement [ rdf:subject ?concept ] ] ]
-		}
-	}
-};
-
-INSERT
-{
-	?commit prov:generated [ a prov:Entity; prov:specializationOf :ontology ];
-}
-WHERE
-{
-	?commit a prov:Activity;
-};
-
 #link concept derivation to proper commit
 INSERT
 {
