@@ -25,7 +25,7 @@ jobs:
         if: startsWith(github.event.head_commit.message, 'Merge pull request')
         run: |
           echo ::set-output name=tag_packages::'true'
-          echo ::set-output name=package_names::'proxy web git rest fuseki'
+          echo ::set-output name=package_names::'proxy web git rest fuseki fuseki_ui'
           echo "Tagging of packages should happen as we are receiving a tag on master branch..."
 
   tag_packages:
@@ -92,6 +92,16 @@ jobs:
           registry: '${{ env.REGISTRY }}'
           token: "${{ env.token }}"
           repository: '${{ github.repository }}/${{ github.event.repository.name }}-fuseki'
+          target: 'sha-${{ steps.prep.outputs.commit_sha }}'
+          tags: |
+            v${{ steps.prep.outputs.version }}
+            latest
+      - name: Add git Version tag to fuseki_ui Docker Image
+        uses: shrink/actions-docker-registry-tag@v1
+        with:
+          registry: '${{ env.REGISTRY }}'
+          token: "${{ env.token }}"
+          repository: '${{ github.repository }}/${{ github.event.repository.name }}-fuseki_ui'
           target: 'sha-${{ steps.prep.outputs.commit_sha }}'
           tags: |
             v${{ steps.prep.outputs.version }}
