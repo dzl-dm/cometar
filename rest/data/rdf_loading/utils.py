@@ -46,7 +46,7 @@ def load_checkout_into_fuseki(server = os.environ["FUSEKI_TEST_SERVER"], commit_
                 return 1
     #insert rules
     logger.debug("Inserting rules.")
-    rules_file = os.environ['COMETAR_PROD_DIR']+'/rdf_loading/insertrules.ttl'
+    rules_file = '/config/insertrules.ttl'
     data = open(rules_file).read()
     headers = {'Content-Type': 'application/sparql-update;charset=utf-8'}
     r = requests.post(server+"/update", data=data.encode('utf-8'), headers=headers)
@@ -81,7 +81,7 @@ def load_provenance_into_fuseki(server = os.environ["FUSEKI_TEST_SERVER"]):
                         mylog("Line "+str(index+1)+": "+rows[index][:-1])
                 return 1
     #insert rules
-    # logger.debug("Inserting rules.")
+    # mylog("Inserting rules.")
     # rules_file = '/config/provenance_derivations.ttl'
     # data = open(rules_file).read()
     # headers = {'Content-Type': 'application/sparql-update;charset=utf-8'}
