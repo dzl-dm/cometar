@@ -221,7 +221,7 @@ def get_ttl_string(commits_list):
 :commit_{commit_id}
     a prov:Activity ;
     prov:wasAssociatedWith :{anf} ;
-    prov:startedAtTime "{sd}"^^xsd:dateTime
+    prov:startedAtTime "{sd}"^^xsd:dateTime ;
     prov:endedAtTime "{cd}"^^xsd:dateTime ;
     prov:label \'\'\'{cm}\'\'\' ;
     prov:wasInfluencedBy {cp} ;        
@@ -239,8 +239,8 @@ def get_ttl_string(commits_list):
        ),
         ae=commit["author_mail"],
         commit_id=commit["id"],
-        sd=start_date.strftime("%Y-%m-%d %H:%M:%S"),
-        cd=commit["date"][:10]+" "+commit["date"][11:19],
+        sd=start_date.strftime("%Y-%m-%dT%H:%M:%S"),
+        cd=commit["date"][:10]+"T"+commit["date"][11:19],
         cm=commit["message"].replace("'","\\'"),
         cp=", ".join(list(map(lambda x: ":commit_"+x, commit["parents"]))),
         cs=get_change_set_ttl(commit["id"])
