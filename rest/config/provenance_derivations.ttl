@@ -95,8 +95,8 @@ WHERE
 		SELECT ?oldConcept1 ?derivedConcept1 ?oldConcept2 ?derivedConcept2
 		WHERE
 		{
-			?derivedConcept1 prov:wasDerivedFrom ?oldConcept1 .	
-			?derivedConcept2 prov:wasDerivedFrom ?oldConcept2 .	
+			?derivedConcept1 prov:wasDerivedFrom+ ?oldConcept1 .	
+			?derivedConcept2 prov:wasDerivedFrom+ ?oldConcept2 .	
 		}
 	}
 	?add a rdf:Statement;
