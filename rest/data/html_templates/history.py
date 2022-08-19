@@ -30,31 +30,35 @@ def get_history_html():
 def get_history_concept_html(history_data):
     result_rows=""
     for row in history_data["results"]["bindings"]:
+        commits=row["commits"]["value"].split(",")
+        for index in range(len(commits)):
+            commits[index] = commits[index][-40:]
+        lang=row["lang"]["value"] if "lang" in row else ""
         result_rows += '''
-        <tr>
-            <td><div style="width:120px">{commit}</div></td>
-            <td><div style="width:120px">{date}</div></td>
-            <td><div style="width:100px">{addorremove}</div></td>
-            <td><div>{subject}</div></td>
-            <td><div>{predicate}</div></td>
-            <td><div>{object}</div></td>
-        </tr>
-    '''.format(
-        commit = row["commit"]["value"][-40:],
-        date = row["date"]["value"][:-6].replace("T"," "),
-        addorremove = row["addorremove"]["value"].split("#")[-1],
-        subject = row["subject"]["value"],
-        predicate = row["predicate"]["value"],
-        object = row["object"]["value"])
+            <tr>
+                <td><div style="width:120px">{commits}</div></td>
+                <td><div style="width:120px">{date}</div></td>
+                <td><div>{predicate}</div></td>
+                <td><div>{lang}</div></td>
+                <td><div>{oldobject}</div></td>
+                <td><div>{newobject}</div></td>
+            </tr>
+        '''.format(
+            commits = ",".join(commits),
+            date = row["day"]["value"],
+            predicate = row["predicate"]["value"],
+            lang = lang,
+            oldobject = row["oldobject"]["value"] if "oldobject" in row else "",
+            newobject = row["newobject"]["value"] if "newobject" in row else "")
     result_table='''
         <table>
             <tr>
                 <th>Commit</th>
                 <th>Date</th>
-                <th>Action</th>
-                <th>Subject</th>
                 <th>Predicate</th>
-                <th>Object</th>
+                <th>Language</th>
+                <th>Old Object</th>
+                <th>New Object</th>
             </tr>
             {rows}
         </table>'''.format(rows=result_rows)

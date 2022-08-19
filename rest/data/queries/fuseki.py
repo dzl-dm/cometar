@@ -69,22 +69,107 @@ def get_history_data(iri):
 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX prov:   <http://www.w3.org/ns/prov#>
 PREFIX cs:     <http://purl.org/vocab/changeset/schema#>
-SELECT DISTINCT ?commit ?date ?addorremove ?subject ?predicate ?object 
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+#SELECT DISTINCT (GROUP_CONCAT(?commit;SEPARATOR=",") AS ?commits) ?day ?subject ?predicate ?oldobject ?newobject
+#SELECT DISTINCT ?commits ?day ?subject ?predicate ?lang (GROUP_CONCAT(DISTINCT ?oldobject;SEPARATOR=", ") AS ?oldobjects) (GROUP_CONCAT(DISTINCT ?newobject;SEPARATOR=", ") AS ?newobjects)
+SELECT DISTINCT ?commits ?day ?subject ?predicate ?lang ?oldobject ?newobject
 WHERE {
-	{
-		?concept prov:wasDerivedFrom* <'''+iri+'''> .
-		?commit prov:qualifiedUsage ?usage ;
-			prov:endedAtTime ?date .
-		?usage a prov:Usage, cs:ChangeSet .
-		?usage ?addorremove ?statement FILTER (?addorremove IN (cs:addition,cs:removal)) .
-		?statement a rdf:Statement;
-			rdf:subject ?subject;
-			rdf:predicate ?predicate;
-			rdf:object ?object .
-		FILTER (?subject = ?concept || ?object = ?concept)
-	}
+  {
+    {
+      # All days on which predicates were changed
+      SELECT DISTINCT (GROUP_CONCAT(?commit;SEPARATOR=",") AS ?commits) ?day ?predicate ?lang
+      WHERE {
+        <'''+iri+'''> prov:wasDerivedFrom* ?subject .
+        ?commit prov:qualifiedUsage ?usage ;
+          prov:endedAtTime ?date .
+        ?usage ?addorremove ?statement FILTER (?addorremove IN (cs:addition,cs:removal)) .
+        ?statement a rdf:Statement ;
+          rdf:subject ?subject ;
+          rdf:predicate ?predicate ;
+          rdf:object ?object .
+        BIND (xsd:date(concat(str(year(?date)),"-",
+                       str(month(?date)),"-",
+                       str(day(?date))))
+        as ?day)
+        BIND (lang(?object) as ?lang)
+      }
+      GROUP BY ?day ?predicate ?lang
+    }
+
+    OPTIONAL {
+      <'''+iri+'''> prov:wasDerivedFrom* ?subject_1 .
+      ?commit_1 prov:qualifiedUsage [
+          cs:removal [
+            a rdf:Statement ;
+            rdf:subject ?subject_1 ;
+            rdf:predicate ?predicate ;
+            rdf:object ?oldobject 
+          ]
+        ] ;
+        prov:endedAtTime ?date_1 .
+      FILTER (xsd:date(concat(str(year(?date_1)),"-",
+                        str(month(?date_1)),"-",
+                        str(day(?date_1)))) = ?day)
+      FILTER (!bound(?lang) || lang(?oldobject) = ?lang)
+      # check if object has not been added this day (before or after removal)
+      FILTER NOT EXISTS {
+        <'''+iri+'''> prov:wasDerivedFrom* ?subject_22 .
+        ?commit_22 prov:qualifiedUsage [
+            cs:addition [
+              a rdf:Statement ;
+              rdf:subject ?subject_22 ;
+              rdf:predicate ?predicate ;
+              rdf:object ?oldobject
+            ]
+          ] ;
+          prov:endedAtTime ?date_22 .
+        FILTER (xsd:date(concat(str(year(?date_22)),"-",
+                        str(month(?date_22)),"-",
+                        str(day(?date_22)))) = ?day)
+        FILTER (!bound(?lang) || lang(?oldobject) = ?lang)
+      }
+    }
+
+    OPTIONAL {
+      <'''+iri+'''> prov:wasDerivedFrom* ?subject_2 .
+      ?commit_2 prov:qualifiedUsage [
+          cs:addition [
+            a rdf:Statement ;
+            rdf:subject ?subject_2 ;
+            rdf:predicate ?predicate ;
+            rdf:object ?newobject 
+          ]
+        ] ;
+        prov:endedAtTime ?date_2 .
+      FILTER (xsd:date(concat(str(year(?date_2)),"-",
+                        str(month(?date_2)),"-",
+                        str(day(?date_2)))) = ?day)
+      FILTER (!bound(?lang) || lang(?newobject) = ?lang)
+      # check if object has not been removed this day (before or after addition)
+      FILTER NOT EXISTS {
+        <'''+iri+'''> prov:wasDerivedFrom* ?subject_11 .
+        ?commit_11 prov:qualifiedUsage [
+            cs:removal [
+              a rdf:Statement ;
+              rdf:subject ?subject_11 ;
+              rdf:predicate ?predicate ;
+              rdf:object ?newobject
+            ]
+          ] ;
+          prov:endedAtTime ?date_11 .
+        FILTER (xsd:date(concat(str(year(?date_11)),"-",
+                        str(month(?date_11)),"-",
+                        str(day(?date_11)))) = ?day)
+        FILTER (!bound(?lang) || lang(?newobject) = ?lang)
+      }
+    }
+
+    FILTER ((bound(?oldobject) || bound(?newobject)) && (!bound(?oldobject) || !bound(?newobject) || ?oldobject != ?newobject))
+  }
 }
-ORDER BY DESC(?date) ?subject ?predicate DESC(?addorremove)
+#GROUP BY ?commits ?day ?subject ?predicate ?lang
+#HAVING ((bound(?oldobjects) || bound(?newobjects)) && (!bound(?oldobjects) || !bound(?newobjects) || ?oldobjects != ?newobjects))
+ORDER BY DESC(?day) ?subject ?predicate
 '''
 	url = os.environ['FUSEKI_LIVE_SERVER']+'/query'
 	headers = {'Accept-Charset': 'UTF-8'}
