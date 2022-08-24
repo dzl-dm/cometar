@@ -2,8 +2,6 @@ from datetime import datetime
 import os
 import json
 import re
-from typing import Any, List, TypedDict
-from ..rdf_loading import utils as rdf_load_utils
 from ..queries import fuseki as fuseki_query
 import git
 import logging

@@ -2,13 +2,18 @@
   <div class="logo"><img src="{{getConfig().logos.src_cometar}}"/></div>
   <div class="heading">CoMetaR - a Collaborative Metadata Repository</div>
 </div>
-<app-section [style.visibility]="devServer()?'hidden':'visible'" [style.height]="devServer()?'0px':'auto'" backgroundstyle="solid" [margin]="20" title="Latest Activities">
+<app-section [style.visibility]="devServer()?'hidden':'visible'" [style.height]="devServer()?'0px':'auto'" backgroundstyle="solid" [margin]="20" title="Statistics and Progress">
 <!--<app-section [style.visibility]="devServer()?'hidden':'visible'" [style.display]="'none'" [style.height]="devServer()?'0px':'auto'" backgroundstyle="solid" [margin]="20" title="Latest Activities">-->
   <br>
   <div class="statistics">
-    <div class="statistic">
+    <div class="statistic" id="total_figure">
+      <img src="http://localhost/rest/query/progress/metadata/total/figure"/>
     </div>
-    <div class="statistic">
+    <div class="statistic" id="changes_figure">
+      <img src="http://localhost/rest/query/progress/metadata/changes/figure"/>
+    </div> 
+    <div class="statistic" id="distribution_figure">
+      <img src="http://localhost/rest/query/progress/metadata/distribution/figure"/>
     </div> 
   </div>
   <br>

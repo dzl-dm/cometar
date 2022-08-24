@@ -8,12 +8,14 @@ from datetime import datetime
 import logging
 import logging.config
 import os
+from matplotlib.font_manager import json_load
 import yaml
-from flask import Flask, request
+from flask import Flask, jsonify, request, send_file, url_for
 from flask_accept import accept
 
-from .rdf_provenance import utils as prov_utils
-from .rdf_loading import utils as rdf_load_utils
+from . import rdf_provenance
+from . import rdf_loading
+from . import plotting
 from .rdf_verification import utils as rdf_verification_utils
 from .queries import git_commits
 from .html_templates import commits as html_commits
@@ -61,13 +63,13 @@ def rdf_verification_json(commit_id):
 @app.route('/admin/load_latest_commit')
 def fuseki_load_live():
     reset_mylog()
-    rdf_load_utils.load_checkout_into_fuseki(server = os.environ["FUSEKI_LIVE_SERVER"])
+    rdf_loading.load_checkout_into_fuseki(server = os.environ["FUSEKI_LIVE_SERVER"])
     return html_text.get_html("\n".join(get_mylog()))
 
 @app.route('/admin/load_provenance')
 def admin_load_provenance():
     reset_mylog()
-    rdf_load_utils.load_provenance_into_fuseki(server = os.environ["FUSEKI_LIVE_SERVER"])
+    rdf_loading.load_provenance_into_fuseki(server = os.environ["FUSEKI_LIVE_SERVER"])
     return html_text.get_html("\n".join(get_mylog()))
 
 @app.route('/query/console')
@@ -78,7 +80,7 @@ def get_console():
 @app.route('/admin/provenance')
 def admin_provenance():
     reset_mylog()
-    missing_commits = prov_utils.get_missing_provenance_data()
+    missing_commits = rdf_provenance.get_missing_provenance_data()
     return html_provenance.get_provenance_html(missing_commits,git_commits.get_commits_list())
 
 @app.route('/admin/update_provenance')
@@ -86,7 +88,7 @@ def admin_update_provenance():
     reset_mylog()
     date_from = request.args.get('date_from', default = datetime.now().strftime("%Y-%m-%d"), type = str)
     date_to = request.args.get('date_to', default = datetime.now().strftime("%Y-%m-%d"), type = str)
-    prov_utils.update_provenance_data(date_from,date_to)
+    rdf_provenance.update_provenance_data(date_from,date_to)
     return html_text.get_html("\n".join(get_mylog()))
 
 @app.route('/query/commits')
@@ -142,3 +144,34 @@ def search_pattern(pattern):
     reset_mylog()
     search_data = fuseki_query.get_search_data(pattern)
     return html_search.get_search_pattern_html(search_data,pattern)
+
+# @app.route('/query/progress')
+# def get_progress(pattern):
+#     return send_file(filename, mimetype='image/gif')
+
+@app.route('/query/progress/metadata')
+@accept('application/json')
+def get_metadata_progress():
+    return jsonify({"test":"jo"})
+
+@get_metadata_progress.support('text/html')
+def get_metadata_progress_html():
+    response = "<html><body>"
+    #response += str(fuseki_query.get_metadata_progress())
+    response += "<img style='width:500px;border:1px solid #333' src='http://localhost/rest/query/progress/metadata/total/figure'/>"
+    response += "<img style='width:500px;border:1px solid #333' src='http://localhost/rest/query/progress/metadata/changes/figure'/>"
+    response += "<img style='width:1000px;border:1px solid #333' src='http://localhost/rest/query/progress/metadata/distribution/figure'/>"
+    response += "</body></html>"
+    return response
+
+@app.route('/query/progress/metadata/changes/figure')
+def get_metadata_progress_changes_figure():
+    return send_file(plotting.get_progress_metadata_changes_figure(False), mimetype='image/jpg')
+
+@app.route('/query/progress/metadata/total/figure')
+def get_metadata_progress_total_figure():
+    return send_file(plotting.get_progress_metadata_total_figure(False), mimetype='image/jpg')
+
+@app.route('/query/progress/metadata/distribution/figure')
+def get_metadata_progress_distribution_figure():
+    return send_file(plotting.get_metadata_distribution_figure(False), mimetype='image/jpg')

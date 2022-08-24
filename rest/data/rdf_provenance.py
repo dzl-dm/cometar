@@ -6,8 +6,8 @@ provenance module related functions
 import logging
 
 logger = logging.getLogger(__name__)
-from ..mylog import mylog
-from ..queries import git_commits
+from .mylog import mylog
+from .queries import git_commits
 
 import os
 

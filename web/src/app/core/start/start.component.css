@@ -28,12 +28,27 @@ div.functions{
 div.statistics {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-evenly;
 }
 div.statistic {
-    width:40%;
     background-color: white;
     box-shadow: 0 0 10px #777;
+    flex-shrink:0;
+    flex-grow:1;
+    margin:10px;
+}
+div.statistic img {
+    width:100%;
+}
+#total_figure {
+    width:40%;
+}
+#changes_figure {
+    width:40%;
+}
+#distribution_figure {
+    width:90%;
 }
 
 .sectionWrapper {

@@ -1,6 +1,6 @@
 import subprocess
 import os
-from ..rdf_loading import utils as rdf_load_utils
+from .. import rdf_loading
 from ..mylog import mylog
 import logging
 
@@ -14,7 +14,7 @@ def apply_verification_tests():
 
 def rdf_verification_steps(commit_id):
     if os.path.exists("/update-hook-repository"):
-        exit_code = rdf_load_utils.load_checkout_into_fuseki(commit_id=commit_id)
+        exit_code = rdf_loading.load_checkout_into_fuseki(commit_id=commit_id)
         if exit_code > 0:
             return exit_code
         exit_code = apply_verification_tests()

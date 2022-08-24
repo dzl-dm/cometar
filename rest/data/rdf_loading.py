@@ -2,8 +2,8 @@ import os
 import logging
 import requests
 import re
-from ..queries import git_commits
-from ..mylog import mylog
+from .queries import git_commits
+from .mylog import mylog
 logger = logging.getLogger(__name__)
 
 
