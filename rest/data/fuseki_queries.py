@@ -1,7 +1,7 @@
 from typing import Dict
 import requests
-from .. import rdf_loading
-from ..mylog import mylog
+from . import rdf_loading
+from .mylog import mylog
 
 
 import os

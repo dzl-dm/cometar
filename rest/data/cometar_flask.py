@@ -17,14 +17,14 @@ from . import rdf_provenance
 from . import rdf_loading
 from . import plotting
 from .rdf_verification import utils as rdf_verification_utils
-from .queries import git_commits
+from . import git_utils
 from .html_templates import commits as html_commits
 from .html_templates import console as html_console
 from .html_templates import search as html_search
 from .html_templates import history as html_history
 from .html_templates import text_only as html_text
 from .html_templates import provenance as html_provenance
-from .queries import fuseki as fuseki_query
+from . import fuseki_queries as fuseki_query
 from .mylog import mylog,reset_mylog,get_mylog
 
 print("Basic imports done")
@@ -81,7 +81,7 @@ def get_console():
 def admin_provenance():
     reset_mylog()
     missing_commits = rdf_provenance.get_missing_provenance_data()
-    return html_provenance.get_provenance_html(missing_commits,git_commits.get_commits_list())
+    return html_provenance.get_provenance_html(missing_commits,git_utils.get_commits_list())
 
 @app.route('/admin/update_provenance')
 def admin_update_provenance():
@@ -100,26 +100,26 @@ def get_commits_list():
     reset_mylog()
     date_from = request.args.get('date_from', default = '2016-01-01', type = str)
     date_to = request.args.get('date_to', default = datetime.now().strftime("%Y-%m-%d"), type = str)
-    git_log_list = git_commits.get_commits_list(date_from,date_to)
+    git_log_list = git_utils.get_commits_list(date_from,date_to)
     git_log_html = html_commits.get_commits_list(git_log_list)
     return git_log_html
 
 @app.route('/query/commits/diff_ttl/<commit_id>')
 def query_ttl_diff(commit_id):
     reset_mylog()
-    diff = git_commits.get_diff_ttl(commit_id)
+    diff = rdf_provenance.get_diff_ttl(commit_id)
     return html_commits.get_text_diff_html(diff,"TTL diff for "+commit_id)
 
 @app.route('/query/commits/diff_text/<commit_id>')
 def query_text_diff(commit_id):
     reset_mylog()
-    diff = git_commits.get_diff_text(commit_id)
+    diff = rdf_provenance.get_diff_text(commit_id)
     return html_commits.get_text_diff_html(diff,"Text diff for "+commit_id)
 
 @app.route('/query/commits/diff_rdf/<commit_id>')
 def query_rdf_diff(commit_id):
     reset_mylog()
-    diff_result = git_commits.get_diff_rdf(commit_id)
+    diff_result = rdf_provenance.get_diff_rdf(commit_id)
     return html_commits.get_rdf_diff_html(diff_result,"RDF diff for "+commit_id)
 
 @app.route('/query/history')

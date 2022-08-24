@@ -7,7 +7,7 @@ import matplotlib.dates as mdates
 from matplotlib import pyplot as plt
 import os
 
-from .queries import fuseki
+from . import fuseki_queries
 
 import logging
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ def get_metadata_distribution_figure(force_redraw):
     for file in listing:
         if file.startswith(prefix) and file.endswith(".jpg"):
             os.remove(os.path.join(figures_path, file))
-    data = fuseki.get_distribution_metadata()
+    data = fuseki_queries.get_distribution_metadata()
     
     pie_labels = data.keys()
     donut_labels = []
@@ -94,7 +94,7 @@ def get_progress_metadata_changes_figure(force_redraw):
         if file.startswith(prefix) and file.endswith(".jpg"):
             os.remove(os.path.join(figures_path, file))
 
-    data = fuseki.get_progress_metadata()
+    data = fuseki_queries.get_progress_metadata()
     dates = [datetime.strptime(d,'%Y-%m').date() for d in data["dates"]]
     bar_width=8
 
@@ -144,7 +144,7 @@ def get_progress_metadata_total_figure(force_redraw):
         if file.startswith(prefix) and file.endswith(".jpg"):
             os.remove(os.path.join(figures_path, file))
 
-    data = fuseki.get_progress_metadata()
+    data = fuseki_queries.get_progress_metadata()
     dates = [datetime.strptime(d,'%Y-%m').date() for d in data["dates"]]
 
     global blocker

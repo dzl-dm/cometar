@@ -2,7 +2,7 @@ import os
 import logging
 import requests
 import re
-from .queries import git_commits
+from . import git_utils
 from .mylog import mylog
 logger = logging.getLogger(__name__)
 
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def load_checkout_into_fuseki(server = os.environ["FUSEKI_TEST_SERVER"], commit_id = "master"):
     mylog("Loading data for commit "+commit_id+" to "+server+" server.")
     try:
-        git_commits.git_checkout(commit_id)
+        git_utils.git_checkout(commit_id)
     except:
         mylog("Error during checkout of "+commit_id)
         return 1    
