@@ -27,7 +27,8 @@ def get_whole_commit_data(commit_id):
     return r.json()
 
 def get_search_data(pattern):    
-    sparql_query='''PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+    sparql_query='''
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX : <http://data.dzl.de/ont/dwh#>
 PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX cs:		<http://purl.org/vocab/changeset/schema#>
@@ -179,34 +180,58 @@ ORDER BY DESC(?day) ?subject ?predicate
 	r = requests.post(url, data={'query': sparql_query}, headers=headers)
 	return r.json()
 
-def get_progress_metadata():
+def get_progress_metadata_concepts():
   sparql_query='''
-# PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-# PREFIX prov:   <http://www.w3.org/ns/prov#>
-# PREFIX cs:     <http://purl.org/vocab/changeset/schema#>
-# PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
-# SELECT ?date (COUNT(DISTINCT ?add) as ?additions) (COUNT(DISTINCT ?rem) as ?removals)
-# WHERE { 
-#   {
-#     SELECT ?usage ?date
-#     WHERE {
-#       ?commit prov:qualifiedUsage ?usage ;
-#         prov:endedAtTime ?d .
-#       BIND (
-#           CONCAT(STR(YEAR(?d)), 
-#           "-", 
-#           STR(MONTH(?d))
-#           # , 
-#           # "-", 
-#           # STR(DAY(?d))
-#         ) as ?date)
-#     }
-#   }
-#   OPTIONAL { ?usage cs:addition ?add FILTER NOT EXISTS { ?add rdf:comment "hidden" } . }
-#   OPTIONAL { ?usage cs:removal ?rem FILTER NOT EXISTS { ?rem rdf:comment "hidden" }  . }
-# }
-# group by ?date ?total
-# order by ?date
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX prov:   <http://www.w3.org/ns/prov#>
+PREFIX cs:     <http://purl.org/vocab/changeset/schema#>
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+SELECT ?date (COUNT(DISTINCT ?add) as ?additions) (COUNT(DISTINCT ?rem) as ?removals)
+WHERE { 
+  {
+    SELECT ?usage ?date
+    WHERE {
+      ?commit prov:qualifiedUsage ?usage ;
+        prov:endedAtTime ?d .
+      BIND (
+          CONCAT(STR(YEAR(?d)), 
+          "-", 
+          STR(MONTH(?d))
+          # , 
+          # "-", 
+          # STR(DAY(?d))
+        ) as ?date)
+    }
+  }
+  OPTIONAL { 
+    ?usage cs:addition ?add FILTER NOT EXISTS { ?add rdf:comment "hidden" } . 
+    ?add rdf:object skos:Concept .
+  }
+  OPTIONAL { 
+    ?usage cs:removal ?rem FILTER NOT EXISTS { ?rem rdf:comment "hidden" }  . 
+    ?rem rdf:object skos:Concept .
+  }
+}
+group by ?date ?total
+order by ?date
+'''
+  url = os.environ['FUSEKI_LIVE_SERVER']+'/query'
+  headers = {'Accept-Charset': 'UTF-8'}
+  r = requests.post(url, data={'query': sparql_query}, headers=headers)
+  number_of_concepts = []
+  dates = []
+  for row in r.json()["results"]["bindings"]:
+    addition = int(row["additions"]["value"])
+    removal = int(row["removals"]["value"])
+    diff=(number_of_concepts[-1] if len(number_of_concepts) > 0 else 0)+addition-removal
+    dates.append(row["date"]["value"])
+    number_of_concepts.append(diff)
+  return {"dates":dates,"number_of_concepts":number_of_concepts}
+
+
+def get_progress_metadata_annotations():
+  sparql_query='''
 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX prov:   <http://www.w3.org/ns/prov#>
 PREFIX cs:     <http://purl.org/vocab/changeset/schema#>
@@ -279,11 +304,11 @@ PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX dzl: <http://data.dzl.de/ont/dwh#>
 
-SELECT DISTINCT ?top_element ?top_label ?element ?label ?sub_elements (COUNT(?x) AS ?sub_sub_elements)
+SELECT DISTINCT ?top_element ?top_label ?element ?label ?sub_elements (COUNT(DISTINCT ?x) AS ?sub_sub_elements)
 WHERE
 {
   {
-    SELECT DISTINCT ?top_element ?top_label (COUNT(?y) AS ?sub_elements)
+    SELECT DISTINCT ?top_element ?top_label (COUNT(DISTINCT ?y) AS ?sub_elements)
     WHERE {
       ?dzl dzl:topLevelNode ?top_element .
       ?top_element skos:prefLabel ?top_label FILTER(lang(?top_label)='en') .
@@ -297,7 +322,7 @@ WHERE
   ?element skos:narrower* [ rdf:hasPart* [ skos:narrower* ?x ] ] .
 } 
 GROUP BY ?top_element ?top_label ?element ?label ?sub_elements
-ORDER BY DESC(?sub_elements) DESC(COUNT(?x))
+ORDER BY DESC(?sub_elements) DESC(COUNT(DISTINCT ?x))
 '''
   url = os.environ['FUSEKI_LIVE_SERVER']+'/query'
   headers = {'Accept-Charset': 'UTF-8'}
