@@ -277,6 +277,7 @@ WHERE {
 }
 ORDER BY ?datea
 '''
+  logger.debug("Making SPARQL query against CoMetaR fuseki server to obtain 'progress metadata annotations'")
   url = os.environ['FUSEKI_LIVE_SERVER']+'/query'
   headers = {'Accept-Charset': 'UTF-8'}
   r = requests.post(url, data={'query': sparql_query}, headers=headers)
@@ -296,6 +297,7 @@ ORDER BY ?datea
     changes.append(change)
     total_statements.append(diff)
 
+  logger.debug("Data query complete")
   return {"dates":dates,"additions":additions,"removals":removals,"changes":changes,"total_statements":total_statements}
 
 def get_distribution_metadata():

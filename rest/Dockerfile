@@ -1,6 +1,5 @@
 FROM python:3.10-slim-bullseye
 
-ARG COMETAR_BASE_DIR=${COMETAR_BASE_DIR:-/cometar_base}
 ## Used in build and run
 ENV COMETAR_TEMP_DIR=${COMETAR_TEMP_DIR:-/tmp/cometar}
 ENV COMETAR_PROD_DIR=${COMETAR_PROD_DIR:-/cometar}
@@ -18,16 +17,14 @@ RUN apt-get update && \
 COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir -r /requirements.txt
 
-COPY data ${COMETAR_BASE_DIR}
+COPY data ${COMETAR_PROD_DIR}
 COPY config /config
 
-RUN mkdir -p $COMETAR_PROD_DIR && \
-    mkdir -p /var/lib/cometar/provenance/output && \
-    mkdir -p /var/lib/cometar/provenance/checkouts && \
-    mkdir -p /var/lib/cometar/provenance/deltas && \
-    mkdir -p /var/tmp/cometar && \
-    cp -R "${COMETAR_BASE_DIR}/." "${COMETAR_PROD_DIR}/" && \
-    find "${COMETAR_PROD_DIR}/" -type f -iname "*.sh" -execdir chmod +x {} +
+RUN mkdir -p \
+        /var/lib/cometar/provenance/output \
+        /var/lib/cometar/provenance/checkouts \
+        /var/lib/cometar/provenance/deltas \
+        /var/tmp/cometar
 
 ENV FUSEKI_LIVE_SERVER=${FUSEKI_LIVE_SERVER:-http://cometar.fuseki:3030/cometar_live}
 ENV FUSEKI_TEST_SERVER=${FUSEKI_TEST_SERVER:-http://cometar.fuseki:3030/cometar_test}

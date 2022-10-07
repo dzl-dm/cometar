@@ -1,11 +1,7 @@
 Flask
 flask-accept
-# Flask-Migrate
-# Flask-SQLAlchemy
 matplotlib
 MarkupSafe
-# psycopg2-binary
 pyyaml
 requests
-# SQLAlchemy
 GitPython
