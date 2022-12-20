@@ -75,17 +75,16 @@ export class UploadClientConfigurationComponent implements OnInit {
   }
 
   public inputFileSelected(fileInput: any){
-    var dateien = fileInput.target.files;
-    for (var i = 0, f; f = dateien[i]; i++) {
+    var files = fileInput.target.files;
+    for (var i = 0, f; f = files[i]; i++) {
       if (!f.type.match('text/plain') && !f.type.match('text/xml')) {
+		//TODO error message
         continue;
       }
       var reader = new FileReader();
-      reader.onload = ((theFile) => {
-        return ((e) => {
-          this.xmlFileContent = e.target.result;
-        });
-      })(f);
+      reader.onloadend = ((e) => {
+        this.xmlFileContent = <string>reader.result;
+      });
       reader.readAsText(f, "UTF-8");
     }
   }
