@@ -20,7 +20,6 @@ import { SectionComponent } from './section/section.component';
 import { TextWithNavigationComponent } from './text-with-navigation/text-with-navigation.component';
 import { FormsModule } from '@angular/forms';
 import { MatLegacyAutocompleteModule as MatAutocompleteModule } from '@angular/material/legacy-autocomplete'; 
-import { AngularResizedEventModule } from 'angular-resize-event';
 
 @NgModule({
     declarations: [
@@ -46,8 +45,7 @@ import { AngularResizedEventModule } from 'angular-resize-event';
         MatIconModule,
         MatTooltipModule,
         FormsModule,
-        MatAutocompleteModule,
-        AngularResizedEventModule
+        MatAutocompleteModule
     ],
     exports: [
         TreeComponent,
