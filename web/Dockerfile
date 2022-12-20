@@ -3,7 +3,7 @@ ARG BUILD_DIR="/opt/cometar_web"
 
 ## This is a multi-stage build, this node container is discarded after doing the job of building the angular app
 ## Currnt stable version at time of writing
-FROM node:16-alpine as cometar-build
+FROM node:19-alpine as cometar-build
   ARG BUILD_DIR
   WORKDIR ${BUILD_DIR}
   ENV PATH ${BUILD_DIR}/node_modules/.bin:$PATH
