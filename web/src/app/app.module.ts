@@ -57,9 +57,8 @@ export function initializeApp(appConfig: ConfigurationService) {
         }
       ],
       {
-        enableTracing: false,
-        relativeLinkResolution: 'legacy',
-      }
+    enableTracing: false
+}
     )
   ],
   providers: [ 

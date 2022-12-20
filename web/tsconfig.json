@@ -10,7 +10,7 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es2020",
+    "target": "ES2022",
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -18,11 +18,16 @@
       "es2018",
       "dom"
     ],
-    "resolveJsonModule": true, 
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "paths": {
-      "stream": [ "./node_modules/stream-browserify" ],
-      "timers": [ "./node_modules/timers-browserify" ]
+      "stream": [
+        "./node_modules/stream-browserify"
+      ],
+      "timers": [
+        "./node_modules/timers-browserify"
+      ]
     },
+    "useDefineForClassFields": false
   }
 }
