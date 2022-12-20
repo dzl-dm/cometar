@@ -23,44 +23,41 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AngularResizedEventModule } from 'angular-resize-event';
 
 @NgModule({
-  declarations: [
-    TreeComponent,
-    TreeItemComponent,
-    TreeItemListComponent,
-    BrowserComponent,
-    LogosComponent,
-    MenuComponent,
-    SnackbarComponent,
-    StartComponent,
-    NoSanitizePipe,
-    ConceptInformationComponent,
-    ProgressbarComponent,
-    SectionComponent,
-    TextWithNavigationComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule,
-    ChartsModule,
-    MatProgressBarModule,
-    MatIconModule,
-    MatTooltipModule,
-    FormsModule,
-    MatAutocompleteModule,
-    AngularResizedEventModule
-  ],
-  exports: [
-    TreeComponent,
-    TreeItemComponent,
-    TreeItemListComponent,
-    BrowserComponent,
-    CommonModule,
-    ConceptInformationComponent,
-    SectionComponent,
-    TextWithNavigationComponent
-  ],
-  entryComponents: [
-    SnackbarComponent
-  ]
+    declarations: [
+        TreeComponent,
+        TreeItemComponent,
+        TreeItemListComponent,
+        BrowserComponent,
+        LogosComponent,
+        MenuComponent,
+        SnackbarComponent,
+        StartComponent,
+        NoSanitizePipe,
+        ConceptInformationComponent,
+        ProgressbarComponent,
+        SectionComponent,
+        TextWithNavigationComponent
+    ],
+    imports: [
+        CommonModule,
+        RouterModule,
+        ChartsModule,
+        MatProgressBarModule,
+        MatIconModule,
+        MatTooltipModule,
+        FormsModule,
+        MatAutocompleteModule,
+        AngularResizedEventModule
+    ],
+    exports: [
+        TreeComponent,
+        TreeItemComponent,
+        TreeItemListComponent,
+        BrowserComponent,
+        CommonModule,
+        ConceptInformationComponent,
+        SectionComponent,
+        TextWithNavigationComponent
+    ]
 })
 export class CoreModule { }
