@@ -17,11 +17,11 @@ import { trigger, state, transition, animate, style } from '@angular/animations'
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('openClose', [
-      state('void', style({
-        opacity: '0',
-        transform: 'translateX(50px)'
-      })),
-      transition('void <=> *', animate(100))
+      // state('void', style({
+      //   opacity: '0',
+      //   transform: 'translateX(50px)'
+      // })),
+      // transition('void <=> *', animate(100))
     ]),
     trigger('highlight', [
       transition(':enter', []),
