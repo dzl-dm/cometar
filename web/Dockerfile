@@ -21,7 +21,7 @@ FROM node:16-alpine as cometar-build
   RUN ng build --configuration production --output-path=dist
 
 ## Production container, copies pre-built app from 1st container
-## Currnt stable version at time of writing
+## Current stable version at time of writing
 FROM nginx:1.20-alpine
 ARG BUILD_DIR
 

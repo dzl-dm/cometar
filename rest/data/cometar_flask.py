@@ -158,10 +158,10 @@ def get_metadata_progress():
 def get_metadata_progress_html():
     response = "<html><body>"
     #response += str(fuseki_query.get_metadata_progress())
-    response += "<img style='width:500px;border:1px solid #333' src='http://localhost/rest/query/progress/metadata/total_annotations/figure'/>"
-    response += "<img style='width:500px;border:1px solid #333' src='http://localhost/rest/query/progress/metadata/total_concepts/figure'/>"
-    response += "<img style='width:500px;border:1px solid #333' src='http://localhost/rest/query/progress/metadata/changes/figure'/>"
-    response += "<img style='width:1000px;border:1px solid #333' src='http://localhost/rest/query/progress/metadata/distribution/figure'/>"
+    response += "<img style='width:500px;border:1px solid #333' src='/rest/query/progress/metadata/total_annotations/figure'/>"
+    response += "<img style='width:500px;border:1px solid #333' src='/rest/query/progress/metadata/total_concepts/figure'/>"
+    response += "<img style='width:500px;border:1px solid #333' src='/rest/query/progress/metadata/changes/figure'/>"
+    response += "<img style='width:1000px;border:1px solid #333' src='/rest/query/progress/metadata/distribution/figure'/>"
     response += "</body></html>"
     return response
 
