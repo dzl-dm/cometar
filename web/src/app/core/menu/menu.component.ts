@@ -3,7 +3,7 @@ import { TreeDataService } from '../services/tree-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { of, Observable } from 'rxjs';
 import { MatIconRegistry } from '@angular/material/icon';
-import { MatSliderChange } from '@angular/material/slider';
+import { MatLegacySliderChange as MatSliderChange } from '@angular/material/legacy-slider';
 import { DataService } from 'src/app/services/data.service';
 import { combineAll, combineLatest } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
