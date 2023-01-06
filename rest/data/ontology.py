@@ -230,7 +230,16 @@ class AttributeDefinition(RDFIriObject):
     def toJson(self):
         return json.loads(json.dumps(self, default=lambda o: o.__dict__))
 
-def get_concept_list(rdfPredicates:RDFPredicates,attributes_definitions:list[AttributeDefinition]=[],attributes_used:set[str]=set(),iri:list[str]|str|None=None) -> ConceptList:
+tags:list[ConceptTag] = [
+    ConceptTag(attribute_label="Draft",attribute_name="http://data.dzl.de/ont/dwh#status", is_rdf_attribute=True, attribute_value="draft", aggregate_children=True),
+    ConceptTag(attribute_label="Editorial Note",attribute_name="http://www.w3.org/2004/02/skos/core#editorialNote", is_rdf_attribute=True, aggregate_children=True)
+]
+def get_concept_list(
+            rdfPredicates:RDFPredicates,
+            attributes_definitions:list[AttributeDefinition]=[],
+            attributes_used:set[str]=set(),
+            iri:list[str]|str|None=None
+        ) -> ConceptList:
     item_iris=[]
     if iri:    
         if isinstance(iri, list):
@@ -239,7 +248,7 @@ def get_concept_list(rdfPredicates:RDFPredicates,attributes_definitions:list[Att
             item_iris = iri.split(",")
     else:
         item_iris = list(set([t[0] for t in rdfPredicates.predicates.keys()]))
-    concept_details = [ConceptDetails(iri,attributes_used,rdfPredicates) for iri in item_iris]
+    concept_details = [ConceptDetails(iri,attributes_used,rdfPredicates,tags) for iri in item_iris]
     return ConceptList(concept_details,attributes_definitions)
 def get_concept_tree(
             rdfPredicates:RDFPredicates,
@@ -250,10 +259,7 @@ def get_concept_tree(
     treeNodes:list[ConceptDetails]
     if len(iris)==0:        
         iris = fuseki_query.get_toplevel_elements()
-    tags:list[ConceptTag] = [
-        ConceptTag(attribute_label="Draft",attribute_name="http://data.dzl.de/ont/dwh#status", is_rdf_attribute=True, attribute_value="draft", aggregate_children=True),
-        ConceptTag(attribute_label="Editorial Note",attribute_name="http://www.w3.org/2004/02/skos/core#editorialNote", is_rdf_attribute=True, aggregate_children=True)
-    ]
+
     treeNodes = [ConceptTreeNode(
             iri,
             attributes_definitions,
