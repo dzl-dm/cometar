@@ -3,9 +3,11 @@ from .snippets import get_html
 
 def get_console_html():
     return get_html(
-        '''<style>
+        head='''<style>
             .container iframe {min-height:500px}
-        </style>''','''
+        </style>''',body='''
+        <h3>Concepts</h3>
+        <iframe src="/rest/query/concepts"></iframe>
         <h3>Provenance</h3>
         <iframe src="/rest/admin/provenance"></iframe>
         <h3>Commits</h3>

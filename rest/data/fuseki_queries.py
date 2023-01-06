@@ -1,6 +1,7 @@
 from typing import Dict
 import requests
 from . import rdf_loading
+from . import ontology
 from .mylog import mylog
 
 
@@ -63,7 +64,7 @@ WHERE {
   }
 }
 ORDER BY ?element ?property'''
-    url=os.environ["FUSEKI_TEST_SERVER"]+'/query'
+    url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
     headers = {'Accept-Charset': 'UTF-8'}
     r = requests.post(url, data={'query': sparql_query}, headers=headers)
     return r.json()
@@ -229,8 +230,7 @@ order by ?date
     number_of_concepts.append(diff)
   return {"dates":dates,"number_of_concepts":number_of_concepts}
 
-
-def get_progress_metadata_annotations():
+def get_progress_metadata_attributes():
   sparql_query='''
 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX prov:   <http://www.w3.org/ns/prov#>
@@ -340,3 +340,109 @@ ORDER BY DESC(?sub_elements) DESC(COUNT(DISTINCT ?x))
     categories[cat_name]["sub_categories"].update({row["label"]["value"]:int(row["sub_sub_elements"]["value"])})
 
   return categories
+
+def get_toplevel_elements()->list[str]:
+  sparql_query='''
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX : <http://data.dzl.de/ont/dwh#>
+PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?element
+WHERE {
+	{
+		SELECT ?element
+		WHERE {
+			?element a skos:Concept .
+			?scheme :topLevelNode ?element .
+		}
+	}
+	UNION
+	{
+		SELECT ?element
+		WHERE {
+			?element a skos:Concept .
+			?element skos:topConceptOf ?scheme .
+		}
+	}
+}
+'''
+  url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
+  headers = {'Accept-Charset': 'UTF-8'}
+  r = requests.post(url, data={'query': sparql_query}, headers=headers)
+  return list(map(lambda x:x["element"]["value"],r.json()["results"]["bindings"]))
+
+def get_concept_details(iri:list[str]|str|None=None,include_children=False) -> tuple[ontology.RDFPredicates,set[str]]:
+  subject_filter=""
+  parent_subject_filter=""
+  if iri: 
+    subject_filter="?parent_subject skos:narrower* ?subject. ?parent_subject skos:broader* ?subject ."
+    if include_children:
+      subject_filter="?parent_subject skos:narrower* [rdf:hasPart* [skos:narrower* ?subject]] ."   
+    if isinstance(iri, list):
+      parent_subject_filter="FILTER(?parent_subject IN (<"+">,<".join(iri)+">)) ."
+    else:
+      parent_subject_filter="FILTER(?parent_subject IN (<"+">,<".join(iri.split(","))+">)) ."
+  sparql_query='''
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX : <http://data.dzl.de/ont/dwh#>
+PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?subject ?predicate ?object ?object_label
+WHERE {
+  '''+parent_subject_filter+'''
+  '''+subject_filter+'''
+  ?subject a skos:Concept .
+  ?subject ?predicate ?object .
+  OPTIONAL {
+    ?object ?label_predicate ?object_label .
+    FILTER (?label_predicate IN (rdf:label,skos:prefLabel))
+  }
+}
+'''
+  url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
+  headers = {'Accept-Charset': 'UTF-8'}
+  r = requests.post(url, data={'query': sparql_query}, headers=headers)
+  result_predicates = ontology.RDFPredicates()
+  result_predicates_set = set()
+  for row in r.json()["results"]["bindings"]:
+    subject = row["subject"]["value"]
+    predicate = row["predicate"]["value"]
+    object=row["object"]["value"]
+    object_label="object_label" in row and row["object_label"]["value"] or None
+    type=row["object"]["type"]
+    language = "object_label" in row and "xml:lang" in row["object_label"] and row["object_label"]["xml:lang"] or "xml:lang" in row["object"] and row["object"]["xml:lang"] or None
+    rdfpredicates = result_predicates.get(subject,predicate)
+    rdfpredicates.add_object(value=object,object_label=object_label,type=type,language=language)
+    result_predicates_set.update({predicate})
+  return result_predicates, result_predicates_set
+
+
+def get_attribute_definitions() -> list[ontology.AttributeDefinition]:
+  sparql_query='''
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX : <http://data.dzl.de/ont/dwh#>
+PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dwh:    <http://sekmi.de/histream/dwh#> 
+SELECT ?attribute ?label ?display_index
+WHERE {
+  ?attribute a :attribute .
+  ?attribute rdf:label ?label .
+  ?attribute :cometar_displayIndex ?display_index .
+}
+ORDER BY ?display_index
+'''
+  url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
+  headers = {'Accept-Charset': 'UTF-8'}
+  r = requests.post(url, data={'query': sparql_query}, headers=headers)
+  result:list[ontology.AttributeDefinition] = []
+  for row in r.json()["results"]["bindings"]:
+    iri=row["attribute"]["value"]
+    label=row["label"]["value"]
+    language="xml:lang" in row["label"] and row["label"]["xml:lang"] or None
+    display_index=row["display_index"]["value"]
+    ads=[x for x in result if x.iri == iri]
+    if len(ads) == 0:
+      ad=ontology.AttributeDefinition(iri,display_index)
+      result.append(ad)
+    else:
+      ad=ads[0]
+    ad.addLabel(label,language)
+  return result

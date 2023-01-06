@@ -16,6 +16,7 @@ from flask_accept import accept
 from . import rdf_provenance
 from . import rdf_loading
 from . import plotting
+from . import ontology
 from .rdf_verification import utils as rdf_verification_utils
 from . import git_utils
 from .html_templates import commits as html_commits
@@ -24,6 +25,7 @@ from .html_templates import search as html_search
 from .html_templates import history as html_history
 from .html_templates import text_only as html_text
 from .html_templates import provenance as html_provenance
+from .html_templates import concepts as html_concepts
 from . import fuseki_queries as fuseki_query
 from .mylog import mylog,reset_mylog,get_mylog
 
@@ -144,6 +146,26 @@ def search_pattern(pattern):
     reset_mylog()
     search_data = fuseki_query.get_search_data(pattern)
     return html_search.get_search_pattern_html(search_data,pattern)
+
+@app.route('/query/concepts')
+def query_concepts():
+    reset_mylog()
+    return html_concepts.get_concepts_html()
+
+@app.route('/query/concepts/listing')
+def query_concepts_listing():
+    reset_mylog()
+    iri=request.args.get('iri', default = "", type = str)
+    format=request.args.get('format', default = "tree", type = str)
+    include_children=request.args.get('include_children', default = format=="tree", type = str)
+    attributes_definitions = fuseki_query.get_attribute_definitions()
+    rdfPredicates, attributes_used = fuseki_query.get_concept_details(iri,include_children=="true")
+    concept_list=ontology.ConceptList([],[])
+    if format == "tree":
+        concept_list = ontology.get_concept_tree(iri=iri,rdfPredicates=rdfPredicates,attributes_definitions=attributes_definitions,attributes_used=attributes_used)
+    elif format == "list":
+        concept_list = ontology.get_concept_list(rdfPredicates=rdfPredicates,attributes_definitions=attributes_definitions,attributes_used=attributes_used)
+    return html_concepts.get_thesaurus_html(concept_list)
 
 # @app.route('/query/progress')
 # def get_progress(pattern):

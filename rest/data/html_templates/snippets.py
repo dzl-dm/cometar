@@ -110,9 +110,9 @@ main_style = '''
 </style>
 '''
 
-def get_html(head, body, heading=""):
+def get_html(head, body, heading="", nostyle=False):
     return html_template.format(
-        main_style = main_style,
+        main_style = main_style if not nostyle else "",
         head = head,
         body = body,
         heading=heading,
