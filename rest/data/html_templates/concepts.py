@@ -53,6 +53,17 @@ def get_concepts_html():
 def get_html_rows(item:ontology.ConceptDetails,attributes:list[ontology.AttributeDefinition],level=0,language:str|None=None):
     result="<tr>"
     result+="<td><div class='anchor' id='"+item.iri+"'></div><div style='padding-left:"+str(level*20+10)+"px'><pre>"+item.getDisplayLabel(language)+"</pre></div></td>"
+    result+="<td><pre>"
+    if item.tags: 
+        for tag in item.tags:
+            result += tag.attribute_label
+            if tag.is_child_aggregation:
+                result += " Children"
+            if tag.amount:
+                result += ": "+str(tag.amount)
+            result+="\n"
+    result=result[:-1]
+    result+="</pre></td>"
     for attribute in attributes:
         result += "<td><div>"
         if attribute.iri in (
@@ -158,6 +169,6 @@ def get_thesaurus_html(concept_list:ontology.ConceptList):
     </table>
 </div>
     '''.format(
-        headings="<thead><th></th><th>"+"</th><th>".join([x.get_located_literal(language) for x in concept_list.attributes_definitions])+"</th></thead>",
+        headings="<thead><th></th><th>Tags</th><th>"+"</th><th>".join([x.get_located_literal(language) for x in concept_list.attributes_definitions])+"</th></thead>",
         rows="<tbody>"+"".join([get_html_rows(x,concept_list.attributes_definitions,0,language) for x in concept_list.items])+"</tbody>"
     ),nostyle=True)
