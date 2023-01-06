@@ -163,13 +163,15 @@ def get_concept_list(rdfPredicates:RDFPredicates,attributes_definitions:list[Att
         item_iris = list(set([t[0] for t in rdfPredicates.predicates.keys()]))
     concept_details = [ConceptDetails(iri,attributes_used,rdfPredicates) for iri in item_iris]
     return ConceptList(concept_details,attributes_definitions)
-def get_concept_tree(rdfPredicates:RDFPredicates,iri:str|None=None,attributes_definitions:list[AttributeDefinition]=[],attributes_used:set[str]=set()) -> ConceptList:
+def get_concept_tree(
+            rdfPredicates:RDFPredicates,
+            iris:list[str]|None=None,
+            attributes_definitions:list[AttributeDefinition]=[],
+            attributes_used:set[str]=set()
+        ) -> ConceptList:
     treeNodes:list[ConceptDetails]
-    if not iri:        
-        child_iris = fuseki_query.get_toplevel_elements()
-        #child_iris = ["http://data.dzl.de/ont/dwh#Specimen"]
-        #child_iris = ["http://data.dzl.de/ont/dwh#citrat"]
-        treeNodes = list(map(lambda x:ConceptTreeNode(x,attributes_definitions,attributes_used,rdfPredicates),child_iris))
-    else:
-        treeNodes = [ConceptTreeNode(iri,attributes_definitions,attributes_used,rdfPredicates)]
+    if not iris:        
+        iris = fuseki_query.get_toplevel_elements()
+    treeNodes = [ConceptTreeNode(iri,attributes_definitions,attributes_used,rdfPredicates) for iri in iris]
+    #treeNodes = [ConceptTreeNode(iri,attributes_definitions,attributes_used,rdfPredicates)]
     return ConceptList(treeNodes,attributes_definitions)

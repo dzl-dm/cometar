@@ -156,15 +156,25 @@ def query_concepts():
 def query_concepts_listing():
     reset_mylog()
     iri=request.args.get('iri', default = "", type = str)
+    iris=iri.split(",")
     format=request.args.get('format', default = "tree", type = str)
     include_children=request.args.get('include_children', default = format=="tree", type = str)
     attributes_definitions = fuseki_query.get_attribute_definitions()
-    rdfPredicates, attributes_used = fuseki_query.get_concept_details(iri,include_children=="true")
+    rdfPredicates, attributes_used = fuseki_query.get_concept_details(iris,include_children=="true")
     concept_list=ontology.ConceptList([],[])
     if format == "tree":
-        concept_list = ontology.get_concept_tree(iri=iri,rdfPredicates=rdfPredicates,attributes_definitions=attributes_definitions,attributes_used=attributes_used)
+        concept_list = ontology.get_concept_tree(
+            iris=iris,
+            rdfPredicates=rdfPredicates,
+            attributes_definitions=attributes_definitions,
+            attributes_used=attributes_used
+        )
     elif format == "list":
-        concept_list = ontology.get_concept_list(rdfPredicates=rdfPredicates,attributes_definitions=attributes_definitions,attributes_used=attributes_used)
+        concept_list = ontology.get_concept_list(
+            rdfPredicates=rdfPredicates,
+            attributes_definitions=attributes_definitions,
+            attributes_used=attributes_used
+        )
     return html_concepts.get_thesaurus_html(concept_list)
 
 # @app.route('/query/progress')

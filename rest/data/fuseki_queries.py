@@ -370,17 +370,14 @@ WHERE {
   r = requests.post(url, data={'query': sparql_query}, headers=headers)
   return list(map(lambda x:x["element"]["value"],r.json()["results"]["bindings"]))
 
-def get_concept_details(iri:list[str]|str|None=None,include_children=False) -> tuple[ontology.RDFPredicates,set[str]]:
+def get_concept_details(iris:list[str]|None=None,include_children=False) -> tuple[ontology.RDFPredicates,set[str]]:
   subject_filter=""
   parent_subject_filter=""
-  if iri: 
+  if iris: 
     subject_filter="?parent_subject skos:narrower* ?subject. ?parent_subject skos:broader* ?subject ."
     if include_children:
       subject_filter="?parent_subject skos:narrower* [rdf:hasPart* [skos:narrower* ?subject]] ."   
-    if isinstance(iri, list):
-      parent_subject_filter="FILTER(?parent_subject IN (<"+">,<".join(iri)+">)) ."
-    else:
-      parent_subject_filter="FILTER(?parent_subject IN (<"+">,<".join(iri.split(","))+">)) ."
+    parent_subject_filter="FILTER(?parent_subject IN (<"+">,<".join(iris)+">)) ."
   sparql_query='''
 PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX : <http://data.dzl.de/ont/dwh#>
