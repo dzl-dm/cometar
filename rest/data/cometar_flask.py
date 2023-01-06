@@ -156,7 +156,10 @@ def query_concepts():
 def query_concepts_listing():
     reset_mylog()
     iri=request.args.get('iri', default = "", type = str)
-    iris=iri.split(",")
+    if iri == "":
+        iris = []
+    else:
+        iris=iri.split(",")
     format=request.args.get('format', default = "tree", type = str)
     include_children=request.args.get('include_children', default = format=="tree", type = str)
     attributes_definitions = fuseki_query.get_attribute_definitions()
