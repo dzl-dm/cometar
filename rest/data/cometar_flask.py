@@ -136,6 +136,22 @@ def history_concept():
     history_data = fuseki_query.get_history_data(iri)
     return html_history.get_history_concept_html(history_data)
 
+@app.route('/query/history/details')
+def history_details():
+    reset_mylog()
+    iri=request.args.get('iri', default = None, type = str)
+    from_date:datetime=datetime(2022,1,1)
+    fromd=request.args.get('from_date', default = None, type = str)
+    until_date:datetime=datetime.now()
+    untild=request.args.get('until_date', default = None, type = str)
+    if fromd:
+        from_date=datetime.strptime(fromd,'%Y-%m-%d')
+    if untild:
+        until_date=datetime.strptime(untild,'%Y-%m-%d')
+    provenance_commits = fuseki_query.get_provenance_commits(from_date,until_date)
+    ontology_changes = ontology.OntologyChanges(provenance_commits).by_date("year")
+    return ontology_changes.toJson()
+
 @app.route('/query/search')
 def search():
     reset_mylog()
@@ -150,6 +166,7 @@ def search_pattern(pattern):
 @app.route('/query/concepts')
 def query_concepts():
     reset_mylog()
+    #return [x.toJson() for x in fuseki_query.get_provenance()]
     return html_concepts.get_concepts_html()
 
 @app.route('/query/concepts/listing')

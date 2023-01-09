@@ -2,6 +2,7 @@ from __future__ import annotations
 from .mylog import mylog
 import json
 import logging
+from datetime import datetime
 logger = logging.getLogger(__name__)
 from . import fuseki_queries as fuseki_query
 
@@ -14,12 +15,21 @@ class ConceptList:
             "items":[t.toJson() for t in self.items],
             "attributes":[a.toJson() for a in self.attributes_definitions]
         }
-class Jsonifyable:
-    def clearForJson(self):
-        pass
-    def toJson(self):
-        self.clearForJson()
-        return json.loads(json.dumps(self, default=lambda o: o.__dict__))
+class Dictable: 
+    def toDict(self,compact=True):
+        d = self.__dict__
+        keys = [key for key in d.keys()]
+        for i in range(len(d.keys())-1, -1, -1):
+            key = keys[i]
+            a = self.__getattribute__(key)
+            if isinstance(a,Dictable):
+                d.update({key:a.toDict(compact)})
+            if compact and isinstance(a,list):
+                if len(a) == 0:
+                    del d[key]
+        return d
+    def toJson(self,compact=True):
+        return json.loads(json.dumps(self, default=lambda o: isinstance(o,Dictable) and o.toDict(compact) or hasattr(o,"__dict__") and o.__dict__ or str(o)))
 class ConceptTag:
     attribute_label:str
     attribute_name:str
@@ -36,7 +46,7 @@ class ConceptTag:
         self.amount = amount
         self.is_child_aggregation = is_child_aggregation
         self.aggregate_children = aggregate_children
-class ConceptDetails(Jsonifyable):
+class ConceptDetails(Dictable):
     iri:str
     predicates:list[RDFPredicate]
     tags:list[ConceptTag]
@@ -72,31 +82,27 @@ class ConceptDetails(Jsonifyable):
             if len(prefLabel_candidates_noempty) > 0:
                 return prefLabel_candidates_noempty[0]
         return "No  "+("'"+language+"'" if language else "")+" Label Available"
-    def clearForJson(self):
-        for i in range(len(self.tags)-1, -1, -1):
-            tag = self.tags[i]
-            if tag.is_child_aggregation and hasattr(tag,"amount") and tag.amount == 0:
-                del self.tags[i]
-            else:
-                if hasattr(tag,"attribute_name"):
-                    del tag.attribute_name
-                if hasattr(tag,"attribute_value"):
-                    del(tag.attribute_value)
-                if hasattr(tag,"is_rdf_attribute"):
-                    del(tag.is_rdf_attribute)
-                if hasattr(tag,"aggregate_children"):
-                    del(tag.aggregate_children)
-                if not tag.is_child_aggregation and hasattr(tag,"amount"):
-                    del(tag.amount)
-        if len(self.tags) == 0:
-            del self.tags
-        for i in range(len(self.predicates)-1, -1, -1):
-            p=self.predicates[i]
-            if len(p.objects) == 0:
-                del self.predicates[i]
-            else:
-                if hasattr(p,'subject_iri'):
-                    del(p.subject_iri)
+    def toDict(self, compact=True):
+        d = super().toDict(compact)      
+        if compact:
+            if "tags" in d.keys():
+                d_tags:list[ConceptTag] = d["tags"] # type: ignore  
+                for i in range(len(d_tags)-1, -1, -1):
+                    tag = d_tags[i]
+                    if tag.is_child_aggregation and hasattr(tag,"amount") and tag.amount == 0:
+                        del d_tags[i]
+                    else:
+                        if hasattr(tag,"attribute_name"):
+                            del tag.attribute_name
+                        if hasattr(tag,"attribute_value"):
+                            del(tag.attribute_value)
+                        if hasattr(tag,"is_rdf_attribute"):
+                            del(tag.is_rdf_attribute)
+                        if hasattr(tag,"aggregate_children"):
+                            del(tag.aggregate_children)
+                        if not tag.is_child_aggregation and hasattr(tag,"amount"):
+                            del(tag.amount)
+        return d
 class ConceptTreeNode(ConceptDetails):
     children:list[ConceptDetails]
     def __init__(self,iri:str,attributes_definitions:list[AttributeDefinition],attributes_used:set[str],rdfPredicates:RDFPredicates,tags:list[ConceptTag]):
@@ -122,21 +128,16 @@ class ConceptTreeNode(ConceptDetails):
                             tag_agg.amount=(tag_agg.amount or 0) + (child_tag.amount or 0)
                 if tag_agg.amount and tag_agg.amount > 0:
                     self.tags.append(tag_agg)
-
-    def clearForJson(self):
-        super().clearForJson()
-        for c in self.children:
-            c.clearForJson()
-
         
 class RDFPredicates:
     predicates:dict[tuple[str,str],RDFPredicate]
     def __init__(self):
         self.predicates={}
     def has(self,subject_iri:str,predicate_iri:str) -> bool:
-        if not self.predicates.get((subject_iri,predicate_iri),RDFPredicate(predicate_iri,subject_iri)):
+        p = self.predicates.get((subject_iri,predicate_iri))
+        if not p:
             return False
-        if len(self.predicates.get((subject_iri,predicate_iri),RDFPredicate(predicate_iri,subject_iri)).objects) == 0:
+        if len(p.objects) == 0:
             return False
         return True
     def get(self,subject_iri:str,predicate_iri:str) -> RDFPredicate:
@@ -144,7 +145,7 @@ class RDFPredicates:
         self.predicates.update({(subject_iri,predicate_iri):p})
         return p
 
-class RDFObject:
+class RDFObject(Dictable):
     def __init__(self):
         pass
     def get_located_literal(self,language:str|None=None,tagged=False) -> str:
@@ -172,7 +173,7 @@ class RDFLiteralObject(RDFObject):
         self.language=language
         self.value=value
 
-class RDFPredicate:
+class RDFPredicate(Dictable):
     subject_iri:str
     iri:str
     objects:list[RDFObject]
@@ -216,9 +217,12 @@ class RDFPredicate:
             return res
         else:
             return [""]
-
     def get_iris(self) -> list[str]:
         return [o.iri for o in self.objects if isinstance(o,RDFIriObject)]
+    def toDict(self, compact=True):
+        d = super().toDict(compact)
+        if "subject_iri" in d.keys():
+            del d["subject_iri"]
 
 
 class AttributeDefinition(RDFIriObject):
@@ -227,8 +231,6 @@ class AttributeDefinition(RDFIriObject):
         self.iri = iri
         self.labels=[]
         self.display_index = list(map(lambda x:int(x),display_index.split(":")))
-    def toJson(self):
-        return json.loads(json.dumps(self, default=lambda o: o.__dict__))
 
 tags:list[ConceptTag] = [
     ConceptTag(attribute_label="Draft",attribute_name="http://data.dzl.de/ont/dwh#status", is_rdf_attribute=True, attribute_value="draft", aggregate_children=True),
@@ -268,3 +270,87 @@ def get_concept_tree(
             tags
         ) for iri in iris]
     return ConceptList(treeNodes,attributes_definitions)
+
+class ProvenanceCommitDetails:
+    subject:str
+    sl:str|None
+    predicate:str
+    object:str
+    ol:str|None
+    object_type:str
+    addition:bool
+    def __init__(self,subject:str,sl:str|None,predicate:str,object:str,ol:str|None,addition:bool,object_type:str) -> None:
+        self.subject=subject
+        self.sl=sl
+        self.predicate=predicate
+        self.object=object
+        self.ol=ol
+        self.addition=addition
+        self.object_type=object_type
+class ProvenanceCommit:
+    commitid:str
+    author:str
+    message:str
+    enddate:datetime
+    details:list[ProvenanceCommitDetails]
+    def __init__(self,commitid:str,author:str,message:str,enddate:datetime) -> None:
+        self.commitid=commitid
+        self.author=author
+        self.message=message
+        self.enddate=enddate
+        self.details=fuseki_query.get_provenance_commit_details(commitid)
+
+class ConceptChange:
+    predicate:RDFPredicate|None
+    new:bool
+    def __init__(self,predicate:RDFPredicate,new:bool) -> None:
+        self.predicate = predicate
+        self.new = new    
+class OntologyChanges:
+    changes:dict[tuple[str,datetime],list[ConceptChange]]
+    def __init__(self,commits:list[ProvenanceCommit]):
+        self.changes={}
+        for commit in commits:
+            for detail in commit.details:
+                c = self.get(detail.subject,commit.enddate)
+                p = RDFPredicate(detail.predicate,detail.subject)
+                p.add_object(detail.object,detail.object_type,detail.ol)
+                c.append(ConceptChange(p,detail.addition))
+    def has(self,subject_iri:str,date:datetime) -> bool:
+        c = self.changes.get((subject_iri,date))
+        if not c:
+            return False
+        if len(c) == 0:
+            return False
+        return True
+    def get(self,subject_iri:str,date:datetime) -> list[ConceptChange]:
+        c = self.changes.get((subject_iri,date),[])
+        self.changes.update({(subject_iri,date):c})
+        return c
+    def by_date(self,granularity:str="day") -> OntologyChangesByDate:
+        return OntologyChangesByDate(self,granularity)
+    def by_subject(self) -> OntologyChangesBySubject:
+        return OntologyChangesBySubject(self)
+class OntologyChangesByDate(Dictable):
+    changes:dict[str,dict[str,list[ConceptChange]]]
+    def __init__(self,ontology_changes:OntologyChanges,granularity:str="day") -> None:
+        self.changes={}
+        for iri,date in ontology_changes.changes.keys():
+            date_string = date.isoformat()
+            if granularity == "day":
+                date_string = date_string[:10]
+            elif granularity == "month":
+                date_string = date_string[:7]
+            elif granularity == "year":
+                date_string = date_string[:4]
+            c = self.changes.get(date_string,{})
+            c.update({iri:ontology_changes.get(iri,date)})
+            self.changes.update({date_string:c})
+class OntologyChangesBySubject(Dictable):
+    changes:dict[str,dict[str,list[ConceptChange]]]
+    def __init__(self,ontology_changes:OntologyChanges) -> None:
+        self.changes={}
+        for iri,date in ontology_changes.changes.keys():
+            c = self.changes.get(iri,{})
+            c.update({date.isoformat():ontology_changes.get(iri,date)})
+            self.changes.update({iri:c})

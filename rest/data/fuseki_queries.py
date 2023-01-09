@@ -7,6 +7,8 @@ from .mylog import mylog
 
 import os
 import logging
+from datetime import datetime
+import dateutil.parser
 logger = logging.getLogger(__name__)
 
 def get_whole_commit_data(commit_id):
@@ -69,7 +71,95 @@ ORDER BY ?element ?property'''
     r = requests.post(url, data={'query': sparql_query}, headers=headers)
     return r.json()
 
-def get_history_data(iri):
+def get_provenance_commit_details(commitid:str) -> list[ontology.ProvenanceCommitDetails]:
+	sparql_query='''
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX prov:   <http://www.w3.org/ns/prov#>
+PREFIX cs:     <http://purl.org/vocab/changeset/schema#>
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+SELECT DISTINCT ?subject ?sl ?predicate ?object ?ol ?addition (!bound(?p) as ?deprecatedsubject) ?date ?author
+WHERE	
+{
+	<'''+commitid+'''> prov:qualifiedUsage ?usage ;
+		prov:wasAssociatedWith ?author ;
+		prov:endedAtTime ?date .
+	?usage ?addorremove ?statement .
+	BIND(IF(?addorremove = cs:addition,true,false) as ?addition ) .
+	?statement a rdf:Statement; 
+		rdf:subject ?subject;
+		rdf:predicate ?predicate; 
+		rdf:object ?object .
+	FILTER NOT EXISTS { ?statement rdf:comment "hidden" } 
+  
+	#case of re-introduced concepts like "Sepsis" or in general concepts which's 'old versions' are modified for some reason
+	OPTIONAL {
+		?commit2 prov:qualifiedUsage ?usage2 ;
+			prov:endedAtTime ?date2 .
+		?usage2 cs:addition [
+			a rdf:Statement; 
+			rdf:subject ?newsubject;
+			rdf:predicate prov:wasDerivedFrom; 
+			rdf:object ?subject 
+		]
+	}
+	FILTER(!bound(?date2) || ?date >= ?date2)
+
+	OPTIONAL { ?subject skos:prefLabel ?sl filter (lang(?sl)='en') . }
+	OPTIONAL { ?object skos:prefLabel ?ol filter (lang(?ol)='en') . }
+  
+	#identifying deprecated subjects
+	OPTIONAL {
+		?subject ?p ?o
+	}
+	FILTER (
+		bound(?predicate)
+	)
+}
+ORDER BY ?subject DESC(?date) ?predicate lang(?object) ?date ?addition
+	'''
+	url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
+	headers = {'Accept-Charset': 'UTF-8'}
+	r = requests.post(url, data={'query': sparql_query}, headers=headers)
+	return [ontology.ProvenanceCommitDetails(
+		subject=row["subject"]["value"],
+		sl="sl" in row and row["sl"]["value"] or None,
+		predicate=row["predicate"]["value"],
+		object=row["object"]["value"],
+		ol="ol" in row and row["ol"]["value"] or None,
+		addition="addition" in row and row["addition"]["value"] == "true",
+    	object_type=row["object"]["type"]
+	) for row in r.json()["results"]["bindings"]]
+
+def get_provenance_commits(from_date:datetime,until_date:datetime) -> list[ontology.ProvenanceCommit]:
+	sparql_query='''
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX prov:   <http://www.w3.org/ns/prov#>
+PREFIX cs:     <http://purl.org/vocab/changeset/schema#>
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+SELECT ?commitid ?author ?message ?enddate
+WHERE
+{
+	?commitid a prov:Activity ;
+		prov:wasAssociatedWith ?author ;
+		prov:endedAtTime ?enddate ;
+		prov:label ?message ;
+	.	
+	filter (?enddate >= "'''+from_date.isoformat()+'''"^^xsd:dateTime && ?enddate <= "'''+until_date.isoformat()+'''"^^xsd:dateTime)
+}
+order by DESC(?enddate )
+	'''
+	url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
+	headers = {'Accept-Charset': 'UTF-8'}
+	r = requests.post(url, data={'query': sparql_query}, headers=headers)
+	return [ontology.ProvenanceCommit(
+		row["commitid"]["value"],
+		row["author"]["value"],
+		message=row["message"]["value"],
+		enddate=dateutil.parser.isoparse(row["enddate"]["value"])
+	) for row in r.json()["results"]["bindings"]]
+
+def get_history_data(iri:str):
 	sparql_query='''
 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX prov:   <http://www.w3.org/ns/prov#>
