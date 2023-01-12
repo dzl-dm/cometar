@@ -4,7 +4,8 @@ import json
 import logging
 from datetime import datetime
 logger = logging.getLogger(__name__)
-from . import fuseki_queries as fuseki_query
+from . import fuseki_query_adapter as query_adapter
+from .fuseki_query_adapter import ProvenanceCommit, Dictable, RDFIriObject, RDFLiteralObject, RDFPredicate, RDFPredicates, AttributeDefinition
 
 class ConceptList:
     def __init__(self,items:list[ConceptDetails],attributes_definitions:list[AttributeDefinition]):
@@ -15,21 +16,6 @@ class ConceptList:
             "items":[t.toJson() for t in self.items],
             "attributes":[a.toJson() for a in self.attributes_definitions]
         }
-class Dictable: 
-    def toDict(self,compact=True):
-        d = self.__dict__
-        keys = [key for key in d.keys()]
-        for i in range(len(d.keys())-1, -1, -1):
-            key = keys[i]
-            a = self.__getattribute__(key)
-            if isinstance(a,Dictable):
-                d.update({key:a.toDict(compact)})
-            if compact and isinstance(a,list):
-                if len(a) == 0:
-                    del d[key]
-        return d
-    def toJson(self,compact=True):
-        return json.loads(json.dumps(self, default=lambda o: isinstance(o,Dictable) and o.toDict(compact) or hasattr(o,"__dict__") and o.__dict__ or str(o)))
 class ConceptTag:
     attribute_label:str
     attribute_name:str
@@ -129,108 +115,9 @@ class ConceptTreeNode(ConceptDetails):
                 if tag_agg.amount and tag_agg.amount > 0:
                     self.tags.append(tag_agg)
         
-class RDFPredicates:
-    predicates:dict[tuple[str,str],RDFPredicate]
-    def __init__(self):
-        self.predicates={}
-    def has(self,subject_iri:str,predicate_iri:str) -> bool:
-        p = self.predicates.get((subject_iri,predicate_iri))
-        if not p:
-            return False
-        if len(p.objects) == 0:
-            return False
-        return True
-    def get(self,subject_iri:str,predicate_iri:str) -> RDFPredicate:
-        p = self.predicates.get((subject_iri,predicate_iri),RDFPredicate(predicate_iri,subject_iri))
-        self.predicates.update({(subject_iri,predicate_iri):p})
-        return p
-
-class RDFObject(Dictable):
-    def __init__(self):
-        pass
-    def get_located_literal(self,language:str|None=None,tagged=False) -> str:
-        return ""
-    
-class RDFIriObject(RDFObject):
-    iri:str
-    labels:list[RDFLiteralObject]
-    def __init__(self, iri: str):
-        self.iri = iri
-        self.labels=[]
-    def addLabel(self,literal:str,language:str|None):
-        if len([x for x in self.labels if x.value==literal and x.language==language]) == 0:
-            self.labels.append(RDFLiteralObject(literal,language))
-    def get_located_literal(self,language:str|None=None,tagged=False) -> str:
-        lit = [l.value for l in self.labels if not language or l.language == language]
-        if len(lit) > 0:
-            return (tagged and language and language + ": " or "") + lit[0]
-        return self.iri
-
-class RDFLiteralObject(RDFObject):
-    language:str|None
-    value:str
-    def __init__(self,value,language=None):
-        self.language=language
-        self.value=value
-
-class RDFPredicate(Dictable):
-    subject_iri:str
-    iri:str
-    objects:list[RDFObject]
-    def __init__(self,iri,subject_iri):
-        self.subject_iri=subject_iri
-        self.iri=iri
-        self.objects = []
-    def add_object(self,value:str, type:str, object_label:str|None=None, language:str|None=None):
-        if type=="uri":
-            rdfiriobjects:list[RDFIriObject] = [o for o in self.objects if isinstance(o,RDFIriObject) and o.iri==value]
-            if len(rdfiriobjects) == 0:
-                rdfiriobject = RDFIriObject(value)
-                self.objects.append(rdfiriobject)
-            else:
-                rdfiriobject = rdfiriobjects[0]
-            if object_label:
-                rdfiriobject.addLabel(object_label,language)
-        if type=="literal":
-            rdfliteralobjects:list[RDFLiteralObject] = [o for o in self.objects if isinstance(o,RDFLiteralObject) and o.value==value and o.language == language]
-            if len(rdfliteralobjects) == 0:
-                self.objects.append(RDFLiteralObject(value,language))
-    def get_located_literal(self,language:str|None=None,tagged=False,fallBackOnNoLang=True,fallBackOnEnLang=True) -> str:
-        return self.get_located_literals(language,False,fallBackOnNoLang,fallBackOnEnLang)[0]
-    def get_located_literals(self,language:str|None=None,tagged=False,fallBackOnNoLang=True,fallBackOnEnLang=True) -> list[str]:
-        res = []
-        for o in self.objects:
-            if isinstance(o,RDFLiteralObject):
-                if language == "all" or o.language == language:
-                    val = o.value if not tagged or not o.language else (o.language+": "+o.value)
-                    res.append(val)
-            elif isinstance(o,RDFIriObject):
-                for l in o.labels:
-                    if language == "all" or l.language == language:
-                        val = l.value if not tagged or not l.language else (l.language+": "+l.value)
-                        res.append(val)
-        if len(res) == 0 and fallBackOnNoLang and language != None:
-            return self.get_located_literals(None,tagged,False,fallBackOnEnLang)
-        if len(res) == 0 and fallBackOnEnLang and language == None:
-            return self.get_located_literals("en",tagged,fallBackOnNoLang,False)
-        if len(res) > 0:
-            return res
-        else:
-            return [""]
-    def get_iris(self) -> list[str]:
-        return [o.iri for o in self.objects if isinstance(o,RDFIriObject)]
-    def toDict(self, compact=True):
-        d = super().toDict(compact)
-        if "subject_iri" in d.keys():
-            del d["subject_iri"]
 
 
-class AttributeDefinition(RDFIriObject):
-    display_index:list[int]
-    def __init__(self, iri="", display_index:str="1"):
-        self.iri = iri
-        self.labels=[]
-        self.display_index = list(map(lambda x:int(x),display_index.split(":")))
+
 
 tags:list[ConceptTag] = [
     ConceptTag(attribute_label="Draft",attribute_name="http://data.dzl.de/ont/dwh#status", is_rdf_attribute=True, attribute_value="draft", aggregate_children=True),
@@ -260,7 +147,7 @@ def get_concept_tree(
         ) -> ConceptList:
     treeNodes:list[ConceptDetails]
     if len(iris)==0:        
-        iris = fuseki_query.get_toplevel_elements()
+        iris = query_adapter.get_toplevel_elements()
 
     treeNodes = [ConceptTreeNode(
             iri,
@@ -271,51 +158,29 @@ def get_concept_tree(
         ) for iri in iris]
     return ConceptList(treeNodes,attributes_definitions)
 
-class ProvenanceCommitDetails:
-    subject:str
-    sl:str|None
-    predicate:str
-    object:str
-    ol:str|None
-    object_type:str
-    addition:bool
-    def __init__(self,subject:str,sl:str|None,predicate:str,object:str,ol:str|None,addition:bool,object_type:str) -> None:
-        self.subject=subject
-        self.sl=sl
-        self.predicate=predicate
-        self.object=object
-        self.ol=ol
-        self.addition=addition
-        self.object_type=object_type
-class ProvenanceCommit:
-    commitid:str
-    author:str
-    message:str
-    enddate:datetime
-    details:list[ProvenanceCommitDetails]
-    def __init__(self,commitid:str,author:str,message:str,enddate:datetime) -> None:
-        self.commitid=commitid
-        self.author=author
-        self.message=message
-        self.enddate=enddate
-        self.details=fuseki_query.get_provenance_commit_details(commitid)
 
-class ConceptChange:
-    predicate:RDFPredicate|None
+class ConceptChange(Dictable):
+    predicate:RDFPredicate
     new:bool
-    def __init__(self,predicate:RDFPredicate,new:bool) -> None:
+    commit:ProvenanceCommit
+    def __init__(self,predicate:RDFPredicate,new:bool,commit:ProvenanceCommit) -> None:
         self.predicate = predicate
         self.new = new    
-class OntologyChanges:
+        self.commit = commit
+    def toDict(self, compact=True):
+        d = super().toDict(compact)
+        if "commit" in d.keys():
+            del d["commit"]
+        return d
+class OntologyChanges(Dictable):
     changes:dict[tuple[str,datetime],list[ConceptChange]]
     def __init__(self,commits:list[ProvenanceCommit]):
         self.changes={}
         for commit in commits:
             for detail in commit.details:
-                c = self.get(detail.subject,commit.enddate)
-                p = RDFPredicate(detail.predicate,detail.subject)
-                p.add_object(detail.object,detail.object_type,detail.ol)
-                c.append(ConceptChange(p,detail.addition))
+                c = self.get(detail.subject.iri,commit.enddate)
+                p = detail.predicate
+                c.append(ConceptChange(p,detail.addition,commit))
     def has(self,subject_iri:str,date:datetime) -> bool:
         c = self.changes.get((subject_iri,date))
         if not c:
@@ -331,6 +196,7 @@ class OntologyChanges:
         return OntologyChangesByDate(self,granularity)
     def by_subject(self) -> OntologyChangesBySubject:
         return OntologyChangesBySubject(self)
+
 class OntologyChangesByDate(Dictable):
     changes:dict[str,dict[str,list[ConceptChange]]]
     def __init__(self,ontology_changes:OntologyChanges,granularity:str="day") -> None:
@@ -344,7 +210,7 @@ class OntologyChangesByDate(Dictable):
             elif granularity == "year":
                 date_string = date_string[:4]
             c = self.changes.get(date_string,{})
-            c.update({iri:ontology_changes.get(iri,date)})
+            c.update({iri:c.get(iri,[])+ontology_changes.get(iri,date)})
             self.changes.update({date_string:c})
 class OntologyChangesBySubject(Dictable):
     changes:dict[str,dict[str,list[ConceptChange]]]

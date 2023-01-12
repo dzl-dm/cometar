@@ -26,7 +26,8 @@ from .html_templates import history as html_history
 from .html_templates import text_only as html_text
 from .html_templates import provenance as html_provenance
 from .html_templates import concepts as html_concepts
-from . import fuseki_queries as fuseki_query
+from . import fuseki_query_adapter as query_adapter
+from . import fuseki_queries
 from .mylog import mylog,reset_mylog,get_mylog
 
 print("Basic imports done")
@@ -133,14 +134,14 @@ def history():
 def history_concept():
     reset_mylog()
     iri=request.args.get('iri', default = "", type = str)
-    history_data = fuseki_query.get_history_data(iri)
+    history_data = fuseki_queries.get_history_data(iri).json()
     return html_history.get_history_concept_html(history_data)
 
 @app.route('/query/history/details')
 def history_details():
     reset_mylog()
     iri=request.args.get('iri', default = None, type = str)
-    from_date:datetime=datetime(2022,1,1)
+    from_date:datetime=datetime(2022,10,1)
     fromd=request.args.get('from_date', default = None, type = str)
     until_date:datetime=datetime.now()
     untild=request.args.get('until_date', default = None, type = str)
@@ -148,9 +149,10 @@ def history_details():
         from_date=datetime.strptime(fromd,'%Y-%m-%d')
     if untild:
         until_date=datetime.strptime(untild,'%Y-%m-%d')
-    provenance_commits = fuseki_query.get_provenance_commits(from_date,until_date)
-    ontology_changes = ontology.OntologyChanges(provenance_commits).by_date("year")
-    return ontology_changes.toJson()
+    provenance_commits = query_adapter.get_provenance_commits(from_date,until_date)
+    ontology_changes = ontology.OntologyChanges(provenance_commits).by_date("month")
+    attributes_definitions = query_adapter.get_attribute_definitions()
+    return html_history.get_history_by_date_html(ontology_changes,attributes_definitions)
 
 @app.route('/query/search')
 def search():
@@ -160,7 +162,7 @@ def search():
 @app.route('/query/search/<pattern>')
 def search_pattern(pattern):
     reset_mylog()
-    search_data = fuseki_query.get_search_data(pattern)
+    search_data = fuseki_queries.get_search_data(pattern).json()
     return html_search.get_search_pattern_html(search_data,pattern)
 
 @app.route('/query/concepts')
@@ -179,8 +181,8 @@ def query_concepts_listing():
         iris=iri.split(",")
     format=request.args.get('format', default = "tree", type = str)
     include_children=request.args.get('include_children', default = format=="tree", type = str)
-    attributes_definitions = fuseki_query.get_attribute_definitions()
-    rdfPredicates, attributes_used = fuseki_query.get_concept_details(iris,include_children=="true")
+    attributes_definitions = query_adapter.get_attribute_definitions()
+    rdfPredicates, attributes_used = query_adapter.get_concept_details(iris,include_children=="true")
     concept_list=ontology.ConceptList([],[])
     if format == "tree":
         concept_list = ontology.get_concept_tree(

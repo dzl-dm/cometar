@@ -1,21 +1,24 @@
-from typing import Dict
 import requests
 from . import rdf_loading
-from . import ontology
 from .mylog import mylog
 
 
 import os
 import logging
 from datetime import datetime
-import dateutil.parser
 logger = logging.getLogger(__name__)
+
+def get_response(query):
+	url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
+	headers = {'Accept-Charset': 'UTF-8'}
+	r = requests.post(url, data={'query': query}, headers=headers)
+	return r
 
 def get_whole_commit_data(commit_id):
     exit_code = rdf_loading.load_checkout_into_fuseki(commit_id=commit_id)
     if exit_code > 0:
         return None
-    sparql_query="""PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+    query="""PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 		SELECT DISTINCT ?subject ?predicate ?object WHERE {
 		{
 			?a ?predicate ?object .
@@ -23,13 +26,9 @@ def get_whole_commit_data(commit_id):
 		}
 	}
 	ORDER BY ?subject ?predicate lang(?object) ?object"""
-    url = os.environ['FUSEKI_TEST_SERVER']+'/query'
-    mylog("Query data from "+url)
-    headers = {'Accept-Charset': 'UTF-8'}
-    r = requests.post(url, data={'query': sparql_query}, headers=headers)
-    return r.json()
+    get_response(query).json()
 
-def get_search_data(pattern):    
+def get_search_data(pattern) -> requests.Response:    
     sparql_query='''
 PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX : <http://data.dzl.de/ont/dwh#>
@@ -66,19 +65,16 @@ WHERE {
   }
 }
 ORDER BY ?element ?property'''
-    url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
-    headers = {'Accept-Charset': 'UTF-8'}
-    r = requests.post(url, data={'query': sparql_query}, headers=headers)
-    return r.json()
+    return get_response(sparql_query)
 
-def get_provenance_commit_details(commitid:str) -> list[ontology.ProvenanceCommitDetails]:
-	sparql_query='''
+def get_provenance_commit_details(commitid:str) -> requests.Response:
+	query='''
 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX prov:   <http://www.w3.org/ns/prov#>
 PREFIX cs:     <http://purl.org/vocab/changeset/schema#>
 PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
 PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
-SELECT DISTINCT ?subject ?sl ?predicate ?object ?ol ?addition (!bound(?p) as ?deprecatedsubject) ?date ?author
+SELECT DISTINCT ?subject ?predicate ?object ?addition (!BOUND(?p) as ?deprecatedsubject) (GROUP_CONCAT(DISTINCT CONCAT(?sl,":::",lang(?sl));SEPARATOR = "::::") as ?subject_labels) (GROUP_CONCAT(DISTINCT CONCAT(?ol,":::",lang(?ol));SEPARATOR = "::::") as ?object_labels) ?date ?author
 WHERE	
 {
 	<'''+commitid+'''> prov:qualifiedUsage ?usage ;
@@ -105,8 +101,14 @@ WHERE
 	}
 	FILTER(!bound(?date2) || ?date >= ?date2)
 
-	OPTIONAL { ?subject skos:prefLabel ?sl filter (lang(?sl)='en') . }
-	OPTIONAL { ?object skos:prefLabel ?ol filter (lang(?ol)='en') . }
+	OPTIONAL { 
+    ?subject ?haslabel ?sl .  
+    FILTER (?haslabel IN (rdf:label,skos:prefLabel))      
+  }
+	OPTIONAL { 
+    ?object ?haslabel ?ol .  
+    FILTER (?haslabel IN (rdf:label,skos:prefLabel))      
+  }
   
 	#identifying deprecated subjects
 	OPTIONAL {
@@ -116,23 +118,13 @@ WHERE
 		bound(?predicate)
 	)
 }
+GROUP BY ?subject ?predicate ?object ?addition ?p ?date ?author
 ORDER BY ?subject DESC(?date) ?predicate lang(?object) ?date ?addition
 	'''
-	url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
-	headers = {'Accept-Charset': 'UTF-8'}
-	r = requests.post(url, data={'query': sparql_query}, headers=headers)
-	return [ontology.ProvenanceCommitDetails(
-		subject=row["subject"]["value"],
-		sl="sl" in row and row["sl"]["value"] or None,
-		predicate=row["predicate"]["value"],
-		object=row["object"]["value"],
-		ol="ol" in row and row["ol"]["value"] or None,
-		addition="addition" in row and row["addition"]["value"] == "true",
-    	object_type=row["object"]["type"]
-	) for row in r.json()["results"]["bindings"]]
+	return get_response(query)
 
-def get_provenance_commits(from_date:datetime,until_date:datetime) -> list[ontology.ProvenanceCommit]:
-	sparql_query='''
+def get_provenance_commits(from_date:datetime,until_date:datetime) -> requests.Response:
+	query='''
 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX prov:   <http://www.w3.org/ns/prov#>
 PREFIX cs:     <http://purl.org/vocab/changeset/schema#>
@@ -149,17 +141,9 @@ WHERE
 }
 order by DESC(?enddate )
 	'''
-	url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
-	headers = {'Accept-Charset': 'UTF-8'}
-	r = requests.post(url, data={'query': sparql_query}, headers=headers)
-	return [ontology.ProvenanceCommit(
-		row["commitid"]["value"],
-		row["author"]["value"],
-		message=row["message"]["value"],
-		enddate=dateutil.parser.isoparse(row["enddate"]["value"])
-	) for row in r.json()["results"]["bindings"]]
+	return get_response(query)
 
-def get_history_data(iri:str):
+def get_history_data(iri:str) -> requests.Response:
 	sparql_query='''
 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX prov:   <http://www.w3.org/ns/prov#>
@@ -266,12 +250,9 @@ WHERE {
 #HAVING ((bound(?oldobjects) || bound(?newobjects)) && (!bound(?oldobjects) || !bound(?newobjects) || ?oldobjects != ?newobjects))
 ORDER BY DESC(?day) ?subject ?predicate
 '''
-	url = os.environ['FUSEKI_LIVE_SERVER']+'/query'
-	headers = {'Accept-Charset': 'UTF-8'}
-	r = requests.post(url, data={'query': sparql_query}, headers=headers)
-	return r.json()
+	return get_response(sparql_query)
 
-def get_progress_metadata_concepts():
+def get_progress_metadata_concepts() -> requests.Response:
   sparql_query='''
 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX prov:   <http://www.w3.org/ns/prov#>
@@ -307,20 +288,9 @@ WHERE {
 group by ?date ?total
 order by ?date
 '''
-  url = os.environ['FUSEKI_LIVE_SERVER']+'/query'
-  headers = {'Accept-Charset': 'UTF-8'}
-  r = requests.post(url, data={'query': sparql_query}, headers=headers)
-  number_of_concepts = []
-  dates = []
-  for row in r.json()["results"]["bindings"]:
-    addition = int(row["additions"]["value"])
-    removal = int(row["removals"]["value"])
-    diff=(number_of_concepts[-1] if len(number_of_concepts) > 0 else 0)+addition-removal
-    dates.append(row["date"]["value"])
-    number_of_concepts.append(diff)
-  return {"dates":dates,"number_of_concepts":number_of_concepts}
+  return get_response(sparql_query)
 
-def get_progress_metadata_attributes():
+def get_progress_metadata_attributes() -> requests.Response:
   sparql_query='''
 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX prov:   <http://www.w3.org/ns/prov#>
@@ -367,28 +337,9 @@ WHERE {
 }
 ORDER BY ?datea
 '''
-  url = os.environ['FUSEKI_LIVE_SERVER']+'/query'
-  headers = {'Accept-Charset': 'UTF-8'}
-  r = requests.post(url, data={'query': sparql_query}, headers=headers)
-  total_statements = []
-  dates = []
-  additions = []
-  removals = []
-  changes = []
-  for row in r.json()["results"]["bindings"]:
-    addition = int(row["additions"]["value"])
-    removal = int(row["removals"]["value"])
-    change = int(row["changes"]["value"])
-    diff=(total_statements[-1] if len(total_statements) > 0 else 0)+addition-removal
-    dates.append(row["date"]["value"])
-    additions.append(addition)
-    removals.append(removal)
-    changes.append(change)
-    total_statements.append(diff)
+  return get_response(sparql_query)
 
-  return {"dates":dates,"additions":additions,"removals":removals,"changes":changes,"total_statements":total_statements}
-
-def get_distribution_metadata():
+def get_distribution_metadata() -> requests.Response:
   sparql_query='''
 PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -414,24 +365,9 @@ WHERE
 GROUP BY ?top_element ?top_label ?element ?label ?sub_elements
 ORDER BY DESC(?sub_elements) DESC(COUNT(DISTINCT ?x))
 '''
-  url = os.environ['FUSEKI_LIVE_SERVER']+'/query'
-  headers = {'Accept-Charset': 'UTF-8'}
-  r = requests.post(url, data={'query': sparql_query}, headers=headers)
-  categories:Dict[str,Dict[str,Dict[str,int]]] = {}
-  for row in r.json()["results"]["bindings"]:
-    cat_name=row["top_label"]["value"]
-    if cat_name not in categories:
-      categories.update({
-        cat_name:{
-          "sub_concepts":int(row["sub_elements"]["value"]),
-          "sub_categories":{}
-        }
-      })
-    categories[cat_name]["sub_categories"].update({row["label"]["value"]:int(row["sub_sub_elements"]["value"])})
+  return get_response(sparql_query)
 
-  return categories
-
-def get_toplevel_elements()->list[str]:
+def get_toplevel_elements() -> requests.Response:
   sparql_query='''
 PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX : <http://data.dzl.de/ont/dwh#>
@@ -455,12 +391,9 @@ WHERE {
 	}
 }
 '''
-  url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
-  headers = {'Accept-Charset': 'UTF-8'}
-  r = requests.post(url, data={'query': sparql_query}, headers=headers)
-  return list(map(lambda x:x["element"]["value"],r.json()["results"]["bindings"]))
+  return get_response(sparql_query)
 
-def get_concept_details(iris:list[str]|None=None,include_children=False) -> tuple[ontology.RDFPredicates,set[str]]:
+def get_concept_details(iris:list[str]|None=None,include_children=False) -> requests.Response:
   subject_filter=""
   parent_subject_filter=""
   if iris: 
@@ -484,25 +417,9 @@ WHERE {
   }
 }
 '''
-  url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
-  headers = {'Accept-Charset': 'UTF-8'}
-  r = requests.post(url, data={'query': sparql_query}, headers=headers)
-  result_predicates = ontology.RDFPredicates()
-  result_predicates_set = set()
-  for row in r.json()["results"]["bindings"]:
-    subject = row["subject"]["value"]
-    predicate = row["predicate"]["value"]
-    object=row["object"]["value"]
-    object_label="object_label" in row and row["object_label"]["value"] or None
-    type=row["object"]["type"]
-    language = "object_label" in row and "xml:lang" in row["object_label"] and row["object_label"]["xml:lang"] or "xml:lang" in row["object"] and row["object"]["xml:lang"] or None
-    rdfpredicates = result_predicates.get(subject,predicate)
-    rdfpredicates.add_object(value=object,object_label=object_label,type=type,language=language)
-    result_predicates_set.update({predicate})
-  return result_predicates, result_predicates_set
+  return get_response(sparql_query)
 
-
-def get_attribute_definitions() -> list[ontology.AttributeDefinition]:
+def get_attribute_definitions() -> requests.Response:
   sparql_query='''
 PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX : <http://data.dzl.de/ont/dwh#>
@@ -516,20 +433,4 @@ WHERE {
 }
 ORDER BY ?display_index
 '''
-  url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
-  headers = {'Accept-Charset': 'UTF-8'}
-  r = requests.post(url, data={'query': sparql_query}, headers=headers)
-  result:list[ontology.AttributeDefinition] = []
-  for row in r.json()["results"]["bindings"]:
-    iri=row["attribute"]["value"]
-    label=row["label"]["value"]
-    language="xml:lang" in row["label"] and row["label"]["xml:lang"] or None
-    display_index=row["display_index"]["value"]
-    ads=[x for x in result if x.iri == iri]
-    if len(ads) == 0:
-      ad=ontology.AttributeDefinition(iri,display_index)
-      result.append(ad)
-    else:
-      ad=ads[0]
-    ad.addLabel(label,language)
-  return result
+  return get_response(sparql_query)
