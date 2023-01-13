@@ -1,6 +1,6 @@
 from __future__ import annotations
 from .mylog import mylog
-import json
+import difflib
 import logging
 from datetime import datetime
 logger = logging.getLogger(__name__)
@@ -159,19 +159,45 @@ def get_concept_tree(
     return ConceptList(treeNodes,attributes_definitions)
 
 
+
 class ConceptChange(Dictable):
-    predicate:RDFPredicate
-    new:bool
     commit:ProvenanceCommit
-    def __init__(self,predicate:RDFPredicate,new:bool,commit:ProvenanceCommit) -> None:
-        self.predicate = predicate
-        self.new = new    
+    predicate:RDFPredicate
+    subject:RDFIriObject
+    def __init__(self,commit:ProvenanceCommit,subject:RDFIriObject,predicate:RDFPredicate) -> None:
         self.commit = commit
+        self.subject=subject
+        self.predicate=predicate
     def toDict(self, compact=True):
         d = super().toDict(compact)
         if "commit" in d.keys():
             del d["commit"]
         return d
+
+class SingleConceptChange(ConceptChange):
+    new:bool
+    commit:ProvenanceCommit
+    literal_object_change:LiteralConceptOldAndNewValue
+    def __init__(self,commit:ProvenanceCommit,subject:RDFIriObject,predicate:RDFPredicate,new:bool) -> None:
+        self.predicate = predicate
+        self.subject=subject
+        self.new = new    
+        self.commit = commit
+        self.literal_object_changes=[]
+class LiteralConceptOldAndNewValue(ConceptChange):
+    commit:ProvenanceCommit|list[ProvenanceCommit]
+    language:str|None
+    before:str
+    after:str
+    codes:list[tuple[str, int, int, int, int]]
+    def __init__(self,commit:list[ProvenanceCommit],subject:RDFIriObject,predicate:RDFPredicate,before:str,after:str,language:str|None=None) -> None:
+        self.commit=commit
+        self.subject=subject
+        self.predicate=predicate
+        self.language=language
+        self.before=before
+        self.after=after
+        self.codes=difflib.SequenceMatcher(a=before, b=after).get_opcodes()
 class OntologyChanges(Dictable):
     changes:dict[tuple[str,datetime],list[ConceptChange]]
     def __init__(self,commits:list[ProvenanceCommit]):
@@ -179,8 +205,7 @@ class OntologyChanges(Dictable):
         for commit in commits:
             for detail in commit.details:
                 c = self.get(detail.subject.iri,commit.enddate)
-                p = detail.predicate
-                c.append(ConceptChange(p,detail.addition,commit))
+                c.append(SingleConceptChange(commit,detail.subject,detail.predicate,detail.addition))
     def has(self,subject_iri:str,date:datetime) -> bool:
         c = self.changes.get((subject_iri,date))
         if not c:
@@ -212,6 +237,36 @@ class OntologyChangesByDate(Dictable):
             c = self.changes.get(date_string,{})
             c.update({iri:c.get(iri,[])+ontology_changes.get(iri,date)})
             self.changes.update({date_string:c})
+    def condense(self) -> OntologyChangesByDate:
+        for date,subjects in self.changes.items():
+            for subject_iri,changes in subjects.items():
+                single_changes:list[SingleConceptChange] = [c for c in changes if isinstance(c,SingleConceptChange)]
+                predicate_iris = set([change.predicate.iri for change in single_changes if len(change.predicate.objects) > 0 and isinstance(change.predicate.objects[0],RDFLiteralObject)])
+                for predicate_iri in predicate_iris:
+                    p_changes = [change for change in single_changes if change.predicate.iri == predicate_iri]
+                    langs = set([change.predicate.objects[0].language for change in p_changes if isinstance(change.predicate.objects[0],RDFLiteralObject)])
+                    for lang in langs:
+                        p_l_changes = [change for change in p_changes if isinstance(change.predicate.objects[0],RDFLiteralObject) and change.predicate.objects[0].language==lang]
+                        if len([c for c in p_l_changes if c.new]) > 0 and len([c for c in p_l_changes if not c.new]) > 0:
+                            p_l_changes.sort(key=lambda c:c.commit.enddate.isoformat())
+                            if p_l_changes[0].new:
+                                last_old = [c for c in p_l_changes if not c.new][-1]
+                                last_old_val = isinstance(last_old.predicate.objects[0],RDFLiteralObject) and last_old.predicate.objects[0].value or ""
+                                first_new = [c for c in p_l_changes if c.new][0]
+                                first_new_val = isinstance(first_new.predicate.objects[0],RDFLiteralObject) and first_new.predicate.objects[0].value or ""
+                                betweens = [c for c in p_l_changes if p_l_changes.index(c) >= p_l_changes.index(first_new) and p_l_changes.index(c) <= p_l_changes.index(last_old)]
+                                if not first_new_val == last_old_val:
+                                    changes.append(LiteralConceptOldAndNewValue([c.commit for c in betweens],last_old.subject,RDFPredicate(predicate_iri,subject_iri), first_new_val,last_old_val,lang))
+                            else:
+                                last_new = [c for c in p_l_changes if c.new][-1]
+                                last_new_val = isinstance(last_new.predicate.objects[0],RDFLiteralObject) and last_new.predicate.objects[0].value or ""
+                                first_old = [c for c in p_l_changes if not c.new][0]
+                                first_old_val = isinstance(first_old.predicate.objects[0],RDFLiteralObject) and first_old.predicate.objects[0].value or ""
+                                betweens = [c for c in p_l_changes if p_l_changes.index(c) >= p_l_changes.index(first_old) and p_l_changes.index(c) <= p_l_changes.index(last_new)]
+                                changes.append(LiteralConceptOldAndNewValue([c.commit for c in betweens],last_new.subject,RDFPredicate(predicate_iri,subject_iri), first_old_val,last_new_val,lang))
+                            changes=[c for c in changes if not c in betweens]
+                            subjects.update({subject_iri: changes})          
+        return self
 class OntologyChangesBySubject(Dictable):
     changes:dict[str,dict[str,list[ConceptChange]]]
     def __init__(self,ontology_changes:OntologyChanges) -> None:

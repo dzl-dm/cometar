@@ -44,7 +44,7 @@ class RDFIriObject(RDFObject):
         if len([x for x in self.labels if x.value==literal and x.language==language]) == 0:
             self.labels.append(RDFLiteralObject(literal,language))
     def get_located_literal(self,language:str|None=None,tagged=False) -> str:
-        lit = [l.value for l in self.labels if not language or l.language == language]
+        lit = [l.value for l in self.labels if language == "all" or not language or l.language == language]
         if len(lit) > 0:
             return (tagged and language and language + ": " or "") + lit[0]
         return self.iri
@@ -57,7 +57,6 @@ class RDFPredicate(Dictable):
         self.subject_iri=subject_iri
         self.iri=iri
         self.objects = []
-    #def add_object(self,value:str, type:str, object_label:str|None=None, language:str|None=None):
     def add_object(self,iri:str|None=None, iri_literal:str|None=None, iri_literal_lang:str|None=None, literal:str|None=None, literal_lang:str|None=None):
         if iri:
             rdfiriobjects:list[RDFIriObject] = [o for o in self.objects if isinstance(o,RDFIriObject) and o.iri==iri]
@@ -187,6 +186,10 @@ def get_provenance_commit_details(commitid:str) -> list[ProvenanceCommitDetails]
 		addition="addition" in row and row["addition"]["value"] == "true",
     	object_type=row["object"]["type"],
 	) for row in r.json()["results"]["bindings"]]
+
+
+
+
 
 def get_toplevel_elements() -> list[str]:
     r = fuseki_query.get_toplevel_elements()
