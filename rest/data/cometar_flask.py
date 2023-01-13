@@ -141,7 +141,7 @@ def history_concept():
 def history_details():
     reset_mylog()
     iri=request.args.get('iri', default = None, type = str)
-    from_date:datetime=datetime(2022,10,1)
+    from_date:datetime=datetime(2022,7,1)
     fromd=request.args.get('from_date', default = None, type = str)
     until_date:datetime=datetime.now()
     untild=request.args.get('until_date', default = None, type = str)
@@ -150,7 +150,7 @@ def history_details():
     if untild:
         until_date=datetime.strptime(untild,'%Y-%m-%d')
     provenance_commits = query_adapter.get_provenance_commits(from_date,until_date)
-    ontology_changes = ontology.OntologyChanges(provenance_commits).by_date("month")
+    ontology_changes = ontology.OntologyChanges(provenance_commits).by_date("month").condense()
     attributes_definitions = query_adapter.get_attribute_definitions()
     return html_history.get_history_by_date_html(ontology_changes,attributes_definitions)
 

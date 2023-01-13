@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 logger = logging.getLogger(__name__)
 from . import fuseki_query_adapter as query_adapter
-from .fuseki_query_adapter import ProvenanceCommit, Dictable, RDFIriObject, RDFLiteralObject, RDFPredicate, RDFPredicates, AttributeDefinition
+from .fuseki_query_adapter import ProvenanceCommit, Dictable, RDFIriObject, RDFPredicate, RDFPredicates, AttributeDefinition, LocatedLiteralizable
 
 class ConceptList:
     def __init__(self,items:list[ConceptDetails],attributes_definitions:list[AttributeDefinition]):
@@ -46,24 +46,24 @@ class ConceptDetails(Dictable):
                     # TODO: For now, only works for literal values not taking language into account
                     if tag.attribute_value:
                         for o in rdfPredicates.get(self.iri,tag.attribute_name).objects:
-                            if isinstance(o,RDFLiteralObject):
-                                if o.value == tag.attribute_value:
+                            if isinstance(o,LocatedLiteralizable):
+                                if o.get_single_located_literal() == tag.attribute_value:
                                     self.tags.append(tag)
                                     break
                             if isinstance(o,RDFIriObject):
-                                for l in o.labels:
+                                for l in o.literals:
                                     if l.value == tag.attribute_value:
                                         self.tags.append(tag)
                                         break
                     else:
                         self.tags.append(tag)
     def getDisplayLabel(self,language:str|None=None) -> str:
-        displayLabel_candidates = [p.get_located_literal(language=language,tagged=False) for p in self.predicates if p.iri == "http://data.dzl.de/ont/dwh#displayLabel"]
+        displayLabel_candidates = [p.get_single_located_literal(language=language,tagged=False) for p in self.predicates if p.iri == "http://data.dzl.de/ont/dwh#displayLabel"]
         displayLabel_candidates_noempty = list(filter(None,displayLabel_candidates))
         if len(displayLabel_candidates_noempty) > 0:
             return displayLabel_candidates_noempty[0]
         else:
-            prefLabel_candidates = [p.get_located_literal(language=language,tagged=False) for p in self.predicates if p.iri == "http://www.w3.org/2004/02/skos/core#prefLabel"]
+            prefLabel_candidates = [p.get_single_located_literal(language=language,tagged=False) for p in self.predicates if p.iri == "http://www.w3.org/2004/02/skos/core#prefLabel"]
             prefLabel_candidates_noempty = list(filter(None,prefLabel_candidates))
             if len(prefLabel_candidates_noempty) > 0:
                 return prefLabel_candidates_noempty[0]
@@ -241,31 +241,50 @@ class OntologyChangesByDate(Dictable):
         for date,subjects in self.changes.items():
             for subject_iri,changes in subjects.items():
                 single_changes:list[SingleConceptChange] = [c for c in changes if isinstance(c,SingleConceptChange)]
-                predicate_iris = set([change.predicate.iri for change in single_changes if len(change.predicate.objects) > 0 and isinstance(change.predicate.objects[0],RDFLiteralObject)])
+                predicate_iris = set([change.predicate.iri for change in single_changes if len(change.predicate.objects) > 0 and isinstance(change.predicate.objects[0],LocatedLiteralizable)])
                 for predicate_iri in predicate_iris:
                     p_changes = [change for change in single_changes if change.predicate.iri == predicate_iri]
-                    langs = set([change.predicate.objects[0].language for change in p_changes if isinstance(change.predicate.objects[0],RDFLiteralObject)])
+                    #iri objects
+                    p_i_changes = [change for change in p_changes if isinstance(change.predicate.objects[0],RDFIriObject)]
+                    p_i_changes.sort(key=lambda c:c.commit.enddate.isoformat())
+                    removes=set()
+                    for i,p_i_change in enumerate(p_i_changes):
+                        for match_candidate in p_i_changes[i:]:
+                            if p_i_change.predicate.objects[0].iri == match_candidate.predicate.objects[0].iri:# type: ignore                    
+                                if (p_i_change.new and not match_candidate.new) or (not p_i_change.new and match_candidate.new):
+                                    if p_i_change not in removes and match_candidate not in removes:
+                                        removes.add(p_i_change)
+                                        removes.add(match_candidate)
+                                        break
+                    changes=[c for c in changes if not c in removes]
+                    subjects.update({subject_iri:changes})
+                    #literals
+                    langs:set[str|None]=set()
+                    for change in p_changes:
+                        for o in [o for o in change.predicate.objects if isinstance(o,LocatedLiteralizable)]:
+                            for l in o.literals:
+                                langs.add(l.language)
                     for lang in langs:
-                        p_l_changes = [change for change in p_changes if isinstance(change.predicate.objects[0],RDFLiteralObject) and change.predicate.objects[0].language==lang]
+                        p_l_changes = [change for change in p_changes if isinstance(change.predicate.objects[0],LocatedLiteralizable) and change.predicate.objects[0].literals[0].language==lang]
                         if len([c for c in p_l_changes if c.new]) > 0 and len([c for c in p_l_changes if not c.new]) > 0:
                             p_l_changes.sort(key=lambda c:c.commit.enddate.isoformat())
                             if p_l_changes[0].new:
                                 last_old = [c for c in p_l_changes if not c.new][-1]
-                                last_old_val = isinstance(last_old.predicate.objects[0],RDFLiteralObject) and last_old.predicate.objects[0].value or ""
+                                last_old_val = isinstance(last_old.predicate.objects[0],LocatedLiteralizable) and last_old.predicate.get_single_located_literal() or ""
                                 first_new = [c for c in p_l_changes if c.new][0]
-                                first_new_val = isinstance(first_new.predicate.objects[0],RDFLiteralObject) and first_new.predicate.objects[0].value or ""
+                                first_new_val = isinstance(first_new.predicate.objects[0],LocatedLiteralizable) and first_new.predicate.get_single_located_literal() or ""
                                 betweens = [c for c in p_l_changes if p_l_changes.index(c) >= p_l_changes.index(first_new) and p_l_changes.index(c) <= p_l_changes.index(last_old)]
                                 if not first_new_val == last_old_val:
                                     changes.append(LiteralConceptOldAndNewValue([c.commit for c in betweens],last_old.subject,RDFPredicate(predicate_iri,subject_iri), first_new_val,last_old_val,lang))
                             else:
                                 last_new = [c for c in p_l_changes if c.new][-1]
-                                last_new_val = isinstance(last_new.predicate.objects[0],RDFLiteralObject) and last_new.predicate.objects[0].value or ""
+                                last_new_val = isinstance(last_new.predicate.objects[0],LocatedLiteralizable) and last_new.predicate.get_single_located_literal() or ""
                                 first_old = [c for c in p_l_changes if not c.new][0]
-                                first_old_val = isinstance(first_old.predicate.objects[0],RDFLiteralObject) and first_old.predicate.objects[0].value or ""
+                                first_old_val = isinstance(first_old.predicate.objects[0],LocatedLiteralizable) and first_old.predicate.get_single_located_literal() or ""
                                 betweens = [c for c in p_l_changes if p_l_changes.index(c) >= p_l_changes.index(first_old) and p_l_changes.index(c) <= p_l_changes.index(last_new)]
                                 changes.append(LiteralConceptOldAndNewValue([c.commit for c in betweens],last_new.subject,RDFPredicate(predicate_iri,subject_iri), first_old_val,last_new_val,lang))
                             changes=[c for c in changes if not c in betweens]
-                            subjects.update({subject_iri: changes})          
+                            subjects.update({subject_iri: changes})       
         return self
 class OntologyChangesBySubject(Dictable):
     changes:dict[str,dict[str,list[ConceptChange]]]

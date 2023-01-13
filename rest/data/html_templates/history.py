@@ -96,7 +96,7 @@ def get_literal_change_html(c:LiteralConceptOldAndNewValue):
 
 def get_history_by_date_html(data:OntologyChangesByDate,attributes_definitions:list[AttributeDefinition]=[]):
     rows=""
-    ad = {a.iri: a.get_located_literal("en") for a in attributes_definitions}
+    ad = {a.iri: a.get_single_located_literal("en") for a in attributes_definitions}
     for c_index,(date,subjects) in enumerate(data.changes.items()):
         commits:set[ProvenanceCommit]|list[ProvenanceCommit]=set()
         for s_index,(subject_iri,changes) in enumerate(subjects.items()):
@@ -145,10 +145,10 @@ def get_history_by_date_html(data:OntologyChangesByDate,attributes_definitions:l
         date=date
         ) if p_index == 0 and s_index == 0 else "",
     subject_column_even_or_odd="odd" if s_index%2 == 1 else "even",
-    subject_label=cc.subject.get_located_literal("en") if p_index == 0 else "",
+    subject_label=cc.subject.get_single_located_literal("en") if p_index == 0 else "",
     predicate_label=ad.get(cc.predicate.iri) or cc.predicate.iri,
     object_column_class=("added" if cc.new else "removed") if isinstance(cc,SingleConceptChange) else "changed",
-    object_label=cc.predicate.get_located_literal("all",tagged=True) if isinstance(cc,SingleConceptChange) else (get_literal_change_html(cc) if isinstance(cc,LiteralConceptOldAndNewValue) else "")
+    object_label=cc.predicate.get_single_located_literal("all",tagged=True) if isinstance(cc,SingleConceptChange) else (get_literal_change_html(cc) if isinstance(cc,LiteralConceptOldAndNewValue) else "")
 ) 
     return get_html('''
 <style>

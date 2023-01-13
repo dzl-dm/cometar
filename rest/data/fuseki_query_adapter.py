@@ -17,43 +17,62 @@ class Dictable:
                 if len(a) == 0:
                     del d[key]
         return d
-    def toJson(self,compact=True):
-        return json.loads(json.dumps(self, default=lambda o: isinstance(o,Dictable) and o.toDict(compact) or hasattr(o,"__dict__") and o.__dict__ or str(o)))
+    def toJson(self,compact=True,also_loads=True,indent=False):
+        d = json.dumps(self, default=lambda o: isinstance(o,Dictable) and o.toDict(compact) or hasattr(o,"__dict__") and o.__dict__ or str(o),indent=4 if indent else -1)
+        if not also_loads:
+            return d
+        return json.loads(d)
 
-
-class RDFObject(Dictable):
-    def __init__(self):
-        pass
-    def get_located_literal(self,language:str|None=None,tagged=False) -> str:
-        return ""
-
-class RDFLiteralObject(RDFObject):
+class RDFLiteralObject(Dictable):
     language:str|None
     value:str
     def __init__(self,value,language=None):
         self.language=language
         self.value=value
-    
-class RDFIriObject(RDFObject):
-    iri:str
-    labels:list[RDFLiteralObject]
-    def __init__(self, iri: str):
-        self.iri = iri
-        self.labels=[]
-    def addLabel(self,literal:str,language:str|None):
-        if len([x for x in self.labels if x.value==literal and x.language==language]) == 0:
-            self.labels.append(RDFLiteralObject(literal,language))
-    def get_located_literal(self,language:str|None=None,tagged=False) -> str:
-        lit = [l.value for l in self.labels if language == "all" or not language or l.language == language]
-        if len(lit) > 0:
-            return (tagged and language and language + ": " or "") + lit[0]
-        return self.iri
 
-class RDFPredicate(Dictable):
+class LocatedLiteralizable:
+    literals:list[RDFLiteralObject]
+    literal_fallback_value:str|None
+    literal_fallback_array:list[str]
+    def __init__(self,literal_fallback_value:str|None=None,literal_fallback_array:list[str]=[]) -> None:
+        self.literal_fallback_value=literal_fallback_value
+        self.literals=[]
+        self.literal_fallback_array=literal_fallback_array
+    def get_located_literals(self,language:str|None=None,tagged=False,fallBackOnNoLang=True,fallBackOnEnLang=True) -> list[str]:
+        lit = [l for l in self.literals if language == "all" or not language or l.language == language]
+        if len(lit) > 0:
+            return [(tagged and l.language and (l.language + ": ") or "") + l.value for l in lit]
+        if fallBackOnEnLang:
+            lit = [l for l in self.literals if l.language == "en"]
+        if len(lit) > 0:
+            return [(tagged and l.language and (l.language + ": ") or "") + l.value for l in lit]
+        if fallBackOnNoLang:
+            lit = [l for l in self.literals if l.language == None]
+        if len(lit) > 0:
+            return [(tagged and l.language and (l.language + ": ") or "") + l.value for l in lit]
+        return self.literal_fallback_array
+    def get_single_located_literal(self,language:str|None=None,tagged=False,fallBackOnNoLang=True,fallBackOnEnLang=True) -> str|None:
+        r = self.get_located_literals(language=language,tagged=tagged,fallBackOnNoLang=fallBackOnNoLang,fallBackOnEnLang=fallBackOnEnLang)
+        if len(r) > 0:
+            return r[0]
+        return self.literal_fallback_value
+    def addLiteral(self,literal:str,language:str|None):
+        if len([x for x in self.literals if x.value==literal and x.language==language]) == 0:
+            self.literals.append(RDFLiteralObject(literal,language))
+        return self
+    
+class RDFIriObject(LocatedLiteralizable,Dictable):
+    iri:str
+    def __init__(self, iri: str):
+        LocatedLiteralizable.__init__(self,literal_fallback_value=iri,literal_fallback_array=[iri])
+        self.iri=iri
+
+class RDFPredicate(Dictable,LocatedLiteralizable):
     subject_iri:str
     iri:str
-    objects:list[RDFObject]
+    objects:list[LocatedLiteralizable]
     def __init__(self,iri,subject_iri):
+        super().__init__()
         self.subject_iri=subject_iri
         self.iri=iri
         self.objects = []
@@ -66,36 +85,13 @@ class RDFPredicate(Dictable):
             else:
                 rdfiriobject = rdfiriobjects[0]
             if iri_literal:
-                rdfiriobject.addLabel(iri_literal,iri_literal_lang)
+                rdfiriobject.addLiteral(iri_literal,iri_literal_lang)
         elif literal:
             rdfliteralobjects:list[RDFLiteralObject] = [o for o in self.objects if isinstance(o,RDFLiteralObject) and o.value==literal and o.language == literal_lang]
             if len(rdfliteralobjects) == 0:
-                self.objects.append(RDFLiteralObject(literal,literal_lang))
-    def get_located_literal(self,language:str|None=None,tagged=False,fallBackOnNoLang=True,fallBackOnEnLang=True,fallBackOnIri=True) -> str:
-        return self.get_located_literals(language,tagged,fallBackOnNoLang,fallBackOnEnLang,fallBackOnIri)[0]
-    def get_located_literals(self,language:str|None=None,tagged=False,fallBackOnNoLang=True,fallBackOnEnLang=True,fallBackOnIri=True) -> list[str]:
-        res = []
-        for o in self.objects:
-            if isinstance(o,RDFLiteralObject):
-                if language == "all" or o.language == language:
-                    val = o.value if (not tagged or not o.language) else (o.language+": "+o.value)
-                    res.append(val)
-            elif isinstance(o,RDFIriObject):
-                if hasattr(o,"labels"):
-                    for l in o.labels:
-                        if language == "all" or l.language == language:
-                            val = l.value if (not tagged or not l.language) else (l.language+": "+l.value)
-                            res.append(val)
-                if not fallBackOnEnLang and not fallBackOnNoLang and fallBackOnIri:
-                    res.append(o.iri)
-        if len(res) == 0 and fallBackOnNoLang and language != None:
-            return self.get_located_literals(None,tagged,False,fallBackOnEnLang,fallBackOnIri)
-        if len(res) == 0 and fallBackOnEnLang and language == None:
-            return self.get_located_literals("en",tagged,False,False,fallBackOnIri)
-        if len(res) > 0:
-            return res
-        else:
-            return [""]
+                self.objects.append(LocatedLiteralizable().addLiteral(literal,literal_lang))
+    def get_located_literals(self,language:str|None=None,tagged=False,fallBackOnNoLang=True,fallBackOnEnLang=True) -> list[str]:
+        return list(set().union(*[o.get_located_literals(language,tagged,fallBackOnNoLang,fallBackOnEnLang) for o in self.objects]))
     def get_iris(self) -> list[str]:
         return [o.iri for o in self.objects if isinstance(o,RDFIriObject)]
     def toDict(self, compact=True):
@@ -121,10 +117,11 @@ class RDFPredicates:
         return p
 
 class AttributeDefinition(RDFIriObject):
+    iri:str
     display_index:list[int]
-    def __init__(self, iri="", display_index:str="1"):
+    def __init__(self, iri:str, display_index:str="1"):
+        super().__init__(iri)
         self.iri = iri
-        self.labels=[]
         self.display_index = list(map(lambda x:int(x),display_index.split(":")))
         
 class ProvenanceCommitDetails(Dictable):
@@ -137,7 +134,7 @@ class ProvenanceCommitDetails(Dictable):
             label_array=subject_labels.split("::::")
             for l in label_array:
                 label,lang=l.split(":::")
-                self.subject.addLabel(label,lang)
+                self.subject.addLiteral(label,lang)
         self.predicate=RDFPredicate(predicate,subject)
         if object_type == "literal":
             self.predicate.add_object(literal=object,literal_lang=object_lang)
@@ -240,7 +237,7 @@ ORDER BY ?display_index
       result.append(ad)
     else:
       ad=ads[0]
-    ad.addLabel(label,language)
+    ad.addLiteral(label,language)
   return result
 
 
