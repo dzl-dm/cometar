@@ -30,7 +30,7 @@ class RDFLiteralObject(Dictable):
         self.language=language
         self.value=value
 
-class LocatedLiteralizable:
+class LocatedLiteralizable(Dictable):
     literals:list[RDFLiteralObject]
     literal_fallback_value:str|None
     literal_fallback_array:list[str]
@@ -60,6 +60,13 @@ class LocatedLiteralizable:
         if len([x for x in self.literals if x.value==literal and x.language==language]) == 0:
             self.literals.append(RDFLiteralObject(literal,language))
         return self
+    def toDict(self, compact=True):
+        d = super().toDict(compact)        
+        if "literal_fallback_value" in d.keys():
+            del d["literal_fallback_value"]
+        if "literal_fallback_array" in d.keys():
+            del d["literal_fallback_array"]
+        return d
     
 class RDFIriObject(LocatedLiteralizable,Dictable):
     iri:str
@@ -67,7 +74,7 @@ class RDFIriObject(LocatedLiteralizable,Dictable):
         LocatedLiteralizable.__init__(self,literal_fallback_value=iri,literal_fallback_array=[iri])
         self.iri=iri
 
-class RDFPredicate(Dictable,LocatedLiteralizable):
+class RDFPredicate(LocatedLiteralizable):
     subject_iri:str
     iri:str
     objects:list[LocatedLiteralizable]

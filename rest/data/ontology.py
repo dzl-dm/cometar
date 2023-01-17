@@ -172,6 +172,8 @@ class ConceptChange(Dictable):
         d = super().toDict(compact)
         if "commit" in d.keys():
             del d["commit"]
+        if compact and "subject" in d.keys():
+            del d["subject"]
         return d
 
 class SingleConceptChange(ConceptChange):
@@ -265,7 +267,7 @@ class OntologyChangesByDate(Dictable):
                             for l in o.literals:
                                 langs.add(l.language)
                     for lang in langs:
-                        p_l_changes = [change for change in p_changes if isinstance(change.predicate.objects[0],LocatedLiteralizable) and change.predicate.objects[0].literals[0].language==lang]
+                        p_l_changes = [change for change in p_changes if (not isinstance(change.predicate.objects[0],RDFIriObject)) and isinstance(change.predicate.objects[0],LocatedLiteralizable) and change.predicate.objects[0].literals[0].language==lang]
                         if len([c for c in p_l_changes if c.new]) > 0 and len([c for c in p_l_changes if not c.new]) > 0:
                             p_l_changes.sort(key=lambda c:c.commit.enddate.isoformat())
                             if p_l_changes[0].new:
