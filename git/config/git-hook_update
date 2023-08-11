@@ -2,27 +2,27 @@
 
 df="[%Y-%m-%d %H:%M:%S]"
 
-echo "$(date +"$df") UPDATE HOOK called for ref $3"
-echo -e "Verifying upload, using rest service at: ${REST_SERVER}"
+echo "$(date +"$df") UPDATE HOOK called for ref $3" | tee /proc/1/fd/1
+echo -e "Verifying upload, using internal server-side rest service at: ${REST_SERVER}"
 
 upload_verification=$(curl -s -H "Accept: application/json" "${REST_SERVER}/query/commits/rdf_verification/$3")
+exitcode=$(echo "$upload_verification" | jq -r '.exitcode')
 
 if [[ "$upload_verification" == *"403 Forbidden"* ]]; then
-  echo "Access to REST Server forbidden!"
+  echo "$(date +"$df") Access to REST Server forbidden! (${exitcode})" | tee /proc/1/fd/1
   exit 1
 fi
 
 if [[ "$upload_verification" == *"404 Not Found"* ]]; then
-  echo "REST Verification endpoint not found!"
+  echo "$(date +"$df") REST Verification endpoint not found! (${exitcode})" | tee /proc/1/fd/1
   exit 1
 fi
 
-echo "$upload_verification" | jq -r '.rdf_verification_steps_response'
+echo "$(date +"$df") $upload_verification" | jq -r '.rdf_verification_steps_response'
 
-exitcode=$(echo "$upload_verification" | jq -r '.exitcode')
 if [ "$exitcode" == "0" ]; then
-    echo "$(date +"$df") VERIFICATION SUCCESS"
+    echo "$(date +"$df") VERIFICATION SUCCESS (UPDATE HOOK complete)" | tee /proc/1/fd/1
 else
-    echo "$(date +"$df") VERIFICATION FAILED"
+    echo "$(date +"$df") VERIFICATION FAILED (UPDATE HOOK complete - ${exitcode})" | tee /proc/1/fd/1
     exit ${exitcode}
 fi
