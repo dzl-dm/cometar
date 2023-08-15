@@ -4,17 +4,17 @@
 df="[%Y-%m-%d %H:%M:%S]"
 
 ## Call the rest api to load newly committed data
-echo "$(date +"$df") Post-Receive: Loading data to live fuseki..." | tee /proc/1/fd/1
+echo "$(date +"$df") Post-Receive: Loading data to live fuseki..." | tee /tmp/stderr
 load_live_response=$(curl -s -H "Accept: application/json" "${REST_SERVER}/admin/load_latest_commit")
 sleep 1 ## Give the api a little time to write files to disk and ensure its ready for the next request
 ## Call the rest api to update provenance data
 echo "$(date +"$df") Updating provenance data..."
 update_provenance_response=$(curl -s -H "Accept: application/json" "${REST_SERVER}/admin/update_provenance")
 echo "$(date +"$df") Loading provenance data..."
-update_provenance_response=$(curl -s -H "Accept: application/json" "${REST_SERVER}/admin/load_provenance")
+load_provenance_response=$(curl -s -H "Accept: application/json" "${REST_SERVER}/admin/load_provenance")
 ## Conditionally notify i2b2
 if [ -n ${COMETAR_I2B2API_SERVER} ] ; then
-    echo "$(date +"$df") Notifying i2b2 of updates... '${COMETAR_I2B2API_SERVER}${I2B2_UPDATEMETA_PATH}/${I2B2_META_SOURCE_NAME:-all}'" | tee /proc/1/fd/1
+    echo "$(date +"$df") Notifying i2b2 of updates... '${COMETAR_I2B2API_SERVER}${I2B2_UPDATEMETA_PATH}/${I2B2_META_SOURCE_NAME:-all}'" | tee /tmp/stderr
     curl -s --connect-timeout 180 -H "Accept: text/plain" "${COMETAR_I2B2API_SERVER}${I2B2_UPDATEMETA_PATH}/${I2B2_META_SOURCE_NAME:-all}" >&2
 fi
-echo "$(date +"$df") Post-Receive: Complete" | tee /proc/1/fd/1
+echo "$(date +"$df") Post-Receive: Complete" | tee /tmp/stderr
