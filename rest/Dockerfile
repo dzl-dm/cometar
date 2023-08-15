@@ -30,6 +30,7 @@ ENV FUSEKI_LIVE_SERVER=${FUSEKI_LIVE_SERVER:-http://cometar.fuseki:3030/cometar_
 ENV FUSEKI_TEST_SERVER=${FUSEKI_TEST_SERVER:-http://cometar.fuseki:3030/cometar_test}
 ENV FUSEKI_DEV_SERVER=${FUSEKI_DEV_SERVER:-http://cometar.fuseki:3030/cometar_dev}
 ENV LOG_CONF_PATH=${LOG_CONF_PATH:-'/config/logging.yaml'}
+EXPOSE 5000
 
 ## Shortly after restart, ensure fuseki reloads the thesaurus and provenance data
 CMD /bin/bash -c "sleep 5; curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/load_latest_commit' && sleep 1 && curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/update_provenance' && sleep 1 && curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/load_provenance'" & \
