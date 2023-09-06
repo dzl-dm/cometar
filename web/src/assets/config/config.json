@@ -11,6 +11,11 @@
         "status_iri":"http://data.dzl.de/ont/dwh#status",
         "displayLabel_iri":"http://data.dzl.de/ont/dwh#displayLabel"
     },
+    "concept_prefix": {
+        "dzl":"http://data.dzl.de/ont/dwh#",
+        "loinc":"http://loinc.org/owl#",
+        "snomed":"http://purl.bioontology.org/ontology/SNOMEDCT/"
+    },
     "sparql": {
         "endpoint_base":"/fuseki/"
     },

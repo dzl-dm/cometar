@@ -223,6 +223,7 @@ export interface IConfiguration{
       "status_iri":string,
       "displayLabel_iri":string
   },
+  concept_prefix?: { [name: string]: string },
   "sparql": {
     "endpoint_base":string
   },

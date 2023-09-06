@@ -1,6 +1,6 @@
 import { Component, OnInit, NgZone, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
-import { trigger, transition, style, query, animateChild, group, animate, state } from '@angular/animations';
+import { trigger, transition, style, query, animateChild, group, animate, state, keyframes } from '@angular/animations';
 import { DataService } from '../../services/data.service';
 import { MatIconRegistry } from '@angular/material/icon';
 import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
@@ -130,11 +130,15 @@ export class BrowserComponent implements OnInit {
     In 2023 during dockerization we changed from "prefixed concept navigation" to "full URI navigation".
     For backwards-compatibility, we use a prefix-replacement.
     */
-    var url=this.router.url
-    url=url.replace(/(\?|\&)concept=dzl:([^\?\&]+)/,"$1concept="+encodeURIComponent("http://data.dzl.de/ont/dwh#")+"$2")
-    url=url.replace(/(\?|\&)concept=loinc:([^\?\&]+)/,"$1concept="+encodeURIComponent("http://loinc.org/owl#")+"$2")
-    url=url.replace(/(\?|\&)concept=snomed:([^\?\&]+)/,"$1concept="+encodeURIComponent("http://purl.bioontology.org/ontology/SNOMEDCT/")+"$2")
-    this.router.navigateByUrl(url,{replaceUrl: true})
+    if (this.configurationService.settings.concept_prefix) {
+      var url=this.router.url
+      for (let key in this.configurationService.settings.concept_prefix) {
+        let value = this.configurationService.settings.concept_prefix[key];
+        var re=new RegExp("(\\?|\\&)concept="+key+":([^\\?\\&]+)");
+        url=url.replace(re,"$1concept="+encodeURIComponent(value)+"$2");
+      }
+      this.router.navigateByUrl(url,{replaceUrl: true})
+    }
 
     this.browserService.snackbarNotification.subscribe((notification)=> {
       /*this.snackBar.open(notification[0], notification[1], {
