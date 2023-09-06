@@ -120,9 +120,22 @@ export class BrowserComponent implements OnInit {
   }
 
   ngOnInit() {
+    /*
+    The following replacement seems to be outdated when the concept prefix was part of the path, e.g. /web/snomed/12345678
+    */
     if (this.router.url.match(/\/[^\/]+\/[^\/]+/)) {
       this.router.navigate(["/details"],{queryParams: {concept: this.router.url.split("/")[1]+":"+this.router.url.split("/")[2]}, replaceUrl: true });
     }
+    /*
+    In 2023 during dockerization we changed from "prefixed concept navigation" to "full URI navigation".
+    For backwards-compatibility, we use a prefix-replacement.
+    */
+    var url=this.router.url
+    url=url.replace(/(\?|\&)concept=dzl:([^\?\&]+)/,"$1concept="+encodeURIComponent("http://data.dzl.de/ont/dwh#")+"$2")
+    url=url.replace(/(\?|\&)concept=loinc:([^\?\&]+)/,"$1concept="+encodeURIComponent("http://loinc.org/owl#")+"$2")
+    url=url.replace(/(\?|\&)concept=snomed:([^\?\&]+)/,"$1concept="+encodeURIComponent("http://purl.bioontology.org/ontology/SNOMEDCT/")+"$2")
+    this.router.navigateByUrl(url,{replaceUrl: true})
+
     this.browserService.snackbarNotification.subscribe((notification)=> {
       /*this.snackBar.open(notification[0], notification[1], {
         duration: notification[1]=='error'?0:2000,
