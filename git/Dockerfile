@@ -11,6 +11,9 @@ VOLUME ["${GIT_BASE}"]
 RUN git init --bare "${GIT_BASE}" && \
     chown -R nginx:nginx "${GIT_BASE}" && \
     rm /etc/nginx/conf.d/default.conf
+## Setup world writable outputs for proc 1 for pipe to the real docker outputs
+RUN mkfifo /tmp/stdout /tmp/stderr && \
+    chmod 0766 /tmp/stdout /tmp/stderr
 
 ## Setup env vars. These could be overriden, but in standard docker deployments will always be the same
 ENV TZ=${TZ:-'Europe/Berlin'}

@@ -1,9 +1,0 @@
-PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
-PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX : <http://data.dzl.de/ont/dwh#>
-SELECT ?parent ?child
-WHERE
-{
-    ?parent skos:narrower ?child .
-	?parent rdf:hasPart ?child .
-}

@@ -16,6 +16,9 @@ envsubst "\$REST_SERVER" < /config/git-hook_post-receive > /git/hooks/post-recei
 chmod +x /git/hooks/update
 chmod +x /git/hooks/post-receive
 chown -R nginx:nginx "${GIT_BASE}"
+## Allow nginx to write docker logs
+nohup tail -f /tmp/stdout &
+nohup tail -f /tmp/stderr >&2 &
 
 ## Configuration for nginx
 envsubst "\$BROWSER_FQDN" < /config/nginx-git.conf > /etc/nginx/conf.d/cometar-git.conf

@@ -337,9 +337,30 @@ WHERE {
 }
 ORDER BY ?datea
 '''
-  return get_response(sparql_query)
+  logger.debug("Making SPARQL query against CoMetaR fuseki server to obtain 'progress metadata annotations'")
+  url = os.environ['FUSEKI_LIVE_SERVER']+'/query'
+  headers = {'Accept-Charset': 'UTF-8'}
+  r = requests.post(url, data={'query': sparql_query}, headers=headers)
+  total_statements = []
+  dates = []
+  additions = []
+  removals = []
+  changes = []
+  for row in r.json()["results"]["bindings"]:
+    addition = int(row["additions"]["value"])
+    removal = int(row["removals"]["value"])
+    change = int(row["changes"]["value"])
+    diff=(total_statements[-1] if len(total_statements) > 0 else 0)+addition-removal
+    dates.append(row["date"]["value"])
+    additions.append(addition)
+    removals.append(removal)
+    changes.append(change)
+    total_statements.append(diff)
 
-def get_distribution_metadata() -> requests.Response:
+  logger.debug("Data query complete")
+  return {"dates":dates,"additions":additions,"removals":removals,"changes":changes,"total_statements":total_statements}
+
+def get_distribution_metadata():
   sparql_query='''
 PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>

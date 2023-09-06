@@ -184,23 +184,31 @@ def get_progress_metadata_total_concepts_figure(force_redraw):
   return fig_fullname
 
 def get_progress_metadata_total_annotations_figure(force_redraw):
+  logger.info("Plotting graph for total annotations...")
   prefix = "total_amount_of_annotations_per_date_"
   fig_fullname = os.path.join(figures_path,prefix+datetime.now().strftime("%Y-%m-%d")+".jpg")
 
+  logger.debug("Filename for figure (fig_fullname) should be: {}".format(fig_fullname))
   if not exists(fig_fullname) or force_redraw:
+    logger.debug("Up to date figure doesn't exist or we have requested a redraw. force_redraw: {}".format(force_redraw))
     listing = os.listdir(figures_path)
+    logger.debug("Checking files in '{}': {}".format(figures_path, listing))
     for file in listing:
-        if file.startswith(prefix) and file.endswith(".jpg"):
-            os.remove(os.path.join(figures_path, file))
+      logger.info("Cleaning up old graph images...")
+      if file.startswith(prefix) and file.endswith(".jpg"):
+        os.remove(os.path.join(figures_path, file))
 
     data = fuseki_queries.get_progress_metadata_annotations()
     dates = [datetime.strptime(d,'%Y-%m').date() for d in data["dates"]]
+    logger.debug("Data received:\n{}".format(data))
+    logger.debug("Dates calculated:\n{}".format(dates))
 
     global blocker
     while blocker == True:
       sleep(1.0)
     blocker = True
     try:
+      logger.debug("Start generating image")
       figt, axt = plt.subplots()
       axt.plot(dates, data["total_statements"])
       if len(data["dates"]) < 10:
@@ -230,4 +238,5 @@ def get_progress_metadata_total_annotations_figure(force_redraw):
       plt.show()
     finally:
       blocker = False
+  logger.info("Graph complete for total annotations (saved as '{}')...".format(fig_fullname))
   return fig_fullname
