@@ -160,10 +160,10 @@ def get_ttl_string(commits_list):
 :ontology a prov:Entity .
     '''
     for commit in commits_list:
-        start_date = datetime.strptime("2016-01-01", "%Y-%m-%d")
+        start_date = datetime.strptime("2016-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%S%z")
         for parent in commit["parents"]:
             parent_commit = git_utils.get_commit_details(parent)
-            temp_date = datetime.strptime(parent_commit["date"][:19], "%Y-%m-%dT%H:%M:%S")
+            temp_date = datetime.strptime(parent_commit["date"], "%Y-%m-%dT%H:%M:%S%z")
             if temp_date > start_date:
                 start_date = temp_date
         result += '''
@@ -194,8 +194,8 @@ def get_ttl_string(commits_list):
        ),
         ae=commit["author_mail"],
         commit_id=commit["id"],
-        sd=start_date.strftime("%Y-%m-%dT%H:%M:%S"),
-        cd=commit["date"][:10]+"T"+commit["date"][11:19],
+        sd=re.sub("UTC","",start_date.strftime("%Y-%m-%dT%H:%M:%S%Z")),
+        cd=commit["date"],
         cm=commit["message"].replace("'","\\'"),
         cp=", ".join(list(map(lambda x: ":commit_"+x, commit["parents"]))),
         cs=get_change_set_ttl(commit["id"])
