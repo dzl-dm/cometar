@@ -45,7 +45,7 @@ def load_checkout_into_fuseki(server = os.environ["FUSEKI_TEST_SERVER"], commit_
                         mylog("Line "+str(index+1)+": "+rows[index][:-1])
                 return 1
     #insert rules
-    logger.debug("Inserting rules.")
+    mylog("Inserting rules.")
     rules_file = '/config/insertrules.ttl'
     data = open(rules_file).read()
     headers = {'Content-Type': 'application/sparql-update;charset=utf-8'}
@@ -53,6 +53,7 @@ def load_checkout_into_fuseki(server = os.environ["FUSEKI_TEST_SERVER"], commit_
     if not (200 <= r.status_code <300):
         mylog("Error inserting rules: "+r.text)
         return 1
+    mylog("Loading data files for commit "+commit_id+" to "+server+" server was successful.")
     return 0
 
 def load_provenance_into_fuseki(server = os.environ["FUSEKI_TEST_SERVER"]):
@@ -89,6 +90,7 @@ def load_provenance_into_fuseki(server = os.environ["FUSEKI_TEST_SERVER"]):
     # if not (200 <= r.status_code <300):
     #     mylog("Error inserting rules: "+r.text)
     #     return 1
+    mylog("Loading provenance files to "+server+" server was successful.")
     return 0
 
 def load_ttl_string_into_fuseki(server=os.environ["FUSEKI_TEST_SERVER"],s=""):

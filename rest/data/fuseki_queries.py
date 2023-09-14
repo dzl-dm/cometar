@@ -8,25 +8,27 @@ import logging
 from datetime import datetime
 logger = logging.getLogger(__name__)
 
-def get_response(query):
-	url=os.environ["FUSEKI_LIVE_SERVER"]+'/query'
+def get_response(query,server = os.environ["FUSEKI_LIVE_SERVER"]):
+	url=server+'/query'
 	headers = {'Accept-Charset': 'UTF-8'}
 	r = requests.post(url, data={'query': query}, headers=headers)
 	return r
 
-def get_whole_commit_data(commit_id):
-    exit_code = rdf_loading.load_checkout_into_fuseki(commit_id=commit_id)
+def get_whole_commit_data_for_commit_comparison(commit_id,server):
+    exit_code = rdf_loading.load_checkout_into_fuseki(server,commit_id=commit_id)
     if exit_code > 0:
         return None
+    mylog("Querying all triples...")
     query="""PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
 		SELECT DISTINCT ?subject ?predicate ?object WHERE {
 		{
-			?a ?predicate ?object .
-            BIND(IF(isBlank(?a),"none",?a) AS ?subject) .
+			?subject ?predicate ?object .
+      FILTER (!isBlank(?subject)) .
+      FILTER (!isBlank(?object)) .
 		}
 	}
 	ORDER BY ?subject ?predicate lang(?object) ?object"""
-    get_response(query).json()
+    return get_response(query,server).json()
 
 def get_search_data(pattern) -> requests.Response:    
     sparql_query='''

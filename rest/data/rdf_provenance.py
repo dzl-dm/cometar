@@ -28,8 +28,9 @@ def get_missing_provenance_data():
             result.append(c)
     return result
 
-## The following functions calculate differences between two or more commits and return them in different formats.
+## The following functions calculate differences between two or more commits.
 
+# first_list minus second_list
 def substract_sorted_lists(first_list,second_list):
     result = []
     row_index = 0
@@ -75,13 +76,17 @@ def intersect_sorted_lists(first_list,second_list):
     return result
  
 def get_diff_rdf(commit_id):
-    c = git_utils.get_commit_data(commit_id)
+    c = git_utils.get_commit_data_for_commit_comparison(commit_id,os.environ["FUSEKI_TEST_SERVER"])
     result = []
     #TODO hier fehlt natürlich die krasse Logik bei mehreren Parents.
     if len(c) == 0:
         mylog("Commit is empty or was rejected.")
     else:
-        ps = git_utils.get_parent_commit_data(commit_id)
+        mylog("The commit has "+str(len(c))+" triples.")
+        ps = git_utils.get_parent_commit_data_for_commit_comparison(commit_id,os.environ["FUSEKI_TEST_SERVER"])
+        mylog("Received data from "+str(len(ps))+" parent commits, the triple counts are:")
+        for p in ps:
+            mylog(str(len(p)) + " triples")
         if len(ps) == 0:
             addes = c
             removes = []
@@ -90,12 +95,14 @@ def get_diff_rdf(commit_id):
             intersection = ps[0]
             for p in ps[1:]:
                 intersection = intersect_sorted_lists(intersection,p)
+            mylog("The intersection of parents has "+str(len(intersection))+" triples.")
             removes = substract_sorted_lists(intersection,c)
+            mylog("The removals/number of triples that were in the intersection of parents but not in the child commit is "+str(len(removes)))
             #addes are new triples that have not existed in any parent
             addes = c
             for p in ps:
                 addes = substract_sorted_lists(addes,p)
-            mylog("The commit has "+str(len(c))+" triples, the intersection of parents has "+str(len(intersection))+" triples.")
+            mylog("The additions/number of triples that were not in the intersection of parents but are in the child commit is "+str(len(removes)))
         for row in removes:
             row.update({"add_or_remove":{"value":"removed", "type":"decision"}})
         for row in addes:

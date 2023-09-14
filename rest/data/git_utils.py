@@ -60,23 +60,23 @@ def get_parent_commits(commit_id):
     return git_log_list
 
 ## Get all triples defined in the commit
-def get_commit_data(commit_id):
-    mylog("Getting commit data for "+commit_id)
-    r = fuseki_query.get_whole_commit_data(commit_id)
+def get_commit_data_for_commit_comparison(commit_id,server):
+    mylog("Getting commit data for "+commit_id+" on "+server+" server.")
+    r = fuseki_query.get_whole_commit_data_for_commit_comparison(commit_id,server)
     if r == None:
         return []
     data=r["results"]["bindings"]
     return data
 
-def get_parent_commit_data(commit_id):
+def get_parent_commit_data_for_commit_comparison(commit_id,server):
     mylog("Getting parent commit data for "+commit_id)
     ps = []
     for parent in get_parent_commits(commit_id):
-        p = get_commit_data(parent)
+        p = get_commit_data_for_commit_comparison(parent,server)
         if len(p) > 0:
             ps.append(p)
         else:
             mylog("Data for "+parent+" is empty, so it is probably an invalid commit; continue with next parents.")
-            ps += get_parent_commit_data(parent)
+            ps += get_parent_commit_data_for_commit_comparison(parent,server)
     return ps
 
