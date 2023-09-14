@@ -22,6 +22,9 @@ def git_checkout(commit_id):
     g.checkout(commit_id)
 
 def get_commit_details(commit_id):
+    if commit_id == '':
+        ## Don't attempt to get a non existing commit - eg when asking for the parent of the first commit
+        return None
     result={}
     g = git.cmd.Git(repo_dir)  # type: ignore
     g.checkout('master')
@@ -29,9 +32,18 @@ def get_commit_details(commit_id):
     if not git_log_string=='':
         for line in git_log_string.split('\n'):
             items = line.split('::::')
-            result.update({"id":items[0],"author":items[1],"author_mail":items[2],"date":items[3],"message":json.dumps(items[4])[1:-1],"parents":items[5].split(" ")})
+            result.update(
+                {
+                    "id":items[0],
+                    "author":items[1],
+                    "author_mail":items[2],
+                    "date":items[3],
+                    "message":json.dumps(items[4])[1:-1],
+                    ## Remove empty entries. eg 1st commit has no parent
+                    "parents":list(filter(None, items[5].split(" ")))
+                }
+            )
     return result
-
 
 def get_commits_list(date_from="2016-01-01",date_to=datetime.now().strftime("%Y-%m-%d")):
     g = git.cmd.Git(repo_dir)  # type: ignore
@@ -42,7 +54,17 @@ def get_commits_list(date_from="2016-01-01",date_to=datetime.now().strftime("%Y-
     if not git_log_string=='':
         for line in git_log_string.split('\n'):
             items = line.split('::::')
-            result.append({"id":items[0],"author":items[1],"author_mail":items[2],"date":items[3],"message":json.dumps(items[4])[1:-1],"parents":items[5].split(" ")})
+            result.append(
+                {
+                    "id":items[0],
+                    "author":items[1],
+                    "author_mail":items[2],
+                    "date":items[3],
+                    "message":json.dumps(items[4])[1:-1],
+                    ## Remove empty entries. eg 1st commit has no parent
+                    "parents":list(filter(None, items[5].split(" ")))
+                }
+            )
     return result
 
 def get_diff_text(commit_id):

@@ -163,6 +163,9 @@ def get_ttl_string(commits_list):
         start_date = datetime.strptime("2016-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%S%z")
         for parent in commit["parents"]:
             parent_commit = git_utils.get_commit_details(parent)
+            if not parent_commit:
+                logger.debug("Parent commit not available for '%s'", commit["id"])
+                continue
             temp_date = datetime.strptime(parent_commit["date"], "%Y-%m-%dT%H:%M:%S%z")
             if temp_date > start_date:
                 start_date = temp_date
@@ -197,7 +200,8 @@ def get_ttl_string(commits_list):
         sd=re.sub("UTC","",start_date.strftime("%Y-%m-%dT%H:%M:%S%Z")),
         cd=commit["date"],
         cm=commit["message"].replace("'","\\'"),
-        cp=", ".join(list(map(lambda x: ":commit_"+x, commit["parents"]))),
+        ## Substitute an empty parent list with some text
+        cp=", ".join([":commit_{}".format(parent_commit_id) for parent_commit_id in commit["parents"]] if len(commit["parents"]) > 0 else ['"No parent(s)"']),
         cs=get_change_set_ttl(commit["id"])
     )
     return result
