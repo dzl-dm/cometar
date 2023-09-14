@@ -124,8 +124,8 @@ def get_rdf_diff_html(diff_result,heading=""):
     return get_html('''
         <style>
             div.container {background-color:white}
-            tr.added {background-color:#ABEBC6}
-            tr.removed {background-color:#F5B7B1}
+            tr.added td {background-color:#ABEBC6}
+            tr.removed td {background-color:#F5B7B1}
             td {padding:5px}
             table {border-collapse: collapse;}
         </style>''',result_table,
