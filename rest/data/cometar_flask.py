@@ -116,7 +116,7 @@ def query_ttl_diff(commit_id):
 @app.route('/query/commits/diff_text/<commit_id>')
 def query_text_diff(commit_id):
     reset_mylog()
-    diff = rdf_provenance.get_diff_text(commit_id)
+    diff = git_utils.get_diff_text(commit_id)
     return html_commits.get_text_diff_html(diff,"Text diff for "+commit_id)
 
 @app.route('/query/commits/diff_rdf/<commit_id>')

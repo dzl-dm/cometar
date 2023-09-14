@@ -45,6 +45,11 @@ def get_commits_list(date_from="2016-01-01",date_to=datetime.now().strftime("%Y-
             result.append({"id":items[0],"author":items[1],"author_mail":items[2],"date":items[3],"message":json.dumps(items[4])[1:-1],"parents":items[5].split(" ")})
     return result
 
+def get_diff_text(commit_id):
+    g = git.cmd.Git(repo_dir)  # type: ignore
+    diff_string = g.show('--word-diff=plain','-U10', commit_id)
+    return diff_string
+
 def get_parent_commits(commit_id):
     g = git.cmd.Git(repo_dir)  # type: ignore
     git_log_string = g.log('-n 1','--pretty=format:%P',commit_id)

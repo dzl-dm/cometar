@@ -73,12 +73,7 @@ def intersect_sorted_lists(first_list,second_list):
         if match == True:
             result.append(r_1)
     return result
-                
-def get_diff_text(commit_id):
-    g = git.cmd.Git(repo_dir)  # type: ignore
-    diff_string = g.show('--word-diff=plain','-U10', commit_id)
-    return diff_string
-
+ 
 def get_diff_rdf(commit_id):
     c = git_utils.get_commit_data(commit_id)
     result = []
