@@ -37,7 +37,7 @@ def get_commits_list(date_from="2016-01-01",date_to=datetime.now().strftime("%Y-
     g = git.cmd.Git(repo_dir)  # type: ignore
     g.checkout('master')
     result = []
-    git_log_string = g.log('--since="'+date_from+' 00:00:00"','--until="'+date_to+'"',
+    git_log_string = g.log('--since="'+date_from+'"','--until="'+date_to+'"',
          '--pretty=format:%H::::%aN::::%aE::::%aI::::%s::::%P')
     if not git_log_string=='':
         for line in git_log_string.split('\n'):
