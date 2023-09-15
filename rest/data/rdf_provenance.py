@@ -80,7 +80,7 @@ def get_diff_rdf(commit_id):
     result = []
     #TODO hier fehlt natürlich die krasse Logik bei mehreren Parents.
     if len(c) == 0:
-        mylog("Commit is empty or was rejected.")
+        mylog("Commit {} is empty or was rejected.".format(commit_id))
     else:
         mylog("The commit has "+str(len(c))+" triples.")
         ps = git_utils.get_parent_commit_data_for_commit_comparison(commit_id,os.environ["FUSEKI_TEST_SERVER"])

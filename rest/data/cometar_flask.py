@@ -92,7 +92,7 @@ def admin_update_provenance():
     date_from = request.args.get('date_from', default = datetime.now().strftime("%Y-%m-%d"), type = str)
     date_to = request.args.get('date_to', default = datetime.now().strftime("%Y-%m-%d"), type = str)
     rdf_provenance.update_provenance_data(date_from,date_to)
-    return html_text.get_html("\n".join(get_mylog()))
+    return html_text.get_html("\n".join(get_mylog())+"\n")
 
 @app.route('/query/commits')
 def get_commits_options():
