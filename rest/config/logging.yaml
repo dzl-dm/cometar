@@ -42,10 +42,10 @@ handlers:
         backupCount: 5
         encoding: utf8
 
-root:
-    level: DEBUG
-    handlers: [console, debug_file_handler, info_file_handler, critical_file_handler]
-    propogate: yes
+# root:
+#     # level: DEBUG
+#     handlers: [console, debug_file_handler, info_file_handler, critical_file_handler]
+#     propogate: yes
 
 loggers:
     <module>:
@@ -53,7 +53,22 @@ loggers:
         handlers: []
         propogate: yes
 
+    requests.packages.urllib3:
+        level: WARNING
+        handlers: [console, critical_file_handler]
+        propogate: yes
+
+    git:
+        level: WARNING
+        handlers: [console, debug_file_handler, info_file_handler, critical_file_handler]
+        propogate: yes
+
     main:
-        level: INFO
-        handlers: []
+        level: DEBUG
+        handlers: [console, debug_file_handler, info_file_handler, critical_file_handler]
+        propogate: yes
+
+    cometar:
+        level: DEBUG
+        handlers: [console, debug_file_handler, info_file_handler, critical_file_handler]
         propogate: yes
