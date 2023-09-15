@@ -137,6 +137,7 @@ export class DataService {
   PREFIX rdfs:	<http://www.w3.org/2000/01/rdf-schema#> 
   PREFIX prov: 	<http://www.w3.org/ns/prov#>
   PREFIX cs:		<http://purl.org/vocab/changeset/schema#>
+  PREFIX dzl:	  <http://data.dzl.de/ont/dwh#> 
   `;
 }
 

@@ -89,3 +89,13 @@ table td {
     align-self: flex-end;
     height:30px;
 }
+
+div.iriLink {
+    display: flex;
+    align-items: center;
+    cursor:pointer;
+}
+
+div.iriLink mat-icon {
+    flex-shrink: 0;
+}

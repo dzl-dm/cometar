@@ -1,51 +1,48 @@
 <div class="additionalDetails" id="detailed_information_additional">
   <h3>{{label}}</h3>
   <p *ngIf="!validIri">The concept is not part of the ontology.</p>
-  <ng-container *ngFor="let detail of additionalDetails | keyvalue">
+  <ng-container *ngFor="let detail of additionalDetails">
     <app-section 
-      [title]="detail.value.name + (detail.key=='lastchangesdate'?' ('+(detail.value.values | date:'dd.MM.yyyy')+')':'')" 
-      *ngIf="detail.value.values.length > 0"
-      [foldable]="detail.key == 'lastchangesdate'"
-      [expanded]="detail.key != 'lastchangesdate'"
+      [title]="detail.name + (detail.key==lastchangesdateIri?' ('+(detail.values[0].display_string | date:'dd.MM.yyyy')+')':'')" 
+      *ngIf="detail.values.length > 0"
+      [foldable]="detail.key == lastchangesdateIri"
+      [expanded]="detail.key != lastchangesdateIri"
       [shrinking]="false"
       (open)="onSectionExpand(detail.key)">
       <div class='detailContent' [ngSwitch]="detail.key">
-        <div *ngSwitchCase="'modifier'">
-          <!-- buggy interaction with loading screen / elements to show
-            <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true" [cascade_expand]="true"></app-tree-item>
-          -->
-          <ul>
-            <ng-container *ngFor="let iri of detail.value.values">
-              <li style="margin-bottom:5px"><app-text-with-navigation [data]="{navigationtype:'tree',navigationlink:iri}"></app-text-with-navigation></li>
-            </ng-container>
-          </ul>
-        </div>
-        <div *ngSwitchCase="'lastchangesdate'">
+        <div *ngSwitchCase="lastchangesdateIri">
+          asdf
             <ng-container *ngFor="let conceptInformation of changeDetails$ | async">
                 <app-concept-information 
                   [conceptInformation]="conceptInformation" 
                   [hiddenHeading]="false"></app-concept-information>
             </ng-container>
         </div>
-        <div *ngSwitchCase="'related'">
-          <!-- buggy interaction with loading screen / elements to show
-            <app-tree-item *ngFor="let iri of detail.value.values" [conceptIri]="iri" [expanded]="true"></app-tree-item>
-          -->
-          <ul>
-            <ng-container *ngFor="let iri of detail.value.values">
-              <li style="margin-bottom:5px"><app-text-with-navigation [data]="{navigationtype:'tree',navigationlink:iri}"></app-text-with-navigation></li>
-            </ng-container>
-          </ul>
-        </div>
-        <div *ngSwitchCase="'loincTable'">
+        <!--<div *ngSwitchCase="'loincTable'">
           <table>
-              <tr *ngFor="let row of detail.value.values">
+              <tr *ngFor="let row of detail.values">
                 <td *ngFor="let cell of row">{{cell}}</td>
               </tr>                
           </table>
-        </div>
+        </div>-->
         <div *ngSwitchDefault>
-            <div *ngFor="let value of detail.value.values" [innerHTML]="value" class="valueListing"></div>
+            <div *ngFor="let value of detail.values" class="valueListing">
+              <ng-container *ngIf="value.iri && isTreeConcept(value.iri) | async">
+                <div (click)="navigateToConcept(value.iri)" class="iriLink">
+                  <mat-icon aria-hidden="false" aria-label="Home" svgIcon="keyboard_arrow_right"></mat-icon>
+                  <ng-container *ngIf="value.display_string_lang">
+                    {{value.display_string_lang}}: 
+                  </ng-container>
+                  <span>{{value.display_string}}</span>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="!value.iri || !(isTreeConcept(value.iri) | async)">
+                <ng-container *ngIf="value.display_string_lang">
+                  {{value.display_string_lang}}: 
+                </ng-container>
+                <span>{{value.display_string}}</span>
+              </ng-container> 
+            </div>
         </div>
       </div>
     </app-section>
@@ -89,16 +86,30 @@
   </app-section>
 </div>
 <div class="coreDetails" id="detailed_information_core">
-  <div *ngFor="let detail of coreDetails | keyvalue">
+  <div *ngFor="let detail of coreDetails">
     <div class="detail">
-      <div [ngClass]="{'detailHeading':true, 'unfilled':detail.value.values.length == 0}">
-        {{detail.value.name}}
+      <div [ngClass]="{'detailHeading':true, 'unfilled':detail.values.length == 0}">
+        {{detail.name}}
       </div>
       <div class='detailContent'>
-        <div *ngFor="let value of detail.value.values">
-          {{value}} 
-          <div *ngIf="detail.value.copy" (click)="copyToClipboard(value)" class="copy"></div>
-        </div>      
+        <div *ngFor="let value of detail.values" class="valueListing">
+          <ng-container *ngIf="value.iri && isTreeConcept(value.iri) | async">
+            <div (click)="navigateToConcept(value.iri)" class="iriLink">
+              <mat-icon aria-hidden="false" aria-label="Home" svgIcon="keyboard_arrow_right"></mat-icon>
+              <ng-container *ngIf="value.display_string_lang">
+                {{value.display_string_lang}}: 
+              </ng-container>
+              <span>{{value.display_string}}</span>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="!value.iri || !(isTreeConcept(value.iri) | async)">
+            <ng-container *ngIf="value.display_string_lang">
+              {{value.display_string_lang}}: 
+            </ng-container>
+            <span>{{value.display_string}}</span>
+          </ng-container> 
+          <div *ngIf="detail.copy" (click)="copyToClipboard(value.display_string)" class="copy"></div>
+        </div>    
       </div>
     </div>
   </div>  

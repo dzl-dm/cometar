@@ -4,6 +4,7 @@ import { DetailedInformationComponent } from './detailed-information/detailed-in
 import { CoreModule } from "../core/core.module";
 import { ProvenanceModule } from '../provenance/provenance.module';
 import { ElementDetailsService } from './element-details.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import { ElementDetailsService } from './element-details.service';
   imports: [
     CommonModule,
     CoreModule,
-    ProvenanceModule
+    ProvenanceModule,
+    MatIconModule
   ],
   exports: [
     DetailedInformationComponent

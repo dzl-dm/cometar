@@ -47,7 +47,7 @@ export class SparqlComponent implements OnInit {
     this.queries.push(["Search Items", this.searchTreeItemService.getQueryString("Test")]);
     this.queries.push(["Root Items", this.ontologyDataService.getRootElementsQueryString()]);
     this.queries.push(["Commit History", this.commitHistoryService.getQueryString(new Date("2019-05-01"),new Date("2019-07-01"))]);
-    this.queries.push(["Concept Information", this.informationQueryService.getQueryString("http://loinc.org/owl#39156-5")]);
+    this.queries.push(["Concept Information", this.informationQueryService.getConceptAttributesQueryString("http://loinc.org/owl#39156-5")]);
     this.queries.push(["Commit Overview", this.commitMetaDataService.getQueryString(new Date("2019-05-01"),new Date("2019-07-01"))]);
     this.queries.push(["Commit Details", this.commitDetailsService.getQueryString(":commit_6ab3748ab7ca5af2c472fe8708269cf1e08f33e4")]);
     this.queries.push(["Notation Updates", this.conceptByNotationService.getQueryString("S:91302008",new Date("2019-05-01"))]);

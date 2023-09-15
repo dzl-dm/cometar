@@ -56,6 +56,8 @@ export class ExportService {
     return Math.max(...depths)+1;
   }
 
+  //TODO: Rewrite the export process. TreeItem has to hold many information (e.g. unit) that are only used here.
+  //      units and status are based on values in the config.json
   private writeRecursive(ti: TreeItem, maxDepth:number, options:{
     status:boolean,
     isModifier:boolean,
