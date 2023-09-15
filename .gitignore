@@ -5,3 +5,5 @@ media/
 Logo.svg
 Logo2.svg
 Logo.emf
+docker-compose.yml
+.env
