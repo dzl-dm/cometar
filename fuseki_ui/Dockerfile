@@ -86,8 +86,9 @@ RUN chmod 755 $FUSEKI_HOME/load.sh $FUSEKI_HOME/tdbloader $FUSEKI_HOME/tdbloader
 WORKDIR $FUSEKI_HOME
 
 # Make sure we start with empty /fuseki
-RUN rm -rf $FUSEKI_BASE
-VOLUME $FUSEKI_BASE
+RUN rm -rf $FUSEKI_BASE && \
+    mkdir -p $FUSEKI_BASE
+# VOLUME $FUSEKI_BASE
 
 ## Check fuseki service is actually running
 COPY healthcheck.sh /
