@@ -27,11 +27,6 @@ export class OntologyAccessService {
       })
     );
   }
-  public getItem$(iri:string):Observable<TreeItem>{
-    return this.ontologyDataService.treeItems$.pipe(
-      map(tis => tis.filter(ti => ti.element.value === iri)[0])
-    );    
-  }
   public getAllAncestors(iris:string[]):Observable<string[]> {
     return this.ontologyDataService.treeItems$.pipe(
       map(tis => {

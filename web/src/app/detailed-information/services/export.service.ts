@@ -29,7 +29,7 @@ export class ExportService {
     additionalInformationOnly:boolean
   }, callback:(exportString: string)=>void):void {
     
-    let o = this.ontologyAccessService.getItem$(iri).pipe(first()).subscribe(ti => {
+    let o = this.ontologyAccessService.getTreeItem$(iri).pipe(first()).subscribe(ti => {
       let maxDepth = this.getMaxDepth(ti);
       let intent = ";";
       if (exportOptions.intent){for (let i = 1; i < maxDepth; i++){intent+=";"}}
@@ -128,7 +128,7 @@ export class ExportService {
 
   /*public get(iri:string, callback:(exportString: string)=>void):void {
     
-    let o = this.ontologyAccessService.getItem$(iri).pipe(first()).subscribe(tis => {
+    let o = this.ontologyAccessService.getTreeItem$(iri).pipe(first()).subscribe(tis => {
       console.log(tis);
       this.exportItem = { treeItem: tis, subExportItems: [], ontologyElementDetails: [] };
       this.getRecursive(this.exportItem).subscribe(next => {

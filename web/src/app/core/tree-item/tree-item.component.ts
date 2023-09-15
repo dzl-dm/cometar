@@ -76,7 +76,7 @@ export class TreeItemComponent implements OnInit {
       //this.intent$.subscribe(data => this.cd.markForCheck());
     });
     if (this.treeitem) (<HTMLElement>this.el.nativeElement).setAttribute("iri",this.treeitem.element.value);
-    if (this.conceptIri) this.ontologyAccessService.getItem$(this.conceptIri)
+    if (this.conceptIri) this.ontologyAccessService.getTreeItem$(this.conceptIri)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(ti => {
         this.treeitem = ti;

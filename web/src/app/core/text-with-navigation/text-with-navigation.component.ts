@@ -30,7 +30,7 @@ export class TextWithNavigationComponent implements OnInit {
       if (!da.text){
         da.text = "";
         if (da.navigationtype == "tree" && da.navigationlink){
-          this.ontologyAccessService.getItem$(da.navigationlink).subscribe(ti => {
+          this.ontologyAccessService.getTreeItem$(da.navigationlink).subscribe(ti => {
             da.text = ti.label.value;
           });
         }
