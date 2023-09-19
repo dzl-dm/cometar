@@ -11,7 +11,6 @@
       (open)="onSectionExpand(detail.key)">
       <div class='detailContent' [ngSwitch]="detail.key">
         <div *ngSwitchCase="lastchangesdateIri">
-          asdf
             <ng-container *ngFor="let conceptInformation of changeDetails$ | async">
                 <app-concept-information 
                   [conceptInformation]="conceptInformation" 
