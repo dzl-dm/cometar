@@ -94,7 +94,7 @@ def get_progress_metadata_changes_figure(force_redraw):
         if file.startswith(prefix) and file.endswith(".jpg"):
             os.remove(os.path.join(figures_path, file))
 
-    data = fuseki_queries.get_progress_metadata_annotations()
+    data = fuseki_queries.get_progress_metadata_attributes()
     dates = [datetime.strptime(d,'%Y-%m').date() for d in data["dates"]]
     bar_width=8
 
@@ -198,7 +198,7 @@ def get_progress_metadata_total_annotations_figure(force_redraw):
       if file.startswith(prefix) and file.endswith(".jpg"):
         os.remove(os.path.join(figures_path, file))
 
-    data = fuseki_queries.get_progress_metadata_annotations()
+    data = fuseki_queries.get_progress_metadata_attributes()
     dates = [datetime.strptime(d,'%Y-%m').date() for d in data["dates"]]
     logger.debug("Data received:\n{}".format(data))
     logger.debug("Dates calculated:\n{}".format(dates))
