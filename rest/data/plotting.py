@@ -144,7 +144,20 @@ def get_progress_metadata_total_concepts_figure(force_redraw):
         if file.startswith(prefix) and file.endswith(".jpg"):
             os.remove(os.path.join(figures_path, file))
 
-    data = fuseki_queries.get_progress_metadata_concepts()
+    response = fuseki_queries.get_progress_metadata_concepts()
+    data = {"dates":[], "number_of_concepts":[]}
+    additions = []
+    removals = []
+    for row in response.json()["results"]["bindings"]:
+      addition = int(row["additions"]["value"])
+      removal = int(row["removals"]["value"])
+      additions.append(addition)
+      removals.append(removal)
+      diff=(data["number_of_concepts"][-1] if len(data["number_of_concepts"]) > 0 else 0)+addition-removal
+      data["dates"].append(row["date"]["value"])
+      data["number_of_concepts"].append(diff)
+
+    logger.debug("Response and data:\n{}\n{}".format(response, data))
     dates = [datetime.strptime(d,'%Y-%m').date() for d in data["dates"]]
 
     global blocker
