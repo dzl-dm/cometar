@@ -25,8 +25,19 @@ def get_metadata_distribution_figure(force_redraw):
     for file in listing:
         if file.startswith(prefix) and file.endswith(".jpg"):
             os.remove(os.path.join(figures_path, file))
-    data = fuseki_queries.get_distribution_metadata()
-    
+    response = fuseki_queries.get_distribution_metadata()
+    data = {}
+    for row in response.json()["results"]["bindings"]:
+      cat_name=row["top_label"]["value"]
+      if cat_name not in data:
+        data.update({
+          cat_name:{
+            "sub_concepts":int(row["sub_elements"]["value"]),
+            "sub_categories":{}
+          }
+        })
+      data[cat_name]["sub_categories"].update({row["label"]["value"]:int(row["sub_sub_elements"]["value"])})
+
     pie_labels = data.keys()
     donut_labels = []
     pie_real_numbers = []
