@@ -39,7 +39,7 @@
                 <ng-container *ngIf="value.display_string_lang">
                   {{value.display_string_lang}}: 
                 </ng-container>
-                <span>{{value.display_string}}</span>
+                <span [innerHTML]="value.display_string"></span>
               </ng-container> 
             </div>
         </div>
