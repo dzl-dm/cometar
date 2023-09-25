@@ -153,7 +153,7 @@ PREFIX cs:     <http://purl.org/vocab/changeset/schema#>
 PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
 #SELECT DISTINCT (GROUP_CONCAT(?commit;SEPARATOR=",") AS ?commits) ?day ?subject ?predicate ?oldobject ?newobject
 #SELECT DISTINCT ?commits ?day ?subject ?predicate ?lang (GROUP_CONCAT(DISTINCT ?oldobject;SEPARATOR=", ") AS ?oldobjects) (GROUP_CONCAT(DISTINCT ?newobject;SEPARATOR=", ") AS ?newobjects)
-SELECT DISTINCT ?commits ?day ?subject ?predicate ?lang ?oldobject ?newobject
+SELECT DISTINCT ?commits ?day ?subject ?predicate (SAMPLE(?predicate_label_tmp) AS ?predicate_label) ?lang ?oldobject ?newobject
 WHERE {
   {
     {
@@ -247,7 +247,12 @@ WHERE {
 
     FILTER ((bound(?oldobject) || bound(?newobject)) && (!bound(?oldobject) || !bound(?newobject) || ?oldobject != ?newobject))
   }
+  OPTIONAL {
+    ?predicate rdf:label ?predicate_label_tmp
+    FILTER  (lang(?predicate_label_tmp) = 'en')
+  }
 }
+GROUP BY ?commits ?day ?subject ?predicate ?lang ?oldobject ?newobject
 #GROUP BY ?commits ?day ?subject ?predicate ?lang
 #HAVING ((bound(?oldobjects) || bound(?newobjects)) && (!bound(?oldobjects) || !bound(?newobjects) || ?oldobjects != ?newobjects))
 ORDER BY DESC(?day) ?subject ?predicate

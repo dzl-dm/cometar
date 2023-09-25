@@ -40,6 +40,7 @@ def get_history_concept_html(history_data):
                 <td><div style="width:120px">{commits}</div></td>
                 <td><div style="width:120px">{date}</div></td>
                 <td><div>{predicate}</div></td>
+                <td><div>{predicate_label}</div></td>
                 <td><div>{lang}</div></td>
                 <td><div>{oldobject}</div></td>
                 <td><div>{newobject}</div></td>
@@ -48,6 +49,7 @@ def get_history_concept_html(history_data):
             commits = ",".join(commits),
             date = row["day"]["value"],
             predicate = row["predicate"]["value"],
+            predicate_label = row["predicate_label"]["value"] if "predicate_label" in row else "",
             lang = lang,
             oldobject = row["oldobject"]["value"] if "oldobject" in row else "",
             newobject = row["newobject"]["value"] if "newobject" in row else "")
@@ -57,6 +59,7 @@ def get_history_concept_html(history_data):
                 <th>Commit</th>
                 <th>Date</th>
                 <th>Predicate</th>
+                <th>Predicate label</th>
                 <th>Language</th>
                 <th>Old Object</th>
                 <th>New Object</th>
