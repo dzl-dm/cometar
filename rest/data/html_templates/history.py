@@ -39,6 +39,7 @@ def get_history_concept_html(history_data):
             <tr>
                 <td><div style="width:120px">{commits}</div></td>
                 <td><div style="width:120px">{date}</div></td>
+                <td><div>{author_names}</div></td>
                 <td><div>{predicate}</div></td>
                 <td><div>{predicate_label}</div></td>
                 <td><div>{lang}</div></td>
@@ -48,6 +49,7 @@ def get_history_concept_html(history_data):
         '''.format(
             commits = ",".join(commits),
             date = row["day"]["value"],
+            author_names = row["author_names"]["value"],
             predicate = row["predicate"]["value"],
             predicate_label = row["predicate_label"]["value"] if "predicate_label" in row else "",
             lang = lang,
@@ -58,6 +60,7 @@ def get_history_concept_html(history_data):
             <tr>
                 <th>Commit</th>
                 <th>Date</th>
+                <th>Author names</th>
                 <th>Predicate</th>
                 <th>Predicate label</th>
                 <th>Language</th>

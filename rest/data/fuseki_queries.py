@@ -148,20 +148,20 @@ order by DESC(?enddate )
 def get_history_data(iri:str) -> requests.Response:
 	sparql_query='''
 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX prov:   <http://www.w3.org/ns/prov#>
 PREFIX cs:     <http://purl.org/vocab/changeset/schema#>
 PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
-#SELECT DISTINCT (GROUP_CONCAT(?commit;SEPARATOR=",") AS ?commits) ?day ?subject ?predicate ?oldobject ?newobject
-#SELECT DISTINCT ?commits ?day ?subject ?predicate ?lang (GROUP_CONCAT(DISTINCT ?oldobject;SEPARATOR=", ") AS ?oldobjects) (GROUP_CONCAT(DISTINCT ?newobject;SEPARATOR=", ") AS ?newobjects)
-SELECT DISTINCT ?commits ?day ?subject ?predicate (SAMPLE(?predicate_label_tmp) AS ?predicate_label) ?lang ?oldobject ?newobject
+SELECT DISTINCT ?commits ?day ?subject ?author_names ?predicate (SAMPLE(?predicate_label_tmp) AS ?predicate_label) ?lang ?oldobject ?newobject
 WHERE {
   {
     {
       # All days on which predicates were changed
-      SELECT DISTINCT (GROUP_CONCAT(?commit;SEPARATOR=",") AS ?commits) ?day ?predicate ?lang
+      SELECT DISTINCT (GROUP_CONCAT(?commit;SEPARATOR=",") AS ?commits) ?day (GROUP_CONCAT(DISTINCT ?author_name;SEPARATOR=",") AS ?author_names) ?predicate ?lang
       WHERE {
         <'''+iri+'''> prov:wasDerivedFrom* ?subject .
         ?commit prov:qualifiedUsage ?usage ;
+          prov:wasAssociatedWith [ rdfs:label ?author_name ];
           prov:endedAtTime ?date .
         ?usage ?addorremove ?statement FILTER (?addorremove IN (cs:addition,cs:removal)) .
         ?statement a rdf:Statement ;
@@ -187,6 +187,7 @@ WHERE {
             rdf:object ?oldobject 
           ]
         ] ;
+        prov:wasAssociatedWith [ rdfs:label ?author_name ];
         prov:endedAtTime ?date_1 .
       FILTER (xsd:date(concat(str(year(?date_1)),"-",
                         str(month(?date_1)),"-",
@@ -203,6 +204,7 @@ WHERE {
               rdf:object ?oldobject
             ]
           ] ;
+          prov:wasAssociatedWith [ rdfs:label ?author_name ];
           prov:endedAtTime ?date_22 .
         FILTER (xsd:date(concat(str(year(?date_22)),"-",
                         str(month(?date_22)),"-",
@@ -221,6 +223,7 @@ WHERE {
             rdf:object ?newobject 
           ]
         ] ;
+        prov:wasAssociatedWith [ rdfs:label ?author_name ];
         prov:endedAtTime ?date_2 .
       FILTER (xsd:date(concat(str(year(?date_2)),"-",
                         str(month(?date_2)),"-",
@@ -237,6 +240,7 @@ WHERE {
               rdf:object ?newobject
             ]
           ] ;
+          prov:wasAssociatedWith [ rdfs:label ?author_name ];
           prov:endedAtTime ?date_11 .
         FILTER (xsd:date(concat(str(year(?date_11)),"-",
                         str(month(?date_11)),"-",
@@ -252,9 +256,7 @@ WHERE {
     FILTER  (lang(?predicate_label_tmp) = 'en')
   }
 }
-GROUP BY ?commits ?day ?subject ?predicate ?lang ?oldobject ?newobject
-#GROUP BY ?commits ?day ?subject ?predicate ?lang
-#HAVING ((bound(?oldobjects) || bound(?newobjects)) && (!bound(?oldobjects) || !bound(?newobjects) || ?oldobjects != ?newobjects))
+GROUP BY ?commits ?day ?author_names ?subject ?predicate ?lang ?oldobject ?newobject
 ORDER BY DESC(?day) ?subject ?predicate
 '''
 	return get_response(sparql_query)
