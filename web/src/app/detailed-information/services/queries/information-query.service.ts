@@ -98,7 +98,7 @@ export class InformationQueryService {
     SELECT ?predicate (SAMPLE(?labels) as ?label) ?cometar_display_index
     WHERE
     {
-      ?predicate a dzl:conceptAttribute;
+      ?predicate a dzl:cometarAttribute;
       rdf:label ?labels ;
       dzl:cometarDisplayIndex ?cometar_display_index.
       FILTER (lang(?labels)='en').
