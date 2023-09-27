@@ -39,7 +39,7 @@ if [ -n ${COMETAR_I2B2API_SERVER} ] ; then
     update_i2b2_response=$(curl -s --connect-timeout 180 -H "Accept: text/plain" "${COMETAR_I2B2API_SERVER}${I2B2_UPDATEMETA_PATH}/${I2B2_META_SOURCE_NAME:-all}")
     update_i2b2_ret=$?
     if [ $update_i2b2_ret -ne 0 ] || [ "$(echo "${update_i2b2_response}" | head -c12)" != "<html><head>" ]; then
-        echo -e "$(date +"$df") WARNING: Could not update i2b2 with the changed metadata - please contact your server manager. Return value: ${update_i2b2_ret} \n Response: ${update_i2b2_response}" | tee /tmp/stderr
+        echo -e "$(date +"$df") WARNING: Could not update i2b2 with the changed metadata - please contact your server manager. Return value: ${update_i2b2_ret} \n Response: ${update_i2b2_response}" >> /tmp/stderr
     fi
 fi
 echo "$(date +"$df") END hook: 'Post-Receive' - Complete" >> /tmp/stderr
