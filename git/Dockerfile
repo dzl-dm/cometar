@@ -1,5 +1,5 @@
 ## Currnt stable version at time of writing
-FROM nginx:1.20-alpine
+FROM nginx:1.24-alpine-slim
 ARG GIT_BASE=${GIT_BASE:-/git}
 
 RUN apk add --update --no-cache git-daemon fcgiwrap spawn-fcgi jq curl
