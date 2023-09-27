@@ -1,9 +1,9 @@
-FROM nginx:stable
+FROM nginx:stable-alpine-slim
 
-RUN  apt-get update && \
-      apt-get install -y cron certbot python3-certbot-nginx bash wget apache2-utils && \
-      apt-get autoremove -y; apt-get clean && \
-      rm -rf /var/lib/apt/lists/*
+# RUN  apt-get update && \
+#       apt-get install -y cron certbot python3-certbot-nginx bash wget apache2-utils && \
+#       apt-get autoremove -y; apt-get clean && \
+#       rm -rf /var/lib/apt/lists/*
 
 VOLUME /etc/letsencrypt
 
@@ -22,7 +22,5 @@ ENV REST_SERVER=${REST_SERVER:-http://cometar.rest:5000}
 ENV BROWSER_REST_PATH=${BROWSER_REST_PATH:-/rest}
 ENV FUSEKI_SERVER=${FUSEKI_SERVER:-http://cometar.fuseki:3030}
 ENV BROWSER_FUSEKI_PATH=${BROWSER_FUSEKI_PATH:-/fuseki}
-ENV DOMAIN_LIST=${BROWSER_FQDN:-localhost}
-ENV CERTBOT_EMAIL=${ADMIN_EMAIL:-admin@localhost}
 
-CMD [ "sh", "-c", "/bootstrap.sh && cron && nginx -g 'daemon off;'" ]
+CMD [ "sh", "-c", "/bootstrap.sh && nginx -g 'daemon off;'" ]

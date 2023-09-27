@@ -5,13 +5,7 @@ limit_conn_zone $remote_addr zone=dm-conn-prod:36m;
 server {
     listen       80;
     listen  [::]:80;
-    listen       443 ssl;
-    listen  [::]:443 ssl;
     server_name  $BROWSER_FQDN;
-
-    ssl_certificate /etc/letsencrypt/live/${BROWSER_FQDN}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/${BROWSER_FQDN}/privkey.pem;
-    include /etc/nginx/conf.d/ssl-settings.inc;
 
     error_page   500 502 503 504  /50x.html;
     location = /50x.html {
