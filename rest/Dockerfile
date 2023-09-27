@@ -33,6 +33,6 @@ ENV LOG_CONF_PATH=${LOG_CONF_PATH:-'/config/logging.yaml'}
 EXPOSE 5000
 
 ## Shortly after restart, ensure fuseki reloads the thesaurus and provenance data
-CMD /bin/bash -c "sleep 5; curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/load_latest_commit' && sleep 1 && curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/update_provenance' && sleep 1 && curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/load_provenance'" & \
+CMD /bin/bash -c "sleep 5; curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/load_latest_commit' && sleep 1 && curl -s -H 'Accept: application/json' \"http://localhost:5000/admin/update_provenance?date_from=$(date -d 'last week' '+%Y-%m-%d')\" && sleep 1 && curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/load_provenance'" & \
     export FLASK_APP="$COMETAR_PROD_DIR/cometar_flask.py" && \
     flask run -h 0.0.0.0 --reload
