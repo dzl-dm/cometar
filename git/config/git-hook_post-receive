@@ -4,17 +4,43 @@
 df="[%Y-%m-%d %H:%M:%S]"
 
 ## Call the rest api to load newly committed data
-echo "$(date +"$df") Post-Receive: Loading data to live fuseki..." | tee /tmp/stderr
+echo "$(date +"$df") START hook: 'Post-Receive'" >> /tmp/stderr
+echo "$(date +"$df") Loading data to live fuseki..."
 load_live_response=$(curl -s -H "Accept: application/json" "${REST_SERVER}/admin/load_latest_commit")
-sleep 1 ## Give the api a little time to write files to disk and ensure its ready for the next request
+load_live_ret=$?
+if [ $load_live_ret -ne 0 ] || [ "$(echo "${load_live_response}" | head -c12)" != "<html><head>" ]; then
+    echo -e "$(date +"$df") ERROR: Could not load data to fuseki. Return value: ${load_live_ret}\nResponse: ${load_live_response}" | tee /tmp/stderr
+    echo "$(date +"$df") UPLOAD INCOMPLETE - please contact your server manager" | tee /tmp/stderr
+    exit 1
+fi
+
 ## Call the rest api to update provenance data
 echo "$(date +"$df") Updating provenance data..."
-update_provenance_response=$(curl -s -H "Accept: application/json" "${REST_SERVER}/admin/update_provenance")
+update_provenance_response=$(curl -s -H "Accept: application/json" "${REST_SERVER}/admin/update_provenance?date_from=$(date -d 'last month' '+%Y-%m-%d')")
+update_provenance_ret=$?
+if [ $update_provenance_ret -ne 0 ] || [ "$(echo "${update_provenance_response}" | head -c12)" != "<html><head>" ]; then
+    echo -e "$(date +"$df") ERROR: Could not update provenance data. Return value: ${update_provenance_ret}\nResponse: ${update_provenance_response}" | tee /tmp/stderr
+    echo "$(date +"$df") UPLOAD INCOMPLETE - please contact your server manager" | tee /tmp/stderr
+    exit 2
+fi
+
 echo "$(date +"$df") Loading provenance data..."
 load_provenance_response=$(curl -s -H "Accept: application/json" "${REST_SERVER}/admin/load_provenance")
+load_provenance_ret=$?
+if [ $load_provenance_ret -ne 0 ] || [ "$(echo "${load_provenance_response}" | head -c12)" != "<html><head>" ]; then
+    echo -e "$(date +"$df") ERROR: Could not load provenance data to fuseki. Return value: ${load_provenance_ret}\nResponse: ${load_provenance_response}" | tee /tmp/stderr
+    echo "$(date +"$df") UPLOAD INCOMPLETE - please contact your server manager" | tee /tmp/stderr
+    exit 3
+fi
+
 ## Conditionally notify i2b2
 if [ -n ${COMETAR_I2B2API_SERVER} ] ; then
     echo "$(date +"$df") Notifying i2b2 of updates... '${COMETAR_I2B2API_SERVER}${I2B2_UPDATEMETA_PATH}/${I2B2_META_SOURCE_NAME:-all}'" | tee /tmp/stderr
-    curl -s --connect-timeout 180 -H "Accept: text/plain" "${COMETAR_I2B2API_SERVER}${I2B2_UPDATEMETA_PATH}/${I2B2_META_SOURCE_NAME:-all}" >&2
+    update_i2b2_response=$(curl -s --connect-timeout 180 -H "Accept: text/plain" "${COMETAR_I2B2API_SERVER}${I2B2_UPDATEMETA_PATH}/${I2B2_META_SOURCE_NAME:-all}")
+    update_i2b2_ret=$?
+    if [ $update_i2b2_ret -ne 0 ] || [ "$(echo "${update_i2b2_response}" | head -c12)" != "<html><head>" ]; then
+        echo -e "$(date +"$df") WARNING: Could not update i2b2 with the changed metadata - please contact your server manager. Return value: ${update_i2b2_ret} \n Response: ${update_i2b2_response}" | tee /tmp/stderr
+    fi
 fi
-echo "$(date +"$df") Post-Receive: Complete" | tee /tmp/stderr
+echo "$(date +"$df") END hook: 'Post-Receive' - Complete" >> /tmp/stderr
+echo "$(date +"$df") UPLOAD SUCCESSFUL" | tee /tmp/stderr

@@ -3,11 +3,11 @@ echo "---- BEGIN GIT CONFIGURATION ----"
 
 ## Check git repo exists, if not init
 if [[ cd ${GIT_BASE} && git rev-parse --git-dir > /dev/null 2>&1 ]] ; then
-  echo "Git repo exists..."
+  echo "Git repo exists at '${GIT_BASE}'"
 else
   # NOT a git repo!
   git init --bare "${GIT_BASE}"
-  echo "Initialized git repo..."
+  echo "Initialized git repo at '${GIT_BASE}'..."
 fi
 
 ## Configuration for git hook

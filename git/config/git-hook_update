@@ -2,10 +2,18 @@
 
 df="[%Y-%m-%d %H:%M:%S]"
 
-echo "$(date +"$df") UPDATE HOOK called for ref $3" | tee /tmp/stderr
-echo -e "Verifying upload, using internal server-side rest service at: ${REST_SERVER}"
+echo "$(date +"$df") START hook:" >> /tmp/stderr
+echo "$(date +"$df") 'Update' called for ref $3" | tee /tmp/stderr
+echo "Verifying upload, using internal server-side rest service at: ${REST_SERVER}" | tee /tmp/stderr
 
 upload_verification=$(curl -s -H "Accept: application/json" "${REST_SERVER}/query/commits/rdf_verification/$3")
+failcode=$?
+if [ $failcode -ne 0 ]; then
+    echo "$(date +"$df") VERIFICATION COMMAND FAILED (code: ${failcode})" | tee /tmp/stderr
+    echo "$(date +"$df") END hook: 'Update' ended, is rest server responding?" >> /tmp/stderr
+    echo "$(date +"$df") UPLOAD FAILED due to technical issue, please contact your server manager" | tee /tmp/stderr
+    exit ${failcode}
+fi
 exitcode=$(echo "$upload_verification" | jq -r '.exitcode')
 
 if [[ "$upload_verification" == *"403 Forbidden"* ]]; then
@@ -18,11 +26,15 @@ if [[ "$upload_verification" == *"404 Not Found"* ]]; then
   exit 1
 fi
 
-echo "$(date +"$df") $upload_verification" | jq -r '.rdf_verification_steps_response'
+## Don't use date here, its overkill and causes a jq parsing issue
+echo "$upload_verification" | jq -r '.rdf_verification_steps_response'
 
 if [ "$exitcode" == "0" ]; then
-    echo "$(date +"$df") VERIFICATION SUCCESS (UPDATE HOOK complete)" | tee /tmp/stderr
+    echo "$(date +"$df") VERIFICATION SUCCESS" | tee /tmp/stderr
+    echo "$(date +"$df") END hook: 'Update' complete" >> /tmp/stderr
 else
-    echo "$(date +"$df") VERIFICATION FAILED (UPDATE HOOK complete - ${exitcode})" | tee /tmp/stderr
+    echo "$(date +"$df") VERIFICATION FAILED (code - ${exitcode})" | tee /tmp/stderr
+    echo "$(date +"$df") END hook: 'Update' ended - ${exitcode}" >> /tmp/stderr
+    echo "$(date +"$df") UPLOAD FAILED" | tee /tmp/stderr
     exit ${exitcode}
 fi
