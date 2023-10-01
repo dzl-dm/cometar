@@ -30,7 +30,7 @@ services:
     image: ${IMAGE_NAMESPACE}/cometar/cometar-web:${APP_VERSION}
     # build:
     #   context: ./web
-    #   dockerfile: Dockerfile.debug
+    #   dockerfile: Dockerfile
     env_file:
       - .env
     depends_on:

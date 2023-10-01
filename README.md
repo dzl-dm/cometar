@@ -4,54 +4,65 @@
 We are assuming a clean, linux based (git-bash and other windows based mechanisms should also work) environment with docker already installed and available to the user you are logged in as.
 
 ## Deployment
-The first step is to copy the essential files from our repo as templates, these will then be edited for you environment (you may prefer to prepare everything on your desktop then copy over to the deployment system)
+The first step is to copy the essential files from our repo as templates, you will then edit them for you environment (you may prefer to prepare everything on your desktop then copy over to the deployment system)
 ```sh
-wget https://raw.githubusercontent.com/dzl-dm/cometar/master/docker-compose.yml
-wget https://raw.githubusercontent.com/dzl-dm/cometar/master/.env
+wget -O docker-compose.yml https://raw.githubusercontent.com/dzl-dm/cometar/master/docker-compose.yml.example
+wget -O .env https://raw.githubusercontent.com/dzl-dm/cometar/master/.env.example
 ```
-> _NOTE:_ If you prefer to build the images yourself (or edit the way they are built), you shoud clone our whole repo: `git clone https://github.com/dzl-dm/cometar.git`
+> _NOTE:_ If you prefer to build the images yourself (or edit the way they are built), please see our [README-build.md](README-build.md) notes.
 
 ### Configuration
-Environment variables are set in the .env file. You may reference another environment file by editing the `docker-compose.yml` file.
-We provide a commented reference of all environment variables available for this application under `.env_reference`
+Environment variables are set in the `.env` file. The structure and settings in the `docker-compose.yml` file do not need editing for a basic deployment.
 
-Environment variables are used during deployment of containers to apply various configurations, so you should make these changes before deployment. They can also affect the build stage, however we limit the cases where this applies as the images should be neutral and re-usable for anyone.
+Environment variables are used during deployment of containers to apply various configurations, so you should make these changes before deployment. The following sections outline how to make common configuration changes.
 
-### Docker based deployment guide
-Use docker compose to build and run the components:
+#### General rules (of thumb)
+There are 2 ways to implement configuration changes:
+* Environment variables - We use the `.env` file for these. The container with behave based on the variables, often by setting a config at boot time.
+* Overriding files - You may also edit the `docker-compose.yml` file. Including a line like this will override the cometar config file. The same idea can be applied to any file.
+```yml
+    volumes:
+      - custom_config/config.json:/usr/share/nginx/html/cometar_browser/assets/config/config.json:ro
+```
+Both of these methods let you change the behaviour of your instance of the application while using the same, generic, application image which everyone else is using.
+
+#### Setting the version
+Use the `.env` var `APP_VERSION` to let the docker composition know which version of the docker images you want to use. Using `latest` is fine for testing, but please select a tag (from this CoMetaR repo. eg v0.0.1) in production systems to ensure a restart doesn't cause an unexpected upgrade!
+
+#### Branding
+To change the branding, you likely want to consider overriding the logos by adding some lines to the `volumes` section of the `web` service in `docker-compose.yml`. eg:
+```yml
+services:
+  ...
+  web:
+    ...
+    volumes:
+      - custom_config/src_cometar.png:/usr/share/nginx/html/cometar_browser/assets/img/CoMetaR_Logo.png:ro
+      - custom_config/src_cometar_small.png:/usr/share/nginx/html/cometar_browser/assets/img/CoMetaR_Logo_small.png:ro
+      - custom_config/src_brand.png:/usr/share/nginx/html/cometar_browser/assets/img/DZL_Logo.png:ro
+      - custom_config/src_brand_small.png:/usr/share/nginx/html/cometar_browser/assets/img/DZL_Logo_small.png:ro
+```
+The first part of each line (separated by colons:), is where the file is on your host system. You must create the path and provide a file. The middle part is within the container. Changing this will change the purpose, don't change it unless you know you want to override another file. The last part makes it read only, which is a small layer of security.
+
+You can also set the environment variable `HREF_BRAND` in the `.env` file which is used as a link when clicking on the brand logo in the bottom left section of CoMetaR's web interface.
+
+The env var `TITLE` can be used to set the html `<title>` tag's contents, which affects the browser window's title.
+
+### Deploy with docker compose
+Use docker compose to pull and run the components:
 ```sh
 docker compose up -d
 ```
-> _NOTE:_ Older versions of docker do not include `compose` as a sub-command, you may need to install docker-compose separately and use the hyphenated command `docker-compose` in place of `docker compose`
+> _NOTE:_ You may need to install docker's `compose` plugin to use `docker compose`. Older versions may only provide `docker-compose` (which may also need additional installation).
 
-This provides a running system available at `${BROWSER_SCHEME}://${BROWSER_FQDN}:${BROWSER_PORT}` eg. [http://localhost](http://localhost)
-
-This provides a running system available at `${BROWSER_SCHEME}://${BROWSER_FQDN}:${BROWSER_PORT}` eg. [http://localhost](http://localhost)
-
-You may want to edit some settings in `docker-compose.yml` before deploying, and for production deployments more substantial changes could be desired including running behind an https terminating proxy
-
-### _Optional: Building_
-If you would like to build the docker images yourself (allowing you to modify them), this section outlines how the services work together. The `Dockerfile`s are in the repo and the `docker-compose.yml` can be edited to use them instead of the published images (see the comments)
-
-#### web
-This service exposes the interface of the application. It is essentially an NginX server serving static files (for the Angular SPA) and proxying traffic for fuseki and git. All access controls are within this container
-
-#### git
-This is as it says, just a basic git served over http
-
-#### fuseki
-This is a triple store. It converts rdf formatted data from git into SPARQL queryable data over http
-
-#### rest
-The python (flask) api used internally by the application
-
+This provides a running system on your server (desktop, virtual, local, cloud, etc) eg. [http://localhost](http://localhost)
 
 ## Initialization
 In order to actually add data to CoMetaR, you must provide users' access to the git repository
 
-Get a shell inside the docker container for git:
+Authentication is managed by the proxy container, so get a shell inside that container:
 ```sh
-docker exec -it cometar_web sh
+docker exec -it cometar.proxy sh
 ```
 
 Once inside, run the following to add a user, you will be prompted for a password:
@@ -63,8 +74,12 @@ htpasswd .htpasswd_git username
 ## First steps
 Choose a location for the git repository which is to hold the CoMetaR thesaurus data
 
-Then clone the repo from CoMetaR (You can manage git credentials in multiple ways, you can optionally specify them within the url when cloning - shown below):
+Then clone the repo from CoMetaR (You can manage your git credentials in multiple ways, you can optionally specify them within the url when cloning - shown below):
 ```sh
+git clone ${BROWSER_SCHEME}://${BROWSER_FQDN}:[${BROWSER_PORT}]/git
+## eg:
+http://localhost/git
+## Demonstration including credentials - not recommended
 git clone ${BROWSER_SCHEME}://[${user}:${password}@]${BROWSER_FQDN}:[${BROWSER_PORT}]/git
 ```
 eg `git clone http://user:password@localhost/git`

@@ -12,7 +12,7 @@
       "displayLabel_iri":"http://data.dzl.de/ont/dwh#displayLabel"
     },
     "sparql": {
-        "endpoint_base":"${ENDPOINT_BASE}"
+        "endpoint_base":"/fuseki/"
     },
     "modules": {
         "provenance": {

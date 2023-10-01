@@ -23,7 +23,7 @@ if [ "$REST_ALLOW_RANGE" != "" ]; then
   echo "NginX rest allow directive: ${REST_ALLOW_RANGE}"
 fi
 IFS=$ORIG_IFS
-envsubst "\$BROWSER_FQDN \$FUSEKI_SERVER \$FUSEKI_ADMIN_ALLOW_RANGE \$GIT_SERVER \$GIT_ALLOW_RANGE \$REST_SERVER \$REST_ALLOW_RANGE \$WEB_SERVER" < /etc/nginx/conf.d/cometar-proxy.tmpl > /etc/nginx/conf.d/cometar.conf
+envsubst "\$FUSEKI_SERVER \$FUSEKI_ADMIN_ALLOW_RANGE \$GIT_SERVER \$GIT_ALLOW_RANGE \$REST_SERVER \$REST_ALLOW_RANGE \$WEB_SERVER" < /etc/nginx/conf.d/cometar-proxy.tmpl > /etc/nginx/conf.d/cometar.conf
 
 ## Create auth file if doesn't already exist
 if [ ! -e /etc/nginx/auth/.htpasswd_git ]; then

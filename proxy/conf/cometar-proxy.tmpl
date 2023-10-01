@@ -1,20 +1,11 @@
-## Introduce connection and request rate limiting to protect against DOS attacks (10m cache size ~160,000 IPs)
-## $proxy_protocol_addr vs $binary_remote_addr (OR $remote_addr) ??
-limit_req_zone $remote_addr zone=dm-req-prod:36m rate=30r/s;
-limit_conn_zone $remote_addr zone=dm-conn-prod:36m;
 server {
-    listen       80;
-    listen  [::]:80;
-    server_name  $BROWSER_FQDN;
+    listen       80 default_server;
+    listen  [::]:80 default_server;
 
     error_page   500 502 503 504  /50x.html;
     location = /50x.html {
         root   /usr/share/nginx/html;
     }
-
-    ## Burst rate limit settings (delay after delay=X no. of requests)
-    limit_req zone=dm-req-prod burst=5000 delay=500;
-    limit_conn dm-conn-prod 60;
 
     location / {
         proxy_pass         $WEB_SERVER/;
@@ -31,7 +22,7 @@ server {
         proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header   X-Forwarded-Host $server_name;
 
-        client_max_body_size 25m;
+        client_max_body_size 50m;
         proxy_read_timeout 600;
         proxy_connect_timeout 600;
         proxy_send_timeout 600;
@@ -43,7 +34,7 @@ server {
         deny all;
     }
 
-    ## Block browser access to rest service unless authorised (what is this used for?)
+    ## Block browser access to rest service unless authorised
     location /rest/ {
         proxy_pass $REST_SERVER/;
         proxy_set_header   Host $host;

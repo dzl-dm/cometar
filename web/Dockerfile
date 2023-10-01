@@ -22,15 +22,15 @@ FROM node:19-alpine as cometar-build
 
 ## Production container, copies pre-built app from 1st container
 ## Current stable version at time of writing
-FROM nginx:1.20-alpine
+FROM nginx:1.24-alpine-slim
 ARG BUILD_DIR
 
 ## Copy the app
 COPY --from=cometar-build ${BUILD_DIR}/dist /usr/share/nginx/html/cometar_browser
 
 ## Get setup scripts and data
+COPY docker-config/cometar-web.conf /etc/nginx/conf.d/
 COPY bootstrap-web.sh /bootstrap.sh
-COPY docker-config/ /config
 COPY src/assets/config/config_template.json /config/cometar_config_template.json
 
 RUN rm /etc/nginx/conf.d/default.conf
@@ -40,7 +40,7 @@ ENV TZ=${TZ:-'Europe/Berlin'}
 
 ## Application config
 ENV HREF_BRAND=${HREF_BRAND:-https://www.dzl.de/forschung/plattformen/plattform-biobanking-datenmanagement}
-ENV ENDPOINT_BASE=${ENDPOINT_BASE:-/fuseki/}
+ENV TITLE=${TITLE:-CoMetaR}
 
 CMD /bootstrap.sh && \
     nginx -g "daemon off;"

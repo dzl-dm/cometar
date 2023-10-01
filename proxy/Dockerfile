@@ -1,11 +1,8 @@
 FROM nginx:stable-alpine-slim
 
-# RUN  apt-get update && \
-#       apt-get install -y cron certbot python3-certbot-nginx bash wget apache2-utils && \
-#       apt-get autoremove -y; apt-get clean && \
-#       rm -rf /var/lib/apt/lists/*
-
-VOLUME /etc/letsencrypt
+## Ensure htpasswd command is available
+RUN apk add --update --no-cache apache2-utils && \
+    rm -rf /var/cache/apk/*
 
 ## Get config data and scripts
 COPY bootstrap-proxy.sh /bootstrap.sh
@@ -14,7 +11,6 @@ RUN rm /etc/nginx/conf.d/default.conf
 
 ## Setup env vars. These could be overriden, but in standard docker deployments will always be the same
 ENV TZ=${TZ:-'Europe/Berlin'}
-ENV BROWSER_FQDN=${BROWSER_FQDN:-localhost}
 ENV WEB_SERVER=${WEB_SERVER:-http://cometar.web}
 ENV GIT_SERVER=${GIT_SERVER:-http://cometar.git}
 ENV BROWSER_GIT_PATH=${BROWSER_GIT_PATH:-/git}

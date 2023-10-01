@@ -20,9 +20,6 @@ chown -R nginx:nginx "${GIT_BASE}"
 nohup tail -f /tmp/stdout &
 nohup tail -f /tmp/stderr >&2 &
 
-## Configuration for nginx
-envsubst "\$BROWSER_FQDN" < /config/nginx-git.conf > /etc/nginx/conf.d/cometar-git.conf
-
 echo "Updated environment settings and file permissions"
 
 echo "---- END GIT CONFIGURATION ----"

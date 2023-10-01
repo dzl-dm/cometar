@@ -5,6 +5,7 @@ ARG GIT_BASE=${GIT_BASE:-/git}
 RUN apk add --update --no-cache git-daemon fcgiwrap spawn-fcgi jq curl
 
 COPY config/ /config
+COPY config/nginx-git.conf /etc/nginx/conf.d/
 VOLUME ["${GIT_BASE}"]
 
 ## git init during build is only in container (not mounted volume). Has (system dependant) effect if/when a new vol is created
@@ -17,7 +18,6 @@ RUN mkfifo /tmp/stdout /tmp/stderr && \
 
 ## Setup env vars. These could be overriden, but in standard docker deployments will always be the same
 ENV TZ=${TZ:-'Europe/Berlin'}
-ENV BROWSER_FQDN=${BROWSER_FQDN:-localhost}
 ENV REST_SERVER=${REST_SERVER:-http://cometar.rest:5000}
 ENV FUSEKI_SERVER=${FUSEKI_SERVER:-http://cometar.fuseki:3030}
 ENV GIT_BASE=${GIT_BASE:-/git}
