@@ -57,6 +57,24 @@ docker compose up -d
 
 This provides a running system on your server (desktop, virtual, local, cloud, etc) eg. [http://localhost](http://localhost)
 
+### Upgrade the docker composition
+When a newer version of CoMetaR is available and you want to upgrade, you will want to update the version reference in your `.env` file, then run this docker command:
+```sh
+docker compose up -d --force-recreate
+```
+> _NOTE:_ If you are referencing latest or build latest, you won't change the version reference, but you will need to force docker to pull the latest version with:
+```sh
+docker compose pull
+## Then, as normal, run 'up':
+docker compose up -d --force-recreate
+```
+You can check that the running containers are referencing the new images with:
+```sh
+docker ps -a
+docker image ls
+```
+You'll see the version tag at the end of the image name, the ID should have changed if you are referencing (build-)latest (You can comare to image ID's with `docker image ls`)
+
 ## Initialization
 In order to actually add data to CoMetaR, you must provide users' access to the git repository
 
