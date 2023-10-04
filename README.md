@@ -102,6 +102,59 @@ git clone ${BROWSER_SCHEME}://[${user}:${password}@]${BROWSER_FQDN}:[${BROWSER_P
 ```
 eg `git clone http://user:password@localhost/git`
 
+### Add display configuration data
+Since version v0.6.3, CoMetaR's layout and labels can be adjusted with RDF data loaded with the metadata. We call these _"predicates"_ and provide a template `predicates.ttl.example` file.
+
+There are 2 types of predicate recognised...
+#### dwh:*Restriction
+This allows you to define how a data type restriction is displayed in the CoMetaR interface. eg
+```
+dwh:integerRestriction 
+	rdf:label "Integer"@en;
+	rdf:label "Ganzzahl"@de;
+.
+dwh:stringRestriction 
+	rdf:label "String"@en;
+	rdf:label "Zeichenkette"@de;
+.
+```
+Currently only english language is used, but labels for any language can be defined and can be supported by the interface in the future.
+
+#### dzl:cometarAttribute
+This structure allows more control over the core and detailed elements and attributes of a metadata concept. You can use these structures to change the name, visibility and position of each attribute. eg
+```
+skos:prefLabel a dzl:cometarAttribute;
+	rdf:label "Label"@en;
+	rdf:label "Bezeichnung"@de;
+	dzl:cometarDisplayIndex "1:1";
+.
+
+skos:altLabel a dzl:cometarAttribute;
+	rdf:label "Alternative label"@en;
+	rdf:label "Alternative Bezeichnung"@de;
+	dzl:cometarDisplayIndex "1:2";
+.
+
+dc:description a dzl:cometarAttribute;
+	rdf:label "Description"@en;
+	rdf:label "Beschreibung"@de;
+	dzl:cometarDisplayIndex "2:4";
+.
+prov:endedAtTime a dzl:cometarAttribute;
+	rdf:label "Last Changes Date"@en;
+	rdf:label "Datum der letzten Änderung"@de;
+	dzl:cometarDisplayIndex "2:9";
+.
+```
+The purpose and usage of _'rdf:label'_ property is self explanatory, the _'dzl:cometarDisplayIndex'_ is also easy to use after a short explanation.
+
+The first number represents which column the attribute will be displayed in, `1` represents a core attribute and will be displayed on the narrower right column, while `2` represents extended or detailed attributes shown only when available in the centre of the page.
+
+The second number is used to order the attributes, lower numbers are displayed closer to the top of the column. The eventual order is indeterminte if 2 attributes share the same column and order number.
+
+Commenting or removing the _'dzl:cometarDisplayIndex'_ line means the attribute will not be displayed.
+
+### Add your own metadata
 Then create or add some data saved as `*.ttl` file. The extension __must__ be `.ttl` otherwise it will be ignored.
 
 Here we provide a basic example to get you up and running:

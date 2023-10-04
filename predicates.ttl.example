@@ -1,0 +1,159 @@
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+@prefix dwh:    <http://sekmi.de/histream/dwh#> .
+@prefix dc:	<http://purl.org/dc/elements/1.1/> .
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix prov: 	<http://www.w3.org/ns/prov#> .
+@prefix dzl:	<http://data.dzl.de/ont/dwh#> .
+
+
+
+skos:prefLabel a dzl:cometarAttribute;
+	rdf:label "Label"@en;
+	rdf:label "Bezeichnung"@de;
+	dzl:cometarDisplayIndex "1:1";
+.
+
+skos:altLabel a dzl:cometarAttribute;
+	rdf:label "Alternative label"@en;
+	rdf:label "Alternative Bezeichnung"@de;
+	dzl:cometarDisplayIndex "1:2";
+.
+
+skos:notation a dzl:cometarAttribute;
+	rdf:label "Code"@en;
+	rdf:label "Code"@de;
+	dzl:cometarDisplayIndex "1:3";
+.
+
+dwh:restriction a dzl:cometarAttribute;
+	rdf:label "Data type"@en;
+	rdf:label "Datentyp"@de;
+	dzl:cometarDisplayIndex "1:4";
+.
+
+dzl:unit a dzl:cometarAttribute;
+	rdf:label "Unit"@en;
+	rdf:label "Einheit"@de;
+	dzl:cometarDisplayIndex "1:5";
+.
+
+dzl:status a dzl:cometarAttribute;
+	rdf:label "Status"@en;
+	rdf:label "Status"@de;
+	dzl:cometarDisplayIndex "1:6";
+.
+
+skos:inScheme a dzl:cometarAttribute;
+	rdf:label "In Scheme"@en;
+	rdf:label "In Schema"@de;
+	dzl:cometarDisplayIndex "1:7";
+.
+
+
+skos:broader a dzl:cometarAttribute;
+	rdf:label "More general concept"@en;
+	rdf:label "Allgemeinerer Begriff"@de;
+	# dzl:cometarDisplayIndex "2:1";
+.
+
+skos:narrower a dzl:cometarAttribute;
+	rdf:label "More specific concept"@en;
+	rdf:label "Spezifischerer Begriff"@de;
+	# dzl:cometarDisplayIndex "2:2";
+.
+
+dc:creator a dzl:cometarAttribute;
+	rdf:label "Creator"@en;
+	rdf:label "Urheber"@de;
+	# dzl:cometarDisplayIndex "2:3";
+.
+
+dc:description a dzl:cometarAttribute;
+	rdf:label "Description"@en;
+	rdf:label "Beschreibung"@de;
+	dzl:cometarDisplayIndex "2:4";
+.
+
+skos:editorialNote a dzl:cometarAttribute;
+	rdf:label "Editorial note"@en;
+	rdf:label "Redaktionelle Notiz"@de;
+	dzl:cometarDisplayIndex "2:5";
+.
+
+rdf:partOf a dzl:cometarAttribute;
+	rdf:label "Specifies"@en;
+	rdf:label "Spezifiziert"@de;
+	dzl:cometarDisplayIndex "2:6";
+.
+
+rdf:hasPart a dzl:cometarAttribute;
+	rdf:label "Has specification"@en;
+	rdf:label "Hat Spezifikation"@de;
+	dzl:cometarDisplayIndex "2:7";
+.
+
+skos:related a dzl:cometarAttribute;
+	rdf:label "Related to"@en;
+	rdf:label "Verwandt mit"@de;
+	dzl:cometarDisplayIndex "2:8";
+.
+
+prov:endedAtTime a dzl:cometarAttribute;
+	rdf:label "Last Changes Date"@en;
+	rdf:label "Datum der letzten Änderung"@de;
+	dzl:cometarDisplayIndex "2:9";
+.
+
+dwh:display a dzl:cometarAttribute;
+	rdf:label "Show in data warehouse"@en;
+	rdf:label "In Data Warehouse anzeigen"@de;
+	dzl:cometarDisplayIndex "2:10";
+.
+
+
+prov:wasDerivedFrom a dzl:cometarAttribute;
+	rdf:label "Previous identifier"@en;
+	rdf:label "Vorheriger Identifikator"@de;
+.
+
+prov:atLocation a dzl:cometarAttribute;
+	rdf:label "Located at"@en;
+	rdf:label "Aufzufinden unter"@de;
+.
+
+### Attributes
+
+dwh:integerRestriction 
+	rdf:label "Integer"@en;
+	rdf:label "Ganzzahl"@de;
+.
+
+dwh:stringRestriction 
+	rdf:label "String"@en;
+	rdf:label "Zeichenkette"@de;
+.
+
+dwh:largeStringRestriction
+	rdf:label "Large string"@en;
+	rdf:label "Lange Zeichenkette"@de;
+.
+
+dwh:floatRestriction
+	rdf:label "Float"@en;
+	rdf:label "Gleitkommazahl"@de;
+.
+
+dwh:partialDateRestriction 
+	rdf:label "Partial date"@en;
+	rdf:label "Datumsanteil"@de;
+.
+
+dwh:dateRestriction 
+	rdf:label "Date"@en;
+	rdf:label "Datum"@de;
+.
+
+dwh:noValueRestriction 
+	rdf:label "No Value"@en;
+	rdf:label "Ohne Wert"@de;
+.
