@@ -55,6 +55,9 @@ if [ -n "$ADMIN_PASSWORD" ] ; then
   export ADMIN_PASSWORD
 fi
 
+## Ensure there isn't a bogus lock file from a bad shutdown
+[ -f /fuseki/system/tdb.lock ] && rm /fuseki/system/tdb.lock
+
 # fork 
 exec "$@" &
 
@@ -79,6 +82,14 @@ do
          -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8'\
          --data "dbName=${dataset}&dbType=${TDB_VERSION}"
 done
+
+## Populate with CoMetaR data (request from rest)
+while [[ $(curl -I http://${cometar_rest_ip}:5000/admin/load_latest_commit 2>/dev/null | head -n 1 | cut -d$' ' -f2) != '200' ]]; do
+  ## Wait in case the rest api isn't active yet
+  sleep 3s
+done
+curl -I http://${cometar_rest_ip}:5000/admin/update_provenance?date_from=$(date -d 'last week' '+%Y-%m-%d') 2>/dev/null
+curl -I http://${cometar_rest_ip}:5000/admin/load_provenance 2>/dev/null
 
 # rejoin our exec
 wait

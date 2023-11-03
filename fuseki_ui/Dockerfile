@@ -79,8 +79,6 @@ COPY load.sh $FUSEKI_HOME/
 COPY tdbloader $FUSEKI_HOME/
 COPY tdbloader2 $FUSEKI_HOME/
 RUN chmod 755 $FUSEKI_HOME/load.sh $FUSEKI_HOME/tdbloader $FUSEKI_HOME/tdbloader2
-#VOLUME /staging
-
 
 # Where we start our server from
 WORKDIR $FUSEKI_HOME
@@ -88,8 +86,8 @@ WORKDIR $FUSEKI_HOME
 # Make sure we start with empty /fuseki
 RUN rm -rf $FUSEKI_BASE && \
     mkdir -p $FUSEKI_BASE
-# VOLUME $FUSEKI_BASE
 
+ENV cometar_rest_ip=${cometar_rest_ip:-cometar.rest}
 ## Check fuseki service is actually running
 COPY healthcheck.sh /
 HEALTHCHECK --interval=5s --timeout=10s --retries=15 \
@@ -97,6 +95,5 @@ HEALTHCHECK --interval=5s --timeout=10s --retries=15 \
 
 EXPOSE 3030
 ENTRYPOINT ["/usr/bin/tini", "--", "/docker-entrypoint.sh"]
-# CMD ["/jena-fuseki/fuseki-server"]
 CMD ["/jena-fuseki/fuseki-server", "--config=/etc/fuseki/fuseki_cometar_config.ttl"]
 
