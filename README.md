@@ -39,10 +39,11 @@ services:
     volumes:
       - custom_config/src_cometar.png:/usr/share/nginx/html/cometar_browser/assets/img/CoMetaR_Logo.png:ro
       - custom_config/src_cometar_small.png:/usr/share/nginx/html/cometar_browser/assets/img/CoMetaR_Logo_small.png:ro
+      - custom_config/src_cometar_c_small.png:/usr/share/nginx/html/cometar_browser/assets/img/cometar_c_small.png:ro
       - custom_config/src_brand.png:/usr/share/nginx/html/cometar_browser/assets/img/DZL_Logo.png:ro
       - custom_config/src_brand_small.png:/usr/share/nginx/html/cometar_browser/assets/img/DZL_Logo_small.png:ro
 ```
-The first part of each line (separated by colons:), is where the file is on your host system. You must create the path and provide a file. The middle part is within the container. Changing this will change the purpose, don't change it unless you know you want to override another file. The last part makes it read only, which is a small layer of security.
+The first part of each line (separated by colons:), is where the file is on your host system. You must create the path and provide a file. The middle part is within the container. Changing this will change the purpose, don't change it unless you know you want to override another file. The last part makes it read only, which is a small layer of security. The CoMetaR logo, displayed in the bottom left of the browser, under the tree, is composed of 2 parts, you might want to set the 'src_cometar_c_small.png' as a 1x1px transparent image and use only the 'src_cometar_small.png' if you are overriding this logo.
 
 You can also set the environment variable `HREF_BRAND` in the `.env` file which is used as a link when clicking on the brand logo in the bottom left section of CoMetaR's web interface.
 
