@@ -6,10 +6,15 @@
         "href_brand":"${HREF_BRAND}"
     },
     "rdf": {
-      "unit_iri":"http://data.dzl.de/ont/dwh#unit",
-      "topLevelNode_iri":"http://data.dzl.de/ont/dwh#topLevelNode",
-      "status_iri":"http://data.dzl.de/ont/dwh#status",
-      "displayLabel_iri":"http://data.dzl.de/ont/dwh#displayLabel"
+        "unit_iri":"http://data.dzl.de/ont/dwh#unit",
+        "topLevelNode_iri":"http://data.dzl.de/ont/dwh#topLevelNode",
+        "status_iri":"http://data.dzl.de/ont/dwh#status",
+        "displayLabel_iri":"http://data.dzl.de/ont/dwh#displayLabel"
+    },
+    "concept_prefix": {
+        "dzl":"http://data.dzl.de/ont/dwh#",
+        "loinc":"http://loinc.org/owl#",
+        "snomed":"http://purl.bioontology.org/ontology/SNOMEDCT/"
     },
     "sparql": {
         "endpoint_base":"/fuseki/"
