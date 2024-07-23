@@ -41,6 +41,9 @@ ENV TZ=${TZ:-'Europe/Berlin'}
 ## Application config
 ENV HREF_BRAND=${HREF_BRAND:-https://www.dzl.de/forschung/plattformen/plattform-biobanking-datenmanagement}
 ENV TITLE=${TITLE:-CoMetaR}
+ENV head_script=${head_script:-""}
+ENV header_placeholder=${header_placeholder:-""}
+ENV footer_placeholder=${footer_placeholder:-""}
 
 CMD /bootstrap.sh && \
     nginx -g "daemon off;"
