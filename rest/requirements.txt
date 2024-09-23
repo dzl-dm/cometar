@@ -1,8 +1,7 @@
 Flask
 flask-accept
-matplotlib
+GitPython
 MarkupSafe
+matplotlib~=3.9.0
 pyyaml
 requests
-GitPython
-matplotlib

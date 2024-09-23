@@ -79,7 +79,7 @@ def get_metadata_distribution_figure(force_redraw):
       for label, size, color in zip(donut_labels, donut_numbers, donut_colors):
         if size > min_sub_concepts:
           h.append(mpatches.Patch(color = color, label=label + " (" +f'{size:,}'+ ")"))
-      plt.legend(handles=h,loc=0, bbox_to_anchor=(1.3, 1.0), ncol=2)
+      plt.legend(handles=h, bbox_to_anchor=(1.45, 1.0), loc='upper left', ncol=2)
       ax.pie(pie_added_numbers, 
         colors=pie_colors,
         labels=[l+" ("+f'{s:,}'+")" for l,s in zip(pie_labels, pie_real_numbers)],
