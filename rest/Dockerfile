@@ -26,13 +26,15 @@ RUN mkdir -p \
         /var/lib/cometar/provenance/deltas \
         /var/tmp/cometar
 
+COPY --chmod=0755 bootstrap.sh /usr/local/bin/docker-bootstrap.sh
+
 ENV FUSEKI_LIVE_SERVER=${FUSEKI_LIVE_SERVER:-http://cometar.fuseki:3030/cometar_live}
 ENV FUSEKI_TEST_SERVER=${FUSEKI_TEST_SERVER:-http://cometar.fuseki:3030/cometar_test}
 ENV FUSEKI_DEV_SERVER=${FUSEKI_DEV_SERVER:-http://cometar.fuseki:3030/cometar_dev}
+ENV log_verbosity=${log_verbosity:-2}
 ENV LOG_CONF_PATH=${LOG_CONF_PATH:-'/config/logging.yaml'}
 EXPOSE 5000
 
-## Shortly after restart, ensure fuseki reloads the thesaurus and provenance data
-CMD /bin/bash -c "sleep 5; curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/load_latest_commit' && sleep 1 && curl -s -H 'Accept: application/json' \"http://localhost:5000/admin/update_provenance?date_from=$(date -d 'last week' '+%Y-%m-%d')\" && sleep 1 && curl -s -H 'Accept: application/json' 'http://localhost:5000/admin/load_provenance'" & \
-    export FLASK_APP="$COMETAR_PROD_DIR/cometar_flask.py" && \
-    flask run -h 0.0.0.0 --reload
+## Use bootstrap to process data shortly after restart, ensuring fuseki reloads the thesaurus and provenance data
+ENTRYPOINT ["/usr/local/bin/docker-bootstrap.sh"]
+CMD ["/usr/local/bin/flask", "--app", "$COMETAR_PROD_DIR/cometar_flask.py", "run", "-h 0.0.0.0", "--reload"]
