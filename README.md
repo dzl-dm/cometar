@@ -27,7 +27,7 @@ There are 2 ways to implement configuration changes:
 Both of these methods let you change the behaviour of your instance of the application while using the same, generic, application image which everyone else is using.
 
 #### Setting the version
-Use the `.env` var `APP_VERSION` to let the docker composition know which version of the docker images you want to use. Using `latest` is fine for testing, but please select a tag (from this CoMetaR repo. eg v0.0.1) in production systems to ensure a restart doesn't cause an unexpected upgrade!
+Use the `.env` var `COMETAR_VERSION` to let the docker composition know which version of the docker images you want to use. Using `latest` is fine for testing, but please select a tag (from this CoMetaR repo. eg v0.0.1) in production systems to ensure a restart doesn't cause an unexpected upgrade!
 
 #### Branding
 To change the branding, you likely want to consider overriding the logos by adding some lines to the `volumes` section of the `web` service in `docker-compose.yml`. eg:
@@ -156,7 +156,7 @@ The second number is used to order the attributes, lower numbers are displayed c
 Commenting or removing the _'dzl:cometarDisplayIndex'_ line means the attribute will not be displayed.
 
 ### Add your own metadata
-Then create or add some data saved as `*.ttl` file. The extension __must__ be `.ttl` otherwise it will be ignored.
+Then create or add some data saved as `*.ttl` file. The extension __must__ be `.ttl` otherwise it will be ignored. Its also possible to split the linked data over multiple `.ttl` files.
 
 Here we provide a basic example to get you up and running:
 ```

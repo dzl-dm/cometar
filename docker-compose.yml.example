@@ -10,7 +10,7 @@ services:
   proxy:
     container_name:
       cometar.proxy
-    image: ${IMAGE_NAMESPACE}/cometar/cometar-proxy:${APP_VERSION}
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-proxy:${COMETAR_VERSION}
     # build:
     #   context: ./proxy
     #   dockerfile: Dockerfile
@@ -27,7 +27,7 @@ services:
   web:
     container_name:
       cometar.web
-    image: ${IMAGE_NAMESPACE}/cometar/cometar-web:${APP_VERSION}
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-web:${COMETAR_VERSION}
     # build:
     #   context: ./web
     #   dockerfile: Dockerfile
@@ -39,7 +39,7 @@ services:
   git:
     container_name:
       cometar.git
-    image: ${IMAGE_NAMESPACE}/cometar/cometar-git:${APP_VERSION}
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-git:${COMETAR_VERSION}
     # build:
     #   context: ./git
     #   dockerfile: Dockerfile
@@ -53,7 +53,7 @@ services:
   rest:
     container_name:
       cometar.rest
-    image: ${IMAGE_NAMESPACE}/cometar/cometar-rest:${APP_VERSION}
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-rest:${COMETAR_VERSION}
     # build:
     #   context: ./rest
     #   dockerfile: Dockerfile
@@ -65,8 +65,8 @@ services:
   fuseki:
     container_name:
       cometar.fuseki
-    # image: ${IMAGE_NAMESPACE}/cometar/cometar-fuseki:${APP_VERSION}
-    image: ${IMAGE_NAMESPACE}/cometar/cometar-fuseki_ui:${APP_VERSION}
+    # image: ${IMAGE_NAMESPACE}/cometar/cometar-fuseki:${COMETAR_VERSION}
+    image: ${IMAGE_NAMESPACE}/cometar/cometar-fuseki_ui:${COMETAR_VERSION}
     # build:
     #   context: ./fuseki
     #   dockerfile: Dockerfile
