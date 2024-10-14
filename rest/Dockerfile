@@ -35,6 +35,6 @@ ENV log_verbosity=${log_verbosity:-2}
 ENV LOG_CONF_PATH=${LOG_CONF_PATH:-'/config/logging.yaml'}
 EXPOSE 5000
 
-## Use bootstrap to process data shortly after restart, ensuring fuseki reloads the thesaurus and provenance data
+## Use bootstrap to ensure a clean startup of the API and ability to process new git commits etc
 ENTRYPOINT ["/usr/local/bin/docker-bootstrap.sh"]
 CMD ["/usr/local/bin/flask", "--app", "$COMETAR_PROD_DIR/cometar_flask.py", "run", "-h 0.0.0.0", "--reload"]

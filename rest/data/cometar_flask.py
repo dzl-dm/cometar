@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 logger.debug("Logging loaded and configured")
 
 app = Flask(__name__)
+logger.debug("'app' created as Flask(__name__)")
 
 @app.route('/')
 def index():
@@ -234,3 +235,5 @@ def get_metadata_progress_total_concepts_figure():
 @app.route('/query/progress/metadata/distribution/figure')
 def get_metadata_progress_distribution_figure():
     return send_file(plotting.get_metadata_distribution_figure(True), mimetype='image/jpg')
+
+logger.debug("cometar_flask.py bottom")
