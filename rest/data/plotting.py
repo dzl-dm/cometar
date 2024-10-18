@@ -16,7 +16,7 @@ figures_path = "/var/lib/cometar/figures"
 if not os.path.exists(figures_path):
     os.makedirs(figures_path)  
 
-def get_metadata_distribution_figure(force_redraw):
+def get_metadata_distribution_figure(force_redraw:bool=False):
   prefix = "metadata_distribution_"
   fig_fullname = os.path.join(figures_path,prefix+datetime.now().strftime("%Y-%m-%d")+".jpg")
 
@@ -95,7 +95,7 @@ def get_metadata_distribution_figure(force_redraw):
   return fig_fullname
 
 blocker=False
-def get_progress_metadata_changes_figure(force_redraw):  
+def get_progress_metadata_changes_figure(force_redraw:bool=False):  
   prefix = "additions_and_removals_per_date_"
   fig_fullname = os.path.join(figures_path,prefix+datetime.now().strftime("%Y-%m-%d")+".jpg")
 
@@ -145,7 +145,7 @@ def get_progress_metadata_changes_figure(force_redraw):
       blocker = False
   return fig_fullname
 
-def get_progress_metadata_total_concepts_figure(force_redraw):
+def get_progress_metadata_total_concepts_figure(force_redraw:bool=False):
   prefix = "total_amount_of_concepts_per_date_"
   fig_fullname = os.path.join(figures_path,prefix+datetime.now().strftime("%Y-%m-%d")+".jpg")
 
@@ -207,7 +207,7 @@ def get_progress_metadata_total_concepts_figure(force_redraw):
       blocker = False
   return fig_fullname
 
-def get_progress_metadata_total_annotations_figure(force_redraw):
+def get_progress_metadata_total_annotations_figure(force_redraw:bool=False):
   logger.info("Plotting graph for total annotations...")
   prefix = "total_amount_of_annotations_per_date_"
   fig_fullname = os.path.join(figures_path,prefix+datetime.now().strftime("%Y-%m-%d")+".jpg")

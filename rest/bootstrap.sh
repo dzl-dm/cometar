@@ -24,4 +24,5 @@ log_info "Continuing startup process (with CMD: $CMD)..."
 exec $CMD &
 sleep 0.2
 log_info "API should now be available"
+{ service cron start && log_info "Cron service started, scheduled tasks should run at their specified times."; } || log_info "Cron failed to start."
 wait

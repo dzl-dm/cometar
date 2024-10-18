@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bookworm
+FROM python:3.12-slim-bookworm
 
 ## Used in build and run
 ENV COMETAR_TEMP_DIR=${COMETAR_TEMP_DIR:-/tmp/cometar}
@@ -9,8 +9,14 @@ ENV TZ=${TZ:-'Europe/Berlin'}
 
 ARG DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update && \
-    apt-get -y install tzdata && \
-    apt-get install -y git=1:2* git-core curl gawk && \
+    apt-get -y install \
+    cron \
+    curl \
+    gawk \
+    git=1:2* \
+    git-core \
+    tzdata \
+    && \
     apt-get autoremove -y
 
 ## Update and install project requirements from requirements.txt (copy separately to entire src to aid docker layer cache reuse)
@@ -26,7 +32,9 @@ RUN mkdir -p \
         /var/lib/cometar/provenance/deltas \
         /var/tmp/cometar
 
+RUN mv /config/crontabs/* /etc/cron.d/
 COPY --chmod=0755 bootstrap.sh /usr/local/bin/docker-bootstrap.sh
+COPY --chmod=0755 scripts/* /scripts/
 
 ENV FUSEKI_LIVE_SERVER=${FUSEKI_LIVE_SERVER:-http://cometar.fuseki:3030/cometar_live}
 ENV FUSEKI_TEST_SERVER=${FUSEKI_TEST_SERVER:-http://cometar.fuseki:3030/cometar_test}

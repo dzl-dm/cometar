@@ -1,0 +1,4 @@
+## Must be ended with a new line "LF" (Unix) and not "CRLF" (Windows)
+## MIN HOUR DOM MON DOW USER CMD
+13 0 * * * root /scripts/build-figures.sh >> /var/log/cron.log 2>&1
+## An empty line is required at the end of this file for a valid cron file.

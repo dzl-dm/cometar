@@ -222,18 +222,18 @@ def get_metadata_progress_html():
 
 @app.route('/query/progress/metadata/changes/figure')
 def get_metadata_progress_changes_figure():
-    return send_file(plotting.get_progress_metadata_changes_figure(True), mimetype='image/jpg')
+    return send_file(plotting.get_progress_metadata_changes_figure(), mimetype='image/jpg')
 
 @app.route('/query/progress/metadata/total_annotations/figure')
 def get_metadata_progress_total_annotations_figure():
-    return send_file(plotting.get_progress_metadata_total_annotations_figure(True), mimetype='image/jpg')
+    return send_file(plotting.get_progress_metadata_total_annotations_figure(), mimetype='image/jpg')
 
 @app.route('/query/progress/metadata/total_concepts/figure')
 def get_metadata_progress_total_concepts_figure():
-    return send_file(plotting.get_progress_metadata_total_concepts_figure(True), mimetype='image/jpg')
+    return send_file(plotting.get_progress_metadata_total_concepts_figure(), mimetype='image/jpg')
 
 @app.route('/query/progress/metadata/distribution/figure')
 def get_metadata_progress_distribution_figure():
-    return send_file(plotting.get_metadata_distribution_figure(True), mimetype='image/jpg')
+    return send_file(plotting.get_metadata_distribution_figure(), mimetype='image/jpg')
 
 logger.debug("cometar_flask.py bottom")
