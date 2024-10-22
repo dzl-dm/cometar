@@ -3,9 +3,9 @@
 ## Suitable to be run by cron daily overnight, so they are ready for users for the rest of the day
 
 df="%Y-%m-%d %H:%M:%S"
-function log_debug { { [[ "${log_verbosity}" -ge 3 ]] && >&2 echo "[$(date +"$df")] DEBUG: ${@}"; } || return true; }
-function log_info { { [[ "${log_verbosity}" -ge 2 ]] && >&2 echo "[$(date +"$df")] INFO: ${@}"; } || return true; }
-function log_warn { { [[ "${log_verbosity}" -ge 1 ]] && >&2 echo "[$(date +"$df")] WARN: ${@}"; } || return true; }
+function log_debug { { [[ "${log_verbosity}" -ge 3 ]] && echo "[$(date +"$df")] DEBUG: ${@}"; } || return 0; }
+function log_info { { [[ "${log_verbosity}" -ge 2 ]] && echo "[$(date +"$df")] INFO: ${@}"; } || return 0; }
+function log_warn { { [[ "${log_verbosity}" -ge 1 ]] && echo "[$(date +"$df")] WARN: ${@}"; } || return 0; }
 function log_error { >&2 echo "[$(date +"$df")] ERROR: ${@}"; }
 function log_critical { >&2 echo "[$(date +"$df")] CRITICAL: ${@}"; }
 
