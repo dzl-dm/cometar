@@ -19,8 +19,9 @@
 ## This Dockefile builds a reduced footprint container.
 
 ARG OPENJDK_VERSION=${FUSEKI_OPENJDK_VERSION:-"18"}
-ARG ALPINE_VERSION=${FUSEKI_ALPINE_VERSION:-"3.15.0"}
-ARG JENA_VERSION=${FUSEKI_JENA_VERSION:-"4.3.2"}
+ARG JAVA_VERSION=${FUSEKI_JAVA_VERSION:-"21"}
+ARG ALPINE_VERSION=${FUSEKI_ALPINE_VERSION:-"3.21.2"}
+ARG JENA_VERSION=${FUSEKI_JENA_VERSION:-"5.4.0"}
 ARG FUSEKI_CONFIG=${FUSEKI_CONFIG:-"/fuseki/cometar_config.ttl"}
 
 # Internal, passed between stages.
@@ -29,7 +30,8 @@ ARG FUSEKI_JAR=jena-fuseki-server-${JENA_VERSION}.jar
 ARG JAVA_MINIMAL=/opt/java-minimal
 
 ## ---- Stage: Download and build java.
-FROM openjdk:${OPENJDK_VERSION}-alpine AS base
+# FROM openjdk:${OPENJDK_VERSION}-alpine AS base
+FROM eclipse-temurin:${JAVA_VERSION}-alpine AS base
 
 ARG JAVA_MINIMAL
 ARG JENA_VERSION
